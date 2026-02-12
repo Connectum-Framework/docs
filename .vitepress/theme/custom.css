@@ -1,6 +1,26 @@
-/* Nav title — use hero gradient color */
-.VPNavBarTitle .title {
-    color: var(--vp-home-hero-name-color);
+/* Full-page background image — light theme, home page only */
+:root:not(.dark) .home-page {
+    background: url('/assets/background.png') no-repeat center center / cover fixed;
+}
+
+/* Sidebar background image — light theme, non-home pages */
+:root:not(.dark) .VPSidebar {
+    background: url('/assets/background.png') no-repeat left center / 100vw auto fixed !important;
+}
+
+/* Sidebar nav area — transparent, no border */
+:root:not(.dark) .VPSidebar .curtain {
+    background-color: transparent !important;
+}
+
+:root:not(.dark) .VPSidebar .nav {
+    border-bottom: none !important;
+    background-color: transparent !important;
+}
+
+/* Nav logo — hide on home page */
+.home-page .VPNavBarTitle {
+    visibility: hidden;
 }
 
 /* Hero image size override — beats VPHero scoped :deep(.image-src) specificity (0,2,0) */
@@ -42,6 +62,12 @@
 @keyframes mermaid-fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+/* Footer — transparent, no border */
+.VPFooter {
+    border-top: none !important;
+    background-color: transparent !important;
 }
 
 /* medium-zoom override — match VitePress theme */

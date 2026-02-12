@@ -1,6 +1,7 @@
 ---
 layout: home
 title: Connectum — Production-Ready gRPC Framework
+pageClass: home-page
 
 hero:
   name: Connectum

@@ -1,5 +1,6 @@
 ---
 layout: home
+pageClass: home-page
 
 hero:
   name: Connectum

@@ -7,6 +7,10 @@ export const sharedConfig = defineConfig({
     head: [
         ['link', { rel: 'icon', type: 'image/png', href: '/assets/splash.png' }],
     ],
+    themeConfig: {
+        logo: '/assets/name.png',
+        siteTitle: false,
+    },
     markdown: {
         lineNumbers: true,
         config(md) {
