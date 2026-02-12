@@ -7,7 +7,8 @@ hero:
   text: Production-Ready gRPC Framework
   tagline: Build resilient gRPC/ConnectRPC microservices on Node.js with zero boilerplate
   image:
-    src: /assets/splash.png
+    light: /assets/splash.png
+    dark: /assets/splash-dark.png
     alt: Connectum Framework
   actions:
     - theme: brand

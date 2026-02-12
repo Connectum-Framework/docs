@@ -6,7 +6,8 @@ hero:
   text: Production-Ready gRPC фреймворк
   tagline: Создавайте надёжные gRPC/ConnectRPC микросервисы на Node.js без шаблонного кода
   image:
-    src: /assets/splash.png
+    light: /assets/splash.png
+    dark: /assets/splash-dark.png
     alt: Connectum Framework
   actions:
     - theme: brand
