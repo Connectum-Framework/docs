@@ -1,0 +1,441 @@
+---
+title: TypeScript Best Practices
+description: Native TypeScript execution constraints, patterns, and configuration for Connectum services on Node.js 25.2.0+.
+outline: deep
+---
+
+# TypeScript Best Practices
+
+Connectum runs TypeScript natively on Node.js 25.2.0+ using [stable type stripping](https://nodejs.org/api/typescript.html). This eliminates the need for a build step but introduces specific constraints you must follow.
+
+## How Native TypeScript Works
+
+Node.js 25.2.0+ can execute `.ts` files directly by **stripping type annotations** at load time. This is **not** full TypeScript compilation -- it only removes type syntax, leaving the remaining JavaScript intact.
+
+```bash
+# Run TypeScript directly -- no tsc needed
+node src/index.ts
+```
+
+The key implication: your TypeScript code must be valid JavaScript after type annotations are removed. This is called **erasable syntax only**.
+
+## The erasableSyntaxOnly Constraint
+
+Enable this in your `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "erasableSyntaxOnly": true
+  }
+}
+```
+
+This makes TypeScript's type checker enforce that you only use syntax that can be erased, catching violations at development time.
+
+### What You Cannot Use
+
+The following TypeScript features generate runtime code and **cannot** be erased:
+
+#### No `enum`
+
+```typescript
+// WRONG: enum generates runtime code
+enum Status {
+  PENDING = 1,
+  ACTIVE = 2,
+  CLOSED = 3,
+}
+
+// CORRECT: use const object with 'as const'
+const Status = {
+  PENDING: 1,
+  ACTIVE: 2,
+  CLOSED: 3,
+} as const;
+
+type Status = typeof Status[keyof typeof Status];
+// Status = 1 | 2 | 3
+```
+
+This pattern gives you:
+- Type safety (same as enum)
+- Runtime values (accessible in code)
+- String literal type via `keyof typeof`
+- No extra compilation step
+
+#### No `namespace` with Runtime Code
+
+```typescript
+// WRONG: namespace with runtime value
+namespace MyApp {
+  export const version = '1.0.0';
+}
+
+// CORRECT: use a module
+export const version = '1.0.0';
+```
+
+::: tip
+Type-only namespaces (containing only types/interfaces) are allowed since they are fully erasable:
+
+```typescript
+// OK: type-only namespace
+namespace MyTypes {
+  export interface Config {
+    port: number;
+  }
+}
+```
+:::
+
+#### No Parameter Properties
+
+```typescript
+// WRONG: parameter properties generate assignment code
+class Server {
+  constructor(private port: number) {}
+}
+
+// CORRECT: explicit property declaration
+class Server {
+  private port: number;
+  constructor(port: number) {
+    this.port = port;
+  }
+}
+```
+
+#### No Legacy Decorators
+
+Legacy (experimental) decorators are not erasable. TC39 stage 3 decorators are supported in newer Node.js versions:
+
+```typescript
+// WRONG: legacy decorator
+@Injectable()
+class UserService {}
+
+// OK: TC39 stage 3 decorators (if supported by your Node.js version)
+```
+
+## Import Rules
+
+### Explicit `import type`
+
+With `verbatimModuleSyntax: true`, you must separate type imports from value imports:
+
+```typescript
+// CORRECT: explicit type import
+import type { ConnectRouter } from '@connectrpc/connect';
+import type { SayHelloRequest } from '#gen/greeter_pb.ts';
+
+// CORRECT: value import
+import { create } from '@bufbuild/protobuf';
+import { GreeterService } from '#gen/greeter_pb.ts';
+
+// CORRECT: mixed import with inline type
+import { GreeterService, type SayHelloRequest } from '#gen/greeter_pb.ts';
+
+// WRONG: type imported as value (caught by verbatimModuleSyntax)
+import { SayHelloRequest } from '#gen/greeter_pb.ts';
+//       ^ This is a type, must use 'import type'
+```
+
+### File Extensions in Imports
+
+Use `.ts` extensions in relative imports. The `rewriteRelativeImportExtensions` option handles module resolution:
+
+```typescript
+// CORRECT: .ts extension in source code
+import { greeterServiceRoutes } from './services/greeterService.ts';
+import type { Config } from './config.ts';
+
+// CORRECT: no extension for package imports
+import { createServer } from '@connectum/core';
+import { create } from '@bufbuild/protobuf';
+
+// WRONG: .js extension in source code (outdated convention)
+import { greeterServiceRoutes } from './services/greeterService.js';
+
+// WRONG: no extension for relative imports
+import { greeterServiceRoutes } from './services/greeterService';
+```
+
+### Node.js Built-in Modules
+
+Always use the `node:` prefix for Node.js built-in modules:
+
+```typescript
+// CORRECT
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { setTimeout } from 'node:timers/promises';
+
+// WRONG: no node: prefix
+import { readFileSync } from 'fs';
+```
+
+## tsconfig.json Configuration
+
+Here is the recommended `tsconfig.json` for Connectum projects:
+
+```json
+{
+  "compilerOptions": {
+    // No compilation -- TypeScript runs natively
+    "noEmit": true,
+
+    // ECMAScript and module targets
+    "target": "esnext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+
+    // Native TypeScript execution constraints
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "rewriteRelativeImportExtensions": true,
+
+    // Strict type checking
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*.ts", "gen/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+```
+
+### Key Options Explained
+
+| Option | Value | Purpose |
+|--------|-------|---------|
+| `noEmit` | `true` | No compilation output -- TypeScript is for type checking only |
+| `erasableSyntaxOnly` | `true` | Enforce erasable-only syntax |
+| `verbatimModuleSyntax` | `true` | Require explicit `import type` |
+| `rewriteRelativeImportExtensions` | `true` | Allow `.ts` extensions in imports |
+| `module` | `nodenext` | Node.js ESM module system |
+| `moduleResolution` | `nodenext` | Node.js module resolution algorithm |
+
+## Proto Generation and Enums
+
+Proto files commonly use `enum`, which generates non-erasable TypeScript. The workaround is a two-step generation process.
+
+### The Problem
+
+`protoc-gen-es` generates TypeScript `enum` declarations for proto enums:
+
+```protobuf
+// In your .proto file
+enum OrderStatus {
+  ORDER_STATUS_UNSPECIFIED = 0;
+  ORDER_STATUS_PENDING = 1;
+  ORDER_STATUS_SHIPPED = 2;
+}
+```
+
+This generates:
+
+```typescript
+// Generated code -- NOT erasable
+export enum OrderStatus {
+  UNSPECIFIED = 0,
+  PENDING = 1,
+  SHIPPED = 2,
+}
+```
+
+Node.js cannot execute this directly because `enum` generates runtime code.
+
+### The Two-Step Workaround
+
+1. Generate TypeScript to a temporary directory (`gen-ts/`)
+2. Compile with `tsc` to produce JavaScript in `gen/`
+
+```json
+{
+  "scripts": {
+    "build:proto": "protoc -I proto --plugin=protoc-gen-es=./node_modules/.bin/protoc-gen-es --es_out=gen-ts --es_opt=target=ts proto/*.proto",
+    "build:proto:compile": "tsc -p tsconfig.gen.json",
+    "build:proto:all": "pnpm build:proto && pnpm build:proto:compile"
+  }
+}
+```
+
+Create `tsconfig.gen.json` for the compilation step:
+
+```json
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "declaration": true,
+    "outDir": "gen",
+    "rootDir": "gen-ts"
+  },
+  "include": ["gen-ts/**/*.ts"]
+}
+```
+
+### Avoiding the Workaround
+
+If you control your proto definitions, you can avoid `enum` entirely:
+
+```protobuf
+// Instead of enum, use int32 constants
+message Order {
+  int32 status = 1;
+  // Constants defined in documentation:
+  // 0 = UNSPECIFIED
+  // 1 = PENDING
+  // 2 = SHIPPED
+}
+```
+
+Then define constants in TypeScript:
+
+```typescript
+const OrderStatus = {
+  UNSPECIFIED: 0,
+  PENDING: 1,
+  SHIPPED: 2,
+} as const;
+
+type OrderStatus = typeof OrderStatus[keyof typeof OrderStatus];
+```
+
+::: info Future improvement
+This workaround is temporary. When Node.js adds native `enum` support (or `protoc-gen-es` offers an option to generate `as const` objects), the two-step process will no longer be needed.
+:::
+
+## Common Patterns
+
+### Named Parameters
+
+Prefer objects with named properties over positional parameters:
+
+```typescript
+// CORRECT: named parameters
+async function createOrder(options: {
+  userId: string;
+  items: OrderItem[];
+  priority?: number;
+}): Promise<Order> {
+  // ...
+}
+
+await createOrder({ userId: '123', items: [...] });
+
+// AVOID: positional parameters (hard to read)
+async function createOrder(
+  userId: string,
+  items: OrderItem[],
+  priority?: number,
+): Promise<Order> {
+  // ...
+}
+```
+
+### Const Objects Instead of Enums
+
+The standard pattern throughout Connectum:
+
+```typescript
+// Define the const object
+export const ServerState = {
+  CREATED: 'created',
+  STARTING: 'starting',
+  RUNNING: 'running',
+  STOPPING: 'stopping',
+  STOPPED: 'stopped',
+} as const;
+
+// Derive the union type
+export type ServerState = typeof ServerState[keyof typeof ServerState];
+// ServerState = 'created' | 'starting' | 'running' | 'stopping' | 'stopped'
+
+// Usage
+function handleState(state: ServerState) {
+  if (state === ServerState.RUNNING) {
+    // ...
+  }
+}
+```
+
+### Branded Types
+
+For type-safe identifiers:
+
+```typescript
+type UserId = string & { readonly __brand: 'UserId' };
+type OrderId = string & { readonly __brand: 'OrderId' };
+
+function getUser(id: UserId): User { ... }
+function getOrder(id: OrderId): Order { ... }
+
+// Compile-time safety: can't pass OrderId where UserId is expected
+const userId = '123' as UserId;
+const orderId = '456' as OrderId;
+
+getUser(userId);    // OK
+getUser(orderId);   // Compile error!
+```
+
+### Strict Null Checks
+
+Always handle nullable values explicitly:
+
+```typescript
+// The server address is null until started
+const port = server.address?.port;
+if (port === undefined) {
+  throw new Error('Server not started');
+}
+console.log(`Listening on port ${port}`);
+```
+
+## Type Checking
+
+Run type checking as a separate step (not compilation):
+
+```bash
+# Check types
+pnpm typecheck   # or: tsc --noEmit
+
+# Watch mode for development
+tsc --noEmit --watch
+```
+
+## Development Workflow
+
+```bash
+# Start with auto-reload (watches for file changes)
+node --watch src/index.ts
+
+# Type check in a separate terminal
+tsc --noEmit --watch
+
+# Or run once
+pnpm typecheck && node src/index.ts
+```
+
+## Checklist
+
+Before running your Connectum service, verify:
+
+- [ ] Node.js >= 25.2.0 installed (`node --version`)
+- [ ] `"type": "module"` in `package.json`
+- [ ] `erasableSyntaxOnly: true` in `tsconfig.json`
+- [ ] `verbatimModuleSyntax: true` in `tsconfig.json`
+- [ ] No `enum` in application code (use `const` objects)
+- [ ] `import type` for all type-only imports
+- [ ] `.ts` extensions in relative imports
+- [ ] `node:` prefix for built-in modules
+- [ ] Proto enums handled via two-step generation (if applicable)
+
+## Next Steps
+
+- [Quickstart](/en/guide/quickstart) -- build a service from scratch
+- [Interceptors](/en/guide/interceptors) -- customize the interceptor chain
+- [Observability](/en/guide/observability) -- add tracing and metrics
