@@ -3,19 +3,20 @@
     background: url('/assets/background.png') no-repeat center center / cover fixed;
 }
 
-/* Sidebar background image — light theme, non-home pages */
-:root:not(.dark) .VPSidebar {
-    background: url('/assets/background.png') no-repeat left center / 100vw auto fixed !important;
-}
+/* Sidebar background image — light theme, desktop only */
+@media (min-width: 960px) {
+    :root:not(.dark) .VPSidebar {
+        background: url('/assets/background.png') no-repeat left center / 100vw auto fixed !important;
+    }
 
-/* Sidebar nav area — transparent, no border */
-:root:not(.dark) .VPSidebar .curtain {
-    background-color: transparent !important;
-}
+    :root:not(.dark) .VPSidebar .curtain {
+        background-color: transparent !important;
+    }
 
-:root:not(.dark) .VPSidebar .nav {
-    border-bottom: none !important;
-    background-color: transparent !important;
+    :root:not(.dark) .VPSidebar .nav {
+        border-bottom: none !important;
+        background-color: transparent !important;
+    }
 }
 
 /* Nav logo — hide on home page */
