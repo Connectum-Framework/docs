@@ -15,7 +15,7 @@ export const sharedConfig = defineConfig({
     },
     cleanUrls: true,
     sitemap: {
-        hostname: 'https://connectum-framework.github.io/docs',
+        hostname: 'https://connectum.dev',
     },
     vite: {
         plugins: [llmstxt({
