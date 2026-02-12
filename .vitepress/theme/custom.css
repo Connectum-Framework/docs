@@ -1,3 +1,8 @@
+/* Nav title — use hero gradient color */
+.VPNavBarTitle .title {
+    color: var(--vp-home-hero-name-color);
+}
+
 /* Hero image size override — beats VPHero scoped :deep(.image-src) specificity (0,2,0) */
 .VPHero .image-container .image-src {
     max-width: 100%;
