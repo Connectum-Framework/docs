@@ -128,10 +128,9 @@ Before:
   Layer 3: testing
 
 After:
-  Layer 0: proto, utilities, otel
+  Layer 0: core
   Layer 1: interceptors, healthcheck, reflection
-  Layer 2: core
-  Layer 3: testing
+  Layer 2: otel, testing
 ```
 
 ## Migration Guide
