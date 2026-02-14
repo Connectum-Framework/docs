@@ -30,6 +30,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Graceful Shutdown', link: '/en/guide/graceful-shutdown' },
                         { text: 'Server Reflection', link: '/en/guide/server-reflection' },
                         { text: 'TypeScript Best Practices', link: '/en/guide/typescript' },
+                        { text: 'API Testing', link: '/en/guide/testing' },
                     ],
                 },
                 {
