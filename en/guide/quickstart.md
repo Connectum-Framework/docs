@@ -153,8 +153,8 @@ Create `src/services/greeterService.ts`:
 ```typescript
 import { create } from '@bufbuild/protobuf';
 import type { ConnectRouter } from '@connectrpc/connect';
-import { GreeterService, SayHelloResponseSchema } from '#gen/greeter_pb.ts';
-import type { SayHelloRequest } from '#gen/greeter_pb.ts';
+import { GreeterService, SayHelloResponseSchema } from '#gen/greeter_pb.js';
+import type { SayHelloRequest } from '#gen/greeter_pb.js';
 
 export function greeterServiceRoutes(router: ConnectRouter): void {
   router.service(GreeterService, {
