@@ -44,7 +44,7 @@ docker pull ghcr.io/k1low/runn:latest
 
 ### Testing gRPC Services
 
-Connectum services expose gRPC endpoints with server reflection enabled by default. runn can discover services automatically without proto files.
+Connectum services expose gRPC endpoints. Server reflection can be enabled via `Reflection()` protocol. runn can discover services automatically without proto files.
 
 Create `tests/grpc-greeter.yml`:
 
@@ -71,7 +71,7 @@ runn run tests/grpc-greeter.yml
 ```
 
 ::: tip Server Reflection
-Since Connectum enables [Server Reflection](/en/guide/server-reflection) by default, runn discovers services automatically. No `protos:` or `importPaths:` configuration needed.
+When Server Reflection is enabled via `protocols: [Reflection()]`, runn discovers services automatically. No `protos:` or `importPaths:` configuration needed.
 :::
 
 #### With Proto Files
