@@ -105,19 +105,9 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                 },
             ],
         },
-        socialLinks: [
-            { icon: 'github', link: 'https://github.com/Connectum-Framework/connectum' },
-        ],
         editLink: {
             pattern: 'https://github.com/Connectum-Framework/docs/edit/main/:path',
             text: 'Edit this page on GitHub',
-        },
-        search: {
-            provider: 'local',
-        },
-        footer: {
-            message: 'Released under the Apache License 2.0. · <a href="/llms.txt">llms.txt</a> · <a href="/llms-full.txt">llms-full.txt</a>',
-            copyright: 'Copyright <a href="https://highload.zone" target="_blank"><img src="https://highload.zone/images/favicon/favicon-32x32.png" alt="" style="display:inline;height:1em;vertical-align:middle;margin-right:4px">Highload.Zone</a>',
         },
     },
 };
