@@ -134,13 +134,20 @@ await server.start();
 
 #### @connectum/testing
 
-**Purpose**: Testing utilities for unit and integration tests.
+**Purpose**: Mock factories, assertion helpers, and test server utility that eliminate test boilerplate across Connectum packages.
 
-**Contains**: createTestServer, mockInterceptor, test fixtures.
+**Contains**:
+- **Mock factories (P0)**: `createMockRequest`, `createMockNext`, `createMockNextError`, `createMockNextSlow` — eliminate 85+ duplicated mock objects across interceptor tests
+- **Assertion helpers (P0)**: `assertConnectError` — type-safe ConnectError assertion with `asserts` narrowing (replaces 50+ boilerplate patterns)
+- **Descriptor mocks (P1)**: `createMockDescMessage`, `createMockDescField`, `createMockDescMethod` — structurally valid protobuf descriptor mocks
+- **Streaming helpers (P1)**: `createMockStream` — AsyncIterable from array
+- **Test server (P2)**: `createTestServer`, `withTestServer` — real ConnectRPC server on random port with automatic lifecycle management
 
 **Why separate**: Testing is a devDependency concern. Production code should not pull test utilities.
 
 **Internal dependencies**: `@connectum/core` (and all transitive)
+
+**External dependencies**: `@connectrpc/connect`, `@bufbuild/protobuf`
 
 ---
 
@@ -280,3 +287,4 @@ packages/<name>/
 | 2025-12-22 | Claude | Initial ADR -- 8 packages in 4 layers |
 | 2026-02-12 | Claude | @connectum/utilities removed (8 -> 7 packages) |
 | 2026-02-12 | Claude | @connectum/proto removed (7 -> 6 packages, 4 -> 3 layers) |
+| 2026-02-14 | Claude | @connectum/testing description refined with detailed API surface (mock factories, assertions, test server) |

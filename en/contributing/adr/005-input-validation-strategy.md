@@ -4,27 +4,34 @@
 
 **Accepted** - 2025-12-24
 
-## Context
+> **Update (2026-02-14)**: Replaced custom `createValidationInterceptor` with the official `@connectrpc/validate` package (`createValidateInterceptor()`). Custom implementation removed. Interceptor chain order revised — validation is now 7th (before serializer), not 1st. See [Implementation](#implementation) section.
 
-Connectum is a universal framework for building gRPC/ConnectRPC microservices on **embedded devices in isolated (air-gapped) networks**. This environment demands a specific approach to security.
+---
+
+## Context
 
 ### Target Environment
 
-- Devices operate in isolated networks with no Internet access
-- No external threats due to physical isolation
-- No traditional authentication/authorization (no auth server available)
-- No rate limiting needed (controlled environment)
+**Embedded devices in production**:
+- Critical industrial/medical systems (high reliability requirements)
+- Long-running processes (months/years without restart)
+- No remote debugging (isolated networks)
+- Expensive physical access (embedded devices in the field)
 
-**Security model** relies on physical isolation and input validation rather than traditional auth/authz mechanisms.
+**Quality requirements**:
+- Target uptime: 99.9%+ (mission-critical systems)
+- Zero tolerance for crashes — failures can have serious consequences
+- High confidence in releases — no ability to quick-fix in production
+- Must catch bugs before deployment
 
 ### Why Input Validation is Critical (P0)
 
 In this environment, **input validation** is the **primary defense mechanism**:
 
-1. **No Auth/Authz Layer** -- no traditional authentication protection
-2. **Direct Service Access** -- clients have direct access to services
-3. **Malformed Data Risk** -- invalid input can cause crashes or undefined behavior
-4. **Data Integrity** -- critical for embedded systems (robotics, industrial)
+1. **No Auth/Authz Layer** — no traditional authentication protection
+2. **Direct Service Access** — clients have direct access to services
+3. **Malformed Data Risk** — invalid input can cause crashes or undefined behavior
+4. **Data Integrity** — critical for embedded systems (robotics, industrial)
 
 | Mechanism | Priority | Status |
 |-----------|----------|--------|
@@ -36,35 +43,41 @@ In this environment, **input validation** is the **primary defense mechanism**:
 
 ### Requirements
 
-1. **Schema-Based Validation** -- rules must be part of proto schemas
-2. **Automatic Enforcement** -- validation happens automatically for all requests
-3. **Fail Fast** -- invalid requests rejected before business logic
-4. **Clear Error Messages** -- clients receive understandable validation errors
-5. **Performance** -- validation overhead < 1ms per request
-6. **Extensibility** -- custom validation rules possible
+1. **Schema-Based Validation** — rules must be part of proto schemas
+2. **Automatic Enforcement** — validation happens automatically for all requests
+3. **Fail Fast** — invalid requests rejected before business logic
+4. **Clear Error Messages** — clients receive understandable validation errors
+5. **Performance** — validation overhead < 1ms per request
+6. **Extensibility** — custom validation rules possible
 
 ## Decision
 
-**Use @bufbuild/protovalidate for schema-based input validation, enforced via a validation interceptor.**
+**Use `@connectrpc/validate` (official ConnectRPC validation package backed by `@bufbuild/protovalidate`) for schema-based input validation, integrated into the default interceptor chain.**
 
 ### Solution Architecture
 
 ```mermaid
 graph TB
     client["Client"]
-    validationInterceptor["Validation Interceptor<br/>(FIRST in chain)"]
-    otherInterceptors["Other Interceptors<br/>(resilience, logging, etc.)"]
+    errorHandler["Error Handler<br/>(outermost)"]
+    resilience["Resilience<br/>(timeout, bulkhead,<br/>circuit breaker, retry)"]
+    validation["Validation<br/>(@connectrpc/validate)"]
+    serializer["Serializer<br/>(innermost)"]
     handler["Service Handler"]
 
-    client -->|"Request"| validationInterceptor
-    validationInterceptor -->|"Valid"| otherInterceptors
-    validationInterceptor -->|"Invalid"| client
-    otherInterceptors --> handler
-    handler -->|"Response"| otherInterceptors
-    otherInterceptors --> validationInterceptor
-    validationInterceptor --> client
+    client -->|"Request"| errorHandler
+    errorHandler --> resilience
+    resilience --> validation
+    validation -->|"Valid"| serializer
+    validation -->|"Invalid<br/>INVALID_ARGUMENT"| errorHandler
+    serializer --> handler
+    handler -->|"Response"| serializer
+    serializer --> validation
+    validation --> resilience
+    resilience --> errorHandler
+    errorHandler --> client
 
-    style validationInterceptor fill:#ff6b6b,stroke:#c92a2a,stroke-width:3px
+    style validation fill:#ff6b6b,stroke:#c92a2a,stroke-width:3px
     style handler fill:#90ee90,stroke:#2b8a3e
 ```
 
@@ -74,118 +87,195 @@ graph TB
 syntax = "proto3";
 import "buf/validate/validate.proto";
 
-message CreateUserRequest {
-  string email = 1 [(buf.validate.field).string.email = true];
-  string password = 2 [(buf.validate.field).string.min_len = 8];
-  int32 age = 3 [
-    (buf.validate.field).int32.gte = 18,
-    (buf.validate.field).int32.lte = 120
-  ];
-  string username = 4 [
-    (buf.validate.field).string.pattern = "^[a-zA-Z0-9_]{3,20}$",
-    (buf.validate.field).required = true
-  ];
+message CreateOrderRequest {
+  string customer_id = 1 [(buf.validate.field).string.min_len = 1];
+  repeated OrderItem items = 2 [(buf.validate.field).repeated.min_items = 1];
+  ShippingAddress shipping_address = 3 [(buf.validate.field).required = true];
+  string currency = 4 [(buf.validate.field).string = {min_len: 3, max_len: 3}];
+}
+
+message OrderItem {
+  string product_id = 1 [(buf.validate.field).string.min_len = 1];
+  string name = 2 [(buf.validate.field).string.min_len = 1];
+  int32 quantity = 3 [(buf.validate.field).int32.gt = 0];
+  int64 price_cents = 4 [(buf.validate.field).int64.gt = 0];
+}
+
+message GetOrderRequest {
+  string order_id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message ListOrdersRequest {
+  int32 page_size = 1 [(buf.validate.field).int32 = {gte: 1, lte: 100}];
+  string page_token = 2;
 }
 ```
 
-Available constraints include: `min_len`, `max_len`, `pattern`, `email`, `uri`, `uuid` (string); `lt`, `lte`, `gt`, `gte`, `in`, `not_in` (numeric); `min_items`, `max_items`, `unique` (repeated); `required`, `skip` (message); `defined_only` (enum).
+Available constraints: `min_len`, `max_len`, `pattern`, `email`, `uri`, `uuid` (string); `lt`, `lte`, `gt`, `gte`, `in`, `not_in` (numeric); `min_items`, `max_items`, `unique` (repeated); `required`, `skip` (message); `defined_only` (enum).
 
-### Validation Interceptor
+### buf.yaml Configuration
 
-Location: `packages/interceptors/src/validation.ts`
+Proto files that use validation constraints must declare the dependency:
 
-```typescript
-import { Validator } from '@bufbuild/protovalidate';
-import type { Interceptor } from '@connectrpc/connect';
-import { ConnectError, Code } from '@connectrpc/connect';
+```yaml
+# buf.yaml
+version: v2
+modules:
+  - path: proto
+deps:
+  - buf.build/bufbuild/protovalidate
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE
+```
 
-export interface ValidationOptions {
-  failFast?: boolean;       // Stop on first error (default: true)
-  logViolations?: boolean;  // Log validation failures (default: true)
+## Implementation
+
+### Package: `@connectrpc/validate`
+
+Validation is delegated to the official ConnectRPC package. No custom interceptor implementation exists in Connectum.
+
+**Dependencies** (in `@connectum/interceptors`):
+
+```json
+{
+  "dependencies": {
+    "@connectrpc/validate": "catalog:"
+  }
 }
-
-export const createValidationInterceptor = (
-  options: ValidationOptions = {}
-): Interceptor => {
-  const validator = new Validator();
-  const { failFast = true, logViolations = true } = options;
-
-  return (next) => async (req) => {
-    const result = await validator.validate(req.method.input, req.message);
-
-    if (!result.isValid) {
-      if (logViolations) {
-        console.error('Validation failed:', result.violations);
-      }
-      throw new ConnectError(
-        `Validation failed: ${result.violations.join(', ')}`,
-        Code.InvalidArgument,
-        undefined,
-        undefined,
-        { violations: result.violations }
-      );
-    }
-
-    return await next(req);
-  };
-};
 ```
 
-### Integration with createDefaultInterceptors()
+**Catalog** (in `pnpm-workspace.yaml`):
 
-Validation interceptor is placed **first** in the default chain:
+```yaml
+catalog:
+  '@connectrpc/validate': ^0.2.0
+  '@bufbuild/protovalidate': ^1.1.1
+```
+
+`@connectrpc/validate` has peer dependencies on `@bufbuild/protobuf` (^2.9.0), `@bufbuild/protovalidate` (^1.0.0), and `@connectrpc/connect` (^2.0.3).
+
+### Integration with `createDefaultInterceptors()`
+
+Location: `packages/interceptors/src/defaults.ts`
 
 ```typescript
-const interceptors: Interceptor[] = [
-  // 1. VALIDATION - FIRST! Reject invalid data immediately
-  createValidationInterceptor({ failFast: true }),
+import { createValidateInterceptor } from "@connectrpc/validate";
 
-  // 2. RESILIENCE
-  createTimeoutInterceptor({ duration: 30000 }),
-  createCircuitBreakerInterceptor({ threshold: 5 }),
-  createBulkheadInterceptor({ capacity: 100 }),
-
-  // 3. SECURITY
-  createRedactInterceptor(),
-
-  // 4. ERROR HANDLING + OBSERVABILITY
-  createErrorHandlerInterceptor(),
-  createLoggerInterceptor({ serviceName }),
-  createTracingInterceptor({ serviceName }),
-
-  // 5. RETRY + CUSTOM
-  createRetryInterceptor({ maxRetries: 3 }),
-  ...customInterceptors,
-];
+// Inside createDefaultInterceptors():
+if (options.validation !== false) {
+    interceptors.push(createValidateInterceptor());
+}
 ```
 
-**Critical order**: Validation MUST be first -- invalid data is rejected immediately, preventing downstream interceptors from processing bad data or logging sensitive invalid payloads.
+Configuration accepts only `boolean`:
+
+```typescript
+export interface DefaultInterceptorOptions {
+    /** Validates request messages using @connectrpc/validate. @default true */
+    validation?: boolean;
+    // ...
+}
+```
+
+For custom validation configuration, use `createValidateInterceptor()` directly:
+
+```typescript
+import { createValidateInterceptor } from "@connectrpc/validate";
+
+const server = createServer({
+  services: [routes],
+  interceptors: [
+    createValidateInterceptor(/* custom options */),
+    // ... other interceptors
+  ],
+});
+```
+
+### Interceptor Chain Order
+
+The default chain order is fixed (see [ADR-023](./023-uniform-registration-api.md)):
+
+```
+1. errorHandler     — Catch-all error normalization (outermost, must be first)
+2. timeout          — Enforce deadline before any processing
+3. bulkhead         — Limit concurrency
+4. circuitBreaker   — Prevent cascading failures
+5. retry            — Retry transient failures (exponential backoff)
+6. fallback         — Graceful degradation (DISABLED by default)
+7. validation       — @connectrpc/validate (createValidateInterceptor)
+8. serializer       — JSON serialization (innermost)
+```
+
+**Rationale for validation position (7th, not 1st):**
+
+The original ADR proposed validation as the first interceptor ("reject invalid data immediately"). The current implementation places it after resilience interceptors because:
+
+1. **Error handler must be outermost** — validation errors (ConnectError with `INVALID_ARGUMENT`) need consistent error formatting, which errorHandler provides as the outermost wrapper
+2. **Timeout protects validation** — if validation itself is slow (complex constraints), timeout will abort it
+3. **Validation before serializer** — data is validated before JSON serialization, ensuring only valid data reaches the handler
+4. **Resilience is infrastructure** — timeout, bulkhead, circuit breaker protect the system regardless of payload validity
+
+### Usage
+
+```typescript
+import { createServer } from '@connectum/core';
+import { createDefaultInterceptors } from '@connectum/interceptors';
+
+// Validation enabled by default
+const server = createServer({
+  services: [routes],
+  interceptors: createDefaultInterceptors(),
+});
+
+// Disable validation
+const server = createServer({
+  services: [routes],
+  interceptors: createDefaultInterceptors({ validation: false }),
+});
+```
+
+### Error Response
+
+When validation fails, `@connectrpc/validate` throws a `ConnectError` with code `INVALID_ARGUMENT` containing structured violation details:
+
+```
+Code: INVALID_ARGUMENT
+Message: "customer_id: value length must be at least 1 characters [string.min_len]"
+```
+
+---
 
 ## Consequences
 
 ### Positive
 
-1. **Primary Security Defense** -- all input validated before business logic runs. Service handlers can trust that request data meets schema constraints.
+1. **Zero Custom Code** — validation logic is fully delegated to the official `@connectrpc/validate` package. No maintenance burden for custom interceptor.
 
-2. **Consistent Validation Across All Services** -- proto schemas are the single source of truth; reusable message types (e.g., `Email`, `Password`) enforce the same rules everywhere.
+2. **Consistent with Ecosystem** — uses the same validation library as the rest of the ConnectRPC/buf ecosystem.
 
-3. **Developer Experience** -- no manual validation code needed; handlers focus purely on business logic.
+3. **Schema-Based** — proto schemas are the single source of truth. Validation rules are co-located with message definitions.
 
-4. **Clear Error Messages** -- clients receive structured `INVALID_ARGUMENT` errors with per-field violation details.
+4. **Automatic Enforcement** — enabled by default in `createDefaultInterceptors()`. All requests are validated without developer action.
 
-5. **Performance** -- validation overhead < 1ms per request (measured in Phase 5 benchmarks).
+5. **Clear Error Messages** — clients receive structured `INVALID_ARGUMENT` errors with per-field violation details.
 
-6. **Type Safety** -- proto validation complements TypeScript types with runtime checks.
+6. **Performance** — validation overhead < 1ms per request for typical messages.
 
 ### Negative
 
-1. **Proto File Complexity** -- proto files become more verbose with constraint annotations. Mitigated by the fact that constraints are self-documenting and easier to read than manual validation code.
+1. **Proto File Complexity** — proto files become more verbose with constraint annotations. Mitigated: constraints are self-documenting and easier to read than manual validation code.
 
-2. **Limited Custom Validation** -- buf validate provides a predefined constraint set. Business-level validation (e.g., "email must be unique") still requires service-layer code.
+2. **Limited Custom Validation** — `buf.validate` provides a predefined constraint set. Business-level validation (e.g., "email must be unique") still requires service-layer code.
 
-3. **Breaking Proto Changes** -- adding validation constraints to existing messages is a breaking change for clients sending previously-accepted invalid data. Mitigated by version bumps and migration guides.
+3. **Boolean-Only Config** — `createDefaultInterceptors()` accepts only `boolean` for validation. Custom configuration requires direct use of `createValidateInterceptor()`.
 
-4. **Performance Overhead** -- typical ~0.5-1ms per request; complex validations up to 2-3ms. Acceptable for most use cases.
+4. **Upstream Dependency** — relies on `@connectrpc/validate` and `@bufbuild/protovalidate`. Breaking changes upstream would affect Connectum.
+
+---
 
 ## Alternatives Considered
 
@@ -193,12 +283,42 @@ const interceptors: Interceptor[] = [
 |---|-------------|--------|--------------|
 | 1 | Manual validation in service handlers | 2/10 | Error-prone, inconsistent, boilerplate, does not scale |
 | 2 | Joi/Zod runtime validation | 6/10 | Duplicate schemas (proto + Zod), schema drift risk, proto should be single source of truth |
-| 3 | gRPC Gateway validation | 4/10 | Not viable for embedded devices (no gateway); service-to-service calls bypass it |
-| **4** | **@bufbuild/protovalidate (chosen)** | **9/10** | **Best balance of power, consistency, and maintainability; industry standard** |
+| 3 | Custom `createValidationInterceptor` | 7/10 | Was the original decision. Replaced by official `@connectrpc/validate` — less maintenance, better ecosystem compatibility |
+| **4** | **`@connectrpc/validate` (chosen)** | **9/10** | **Official package, zero custom code, ecosystem standard, maintained by ConnectRPC team** |
+
+---
+
+## Migration
+
+The custom validation interceptor was removed in favor of `@connectrpc/validate`:
+
+```typescript
+// BEFORE (custom, removed)
+import { createValidationInterceptor } from "@connectum/interceptors";
+const interceptor = createValidationInterceptor({ skipStreaming: true });
+
+// AFTER (official)
+import { createValidateInterceptor } from "@connectrpc/validate";
+const interceptor = createValidateInterceptor();
+
+// Or via default chain (recommended)
+import { createDefaultInterceptors } from "@connectum/interceptors";
+const interceptors = createDefaultInterceptors(); // validation enabled by default
+```
+
+---
 
 ## References
 
-- [Buf Validate](https://github.com/bufbuild/protovalidate) -- library and constraint reference
+- [@connectrpc/validate](https://www.npmjs.com/package/@connectrpc/validate) — official ConnectRPC validation interceptor
+- [Buf Validate](https://github.com/bufbuild/protovalidate) — constraint library and reference
 - [ConnectRPC Interceptors](https://connectrpc.com/docs/node/interceptors)
 - [OWASP Input Validation Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html)
-- ADR-004: Validation Strategy (internal planning document)
+- [ADR-023: Uniform Registration API](./023-uniform-registration-api.md) — interceptor chain order
+
+## Changelog
+
+| Date | Author | Change |
+|------|--------|--------|
+| 2025-12-24 | Claude | Initial ADR — custom createValidationInterceptor, validation-first chain order |
+| 2026-02-14 | Claude | Replaced custom interceptor with @connectrpc/validate; updated chain order (7th, not 1st); added migration guide; real proto examples from production-ready example |

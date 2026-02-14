@@ -4,6 +4,8 @@
 
 **Accepted** - 2025-12-24
 
+> **Update (2026-02-14)**: Added `@connectum/testing` package specification — mock factories, assertion helpers, and test server utility to eliminate test boilerplate (135+ duplicates identified). Design influenced by [connect-es](https://github.com/connectrpc/connect-es) and [protobuf-es](https://github.com/bufbuild/protobuf-es) testing patterns. See [Testing Utilities](#testing-utilities-connectumtesting) section.
+
 ---
 
 ## Context
@@ -112,6 +114,53 @@ await assert.rejects(() => asyncFn(bad), /message/); // async errors
 
 Always close servers/connections, clear timers, reset mocks, delete temp files, and restore env variables in `afterEach`.
 
+### Testing Utilities (@connectum/testing)
+
+Analysis of the existing test suite (216 tests across 3 packages) revealed significant boilerplate duplication:
+
+| Pattern | Duplicates | Example |
+|---------|-----------|---------|
+| Mock interceptor request | 50+ | `{ url, stream, message, service, method } as any` |
+| Mock next function | 35+ | `mock.fn(async () => ({ message: ... }))` |
+| ConnectError assertions | 50+ | `assert(err instanceof ConnectError); assert.strictEqual(err.code, ...)` |
+| DescMessage/Field/Method mocks | 10+ | 20-line objects with kind, typeName, fields, file, proto |
+| Streaming mock generators | 5+ | `async function* mockStream() { yield ... }` |
+
+**Decision**: Create `@connectum/testing` package (Layer 2) with the following API:
+
+**Phase 1 — Mock Factories & Assertions (P0):**
+- `createMockRequest(options?)` — mock interceptor request with sensible defaults
+- `createMockNext(options?)` — successful next function wrapped in `mock.fn()` for spy capabilities
+- `createMockNextError(code, message?)` — next that throws ConnectError
+- `createMockNextSlow(delay, options?)` — delayed next for timeout/retry testing
+- `assertConnectError(error, code, pattern?)` — type-safe assertion with `asserts` narrowing
+
+**Phase 2 — Protobuf Descriptor Mocks & Streaming (P1):**
+- `createMockDescMessage(typeName, options?)` — structurally valid DescMessage
+- `createMockDescField(localName, options?)` — DescField with isSensitive support
+- `createMockDescMethod(name, options?)` — DescMethod with input/output descriptors
+- `createMockStream(items, options?)` — AsyncIterable from array
+
+**Phase 3 — Test Server (P2):**
+- `createTestServer(options)` — real ConnectRPC server on random port
+- `withTestServer(options, testFn)` — lifecycle wrapper with automatic cleanup
+
+#### Design Decisions for @connectum/testing
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Mock objects vs runtime proto compilation | Mock objects | No protoc/buf dependency at test time; matches existing patterns; simpler setup |
+| `mock.fn()` in createMockNext | Yes (node:test) | Spy capabilities (call count, args) needed; node:test is the project standard |
+| Both createTestServer + withTestServer | Yes | beforeEach/afterEach vs single-test convenience |
+| No re-exports of Code/ConnectError | Correct | Users import directly from @connectrpc/connect; avoids coupling |
+
+#### Upstream Influence
+
+- **connect-es**: `useNodeServer()` pattern (start server before test, close after) → inspired `createTestServer` / `withTestServer`
+- **protobuf-es**: `node:test` + `node:assert`, descriptor-driven parameterized tests, `compileMessage()` for runtime proto compilation (rejected — too heavy for our use case)
+
+Full API specification: `connectum/packages/testing/README.md`
+
 ### Running Tests
 
 ```bash
@@ -179,4 +228,14 @@ All tests passing (100% pass rate). Test execution time ~15s.
 - [node:test Documentation](https://nodejs.org/api/test.html) -- official docs, coverage, mocking
 - [Test Pyramid](https://martinfowler.com/bliki/TestPyramid.html) -- Martin Fowler
 - [ADR-001: Native TypeScript Migration](./001-native-typescript-migration.md)
+- [ADR-003: Package Decomposition](./003-package-decomposition.md) -- @connectum/testing as Layer 2
 - [ADR-006: Resilience Pattern Implementation](./006-resilience-pattern-implementation.md)
+- [connect-es](https://github.com/connectrpc/connect-es) -- upstream testing patterns (Jasmine, useNodeServer)
+- [protobuf-es](https://github.com/bufbuild/protobuf-es) -- upstream testing patterns (node:test, descriptor-driven tests)
+
+## Changelog
+
+| Date | Author | Change |
+|------|--------|--------|
+| 2025-12-24 | Claude | Initial ADR -- testing strategy with node:test |
+| 2026-02-14 | Claude | Added @connectum/testing package specification (mock factories, assertions, test server) |
