@@ -12,7 +12,7 @@ Build a fully functional gRPC/ConnectRPC microservice with health checks, server
 
 - **Node.js >= 25.2.0** -- native TypeScript via [type stripping](https://nodejs.org/api/typescript.html)
 - **pnpm >= 10** -- `corepack enable && corepack prepare pnpm@latest --activate`
-- **protoc** -- Protocol Buffers compiler (`apt install protobuf-compiler` / `brew install protobuf`)
+- **buf** -- installed automatically via `@bufbuild/buf` npm package
 
 ## 1. Project Setup
 
@@ -30,8 +30,11 @@ pnpm add @connectum/core @connectum/healthcheck @connectum/reflection @connectum
 # ConnectRPC runtime
 pnpm add @connectrpc/connect @connectrpc/connect-node @bufbuild/protobuf
 
-# Dev dependencies
-pnpm add -D typescript @types/node @bufbuild/protoc-gen-es
+# Validation (recommended: @connectrpc/validate)
+pnpm add @bufbuild/protovalidate @connectrpc/validate
+
+# Dev dependencies (buf + code generation)
+pnpm add -D typescript @types/node @bufbuild/buf @bufbuild/protoc-gen-es
 ```
 
 Configure `package.json`:
@@ -45,7 +48,7 @@ Configure `package.json`:
     "start": "node src/index.ts",
     "dev": "node --watch src/index.ts",
     "typecheck": "tsc --noEmit",
-    "build:proto": "protoc -I proto --plugin=protoc-gen-es=./node_modules/.bin/protoc-gen-es --es_out=gen --es_opt=target=ts proto/*.proto"
+    "build:proto": "buf generate proto"
   },
   "engines": { "node": ">=25.2.0" }
 }
@@ -88,12 +91,14 @@ syntax = "proto3";
 
 package greeter.v1;
 
+import "buf/validate/validate.proto";
+
 service GreeterService {
   rpc SayHello(SayHelloRequest) returns (SayHelloResponse) {}
 }
 
 message SayHelloRequest {
-  string name = 1;
+  string name = 1 [(buf.validate.field).string.min_len = 1];
 }
 
 message SayHelloResponse {
@@ -101,7 +106,35 @@ message SayHelloResponse {
 }
 ```
 
+Create `buf.yaml` to declare the validate dependency:
+
+```yaml
+version: v2
+deps:
+  - buf.build/bufbuild/protovalidate
+```
+
+Then fetch dependencies:
+
+```bash
+npx buf dep update
+```
+
 ## 3. Code Generation
+
+Create `buf.gen.yaml`:
+
+```yaml
+version: v2
+plugins:
+  - local: protoc-gen-es
+    out: gen
+    opt: target=ts
+inputs:
+  - directory: proto
+```
+
+Run code generation:
 
 ```bash
 pnpm run build:proto
@@ -208,7 +241,7 @@ curl http://localhost:5000/healthz
 | **Bulkhead** | Max 10 concurrent requests + 10-item queue |
 | **Circuit breaker** | Opens after 5 consecutive failures |
 | **Retry** | 3 retries with exponential backoff |
-| **Validation** | Proto constraint validation via protovalidate |
+| **Validation** | Proto constraint validation via [@connectrpc/validate](https://github.com/connectrpc/validate-es) |
 | **Health checks** | gRPC + HTTP endpoints |
 | **Reflection** | Runtime service discovery |
 | **Graceful shutdown** | SIGTERM/SIGINT with connection draining |

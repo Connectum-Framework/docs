@@ -9,8 +9,6 @@ Implements the [gRPC Server Reflection Protocol](https://github.com/grpc/grpc/bl
 
 **Layer**: 1 (Protocol)
 
-**Version**: 1.0.0-beta.2
-
 ## Installation
 
 ```bash

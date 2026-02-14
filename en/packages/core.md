@@ -9,15 +9,13 @@ The central package of the Connectum framework. Provides `createServer()` -- a f
 
 **Layer**: 0 (Server Foundation) -- zero internal dependencies
 
-**Version**: 1.0.0-beta.2
-
 ## Installation
 
 ```bash
 pnpm add @connectum/core
 ```
 
-**Requires**: Node.js >= 25.2.0 (native TypeScript via type stripping)
+**Requires**: Node.js 25+ (native TypeScript via type stripping)
 
 ## Quick Start
 

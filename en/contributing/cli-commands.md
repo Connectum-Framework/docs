@@ -6,15 +6,15 @@ Complete reference of CLI commands for working with the Connectum monorepo.
 
 ## Prerequisites
 
-- **Node.js**: >=25.2.0
-- **pnpm**: >=10.0.0
+- **Node.js**: 25+
+- **pnpm**: 10+
 - **protoc**: Latest version for proto generation
 
 ### Installation Check
 
 ```bash
 # Check Node.js version
-node --version  # Should be >= 25.2.0
+node --version  # Should be 25+
 
 # Check pnpm version
 pnpm --version  # Should be >= 10.0.0

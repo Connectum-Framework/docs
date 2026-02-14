@@ -2,7 +2,7 @@
 
 > Minimalist framework for building production-ready gRPC/ConnectRPC microservices on Node.js 25+
 
-**Current version**: v1.0.0-beta.2 | **8 packages** across 4 layers
+**8 packages** across 4 layers
 
 ## Documentation Site
 

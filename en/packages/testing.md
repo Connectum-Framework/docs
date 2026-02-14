@@ -9,8 +9,6 @@ Testing utilities for Connectum gRPC/ConnectRPC services.
 
 **Layer**: 3 (Development Tools)
 
-**Version**: 1.0.0-beta.2
-
 **Status**: Planned -- this package is currently a placeholder with no implementation.
 
 ## Installation

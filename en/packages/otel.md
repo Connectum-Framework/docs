@@ -9,15 +9,13 @@ Full OpenTelemetry instrumentation for Connectum services. Provides ConnectRPC i
 
 **Layer**: 0 (Independent Core)
 
-**Version**: 1.0.0-beta.2
-
 ## Installation
 
 ```bash
 pnpm add @connectum/otel
 ```
 
-**Requires**: Node.js >= 25.2.0
+**Requires**: Node.js 25+
 
 ## Quick Start
 

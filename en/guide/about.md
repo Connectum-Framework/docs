@@ -8,8 +8,6 @@ outline: deep
 
 **Connectum** is a minimalistic, extensible framework for building production-ready gRPC/ConnectRPC microservices on Node.js 25+.
 
-**Current Release:** 1.0.0-beta.2
-
 ## The Problem
 
 Building production-ready gRPC/ConnectRPC microservices on Node.js requires:
@@ -29,7 +27,7 @@ Connectum provides:
 - **Zero boilerplate** for a basic service
 - **Production-ready out of the box** -- OTEL, health checks, TLS
 - **Pluggable architecture** via peerDependencies
-- **Native TypeScript** -- no build step (Node.js 25.2.0+)
+- **Native TypeScript** -- no build step (Node.js 25+)
 - **Explicit Lifecycle** -- full control over server lifecycle
 
 ## Target Audience
@@ -146,7 +144,7 @@ await server.start();
 - **Not an ORM** -- Connectum does not manage databases
 - **Not a full-stack framework** -- gRPC/ConnectRPC server-side only
 - **Not CommonJS** -- ESM only
-- **Not legacy Node.js** -- requires Node.js >= 25.2.0
+- **Not legacy Node.js** -- requires Node.js 25+
 
 ## Next Steps
 

@@ -5,9 +5,7 @@ description: Migration guides and breaking changes for Connectum releases
 
 # Migration & Changelog
 
-## Current Version
-
-**v1.0.0-beta.2** -- The current release of the Connectum framework.
+This page covers breaking changes and migration steps between Connectum releases.
 
 ## Breaking Changes from Alpha
 
@@ -84,7 +82,7 @@ await server.start();
 
 ### Interceptors: No Auto-Defaults
 
-Starting from v1.0.0-beta.2, `@connectum/core` has **zero internal dependencies**. Omitting the `interceptors` option (or passing `[]`) means **no interceptors are applied**. To use the default resilience chain, explicitly pass `createDefaultInterceptors()`:
+Starting from v1.0.0-beta.x, `@connectum/core` has **zero internal dependencies**. Omitting the `interceptors` option (or passing `[]`) means **no interceptors are applied**. To use the default resilience chain, explicitly pass `createDefaultInterceptors()`:
 
 ```typescript
 import { createServer } from '@connectum/core';

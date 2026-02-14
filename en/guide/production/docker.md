@@ -5,7 +5,7 @@ description: Multi-stage Dockerfile, docker-compose, and image optimization for 
 
 # Docker Containerization
 
-Connectum runs on Node.js 25.2.0+ with native TypeScript execution. This means **no build step** is required -- you copy your TypeScript source files directly into the container alongside `node_modules`.
+Connectum runs on Node.js 25+ with native TypeScript execution. This means **no build step** is required -- you copy your TypeScript source files directly into the container alongside `node_modules`.
 
 ::: tip Full Example
 All Docker files described below are available in the [production-ready example](https://github.com/Connectum-Framework/examples/tree/main/production-ready).
@@ -26,7 +26,7 @@ Key highlights:
 - Environment defaults: `NODE_ENV=production`, `PORT=5000`, `LOG_FORMAT=json`, health and graceful shutdown enabled
 
 ::: tip
-Node.js 25.2.0+ supports stable type stripping. If your code uses only erasable TypeScript syntax (no `enum`, no `namespace` with runtime code, no parameter properties), you can run `.ts` files directly without any build tool.
+Node.js 25+ supports stable type stripping. If your code uses only erasable TypeScript syntax (no `enum`, no `namespace` with runtime code, no parameter properties), you can run `.ts` files directly without any build tool.
 :::
 
 ### Alpine Variant (Smaller Image)

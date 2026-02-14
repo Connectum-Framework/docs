@@ -9,15 +9,13 @@ Production-ready ConnectRPC interceptors providing resilience patterns, error ha
 
 **Layer**: 1 (Protocol)
 
-**Version**: 1.0.0-beta.2
-
 ## Installation
 
 ```bash
 pnpm add @connectum/interceptors
 ```
 
-**Requires**: Node.js >= 25.2.0
+**Requires**: Node.js 25+
 
 ## Quick Start
 

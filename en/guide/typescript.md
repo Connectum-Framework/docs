@@ -1,16 +1,16 @@
 ---
 title: TypeScript Best Practices
-description: Native TypeScript execution constraints, patterns, and configuration for Connectum services on Node.js 25.2.0+.
+description: Native TypeScript execution constraints, patterns, and configuration for Connectum services on Node.js 25+.
 outline: deep
 ---
 
 # TypeScript Best Practices
 
-Connectum runs TypeScript natively on Node.js 25.2.0+ using [stable type stripping](https://nodejs.org/api/typescript.html). This eliminates the need for a build step but introduces specific constraints you must follow.
+Connectum runs TypeScript natively on Node.js 25+ using [stable type stripping](https://nodejs.org/api/typescript.html). This eliminates the need for a build step but introduces specific constraints you must follow.
 
 ## How Native TypeScript Works
 
-Node.js 25.2.0+ can execute `.ts` files directly by **stripping type annotations** at load time. This is **not** full TypeScript compilation -- it only removes type syntax, leaving the remaining JavaScript intact.
+Node.js 25+ can execute `.ts` files directly by **stripping type annotations** at load time. This is **not** full TypeScript compilation -- it only removes type syntax, leaving the remaining JavaScript intact.
 
 ```bash
 # Run TypeScript directly -- no tsc needed
@@ -424,7 +424,7 @@ pnpm typecheck && node src/index.ts
 
 Before running your Connectum service, verify:
 
-- [ ] Node.js >= 25.2.0 installed (`node --version`)
+- [ ] Node.js 25+ installed (`node --version`)
 - [ ] `"type": "module"` in `package.json`
 - [ ] `erasableSyntaxOnly: true` in `tsconfig.json`
 - [ ] `verbatimModuleSyntax: true` in `tsconfig.json`

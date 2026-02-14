@@ -9,8 +9,6 @@ Implements the [gRPC Health Checking Protocol](https://github.com/grpc/grpc/blob
 
 **Layer**: 1 (Protocol)
 
-**Version**: 1.0.0-beta.2
-
 ## Installation
 
 ```bash
