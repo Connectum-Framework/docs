@@ -29,7 +29,7 @@ If you are migrating from v0.2.0-alpha.x to v1.0.0-beta.x, the following breakin
 | New package: `@connectum/reflection` | Extracted from `@connectum/core` |
 | New package: `@connectum/cli` | Proto sync via gRPC Server Reflection |
 | Removed: `@connectum/utilities` | Merged into other packages |
-| Total packages | 6 → 8 |
+| Total packages | 6 → 7 |
 
 ### Migration Example
 

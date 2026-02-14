@@ -20,7 +20,7 @@ A key challenge with protobuf is distributing proto definitions and generated ty
 
 #### 1. Reflection Server (incomplete)
 
-The file `packages/core/src/protocols/reflection/withReflection.ts` implements `grpc.reflection.v1.ServerReflection` (bidirectional streaming), but with critical TODOs:
+The file `packages/reflection/src/Reflection.ts` implements `grpc.reflection.v1.ServerReflection` (bidirectional streaming), but with critical TODOs:
 
 ```typescript
 // withReflection.ts -- current implementation (BROKEN)
@@ -133,6 +133,8 @@ This replaces the **entire** custom `withReflection.ts` (143 lines with two TODO
 ### Security Model
 
 Reflection is explicitly enabled and disabled by default:
+
+> **Note (deprecated):** The `reflection` option was replaced by `protocols: [Reflection()]` in v1.0.0-beta.1 (see [ADR-022](/en/contributing/adr/022-protocol-extraction)). The examples below are kept for historical context.
 
 ```typescript
 const server = createServer({
@@ -383,9 +385,9 @@ All Phase 1 tasks completed:
 - Both gRPC Reflection v1 and v1alpha are registered automatically
 - Integration test uses `ServerReflectionClient` from `@lambdalisue/connectrpc-grpcreflect/client` with `createGrpcTransport` (HTTP/2)
 - Files:
-  - `packages/core/src/protocols/reflection/withReflection.ts` -- server-side wrapper
-  - `packages/core/tests/unit/withReflection.test.ts` -- unit tests
-  - `packages/core/tests/integration/reflection.test.ts` -- integration tests
+  - `packages/reflection/src/Reflection.ts` -- server-side wrapper
+  - `packages/reflection/tests/unit/Reflection.test.ts` -- unit tests
+  - `packages/reflection/tests/integration/reflection.test.ts` -- integration tests
 
 ### Phase 2: CLI Tool -- DONE (2026-02-11)
 

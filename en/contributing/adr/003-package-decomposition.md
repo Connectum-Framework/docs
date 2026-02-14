@@ -6,7 +6,7 @@
 
 > **Update (v0.2.0-beta.2, 2026-02-12)**: Package `@connectum/utilities` removed. All utilities (~800 lines) had better alternatives as Node.js built-ins or npm packages: `retry()` replaced by `cockatiel`, `sleep()` by `node:timers/promises`, `withTimeout()` by `AbortSignal.timeout()`, `LRUCache` by `lru-cache` npm. Configuration module (`ConnectumEnvSchema`, `parseEnvConfig`) moved to `@connectum/core/config`.
 >
-> **Update (v0.2.0-beta.2, 2026-02-12)**: Package `@connectum/proto` removed. It contained third-party proto definitions (Google APIs, buf/validate, OpenAPI v3) but had zero internal consumers. Proto distribution solved via `@connectum/reflection` + `@connectum/cli proto sync` (see [ADR-020](./020-reflection-proto-sync.md)). Third-party proto definitions available through BSR deps in `buf.yaml`. The monorepo now contains **6 packages** in 3 layers. Layer 0 contains only `@connectum/otel`.
+> **Update (v0.2.0-beta.2, 2026-02-12)**: Package `@connectum/proto` removed. It contained third-party proto definitions (Google APIs, buf/validate, OpenAPI v3) but had zero internal consumers. Proto distribution solved via `@connectum/reflection` + `@connectum/cli proto sync` (see [ADR-020](./020-reflection-proto-sync.md)). Third-party proto definitions available through BSR deps in `buf.yaml`. The monorepo now contains **6 packages** in 3 layers. Layer 0 contains only `@connectum/core`.
 
 ## Context
 
@@ -64,14 +64,14 @@ Connectum is a **universal** framework for ANY gRPC/ConnectRPC services:
 ```typescript
 import { createServer } from '@connectum/core';
 import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
-import { withReflection } from '@connectum/reflection';
+import { Reflection } from '@connectum/reflection';
 import { createDefaultInterceptors } from '@connectum/interceptors';
 
 const server = createServer({
   services: [routes],
   port: 5000,
   interceptors: createDefaultInterceptors(),
-  protocols: [Healthcheck({ httpEnabled: true }), withReflection()],
+  protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
   shutdown: { autoShutdown: true, timeout: 30000 },
 });
 
