@@ -12,7 +12,6 @@ Architecture Decision Records (ADRs) capture important design decisions with the
 | # | Title | Date | Summary |
 |---|-------|------|---------|
 | 001 | [Native TypeScript](/en/contributing/adr/001-native-typescript-migration) | 2025-12-22 | Node.js 25.2.0+ type stripping, no build step |
-
 | 003 | [Package Decomposition](/en/contributing/adr/003-package-decomposition) | 2025-12-22 | 7 packages in 4 dependency layers |
 | 005 | [Input Validation](/en/contributing/adr/005-input-validation-strategy) | 2025-12-24 | Protovalidate as primary validation mechanism |
 | 006 | [Resilience Patterns](/en/contributing/adr/006-resilience-pattern-implementation) | 2025-12-24 | 8 interceptors with cockatiel library |
