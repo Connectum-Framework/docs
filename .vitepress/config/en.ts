@@ -106,7 +106,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             ],
         },
         socialLinks: [
-            { icon: 'github', link: 'https://github.com/Connectum-Framework' },
+            { icon: 'github', link: 'https://github.com/Connectum-Framework/connectum' },
         ],
         editLink: {
             pattern: 'https://github.com/Connectum-Framework/docs/edit/main/:path',

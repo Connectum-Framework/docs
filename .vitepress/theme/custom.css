@@ -1,22 +1,6 @@
 /* Full-page background image — light theme, home page only */
 :root:not(.dark) .home-page {
-    background: url('/assets/background.png') no-repeat center center / cover fixed;
-}
-
-/* Sidebar background image — light theme, desktop only */
-@media (min-width: 960px) {
-    :root:not(.dark) .VPSidebar {
-        background: url('/assets/background.png') no-repeat left center / 100vw auto fixed !important;
-    }
-
-    :root:not(.dark) .VPSidebar .curtain {
-        background-color: transparent !important;
-    }
-
-    :root:not(.dark) .VPSidebar .nav {
-        border-bottom: none !important;
-        background-color: transparent !important;
-    }
+    background: url('/assets/background.png') repeat-y center top / cover;
 }
 
 /* Nav logo — hide on home page */
@@ -24,10 +8,48 @@
     visibility: hidden;
 }
 
-/* Hero image size override — beats VPHero scoped :deep(.image-src) specificity (0,2,0) */
+/* Feature cards — icon inline with title */
+.VPFeature .box {
+    display: grid !important;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 0 12px;
+    align-items: center;
+}
+
+.VPFeature .icon {
+    grid-row: 1;
+    grid-column: 1;
+    margin: 0 !important;
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 16px;
+    background-color: transparent !important;
+}
+
+.VPFeature .icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.VPFeature .title {
+    grid-row: 1;
+    grid-column: 2;
+    font-size: 18px !important;
+}
+
+.VPFeature .details {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    font-size: 16px !important;
+    padding-top: 20px !important;
+}
+
+/* Hero image size override */
 .VPHero .image-container .image-src {
     max-width: 100%;
     max-height: 100%;
+    border-radius: 12px;
 }
 
 /* Mermaid diagrams — click-to-fullscreen cursor */
