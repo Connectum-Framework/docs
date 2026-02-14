@@ -127,26 +127,26 @@ With `verbatimModuleSyntax: true`, you must separate type imports from value imp
 ```typescript
 // CORRECT: explicit type import
 import type { ConnectRouter } from '@connectrpc/connect';
-import type { SayHelloRequest } from '#gen/greeter_pb.ts';
+import type { SayHelloRequest } from '#gen/greeter_pb.js';
 
 // CORRECT: value import
 import { create } from '@bufbuild/protobuf';
-import { GreeterService } from '#gen/greeter_pb.ts';
+import { GreeterService } from '#gen/greeter_pb.js';
 
 // CORRECT: mixed import with inline type
-import { GreeterService, type SayHelloRequest } from '#gen/greeter_pb.ts';
+import { GreeterService, type SayHelloRequest } from '#gen/greeter_pb.js';
 
 // WRONG: type imported as value (caught by verbatimModuleSyntax)
-import { SayHelloRequest } from '#gen/greeter_pb.ts';
+import { SayHelloRequest } from '#gen/greeter_pb.js';
 //       ^ This is a type, must use 'import type'
 ```
 
 ### File Extensions in Imports
 
-Use `.ts` extensions in relative imports. The `rewriteRelativeImportExtensions` option handles module resolution:
+Use `.ts` extensions in relative imports of source files. The `rewriteRelativeImportExtensions` option handles module resolution:
 
 ```typescript
-// CORRECT: .ts extension in source code
+// CORRECT: .ts extension for source files
 import { greeterServiceRoutes } from './services/greeterService.ts';
 import type { Config } from './config.ts';
 
@@ -154,12 +154,28 @@ import type { Config } from './config.ts';
 import { createServer } from '@connectum/core';
 import { create } from '@bufbuild/protobuf';
 
-// WRONG: .js extension in source code (outdated convention)
+// WRONG: .js extension for source files (outdated convention)
 import { greeterServiceRoutes } from './services/greeterService.js';
 
 // WRONG: no extension for relative imports
 import { greeterServiceRoutes } from './services/greeterService';
 ```
+
+### Generated Code (`#gen/`) Imports
+
+Generated protobuf files (`#gen/*`) always use `.js` extensions. This is the convention set by `protobuf-es` (`import_extension=.js` in `buf.gen.yaml`):
+
+```typescript
+// CORRECT: .js for generated protobuf files
+import { GreeterService } from '#gen/greeter_pb.js';
+import type { SayHelloRequest } from '#gen/greeter_pb.js';
+import routes from '#gen/routes.js';
+
+// WRONG: .ts for generated files
+import { GreeterService } from '#gen/greeter_pb.ts';
+```
+
+The `#gen/` path alias is defined in `package.json` via the `imports` field (`"#gen/*": "./gen/*"`).
 
 ### Node.js Built-in Modules
 
