@@ -6,7 +6,7 @@
 
 ## Context
 
-In the current architecture (v0.2.0-alpha.2), the `@connectum/core` package contains built-in protocol implementations:
+In the current architecture, the `@connectum/core` package contains built-in protocol implementations:
 
 - **Healthcheck** (`./protocols/healthcheck/`) -- gRPC Health Check + HTTP endpoints
 - **Reflection** (`./protocols/reflection/`) -- gRPC Server Reflection v1 + v1alpha

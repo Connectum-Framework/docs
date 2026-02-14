@@ -16,7 +16,7 @@
 
 A key challenge with protobuf is distributing proto definitions and generated types between a server and its clients. Currently, clients of Connectum services have no standard way to obtain proto files or generated TypeScript types.
 
-### Current State (v0.2.0-alpha.2)
+### Current State
 
 #### 1. Reflection Server (incomplete)
 
