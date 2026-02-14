@@ -84,7 +84,7 @@ import { createDefaultInterceptors } from '@connectum/interceptors';
 const interceptors = createDefaultInterceptors({
   timeout: { duration: 10_000 },   // Custom timeout (10s instead of 30s)
   retry: false,                     // Disable retry
-  bulkhead: { capacity: 20, queue: 20 }, // Higher concurrency limits
+  bulkhead: { capacity: 20, queueSize: 20 }, // Higher concurrency limits
   // All others remain at defaults
 });
 
