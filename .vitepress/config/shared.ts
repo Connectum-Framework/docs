@@ -23,6 +23,34 @@ export const sharedConfig = defineConfig({
         ],
         search: {
             provider: 'local',
+            options: {
+                detailedView: true,
+                locales: {
+                    ru: {
+                        translations: {
+                            button: {
+                                buttonText: 'Поиск',
+                                buttonAriaLabel: 'Поиск',
+                            },
+                            modal: {
+                                displayDetails: 'Подробный список',
+                                resetButtonTitle: 'Сбросить',
+                                backButtonTitle: 'Закрыть',
+                                noResultsText: 'Ничего не найдено',
+                                footer: {
+                                    selectText: 'выбрать',
+                                    selectKeyAriaLabel: 'Enter',
+                                    navigateText: 'навигация',
+                                    navigateUpKeyAriaLabel: 'стрелка вверх',
+                                    navigateDownKeyAriaLabel: 'стрелка вниз',
+                                    closeText: 'закрыть',
+                                    closeKeyAriaLabel: 'Escape',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         footer: {
             message: 'Released under the Apache License 2.0. · <a href="/llms.txt">llms.txt</a> · <a href="/llms-full.txt">llms-full.txt</a>',
