@@ -1,3 +1,13 @@
+<p align="center">
+<a href="https://connectum.dev">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://connectum.dev/assets/splash-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://connectum.dev/assets/splash.png">
+  <img alt="Connectum — Microservices Framework" src="https://connectum.dev/assets/splash.png" width="600">
+</picture>
+</a>
+</p>
+
 # Connectum Documentation
 
 > Minimalist framework for building production-ready gRPC/ConnectRPC microservices on Node.js 25+
