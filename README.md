@@ -10,9 +10,9 @@
 
 # Connectum Documentation
 
-> Minimalist framework for building production-ready gRPC/ConnectRPC microservices on Node.js 25+
+> Minimalist framework for building production-ready gRPC/ConnectRPC microservices on Node.js 18+
 
-**8 packages** across 4 layers
+**6 packages** across 3 layers
 
 ## Documentation Site
 

@@ -11,7 +11,7 @@ Architecture Decision Records (ADRs) capture important design decisions with the
 
 | # | Title | Date | Summary |
 |---|-------|------|---------|
-| 001 | [Native TypeScript](/en/contributing/adr/001-native-typescript-migration) | 2025-12-22 | Node.js 25.2.0+ type stripping, no build step |
+| 001 | [Native TypeScript](/en/contributing/adr/001-native-typescript-migration) | 2026-02-16 | Native TypeScript development + compile-before-publish with tsup |
 | 003 | [Package Decomposition](/en/contributing/adr/003-package-decomposition) | 2025-12-22 | 7 packages in 4 dependency layers |
 | 005 | [Input Validation](/en/contributing/adr/005-input-validation-strategy) | 2025-12-24 | Protovalidate as primary validation mechanism |
 | 006 | [Resilience Patterns](/en/contributing/adr/006-resilience-pattern-implementation) | 2025-12-24 | 8 interceptors with cockatiel library |
@@ -22,6 +22,7 @@ Architecture Decision Records (ADRs) capture important design decisions with the
 | 020 | [Reflection Proto Sync](/en/contributing/adr/020-reflection-proto-sync) | 2026-02-07 | 4-phase reflection-based proto synchronization |
 | 022 | [Protocol Extraction](/en/contributing/adr/022-protocol-extraction) | 2026-02-11 | Healthcheck/Reflection as separate packages |
 | 023 | [Uniform Registration API](/en/contributing/adr/023-uniform-registration-api) | 2026-02-11 | createDefaultInterceptors(), explicit interceptor control |
+| 024 | [Auth/Authz Strategy](/en/contributing/adr/024-auth-authz-strategy) | 2026-02-15 | @connectum/auth package with JWT, RBAC, context propagation |
 
 ## Creating a New ADR
 

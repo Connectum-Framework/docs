@@ -9,7 +9,7 @@ These principles guide every design decision in Connectum. Each links to its ful
 
 ## 1. Native TypeScript Execution
 
-Run `.ts` files directly on Node.js 25+ with stable type stripping. No build step, no transpilation.
+Write TypeScript natively on Node.js 25+. Packages compile to JavaScript + type declarations with tsup before publishing. Consumers can use Node.js 18+.
 
 **Constraints:** No `enum` (use `as const` objects), no runtime `namespace`, no parameter properties, explicit `import type`, `.ts` extensions in imports.
 

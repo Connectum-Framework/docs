@@ -6,7 +6,105 @@ outline: deep
 
 # TypeScript Best Practices
 
-Connectum runs TypeScript natively on Node.js 25+ using [stable type stripping](https://nodejs.org/api/typescript.html). This eliminates the need for a build step but introduces specific constraints you must follow.
+Connectum packages are published as **compiled JavaScript** (`.js` + `.d.ts` + source maps), built with [tsup](https://tsup.egoist.dev/). Consumers can use any runtime that supports ES modules (Node.js 18+, Bun, tsx). Framework developers still write native TypeScript using [stable type stripping](https://nodejs.org/api/typescript.html) on Node.js 25+, which introduces specific constraints described below.
+
+## Runtime Support: Node.js vs Bun vs tsx {#runtime-support-node-js-vs-bun}
+
+Connectum packages ship **compiled JavaScript** with TypeScript declarations (`.d.ts`) and source maps. This means **no special loader or register hook is needed** for any runtime -- all runtimes can import `@connectum/*` packages directly.
+
+### Node.js 25+
+
+Node.js 25+ supports [type stripping](https://nodejs.org/api/typescript.html) for your own `.ts` source files. Since `@connectum/*` packages ship compiled `.js`, no loader is required:
+
+```bash
+node src/index.ts
+```
+
+In `package.json`:
+
+```json
+{
+  "scripts": {
+    "start": "node src/index.ts",
+    "dev": "node --watch src/index.ts"
+  }
+}
+```
+
+#### What Packages Ship
+
+Each `@connectum/*` package is built with [tsup](https://tsup.egoist.dev/) and publishes:
+
+- **Compiled `.js` files** (ESM) -- ready to run on any ES module-capable runtime
+- **TypeScript declarations** (`.d.ts`) -- full type information for IDE support and type checking
+- **Source maps** (`.js.map`) -- accurate stack traces pointing to the original TypeScript source
+
+### Bun
+
+Bun natively supports TypeScript for your own source files. Since `@connectum/*` packages ship compiled `.js`, everything works out of the box:
+
+```bash
+bun src/index.ts
+```
+
+In `package.json`:
+
+```json
+{
+  "scripts": {
+    "start": "bun src/index.ts",
+    "dev": "bun --watch src/index.ts"
+  }
+}
+```
+
+### tsx (Node.js 18+)
+
+[tsx](https://tsx.is) is a TypeScript execution engine powered by [esbuild](https://esbuild.github.io/). It works as a drop-in replacement for `node` and runs on **Node.js 18+**, making it a good option when you cannot use Node.js 25+. Since `@connectum/*` packages ship compiled `.js`, no special configuration is needed.
+
+```bash
+npx tsx src/index.ts
+```
+
+In `package.json`:
+
+```json
+{
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx --watch src/index.ts"
+  }
+}
+```
+
+::: tip
+Install tsx as a devDependency (`pnpm add -D tsx`) for faster invocation without `npx`.
+:::
+
+### Comparison
+
+| Feature | Node.js 25+ | Bun | tsx (Node.js 18+) |
+|---------|------------|-----|-------------------|
+| Your `.ts` files | Native type stripping | Native | esbuild |
+| `@connectum/*` packages | Compiled `.js` (no loader needed) | Compiled `.js` (no loader needed) | Compiled `.js` (no loader needed) |
+| `--watch` mode | `node --watch` | `bun --watch` | `tsx --watch` |
+| Proto enum support | Requires [two-step generation](#proto-generation-and-enums) | Native | Native (esbuild) |
+| Min Node.js version | 25.2.0 (for native `.ts` execution) | N/A (Bun runtime) | 18.0.0 |
+
+### Docker
+
+In Dockerfiles, use the appropriate `CMD` for your runtime:
+
+```dockerfile
+# Node.js 25+ (native TypeScript for your own .ts files)
+CMD ["node", "src/index.ts"]
+
+# Bun
+CMD ["bun", "src/index.ts"]
+
+# tsx (Node.js 18+)
+CMD ["npx", "tsx", "src/index.ts"]
+```
 
 ## How Native TypeScript Works
 
@@ -426,21 +524,27 @@ tsc --noEmit --watch
 ## Development Workflow
 
 ```bash
-# Start with auto-reload (watches for file changes)
+# Node.js 25+: start with auto-reload (watches for file changes)
 node --watch src/index.ts
+
+# Bun: start with auto-reload
+bun --watch src/index.ts
+
+# tsx: start with auto-reload (Node.js 18+)
+tsx --watch src/index.ts
 
 # Type check in a separate terminal
 tsc --noEmit --watch
 
 # Or run once
-pnpm typecheck && node src/index.ts
+pnpm typecheck && pnpm start
 ```
 
 ## Checklist
 
 Before running your Connectum service, verify:
 
-- [ ] Node.js 25+ installed (`node --version`)
+- [ ] Node.js 25+ installed (`node --version`), Bun installed (`bun --version`), or tsx installed (`npx tsx --version`)
 - [ ] `"type": "module"` in `package.json`
 - [ ] `erasableSyntaxOnly: true` in `tsconfig.json`
 - [ ] `verbatimModuleSyntax: true` in `tsconfig.json`
@@ -448,7 +552,7 @@ Before running your Connectum service, verify:
 - [ ] `import type` for all type-only imports
 - [ ] `.ts` extensions in relative imports
 - [ ] `node:` prefix for built-in modules
-- [ ] Proto enums handled via two-step generation (if applicable)
+- [ ] Proto enums handled via two-step generation (if applicable, Node.js only; not needed for Bun or tsx)
 
 ## Next Steps
 

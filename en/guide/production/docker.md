@@ -5,7 +5,7 @@ description: Multi-stage Dockerfile, docker-compose, and image optimization for 
 
 # Docker Containerization
 
-Connectum runs on Node.js 25+ with native TypeScript execution. This means **no build step** is required -- you copy your TypeScript source files directly into the container alongside `node_modules`.
+Connectum packages ship **compiled JavaScript** (`.js` + `.d.ts` + source maps), so they work on any Node.js version >= 18.0.0. If your own application code is written in TypeScript, you can either use Node.js 25+ (native type stripping for `.ts` files) or compile your code with a build tool before containerizing.
 
 ::: tip Full Example
 All Docker files described below are available in the [production-ready example](https://github.com/Connectum-Framework/examples/tree/main/production-ready).
@@ -22,12 +22,29 @@ See [Dockerfile](https://github.com/Connectum-Framework/examples/blob/main/produ
 Key highlights:
 
 - **Stage 1 (deps)** -- `pnpm install --frozen-lockfile --prod` for reproducible, minimal dependencies
-- **Stage 2 (runtime)** -- non-root `connectum` user, `curl` for HEALTHCHECK, native TypeScript via `node --experimental-strip-types`
+- **Stage 2 (runtime)** -- non-root `connectum` user, `curl` for HEALTHCHECK, native TypeScript via `node src/index.ts`
 - Environment defaults: `NODE_ENV=production`, `PORT=5000`, `LOG_FORMAT=json`, health and graceful shutdown enabled
 
-::: tip
-Node.js 25+ supports stable type stripping. If your code uses only erasable TypeScript syntax (no `enum`, no `namespace` with runtime code, no parameter properties), you can run `.ts` files directly without any build tool.
+::: tip Base image selection
+If your own application code is compiled to JavaScript (e.g., via tsup or tsx), you can use any Node.js 18+ base image instead of `node:25-slim`. Use `node:25-slim` only when you want to run your own `.ts` files natively via Node.js type stripping.
 :::
+
+### Alternative Runtimes: Bun and tsx
+
+You can replace the Node.js `CMD` with Bun or tsx:
+
+```dockerfile
+# Node.js 25+ (native TypeScript for your own .ts files)
+CMD ["node", "src/index.ts"]
+
+# Bun
+CMD ["bun", "src/index.ts"]
+
+# tsx (works on Node.js 18+)
+CMD ["npx", "tsx", "src/index.ts"]
+```
+
+When using **tsx**, you can use any Node.js 18+ base image (e.g., `node:18-slim`, `node:20-slim`, `node:22-slim`) and add `tsx` as a dependency. Since `@connectum/*` packages ship compiled JavaScript, no special loader is needed for any runtime.
 
 ### Alpine Variant (Smaller Image)
 

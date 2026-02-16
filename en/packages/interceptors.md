@@ -15,7 +15,7 @@ Production-ready ConnectRPC interceptors providing resilience patterns, error ha
 pnpm add @connectum/interceptors
 ```
 
-**Requires**: Node.js 25+
+**Requires**: Node.js 18+
 
 ## Quick Start
 

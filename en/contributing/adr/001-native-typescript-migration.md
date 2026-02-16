@@ -1,41 +1,116 @@
-# ADR-001: Native TypeScript Execution
+# ADR-001: Compile-Before-Publish TypeScript Strategy
 
 ## Status
 
-**Accepted** - 2025-12-22
+**Accepted** -- 2026-02-16 (supersedes original ADR-001 from 2025-12-22)
 
 ## Context
 
-Connectum is a universal framework for building gRPC/ConnectRPC microservices. When developing the new version, we needed to choose a TypeScript execution strategy.
+### Original Decision
 
-### Requirements
+The original ADR-001 (2025-12-22) chose to publish `@connectum/*` packages as raw `.ts` source files to npm, relying on Node.js 25.2.0+ stable type stripping at runtime. The rationale was zero build step, instant startup, and simplified CI/CD.
 
-1. **Type Safety**: Full typing to prevent runtime errors
-2. **Developer Experience**: Fast feedback loop, strong IDE support
-3. **Production Ready**: Reliability, stability, minimal overhead
-4. **Performance**: Critical for high-throughput systems (300+ req/min)
-5. **Simplicity**: Minimal tooling and build steps
+After real-world feedback and deeper analysis, this decision has been **revised**.
 
-Node.js 22.6.0+ added type stripping support, which became **stable in 25.2.0+**:
+### Node.js Maintainer Feedback
 
-```bash
-# Node.js 25.2.0+: STABLE and enabled by default
-node src/index.ts
-```
+A Node.js core maintainer provided the following critical feedback on the "publish .ts source" approach:
+
+1. **Node.js actively blocks type stripping in `node_modules`** -- this is an intentional design decision, not a temporary limitation. See the [official documentation](https://nodejs.org/api/typescript.html#type-stripping-in-dependencies).
+
+2. **TypeScript is not backward-compatible** -- TypeScript regularly introduces breaking changes in minor versions. Real-world examples include `noble/hashes` and `uint8array` breakage, as well as legacy decorators vs. TC39 Stage 3 decorators incompatibilities.
+
+3. **Each package must control its own TypeScript version** -- a package should compile with the TypeScript version it was tested against and publish the resulting JavaScript. Forcing consumers to strip types at runtime couples them to the publisher's TypeScript version.
+
+4. **JavaScript is permanently backward-compatible** -- once valid JS is published, it works forever. TypeScript source does not have this guarantee.
+
+5. **Official position** -- Node.js documentation explicitly states that type stripping should not be used for dependencies in `node_modules`.
+
+6. **Practical breakage patterns** -- decorator semantics, enum compilation changes, and import resolution differences across TypeScript versions create silent failures that are difficult to diagnose.
+
+### Loader Propagation Issues
+
+The raw `.ts` publishing approach required consumers to register a custom loader (`@connectum/core/register`) or use `--import` flags. This created several problems:
+
+- **Worker threads** do not inherit `--import` hooks
+- **`fork()` / `spawn()`** do not propagate loader configuration
+- **APM instrumentation tools** (OpenTelemetry, Datadog, New Relic) may not propagate hooks correctly
+- **Test runners and build tools** may strip or ignore custom loaders
+
+These issues made the raw `.ts` approach unreliable in production environments with complex process hierarchies.
+
+### Industry-Standard Practice
+
+Compile-before-publish is the established pattern used by virtually all major TypeScript packages in the ecosystem. Frameworks and libraries such as tRPC, Fastify, Effect, Drizzle ORM, and Hono all develop in TypeScript but publish compiled `.js` + `.d.ts` + source maps. Common tooling includes:
+
+- **tsup** (esbuild-powered) or **unbuild** (rollup-powered) for fast compilation
+- **ESM** as the primary output format
+- **`declarationMap: true`** for IDE jump-to-source navigation
+- **Turborepo** or **Nx** for monorepo build orchestration
+
+This pattern is well-proven at scale across monorepos with dozens of packages.
 
 ## Decision
 
-**We choose Native TypeScript (Type Stripping) for Connectum.**
+**Compile-before-publish with tsup**: develop in `.ts`, publish `.js` + `.d.ts` + source maps to npm.
 
-### Requirements
+### Build Pipeline
 
-- **Node.js version**: `>=25.2.0` (requirement in package.json engines)
-- **TypeScript version**: `>=5.8.0` for type checking
-- **Type stripping**: Enabled by default (no flags needed)
+| Tool | Purpose |
+|------|---------|
+| **tsup** | Compile TS to JS (esbuild under the hood) |
+| **tsc** | Type checking only (`--noEmit`) |
+| **Turborepo** | Orchestrate build tasks across monorepo |
+
+Output characteristics:
+- **ESM only** (`type: "module"`)
+- **Declaration files** (`.d.ts`) for consumer type checking
+- **Declaration maps** (`declarationMap: true`) for IDE jump-to-source
+- **Source maps** (`.js.map`) for debugging
+- **No minification** -- framework code should be readable
+
+### tsup Configuration
+
+```typescript
+// tsup.config.ts
+import { defineConfig } from 'tsup'
+
+export default defineConfig({
+  entry: ['src/index.ts'],
+  format: ['esm'],
+  dts: true,
+  sourcemap: true,
+  clean: true,
+  minify: false,
+})
+```
+
+### Package.json Template
+
+```json
+{
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "node --watch src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/**/*.test.ts"
+  }
+}
+```
 
 ### TypeScript Configuration
 
-Following official Node.js recommendations:
+The `tsconfig.json` remains largely unchanged from the original ADR:
 
 ```json
 {
@@ -47,6 +122,7 @@ Following official Node.js recommendations:
     "rewriteRelativeImportExtensions": true,
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
+    "declarationMap": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -55,186 +131,128 @@ Following official Node.js recommendations:
 }
 ```
 
-**Key settings**:
-- `noEmit: true` -- type checking only, no compilation
-- `allowImportingTsExtensions: true` -- lets the type checker process `.ts` extensions in imports
-- `rewriteRelativeImportExtensions: true` -- forward-compatibility option; rewrites `.ts` to `.js` in emitted output if compilation is enabled in the future
-- `erasableSyntaxOnly: true` -- prevents use of non-erasable syntax
-- `verbatimModuleSyntax: true` -- requires explicit `import type`
+### What Is Preserved from the Original ADR
 
-> Both `allowImportingTsExtensions` and `rewriteRelativeImportExtensions` work together: the first lets the type checker understand `.ts` imports with `noEmit: true`, the second ensures a fallback to tsc compilation would produce correct `.js` imports.
+The following conventions remain unchanged:
 
-### Package.json Scripts
+- **`erasableSyntaxOnly: true`** -- no `enum`, no `namespace` with runtime code, no parameter properties
+- **`verbatimModuleSyntax: true`** -- explicit `import type` required
+- **`.ts` extensions in import paths** -- `rewriteRelativeImportExtensions` rewrites them to `.js` during build
+- **`node src/index.ts`** for local development -- type stripping works outside `node_modules`
+- **`node --watch src/index.ts`** for hot reload during development
+- **`tsc --noEmit`** for type checking
+- **Node.js >= 25.2.0** for the development environment
+- All syntax restrictions (no enum, no namespace, no parameter properties, no decorators, explicit `import type`, `package.json#imports` for path aliases)
 
-```json
-{
-  "type": "module",
-  "scripts": {
-    "start": "node src/index.ts",
-    "dev": "node --watch src/index.ts",
-    "typecheck": "tsc --noEmit",
-    "test": "node --test tests/**/*.test.ts"
-  },
-  "engines": {
-    "node": ">=25.2.0"
-  }
-}
-```
+### What Changes
 
-### Syntax Restrictions
-
-#### Enum -- use const objects
-
-```typescript
-// NOT supported (non-erasable)
-export enum Status { SERVING = 1 }
-
-// Correct
-export const ServingStatus = {
-  UNKNOWN: 0,
-  SERVING: 1,
-  NOT_SERVING: 2,
-} as const;
-
-export type ServingStatus = typeof ServingStatus[keyof typeof ServingStatus];
-```
-
-#### Namespace -- use ES Modules
-
-```typescript
-// NOT supported
-namespace MyNamespace { export const value = 1; }
-
-// Correct
-export const value = 1;
-```
-
-#### Mandatory import type
-
-```typescript
-// Correct
-import type { ServiceType } from '@bufbuild/protobuf';
-import { createPromiseClient } from '@connectrpc/connect';
-
-// Incorrect -- may cause errors
-import { ServiceType } from '@bufbuild/protobuf';
-```
-
-#### Import extensions must be .ts
-
-Per Node.js documentation, file extensions are **mandatory** and must match the actual file extension.
-
-```typescript
-// Correct
-import { myFunction } from './utils.ts';
-
-// Incorrect -- no extension
-import { myFunction } from './utils';
-
-// Incorrect -- wrong extension for a .ts file
-import { myFunction } from './utils.js';
-```
-
-#### Parameter Properties -- use explicit properties
-
-```typescript
-// NOT supported
-class User {
-  constructor(public name: string, private age: number) {}
-}
-
-// Correct
-class User {
-  name: string;
-  private age: number;
-  constructor(name: string, age: number) {
-    this.name = name;
-    this.age = age;
-  }
-}
-```
-
-#### Decorators -- not supported
-
-Neither legacy TypeScript decorators nor TC39 Stage 3 decorators work with native type stripping. Node.js strips types but does **not** transform decorators. Use wrapper functions instead.
-
-#### Path Aliases -- use package.json#imports
-
-Node.js does **not** read `tsconfig.json` at runtime. Use `package.json#imports` instead of tsconfig paths:
-
-```json
-{
-  "imports": {
-    "#utils/*": "./src/utils/*.ts",
-    "#types/*": "./src/types/*.ts"
-  }
-}
-```
-
-```typescript
-import { helper } from '#utils/helper.ts';
-```
+| Aspect | Before (Original ADR-001) | After (This ADR) |
+|--------|---------------------------|-------------------|
+| npm artifact | `src/*.ts` (raw source) | `dist/*.js` + `dist/*.d.ts` + `dist/*.js.map` |
+| package.json exports | `./src/index.ts` | `./dist/index.js` |
+| Build step | None | `tsup` before publish |
+| `@connectum/core/register` | Required for consumers | **DEPRECATED** (no longer needed) |
+| Consumer Node.js requirement | `>=25.2.0` | `>=18.0.0` (any modern Node.js) |
+| Consumer TypeScript coupling | Must match publisher's TS version | Decoupled via `.d.ts` |
+| Development Node.js requirement | `>=25.2.0` | `>=25.2.0` (unchanged) |
 
 ## Consequences
 
 ### Positive
 
-1. **Zero Build Step** -- instant startup (`node src/index.ts`), hot reload (`node --watch`), simplified CI/CD
-2. **Performance** -- minimal parsing overhead compared to pure JS; no JIT compilation overhead (unlike ts-node/tsx); smaller memory footprint
-3. **Type Safety** -- full TypeScript types, IDE auto-completion, compile-time checking via `tsc --noEmit`
-4. **Developer Experience** -- instant feedback loop, no watch compilation lag, no `dist/` directory
-5. **Production Ready** -- stable feature in Node.js 25.2.0+, officially supported and documented. Node.js 25.x is a Current release (not LTS); future LTS: 26.x (Current from April 2026, LTS from October 2026)
-6. **Simplified Tooling** -- no webpack/rollup/esbuild, no ts-node/tsx runtime dependencies, fewer dependencies = fewer security vulnerabilities
+1. **Broad Consumer Compatibility** -- published JavaScript works on any Node.js >=18.0.0. Consumers are no longer forced to use Node.js 25.2.0+ at runtime.
+
+2. **No Loader Issues** -- compiled JavaScript requires no custom loaders, hooks, or `--import` flags. Worker threads, `fork()`, and APM tools work without special configuration.
+
+3. **TypeScript Version Decoupling** -- the framework controls which TypeScript version it compiles with. Consumers receive stable `.d.ts` declarations that work with any compatible TypeScript version.
+
+4. **Ecosystem Standard** -- compile-before-publish is the established pattern used by virtually all major TypeScript packages (tRPC, Fastify, Effect, Drizzle ORM, Hono, etc.). This reduces surprise for consumers.
+
+5. **Permanent Backward Compatibility** -- published JavaScript does not break across TypeScript or Node.js upgrades. Once published, it works forever.
+
+6. **IDE Experience Preserved** -- `declarationMap: true` enables jump-to-source navigation in IDEs, providing the same developer experience as raw `.ts` source.
+
+7. **Development Workflow Unchanged** -- developers still write `.ts`, run `node src/index.ts` locally, and use `node --watch` for hot reload. The build step only runs before publish.
 
 ### Negative
 
-1. **Node.js Version Requirement** -- requires >=25.2.0, may be problematic for legacy environments. Mitigated by explicit `engines` in package.json, CI/CD checks, Docker images with Node.js 25.2.0+
-2. **TypeScript Syntax Limitations** -- no enum, no namespace, no parameter properties, mandatory `import type`. Mitigated by documented migration patterns and Biome lint rules
-3. **Ecosystem Compatibility** -- some libraries may not support native TS; generated proto code may need adaptation. Mitigated by dual export (`types` + `default` pointing to `.ts` source) and a fallback plan to add pre-compiled `dist/` if needed
-4. **Learning Curve** -- developers must learn erasable vs non-erasable syntax and new patterns for enum/namespace replacements
+1. **Added Build Step** -- `tsup` must run before publishing. This adds ~2-5 seconds per package to the CI/CD pipeline. Mitigated by Turborepo caching and parallel builds.
 
-### Rollback Plan
+2. **`dist/` Directory** -- each package now has a `dist/` folder that must be gitignored and managed. Mitigated by `.gitignore` and `files` field in `package.json`.
 
-If native TypeScript proves unsuitable, adding a compilation step is ~1-2 days of work:
+3. **Build Dependency** -- tsup (and transitively esbuild) is added as a dev dependency. Mitigated by the fact that tsup is a well-maintained, widely-used build tool with minimal dependencies.
 
-```json
-{
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
-  }
-}
-```
+4. **Source Not Directly Readable in `node_modules`** -- consumers see compiled JS in `node_modules` instead of TypeScript source. Mitigated by source maps and declaration maps for debugging and navigation.
 
-Erasable syntax makes this migration trivial.
+### Risks
+
+1. **tsup/esbuild compatibility** -- if tsup introduces a breaking change, it could affect the build pipeline. Mitigated by pinning versions and using Turborepo's deterministic builds.
+
+2. **Declaration file accuracy** -- `.d.ts` generation can occasionally produce incorrect types for complex TypeScript patterns. Mitigated by `tsc --noEmit` type checking and integration tests.
+
+## Migration Plan
+
+### Phase 1: Add Build Tooling
+
+- Add `tsup` as a dev dependency to each `@connectum/*` package
+- Create `tsup.config.ts` in each package
+- Add `build` script to each `package.json`
+- Add `dist/` to `.gitignore`
+- Update Turborepo pipeline to include `build` task
+
+### Phase 2: Update Package Exports
+
+- Change `package.json` exports from `./src/index.ts` to `./dist/index.js`
+- Add `types` field pointing to `./dist/index.d.ts`
+- Update `files` field to include only `dist`
+- Add `declarationMap: true` to `tsconfig.json`
+
+### Phase 3: Deprecate Register Hook
+
+- Mark `@connectum/core/register` as deprecated with a console warning
+- Update documentation to remove loader registration instructions
+- Remove register entrypoint in the next major version
+
+### Phase 4: Update CI/CD and Documentation
+
+- Update GitHub Actions workflows to run `pnpm build` before publish
+- Update Changesets publish workflow to include build step
+- Update all documentation, guides, and examples
+- Update `engines` field: keep `>=25.2.0` for development, document `>=18.0.0` for consumers
 
 ## Alternatives Considered
 
-### Alternative 1: Traditional tsc compilation
+### Alternative 1: Keep Raw .ts Publishing (Original ADR-001)
 
-**Rating**: 6/10. Stable and production-proven, but build step overhead is not justified for modern Node.js runtime.
+**Rejected.** While appealing in theory (zero build step), this approach is explicitly blocked by Node.js in `node_modules`, couples consumers to a specific TypeScript version, and creates unreliable behavior with worker threads and process forking.
 
-### Alternative 2: ts-node / tsx for development + tsc for production
+### Alternative 2: tsc Compilation
 
-**Rating**: 7/10. Fast development, but environment mismatch risks between dev and prod, plus extra dependencies.
+**Considered but not chosen.** Standard `tsc` compilation works but is significantly slower than tsup/esbuild for the compilation step. It also does not support bundling or tree-shaking if needed in the future. tsup provides a faster, more flexible build pipeline while still using `tsc` for type checking.
 
-### Alternative 3: Deno / Bun
+### Alternative 3: Dual ESM + CJS Publishing
 
-**Rating**: 4/10. Native TypeScript support, but ConnectRPC + Node.js ecosystem is too valuable to abandon.
+**Deferred.** Publishing both ESM and CJS formats increases package size and complexity. Since Connectum targets modern Node.js environments, ESM-only is sufficient. CJS support can be added later via tsup's `format: ['esm', 'cjs']` if consumer demand justifies it.
 
-### Alternative 4: Keep JavaScript
+### Alternative 4: SWC-based Compilation
 
-**Rating**: 3/10. Zero setup, but no type safety -- critical for a production framework.
+**Considered but not chosen.** SWC is faster than esbuild for some workloads but has less mature `.d.ts` generation. tsup's esbuild backend is fast enough for Connectum's package sizes, and tsup's built-in dts support simplifies the pipeline.
+
+### Alternative 5: Bun / Deno Runtime
+
+**Rejected.** Both runtimes have native TypeScript support but would abandon the Node.js ecosystem and ConnectRPC compatibility. The Node.js ecosystem is a core requirement for Connectum.
 
 ## References
 
-1. [Official Node.js TypeScript Documentation](https://nodejs.org/api/typescript.md)
-2. Node.js 25.2.0 Release Notes -- type stripping became STABLE, enabled by default
-3. [TypeScript 5.8 Compiler Options](https://www.typescriptlang.org/tsconfig)
-4. [TC39 Type Annotations Proposal](https://github.com/tc39/proposal-type-annotations)
+1. [Node.js -- Type Stripping in Dependencies](https://nodejs.org/api/typescript.html#type-stripping-in-dependencies) -- official documentation on why type stripping is blocked in `node_modules`
+2. [Node.js TypeScript Documentation](https://nodejs.org/api/typescript.html) -- full TypeScript support documentation
+3. [tsup Documentation](https://tsup.egoist.dev/) -- build tool used for compilation
+4. [TypeScript 5.8 -- `rewriteRelativeImportExtensions`](https://www.typescriptlang.org/tsconfig#rewriteRelativeImportExtensions) -- compiler option for `.ts` to `.js` import rewriting
+5. [Turborepo Documentation](https://turbo.build/repo/docs) -- monorepo build orchestration
 
 ## Changelog
 
 | Date | Author | Change |
 |------|--------|--------|
-| 2025-12-22 | Claude | Initial ADR |
+| 2025-12-22 | Claude | Original ADR: Native TypeScript (raw .ts publishing) |
+| 2026-02-16 | Claude | Revised: Compile-before-publish with tsup (this version) |

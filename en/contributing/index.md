@@ -30,7 +30,7 @@ Connectum is organized as 3 independent repositories under the [Connectum-Framew
 - **Biome** for linting and formatting (`pnpm lint` / `pnpm format`)
 - **Native TypeScript** -- no `enum`, explicit `import type`, `.ts` extensions
 - **Named parameters** -- prefer options objects over positional arguments
-- Node.js 25+ required
+- Node.js 25+ required for development (consumers: Node.js 18+)
 
 ### Commits
 

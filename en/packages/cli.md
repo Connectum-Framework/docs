@@ -15,7 +15,7 @@ Command-line tools for the Connectum framework. Currently provides the `proto sy
 pnpm add -D @connectum/cli
 ```
 
-**Requires**: Node.js 25+, `buf` CLI available on PATH
+**Requires**: Node.js 18+, `buf` CLI available on PATH
 
 **Built with**: [citty](https://github.com/unjs/citty) for CLI framework
 

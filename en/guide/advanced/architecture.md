@@ -5,7 +5,7 @@ description: Connectum framework architecture -- package layers, dependency rule
 
 # Architecture Overview
 
-Connectum is a modular gRPC/ConnectRPC framework for Node.js 25+. It is organized as 6 packages in 3 dependency layers.
+Connectum is a modular gRPC/ConnectRPC framework for Node.js. Development uses Node.js 25+ with native TypeScript; published packages work on Node.js 18+. It is organized as 6 packages in 3 dependency layers.
 
 ## Package Layers
 
@@ -53,7 +53,7 @@ graph TD
 
 | Decision | Summary | ADR |
 |----------|---------|-----|
-| Native TypeScript | Node.js 25+ type stripping, no build step | [ADR-001](/en/contributing/adr/001-native-typescript-migration) |
+| Native TypeScript | Native TypeScript development + compile-before-publish with tsup | [ADR-001](/en/contributing/adr/001-native-typescript-migration) |
 | Modular packages | 7 packages in 4 layers for clear separation | [ADR-003](/en/contributing/adr/003-package-decomposition) |
 | Uniform API | `createServer()` + `createDefaultInterceptors()` | [ADR-023](/en/contributing/adr/023-uniform-registration-api) |
 | Protocol plugins | Healthcheck/Reflection as separate packages | [ADR-022](/en/contributing/adr/022-protocol-extraction) |

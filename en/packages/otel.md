@@ -15,7 +15,7 @@ Full OpenTelemetry instrumentation for Connectum services. Provides ConnectRPC i
 pnpm add @connectum/otel
 ```
 
-**Requires**: Node.js 25+
+**Requires**: Node.js 18+
 
 ## Quick Start
 

@@ -15,7 +15,7 @@ The central package of the Connectum framework. Provides `createServer()` -- a f
 pnpm add @connectum/core
 ```
 
-**Requires**: Node.js 25+ (native TypeScript via type stripping)
+**Requires**: Node.js >= 18.0.0 (packages ship compiled `.js` + `.d.ts` + source maps)
 
 ## Quick Start
 
@@ -246,6 +246,18 @@ CREATED ──start()──> STARTING ──> RUNNING ──stop()──> STOPPI
 ```
 
 Events are emitted in this order: `start` -> `ready` (success) or `error` (failure), then `stopping` -> `stop` (or `error`).
+
+## Published Package Format
+
+All `@connectum/*` packages are built with [tsup](https://tsup.egoist.dev/) and ship:
+
+- **Compiled `.js` files** (ESM) -- ready to run on any ES module-capable runtime (Node.js 18+, Bun, tsx)
+- **TypeScript declarations** (`.d.ts`) -- full type information for IDE support and type checking
+- **Source maps** (`.js.map`) -- accurate stack traces pointing to the original TypeScript source
+
+No special loader or register hook is needed. All runtimes can import `@connectum/*` packages directly.
+
+See [Runtime Support: Node.js vs Bun vs tsx](/en/guide/typescript#runtime-support-node-js-vs-bun) for details.
 
 ## Exports Summary
 

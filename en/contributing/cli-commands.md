@@ -6,7 +6,7 @@ Complete reference of CLI commands for working with the Connectum monorepo.
 
 ## Prerequisites
 
-- **Node.js**: 25+
+- **Node.js**: 25+ (for development), 18+ (for consumers)
 - **pnpm**: 10+
 - **protoc**: Latest version for proto generation
 
@@ -14,7 +14,7 @@ Complete reference of CLI commands for working with the Connectum monorepo.
 
 ```bash
 # Check Node.js version
-node --version  # Should be 25+
+node --version  # Should be 25+ for development
 
 # Check pnpm version
 pnpm --version  # Should be >= 10.0.0
@@ -46,18 +46,20 @@ pnpm update @connectum/core
 ### Build Commands
 
 ```bash
-# Build all packages (runs turbo)
+# Build all packages (tsup → dist/)
 pnpm build
-
-# Build only proto files
-pnpm build:proto
 
 # Build specific package
 pnpm --filter @connectum/core build
 
+# Build only proto files
+pnpm build:proto
+
 # Clean all build outputs
 pnpm clean
 ```
+
+Each package compiles TypeScript to JavaScript + type declarations (`dist/`) using tsup. The output includes source maps for IDE jump-to-source support.
 
 ### Type Checking
 
