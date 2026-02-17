@@ -30,6 +30,10 @@ const myInterceptor: Interceptor = (next) => async (req) => {
 
 Connectum follows the factory pattern for all interceptors -- a function that accepts an options object and returns an `Interceptor`. This is the recommended approach for reusable interceptors:
 
+::: tip
+The **[@connectum/auth](/en/packages/auth)** package provides production-ready authentication and authorization interceptors. Use it instead of building custom auth interceptors from scratch.
+:::
+
 ```typescript
 import type { Interceptor } from '@connectrpc/connect';
 

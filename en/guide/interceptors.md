@@ -308,6 +308,10 @@ const streamAwareInterceptor: Interceptor = (next) => async (req) => {
 
 ### Authentication Interceptor Example
 
+::: tip Built-in Auth Package
+For production authentication, use **[@connectum/auth](/en/packages/auth)** which provides ready-made interceptor factories for JWT, gateway headers, and session-based auth with built-in caching and context propagation.
+:::
+
 A complete example of a custom authentication interceptor:
 
 ```typescript

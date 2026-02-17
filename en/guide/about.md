@@ -56,7 +56,7 @@ Connectum provides:
 
 ### Packages
 
-Connectum is composed of 6 packages organized across 3 layers:
+Connectum is composed of modular packages organized across dependency layers:
 
 ```
 @connectum/

@@ -5,7 +5,7 @@ description: Connectum framework architecture -- package layers, dependency rule
 
 # Architecture Overview
 
-Connectum is a modular gRPC/ConnectRPC framework for Node.js. Development uses Node.js 25+ with native TypeScript; published packages work on Node.js 18+. It is organized as 6 packages in 3 dependency layers.
+Connectum is a modular gRPC/ConnectRPC framework for Node.js. Development uses Node.js 25+ with native TypeScript; published packages work on Node.js 18+. It is organized as modular packages in dependency layers.
 
 ## Package Layers
 
@@ -14,9 +14,11 @@ graph TD
   subgraph "Layer 2 — Tools"
     OTEL["@connectum/otel"]
     TESTING["@connectum/testing"]
+    CLI["@connectum/cli"]
   end
 
   subgraph "Layer 1 — Extensions"
+    AUTH["@connectum/auth"]
     INTERCEPTORS["@connectum/interceptors"]
     HEALTHCHECK["@connectum/healthcheck"]
     REFLECTION["@connectum/reflection"]
@@ -36,10 +38,12 @@ graph TD
 | Package | Layer | Purpose | Key Exports |
 |---------|-------|---------|-------------|
 | `@connectum/core` | 0 | Server factory with lifecycle control (zero internal deps) | `createServer()`, `ServerState` |
+| `@connectum/auth` | 1 | Authentication & authorization interceptors | `createJwtAuthInterceptor()`, `createAuthzInterceptor()` |
 | `@connectum/interceptors` | 1 | Resilience interceptors + method filter | `createDefaultInterceptors()`, `createMethodFilterInterceptor()` |
 | `@connectum/healthcheck` | 1 | gRPC Health Check protocol + HTTP | `Healthcheck()`, `healthcheckManager` |
 | `@connectum/reflection` | 1 | gRPC Server Reflection | `Reflection()` |
 | `@connectum/otel` | 2 | OpenTelemetry instrumentation | `initProvider()`, `createOtelInterceptor()` |
+| `@connectum/cli` | 2 | CLI tooling | -- |
 | `@connectum/testing` | 2 | Testing utilities (planned) | -- |
 
 ## Dependency Rules
@@ -54,10 +58,11 @@ graph TD
 | Decision | Summary | ADR |
 |----------|---------|-----|
 | Native TypeScript | Native TypeScript development + compile-before-publish with tsup | [ADR-001](/en/contributing/adr/001-native-typescript-migration) |
-| Modular packages | 7 packages in 4 layers for clear separation | [ADR-003](/en/contributing/adr/003-package-decomposition) |
+| Modular packages | Modular packages in dependency layers for clear separation | [ADR-003](/en/contributing/adr/003-package-decomposition) |
 | Uniform API | `createServer()` + `createDefaultInterceptors()` | [ADR-023](/en/contributing/adr/023-uniform-registration-api) |
 | Protocol plugins | Healthcheck/Reflection as separate packages | [ADR-022](/en/contributing/adr/022-protocol-extraction) |
-| Resilience chain | 8 interceptors in fixed order (cockatiel) | [ADR-006](/en/contributing/adr/006-resilience-pattern-implementation) |
+| Resilience chain | Fixed-order interceptor chain (cockatiel) | [ADR-006](/en/contributing/adr/006-resilience-pattern-implementation) |
+| Auth & Authz | Interceptor factories for JWT, gateway, session auth + declarative authorization | [ADR-024](/en/contributing/adr/024-auth-authz-strategy) |
 
 
 ## Further Reading

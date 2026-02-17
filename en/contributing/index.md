@@ -19,7 +19,7 @@ Connectum is organized as 3 independent repositories under the [Connectum-Framew
 
 | Repository | Description |
 |-----------|-------------|
-| [connectum](https://github.com/Connectum-Framework/connectum) | Framework code -- 6 packages, pnpm workspace |
+| [connectum](https://github.com/Connectum-Framework/connectum) | Framework code -- pnpm workspace monorepo |
 | [docs](https://github.com/Connectum-Framework/docs) | Documentation site (VitePress) |
 | [examples](https://github.com/Connectum-Framework/examples) | Usage examples |
 

@@ -28,7 +28,7 @@ export type ServerState = typeof ServerState[keyof typeof ServerState];
 
 ## 2. Modular Package Architecture
 
-6 packages in 3 dependency layers. Each layer can only depend on lower layers.
+Multiple packages organized in dependency layers. Each layer can only depend on lower layers.
 
 ```mermaid
 graph BT
@@ -86,7 +86,7 @@ Health checks and server reflection are separate packages (`@connectum/healthche
 
 ## 5. Resilience Interceptor Chain
 
-8 interceptors in a fixed order, built with the [cockatiel](https://github.com/connor-peet/cockatiel) library:
+Interceptors in a fixed order, built with the [cockatiel](https://github.com/connor-peet/cockatiel) library:
 
 ```
 errorHandler → timeout → bulkhead → circuitBreaker → retry → fallback → validation → serializer

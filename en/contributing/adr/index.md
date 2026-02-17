@@ -12,9 +12,9 @@ Architecture Decision Records (ADRs) capture important design decisions with the
 | # | Title | Date | Summary |
 |---|-------|------|---------|
 | 001 | [Native TypeScript](/en/contributing/adr/001-native-typescript-migration) | 2026-02-16 | Native TypeScript development + compile-before-publish with tsup |
-| 003 | [Package Decomposition](/en/contributing/adr/003-package-decomposition) | 2025-12-22 | 7 packages in 4 dependency layers |
+| 003 | [Package Decomposition](/en/contributing/adr/003-package-decomposition) | 2025-12-22 | Modular packages in dependency layers |
 | 005 | [Input Validation](/en/contributing/adr/005-input-validation-strategy) | 2025-12-24 | Protovalidate as primary validation mechanism |
-| 006 | [Resilience Patterns](/en/contributing/adr/006-resilience-pattern-implementation) | 2025-12-24 | 8 interceptors with cockatiel library |
+| 006 | [Resilience Patterns](/en/contributing/adr/006-resilience-pattern-implementation) | 2025-12-24 | Resilience interceptors with cockatiel library |
 | 007 | [Testing Strategy](/en/contributing/adr/007-testing-strategy) | 2025-12-24 | node:test runner, 90%+ coverage target |
 | 008 | [Performance Benchmarking](/en/contributing/adr/008-performance-benchmarking) | 2025-12-24 | k6 load testing, p95 < 100ms SLA |
 | 009 | [Buf CLI Migration](/en/contributing/adr/009-buf-cli-migration) | 2026-02-06 | Buf CLI v2 for proto generation + lint |

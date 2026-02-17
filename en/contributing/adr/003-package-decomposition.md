@@ -6,7 +6,7 @@
 
 > **Update (v0.2.0-beta.2, 2026-02-12)**: Package `@connectum/utilities` removed. All utilities (~800 lines) had better alternatives as Node.js built-ins or npm packages: `retry()` replaced by `cockatiel`, `sleep()` by `node:timers/promises`, `withTimeout()` by `AbortSignal.timeout()`, `LRUCache` by `lru-cache` npm. Configuration module (`ConnectumEnvSchema`, `parseEnvConfig`) moved to `@connectum/core/config`.
 >
-> **Update (v0.2.0-beta.2, 2026-02-12)**: Package `@connectum/proto` removed. It contained third-party proto definitions (Google APIs, buf/validate, OpenAPI v3) but had zero internal consumers. Proto distribution solved via `@connectum/reflection` + `@connectum/cli proto sync` (see [ADR-020](./020-reflection-proto-sync.md)). Third-party proto definitions available through BSR deps in `buf.yaml`. The monorepo now contains **6 packages** in 3 layers. Layer 0 contains only `@connectum/core`.
+> **Update (v0.2.0-beta.2, 2026-02-12)**: Package `@connectum/proto` removed. It contained third-party proto definitions (Google APIs, buf/validate, OpenAPI v3) but had zero internal consumers. Proto distribution solved via `@connectum/reflection` + `@connectum/cli proto sync` (see [ADR-020](./020-reflection-proto-sync.md)). Third-party proto definitions available through BSR deps in `buf.yaml`. The monorepo now contains modular packages in dependency layers. Layer 0 contains only `@connectum/core`.
 
 ## Context
 
@@ -37,21 +37,23 @@ Connectum is a **universal** framework for ANY gRPC/ConnectRPC services:
 
 ## Decision
 
-**We decompose into 6 packages organized in 3 layers (originally 8 packages in 4 layers, refined over time).**
+**We decompose into modular packages organized in dependency layers (originally defined in 4 layers, refined and expanded over time).**
 
 ### Current Package Structure
 
 ```
 @connectum/
 ├── core/               # Layer 0: Server Foundation (zero internal deps)
+├── auth/               # Layer 1: Authentication & authorization interceptors
 ├── interceptors/       # Layer 1: ConnectRPC interceptors
 ├── healthcheck/        # Layer 1: gRPC Health Check protocol
 ├── reflection/         # Layer 1: gRPC Server Reflection protocol
+├── cli/                # Layer 2: CLI tooling
 ├── otel/               # Layer 2: OpenTelemetry instrumentation
 └── testing/            # Layer 2: Testing utilities
 ```
 
-### Layer 0: Server Foundation (1 package)
+### Layer 0: Server Foundation
 
 #### @connectum/core
 
@@ -88,7 +90,7 @@ await server.start();
 
 ---
 
-### Layer 1: Extensions (3 packages)
+### Layer 1: Extensions
 
 #### @connectum/interceptors
 
@@ -99,6 +101,18 @@ await server.start();
 **Why separate**: Interceptors are a distinct architectural pattern. Users choose which interceptors to use, can add custom ones, and can test them independently.
 
 **Internal dependencies**: `@connectum/otel`
+
+**External dependencies**: `@connectrpc/connect`
+
+#### @connectum/auth
+
+**Purpose**: Authentication and authorization interceptors for ConnectRPC services.
+
+**Contains**: Interceptor factories -- `jwtAuth` (JWT Bearer token verification), `gatewayAuth` (trusted gateway header forwarding), `sessionAuth` (session-based authentication), `requireAuth` (declarative authorization guard), and `authComposite` (multi-strategy composition).
+
+**Why separate**: Authentication and authorization are distinct cross-cutting concerns with their own dependency footprint (JWT libraries, session stores). Keeping them separate from `@connectum/interceptors` allows users to opt in only when needed, and avoids pulling auth-related dependencies into projects that handle auth at the gateway level.
+
+**Internal dependencies**: None
 
 **External dependencies**: `@connectrpc/connect`
 
@@ -120,7 +134,19 @@ await server.start();
 
 ---
 
-### Layer 2: Tools (2 packages)
+### Layer 2: Tools
+
+#### @connectum/cli
+
+**Purpose**: CLI tooling for Connectum projects.
+
+**Contains**: Developer-facing commands for proto synchronization (`proto sync`), project scaffolding, and other workflow automation tasks.
+
+**Why separate**: CLI tools are a development-time concern with their own dependency footprint (argument parsing, file system operations). Production services do not need CLI utilities at runtime.
+
+**Internal dependencies**: None
+
+**External dependencies**: TBD
 
 #### @connectum/otel
 
@@ -168,10 +194,11 @@ await server.start();
    // Minimal setup
    { "dependencies": { "@connectum/core": "^0.2.0" } }
 
-   // Full stack with observability
+   // Full stack with observability and auth
    {
      "dependencies": {
        "@connectum/core": "^0.2.0",
+       "@connectum/auth": "^0.2.0",
        "@connectum/otel": "^0.2.0",
        "@connectum/interceptors": "^0.2.0",
        "@connectum/healthcheck": "^0.2.0",
@@ -194,14 +221,14 @@ await server.start();
 
 2. **Version Compatibility** -- risk of incompatible versions between packages. Mitigated by synchronized versioning strategy (all packages bump together) via changesets.
 
-3. **Documentation Fragmentation** -- 6 packages = 6 READMEs. Mitigated by centralized docs site, cross-package examples, and a single getting-started entry point.
+3. **Documentation Fragmentation** -- Each package needs its own README. Mitigated by centralized docs site, cross-package examples, and a single getting-started entry point.
 
 ### Trade-off Analysis
 
-| Aspect | Monolith | Modular (6 packages) |
+| Aspect | Monolith | Modular (layered packages) |
 |--------|----------|---------------------|
 | **Bundle Size** | Large | Small |
-| **Setup Complexity** | Simple (1 pkg) | Medium (3-5 pkgs) |
+| **Setup Complexity** | Simple (1 pkg) | Medium (several pkgs) |
 | **Reusability** | Low | High |
 | **Testability** | Medium | High |
 | **Separation of Concerns** | Poor | Excellent |
@@ -227,7 +254,7 @@ Modular approach wins on most criteria. Setup complexity is compensated by docum
 
 **Rating**: 6/10. Packages aligned to domain areas (server, telemetry, data, middleware). Unclear boundaries -- layer-based approach provides cleaner separation.
 
-### Alternative 5: Current Decision (6 packages, layered) -- ACCEPTED
+### Alternative 5: Current Decision (layered packages) -- ACCEPTED
 
 **Rating**: 9/10. Clear separation of concerns, layered dependency graph, optimal granularity, each package has a clear purpose, manageable complexity.
 
@@ -288,3 +315,6 @@ packages/<name>/
 | 2026-02-12 | Claude | @connectum/utilities removed (8 -> 7 packages) |
 | 2026-02-12 | Claude | @connectum/proto removed (7 -> 6 packages, 4 -> 3 layers) |
 | 2026-02-14 | Claude | @connectum/testing description refined with detailed API surface (mock factories, assertions, test server) |
+| 2026-02-17 | Claude | Added @connectum/auth (Layer 1): 5 interceptor factories for JWT, gateway headers, session-based auth, and declarative authorization |
+| 2026-02-17 | Claude | Added @connectum/cli (Layer 2): CLI tooling |
+| 2026-02-17 | Claude | Updated package count: 6 -> 8 |

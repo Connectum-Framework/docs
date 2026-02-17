@@ -5,7 +5,7 @@ description: Production-ready ConnectRPC interceptors with resilience patterns
 
 # @connectum/interceptors
 
-Production-ready ConnectRPC interceptors providing resilience patterns, error handling, validation, and serialization. Includes a fixed-order default chain of 8 interceptors and a method-filter interceptor for per-method configuration.
+Production-ready ConnectRPC interceptors providing resilience patterns, error handling, validation, and serialization. Includes a fixed-order default interceptor chain and a method-filter interceptor for per-method configuration.
 
 **Layer**: 1 (Protocol)
 
@@ -280,7 +280,7 @@ type MethodFilterMap = Record<string, Interceptor[]>;
 
 | Export | Description |
 |--------|-------------|
-| `createDefaultInterceptors` | Factory for the default 8-interceptor chain |
+| `createDefaultInterceptors` | Factory for the default interceptor chain |
 | `createErrorHandlerInterceptor` | Error normalization |
 | `createLoggerInterceptor` | Request logging |
 | `createSerializerInterceptor` | JSON serialization |

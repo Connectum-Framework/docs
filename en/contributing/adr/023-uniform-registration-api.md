@@ -6,13 +6,13 @@
 
 ## Context
 
-In `@connectum/core` (Layer 2), the `Server.ts` class had tight coupling with `@connectum/interceptors` (Layer 1) through direct import of 6 factory functions and 40+ lines of hardcoded interceptor chain assembly logic.
+In `@connectum/core` (Layer 2), the `Server.ts` class had tight coupling with `@connectum/interceptors` (Layer 1) through direct import of factory functions and hardcoded interceptor chain assembly logic.
 
 ### Problems with the previous architecture
 
 1. **SRP violation**: `Server.ts` was responsible for both server lifecycle AND interceptor chain configuration (selection, creation, ordering). These are two distinct responsibilities combined in a single module.
 
-2. **Tight coupling**: `@connectum/core` directly imported 6 factories from `@connectum/interceptors`:
+2. **Tight coupling**: `@connectum/core` directly imported factories from `@connectum/interceptors`:
    - `createErrorHandlerInterceptor`
    - `createValidationInterceptor`
    - `createSerializerInterceptor`

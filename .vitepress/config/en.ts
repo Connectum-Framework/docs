@@ -59,6 +59,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                     text: 'Packages',
                     items: [
                         { text: '@connectum/core', link: '/en/packages/core' },
+                        { text: '@connectum/auth', link: '/en/packages/auth' },
                         { text: '@connectum/interceptors', link: '/en/packages/interceptors' },
                         { text: '@connectum/healthcheck', link: '/en/packages/healthcheck' },
                         { text: '@connectum/reflection', link: '/en/packages/reflection' },
@@ -102,6 +103,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'ADR-020: Reflection Proto Sync', link: '/en/contributing/adr/020-reflection-proto-sync' },
                         { text: 'ADR-022: Protocol Extraction', link: '/en/contributing/adr/022-protocol-extraction' },
                         { text: 'ADR-023: Uniform Registration API', link: '/en/contributing/adr/023-uniform-registration-api' },
+                        { text: 'ADR-024: Auth & Authz Strategy', link: '/en/contributing/adr/024-auth-authz-strategy' },
                     ],
                 },
             ],
