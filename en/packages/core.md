@@ -247,6 +247,42 @@ CREATED ──start()──> STARTING ──> RUNNING ──stop()──> STOPPI
 
 Events are emitted in this order: `start` -> `ready` (success) or `error` (failure), then `stopping` -> `stop` (or `error`).
 
+## Error Protocol
+
+### `SanitizableError` (interface)
+
+Interface for errors that carry rich server-side details while exposing only a safe message to clients. The `ErrorHandler` interceptor from `@connectum/interceptors` recognizes this interface and sanitizes errors automatically.
+
+```typescript
+interface SanitizableError {
+  readonly clientMessage: string;
+  readonly serverDetails: Readonly<Record<string, unknown>>;
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `clientMessage` | `string` | Safe message returned to the client |
+| `serverDetails` | `Readonly<Record<string, unknown>>` | Structured details for server-side logging |
+
+### `isSanitizableError(err)`
+
+Type guard that checks whether a value implements the `SanitizableError` protocol. Returns `true` only if the value is an `Error` instance with a `clientMessage` string, a non-null `serverDetails` object, and a numeric `code` property.
+
+```typescript
+function isSanitizableError(err: unknown): err is Error & SanitizableError & { code: number };
+```
+
+```typescript
+import { isSanitizableError } from '@connectum/core';
+
+if (isSanitizableError(err)) {
+  // err.clientMessage -- safe for the client
+  // err.serverDetails -- rich details for logging
+  // err.code          -- numeric gRPC status code
+}
+```
+
 ## Published Package Format
 
 All `@connectum/*` packages are built with [tsup](https://tsup.egoist.dev/) and ship:
@@ -266,8 +302,9 @@ See [Runtime Support: Node.js vs Bun vs tsx](/en/guide/typescript#runtime-suppor
 | `createServer` | `.` | Server factory function |
 | `ServerState` | `.` | Server state constants |
 | `LifecycleEvent` | `.` | Lifecycle event name constants |
+| `isSanitizableError` | `.` | Type guard for `SanitizableError` protocol |
 | `getTLSPath`, `readTLSCertificates`, `tlsPath` | `.` | TLS utilities |
-| `Server`, `CreateServerOptions`, `ShutdownOptions`, etc. | `.` | TypeScript types |
+| `SanitizableError`, `Server`, `CreateServerOptions`, `ShutdownOptions`, etc. | `.` | TypeScript types |
 | `parseEnvConfig`, `safeParseEnvConfig`, schemas | `./config` | Env configuration |
 
 ## Related Packages

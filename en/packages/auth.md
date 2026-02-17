@@ -197,7 +197,7 @@ const gatewayAuth = createGatewayAuthInterceptor({
 });
 ```
 
-Mapped headers and the trust header are **automatically stripped** after extraction to prevent downstream spoofing.
+Mapped headers and the trust header are **always stripped** -- including for methods listed in `skipMethods` -- to prevent downstream spoofing even on public endpoints.
 
 #### `GatewayAuthInterceptorOptions`
 
@@ -260,6 +260,7 @@ const sessionAuth = createSessionAuthInterceptor({
 | `cache` | `CacheOptions` | `undefined` | LRU cache for session verification results |
 | `skipMethods` | `string[]` | `[]` | Method patterns to skip authentication for |
 | `propagateHeaders` | `boolean` | `false` | Propagate auth context as headers for downstream services |
+| `propagatedClaims` | `string[]` | `undefined` | Filter which claim keys are propagated in headers (all if undefined) |
 
 ---
 
@@ -344,6 +345,8 @@ Serialization and deserialization of `AuthContext` to/from HTTP headers for cros
 
 Serialize `AuthContext` to request headers. Used internally by auth interceptors when `propagateHeaders` is enabled.
 
+Headers for `roles`, `scopes`, and `claims` are **silently dropped** if the serialized value exceeds 8192 bytes. This prevents oversized headers from causing transport-level failures.
+
 ```typescript
 import { setAuthHeaders } from '@connectum/auth';
 
@@ -383,6 +386,8 @@ Standard header names used for auth context propagation:
 
 Minimal in-memory LRU cache with TTL expiration. Uses `Map` insertion order for LRU eviction. No external dependencies.
 
+The constructor throws `RangeError("ttl must be a positive number")` if `ttl` is zero or negative.
+
 ```typescript
 import { LruCache } from '@connectum/auth';
 
@@ -397,7 +402,7 @@ cache.size; // number of entries
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `ttl` | `number` | **(required)** | Entry time-to-live in milliseconds |
+| `ttl` | `number` | **(required)** | Entry time-to-live in milliseconds. Must be a positive number. |
 | `maxSize` | `number` | `1000` | Maximum number of cached entries |
 
 ## Errors
@@ -458,8 +463,8 @@ import { createMockAuthContext, createTestJwt, withAuthContext, TEST_JWT_SECRET 
 - **SEC-001**: `propagatedClaims` option filters which claims are included in propagated headers to prevent leaking sensitive data.
 - **SEC-002**: `createJwtAuthInterceptor` throws on missing JWT subject claim instead of silently falling back.
 - **HMAC key validation**: Minimum key size enforced per RFC 7518 (32 bytes for HS256, 48 for HS384, 64 for HS512).
-- **Header size limits**: `parseAuthHeaders` enforces 8192-byte limits on roles, scopes, and claims headers to prevent abuse.
-- **Gateway header stripping**: `createGatewayAuthInterceptor` strips all mapped headers and the trust header after extraction to prevent downstream spoofing.
+- **Header size limits**: Both `setAuthHeaders` and `parseAuthHeaders` enforce 8192-byte limits on roles, scopes, and claims headers to prevent abuse. `setAuthHeaders` silently drops oversized headers; `parseAuthHeaders` ignores them.
+- **Gateway header stripping**: `createGatewayAuthInterceptor` strips all mapped headers and the trust header on **every** request -- including skipped methods -- to prevent downstream spoofing.
 
 ## Exports Summary
 

@@ -217,6 +217,7 @@ export const AUTH_HEADERS = {
     ROLES: 'x-auth-roles',
     SCOPES: 'x-auth-scopes',
     CLAIMS: 'x-auth-claims',
+    NAME: 'x-auth-name',
     TYPE: 'x-auth-type',
 } as const;
 
