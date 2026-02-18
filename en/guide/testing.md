@@ -20,6 +20,10 @@ Scenario-based testing validates your gRPC and ConnectRPC services end-to-end us
 - Single binary, CI-friendly
 - Docker image available
 
+::: info Working Example
+See [examples/runn](https://github.com/Connectum-Framework/examples/tree/main/runn) for a complete Docker-based E2E test suite with 9 runbooks covering healthcheck, reflection, auth, interceptors, timeout, and multi-service scenarios.
+:::
+
 ### Installation
 
 ::: code-group
