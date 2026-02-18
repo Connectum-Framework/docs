@@ -128,7 +128,7 @@ JWT convenience wrapper built on [jose](https://github.com/panva/jose). Supports
 function createJwtAuthInterceptor(options: JwtAuthInterceptorOptions): Interceptor;
 ```
 
-Key resolution priority: `jwksUri` > `secret` > `publicKey`. At least one must be provided.
+Key resolution priority: `jwksUri` > `publicKey` > `secret`. At least one must be provided.
 
 ```typescript
 import { createJwtAuthInterceptor } from '@connectum/auth';
@@ -160,7 +160,7 @@ const jwtAuth = createJwtAuthInterceptor({
 |--------|------|---------|-------------|
 | `jwksUri` | `string` | -- | JWKS endpoint URL for remote key set |
 | `secret` | `string` | -- | HMAC symmetric secret (HS256/HS384/HS512). Minimum key size enforced per RFC 7518. |
-| `publicKey` | `CryptoKey` | -- | Asymmetric public key |
+| `publicKey` | `CryptoKey` | -- | Asymmetric public key (RSA, RSA-PSS, EC, EdDSA). Import via `crypto.subtle.importKey()`. |
 | `issuer` | `string \| string[]` | -- | Expected token issuer(s) |
 | `audience` | `string \| string[]` | -- | Expected token audience(s) |
 | `algorithms` | `string[]` | -- | Allowed algorithms |

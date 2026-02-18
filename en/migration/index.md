@@ -94,6 +94,44 @@ const server = createServer({
 });
 ```
 
+## Key Resolution Priority Change (`@connectum/auth`)
+
+**Affected versions**: v1.0.0-beta.x onwards
+
+The JWT auth interceptor (`createJwtAuthInterceptor`) changed the key resolution priority when multiple key sources are provided:
+
+| | Before | After |
+|---|--------|-------|
+| **Priority** | `jwksUri` > `secret` > `publicKey` | `jwksUri` > `publicKey` > `secret` |
+
+### Impact
+
+This change only affects configurations that provide **both** `publicKey` and `secret` simultaneously. Previously the symmetric `secret` was used; now the asymmetric `publicKey` takes precedence.
+
+- **No impact** if you use only one of `jwksUri`, `secret`, or `publicKey`
+- **No impact** if you use `jwksUri` (highest priority, unchanged)
+
+### Migration
+
+If you rely on the previous behavior where `secret` wins over `publicKey`, remove the `publicKey` option:
+
+```typescript
+// Before: secret was used (publicKey was ignored)
+const auth = createJwtAuthInterceptor({
+  secret: process.env.JWT_SECRET,
+  publicKey: myPublicKey, // was silently ignored
+});
+
+// After: remove publicKey if you want HMAC verification
+const auth = createJwtAuthInterceptor({
+  secret: process.env.JWT_SECRET,
+});
+```
+
+### Rationale
+
+Asymmetric keys (`publicKey`) are cryptographically stronger than symmetric secrets (`secret`). When both are provided, the more secure option should take precedence.
+
 ## Changelog
 
 For detailed changelog, see the [CHANGELOG.md](https://github.com/Connectum-Framework/connectum/blob/main/CHANGELOG.md) in the main repository.
