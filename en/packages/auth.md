@@ -353,22 +353,24 @@ extend google.protobuf.ServiceOptions {
 ```protobuf
 import "connectum/auth/v1/options.proto";
 
-service GreeterService {
+service UserService {
   option (connectum.auth.v1.service_auth) = {
     default_policy: "deny"
   };
 
-  rpc SayHello(HelloRequest) returns (HelloResponse) {
+  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse) {
     option (connectum.auth.v1.method_auth) = { public: true };
   }
 
-  rpc AdminGreet(HelloRequest) returns (HelloResponse) {
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse) {
     option (connectum.auth.v1.method_auth) = {
       requires: { roles: ["admin"] }
     };
   }
 }
 ```
+
+> See [examples/auth](https://github.com/Connectum-Framework/examples/tree/main/auth) for a complete demo showing both proto-based and code-based authorization side by side.
 
 ### `createProtoAuthzInterceptor(options?)`
 
@@ -443,8 +445,8 @@ function getPublicMethods(services: readonly DescService[]): string[];
 ```typescript
 import { getPublicMethods } from '@connectum/auth/proto';
 
-const publicMethods = getPublicMethods([GreeterService, HealthService]);
-// ["greet.v1.GreeterService/SayHello", "grpc.health.v1.Health/Check"]
+const publicMethods = getPublicMethods([UserService, HealthService]);
+// ["user.v1.UserService/GetProfile", "grpc.health.v1.Health/Check"]
 
 const authn = createJwtAuthInterceptor({
   jwksUri: '...',
