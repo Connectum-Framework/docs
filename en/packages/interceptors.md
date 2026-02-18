@@ -99,7 +99,7 @@ interface DefaultInterceptorOptions {
 
 ### Error Handler
 
-Transforms errors into `ConnectError` with proper gRPC status codes.
+Transforms errors into `ConnectError` with proper gRPC status codes. Recognizes the `SanitizableError` protocol from `@connectum/core`: preserves server-side details for logging while exposing only a safe `clientMessage` to the client.
 
 ```typescript
 import { createErrorHandlerInterceptor } from '@connectum/interceptors';
@@ -112,8 +112,9 @@ const interceptor = createErrorHandlerInterceptor({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `logErrors` | `boolean` | `NODE_ENV !== "production"` | Log errors to console |
+| `logErrors` | `boolean` | `NODE_ENV !== "production"` | Log errors to console. **Deprecated**: use `onError` instead. |
 | `includeStackTrace` | `boolean` | `NODE_ENV !== "production"` | Include stack trace in logs |
+| `onError` | `(info: { error: Error; code: number; serverDetails?: Record<string, unknown>; stack?: string }) => void` | -- | Error callback. Replaces console.error when provided. Receives rich error info including `serverDetails` from `SanitizableError`. |
 
 ### Timeout
 

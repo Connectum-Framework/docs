@@ -308,6 +308,150 @@ Rules are evaluated in order; the first matching rule wins. If no rule matches, 
 | `effect` | `AuthzEffect` | `"allow"` or `"deny"` |
 | `requires` | `{ roles?: string[]; scopes?: string[] }` | Required roles/scopes for the rule to apply |
 
+## Proto-Based Authorization
+
+Define authorization rules directly in `.proto` files using custom method and service options. The `createProtoAuthzInterceptor` reads these options at runtime via `@bufbuild/protobuf` reflection.
+
+### Proto Definitions
+
+Add `connectum/auth/v1/options.proto` to your proto directory:
+
+```protobuf
+syntax = "proto2";
+package connectum.auth.v1;
+
+import "google/protobuf/descriptor.proto";
+
+message AuthRequirements {
+  repeated string roles = 1;   // any-of semantics
+  repeated string scopes = 2;  // all-of semantics
+}
+
+message MethodAuth {
+  optional bool public = 1;
+  optional AuthRequirements requires = 2;
+  optional string policy = 3;  // "allow" or "deny"
+}
+
+message ServiceAuth {
+  optional string default_policy = 1;
+  optional AuthRequirements default_requires = 2;
+  optional bool public = 3;
+}
+
+extend google.protobuf.MethodOptions {
+  optional MethodAuth method_auth = 50100;
+}
+
+extend google.protobuf.ServiceOptions {
+  optional ServiceAuth service_auth = 50101;
+}
+```
+
+### Usage in `.proto` Files
+
+```protobuf
+import "connectum/auth/v1/options.proto";
+
+service GreeterService {
+  option (connectum.auth.v1.service_auth) = {
+    default_policy: "deny"
+  };
+
+  rpc SayHello(HelloRequest) returns (HelloResponse) {
+    option (connectum.auth.v1.method_auth) = { public: true };
+  }
+
+  rpc AdminGreet(HelloRequest) returns (HelloResponse) {
+    option (connectum.auth.v1.method_auth) = {
+      requires: { roles: ["admin"] }
+    };
+  }
+}
+```
+
+### `createProtoAuthzInterceptor(options?)`
+
+Creates an interceptor that reads authorization configuration from protobuf custom options. When proto options do not resolve the decision, falls back to programmatic rules and callbacks.
+
+```typescript
+function createProtoAuthzInterceptor(options?: ProtoAuthzInterceptorOptions): Interceptor;
+```
+
+**Decision flow**:
+
+1. Read proto options via `resolveMethodAuth(req.method)`
+2. `public = true` → skip (allow without authentication)
+3. No auth context → throw `Unauthenticated`
+4. `requires` defined → check roles/scopes → allow or deny
+5. `policy = "allow"` → allow
+6. `policy = "deny"` → deny
+7. Fallback: evaluate programmatic `rules`
+8. Fallback: call `authorize` callback
+9. Apply `defaultPolicy`
+
+```typescript
+import { createProtoAuthzInterceptor } from '@connectum/auth';
+
+// Proto options only
+const authz = createProtoAuthzInterceptor();
+
+// With fallback rules
+const authz = createProtoAuthzInterceptor({
+  defaultPolicy: 'deny',
+  rules: [
+    { name: 'admin', methods: ['admin.v1.AdminService/*'], requires: { roles: ['admin'] }, effect: 'allow' },
+  ],
+  authorize: (ctx, req) => ctx.roles.includes('superadmin'),
+});
+```
+
+#### `ProtoAuthzInterceptorOptions`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `defaultPolicy` | `AuthzEffect` | `"deny"` | Policy when no proto option and no rule match |
+| `rules` | `AuthzRule[]` | `[]` | Programmatic fallback rules (evaluated after proto options) |
+| `authorize` | `(context: AuthContext, req: { service, method }) => boolean \| Promise<boolean>` | -- | Programmatic authorization callback (fallback after rules) |
+
+### `resolveMethodAuth(method)`
+
+Resolves the effective authorization configuration for an RPC method by merging service-level defaults with method-level overrides.
+
+```typescript
+function resolveMethodAuth(method: DescMethod): ResolvedMethodAuth;
+```
+
+Results are cached in a `WeakMap` keyed by `DescMethod`. Priority: method → service → default.
+
+```typescript
+interface ResolvedMethodAuth {
+  readonly public: boolean;
+  readonly policy: "allow" | "deny" | undefined;
+  readonly requires: { readonly roles: readonly string[]; readonly scopes: readonly string[] } | undefined;
+}
+```
+
+### `getPublicMethods(services)`
+
+Extracts public method patterns from service descriptors. Use with `skipMethods` in auth interceptors.
+
+```typescript
+function getPublicMethods(services: readonly DescService[]): string[];
+```
+
+```typescript
+import { getPublicMethods } from '@connectum/auth/proto';
+
+const publicMethods = getPublicMethods([GreeterService, HealthService]);
+// ["greet.v1.GreeterService/SayHello", "grpc.health.v1.Health/Check"]
+
+const authn = createJwtAuthInterceptor({
+  jwksUri: '...',
+  skipMethods: publicMethods,
+});
+```
+
 ## Context Utilities
 
 ### `authContextStorage`
@@ -485,7 +629,14 @@ import { createMockAuthContext, createTestJwt, withAuthContext, TEST_JWT_SECRET 
 | `AuthzDeniedError` | `.` | Authorization denied error class |
 | `AUTH_HEADERS` | `.` | Standard auth header name constants |
 | `AuthzEffect` | `.` | Authorization effect constants (ALLOW, DENY) |
-| `AuthContext`, `AuthInterceptorOptions`, `JwtAuthInterceptorOptions`, `GatewayAuthInterceptorOptions`, `GatewayHeaderMapping`, `SessionAuthInterceptorOptions`, `AuthzInterceptorOptions`, `AuthzRule`, `CacheOptions`, `InterceptorFactory`, `AuthzDeniedDetails` | `.` | TypeScript types |
+| `createProtoAuthzInterceptor` | `.` | Proto-based authorization interceptor |
+| `AuthContext`, `AuthInterceptorOptions`, `JwtAuthInterceptorOptions`, `GatewayAuthInterceptorOptions`, `GatewayHeaderMapping`, `SessionAuthInterceptorOptions`, `AuthzInterceptorOptions`, `AuthzRule`, `ProtoAuthzInterceptorOptions`, `CacheOptions`, `InterceptorFactory`, `AuthzDeniedDetails` | `.` | TypeScript types |
+| `createProtoAuthzInterceptor` | `./proto` | Proto-based authorization interceptor |
+| `resolveMethodAuth` | `./proto` | Resolve proto auth config for a method |
+| `getPublicMethods` | `./proto` | Extract public method patterns from services |
+| `AuthRequirements`, `MethodAuth`, `ServiceAuth` | `./proto` | Generated proto message types |
+| `AuthRequirementsSchema`, `MethodAuthSchema`, `ServiceAuthSchema` | `./proto` | Generated proto schemas |
+| `method_auth`, `service_auth` | `./proto` | Proto extension descriptors |
 | `createMockAuthContext` | `./testing` | Create mock AuthContext for tests |
 | `createTestJwt` | `./testing` | Generate signed test JWTs |
 | `TEST_JWT_SECRET` | `./testing` | Pre-shared HMAC secret for tests |

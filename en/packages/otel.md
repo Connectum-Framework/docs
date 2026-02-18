@@ -87,6 +87,29 @@ function createOtelClientInterceptor(options: OtelClientInterceptorOptions): Int
 | `attributeFilter` | `OtelAttributeFilter` | -- | Attribute filter |
 | `recordMessages` | `boolean` | `false` | Record message content |
 
+### Streaming RPC Instrumentation
+
+Both server and client interceptors automatically instrument streaming RPCs (client streaming, server streaming, and bidirectional streaming).
+
+**Span lifecycle**: For streaming calls, the span is **not** closed when the handler returns. Instead, the span lifecycle is deferred to stream completion:
+
+- Span starts when the RPC begins
+- Individual `rpc.message` events are recorded for each sent/received message (when `recordMessages` is enabled)
+- Span ends when the stream is fully consumed, errors, or is broken
+
+This ensures accurate duration measurement and complete message tracking for long-lived streams.
+
+#### Streaming Attributes
+
+Additional semantic convention attributes for streaming messages:
+
+| Attribute | Value | Description |
+|-----------|-------|-------------|
+| `rpc.message.id` | sequential number | Message sequence number within the stream |
+| `rpc.message.type` | `"SENT"` / `"RECEIVED"` | Message direction |
+| `rpc.message.uncompressed_size` | bytes (estimated) | Estimated message size |
+| `network.transport` | `"tcp"` | Network transport protocol |
+
 ### Deep Tracing Helpers
 
 #### `traced(fn, options?)`
@@ -270,7 +293,12 @@ import {
   ATTR_SERVER_ADDRESS,
   ATTR_SERVER_PORT,
   ATTR_ERROR_TYPE,
+  ATTR_RPC_MESSAGE_ID,
+  ATTR_RPC_MESSAGE_TYPE,
+  ATTR_RPC_MESSAGE_UNCOMPRESSED_SIZE,
+  ATTR_NETWORK_TRANSPORT,
   RPC_SYSTEM_CONNECT_RPC,
+  RPC_MESSAGE_EVENT,
 } from '@connectum/otel';
 ```
 

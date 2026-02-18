@@ -7,6 +7,76 @@ description: Migration guides and breaking changes for Connectum releases
 
 This page covers breaking changes and migration steps between Connectum releases.
 
+## RC.3 to RC.4
+
+### Compile-Before-Publish with tsup
+
+All `@connectum/*` packages now ship compiled `.js` + `.d.ts` + source maps via [tsup](https://tsup.egoist.dev/). This is the most significant change in rc.4.
+
+| Aspect | Before (rc.3) | After (rc.4) |
+|--------|---------------|--------------|
+| Published format | Raw `.ts` source | Compiled `.js` + `.d.ts` + `.js.map` |
+| Consumer Node.js | >= 25.2.0 (type stripping required) | **>= 18.0.0** (compiled JS) |
+| Loader/register hook | Required `@connectum/core/register` | **Not needed** |
+| Runtime compatibility | Node.js 25+ only | Node.js 18+, Bun, tsx |
+
+**Migration**: Remove any `--import @connectum/core/register` flags or `register()` calls from your startup scripts. Packages now work out of the box.
+
+### Removed: `@connectum/core/register`
+
+The `@connectum/core/register` subpath export has been removed. It was needed in rc.3 to enable type stripping for raw TypeScript source. Since packages now ship compiled JavaScript, no register hook is needed.
+
+```diff
+- node --import @connectum/core/register server.ts
++ node server.js
+```
+
+### New Package: `@connectum/auth`
+
+A complete authentication and authorization package with 5 interceptor factories:
+
+- `createAuthInterceptor()` -- Generic pluggable auth
+- `createJwtAuthInterceptor()` -- JWT with JWKS support (jose)
+- `createGatewayAuthInterceptor()` -- Gateway pre-authenticated headers
+- `createSessionAuthInterceptor()` -- Session-based auth (better-auth, lucia)
+- `createAuthzInterceptor()` -- Declarative rules-based authorization
+
+See [@connectum/auth documentation](/en/packages/auth) for details.
+
+### Error Handler: SanitizableError Protocol
+
+The error handler interceptor in `@connectum/interceptors` now recognizes the `SanitizableError` protocol from `@connectum/core`. Errors implementing this interface have their `clientMessage` sent to clients while `serverDetails` are preserved for logging.
+
+New `onError` callback option replaces `console.error` for structured error handling:
+
+```typescript
+createDefaultInterceptors({
+  errorHandler: {
+    onError: ({ error, code, serverDetails, stack }) => {
+      logger.error('RPC error', { code, serverDetails });
+    },
+  },
+});
+```
+
+### OpenTelemetry: Streaming RPC Support
+
+`@connectum/otel` now instruments streaming RPCs (client, server, and bidirectional). Span lifecycle is deferred to stream completion for accurate duration measurement.
+
+### Cross-Runtime Testing
+
+All packages now include `test:bun` and `test:esbuild` scripts via `@exodus/test`. Known incompatibilities (interceptors/bun, otel/bun, cli/bun) gracefully skip.
+
+### Build Pipeline Changes
+
+The turbo build graph has changed:
+
+```
+build:proto → build (tsup) → typecheck (tsc --noEmit) → test
+```
+
+`typecheck` and `test` now **depend on `build`** (they require compiled `dist/` artifacts). Always run `pnpm build` before `pnpm typecheck` or `pnpm test`.
+
 ## Breaking Changes from Alpha
 
 If you are migrating from v0.2.0-alpha.x to v1.0.0-beta.x, the following breaking changes apply:
