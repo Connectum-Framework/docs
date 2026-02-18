@@ -20,6 +20,9 @@
         "vitepress-plugin-mermaid": "^2.0.17"
     },
     "pnpm": {
+        "overrides": {
+            "lodash-es@<4.17.23": ">=4.17.23"
+        },
         "onlyBuiltDependencies": [
             "esbuild"
         ]
