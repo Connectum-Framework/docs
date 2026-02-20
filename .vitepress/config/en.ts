@@ -104,6 +104,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'ADR-022: Protocol Extraction', link: '/en/contributing/adr/022-protocol-extraction' },
                         { text: 'ADR-023: Uniform Registration API', link: '/en/contributing/adr/023-uniform-registration-api' },
                         { text: 'ADR-024: Auth & Authz Strategy', link: '/en/contributing/adr/024-auth-authz-strategy' },
+                        { text: 'ADR-025: Package Versioning Strategy', link: '/en/contributing/adr/025-package-versioning-strategy' },
                     ],
                 },
             ],

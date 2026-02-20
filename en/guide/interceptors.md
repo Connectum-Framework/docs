@@ -116,6 +116,10 @@ const server = createServer({
 });
 ```
 
+::: tip Auth interceptors require a specific position
+If your custom interceptor is an authentication or authorization interceptor from `@connectum/auth`, it must be placed **immediately after** `errorHandler` — before `timeout` and other resilience interceptors. See the [Custom Interceptors](./advanced/custom-interceptors) guide for a manual chain example and [ADR-024](/en/contributing/adr/024-auth-authz-strategy) for the rationale.
+:::
+
 ### Standalone Usage
 
 You can use `createDefaultInterceptors()` outside of `createServer`:

@@ -160,12 +160,35 @@ const server = createServer({
   services: [routes],
   port: 5000,
   interceptors: [
-    // Built-in chain: errorHandler -> timeout -> bulkhead -> circuitBreaker -> retry -> fallback -> validation -> serializer
     ...createDefaultInterceptors({ timeout: { duration: 10_000 } }),
-
-    // Custom interceptors run after builtins
-    createAuthInterceptor({ validateToken: verifyJwt }),
+    // Custom interceptors appended after the built-in chain
     createRateLimitInterceptor({ maxRequests: 100, windowMs: 60_000 }),
+  ],
+});
+```
+
+::: warning Auth interceptor chain position
+Auth interceptors must be placed **immediately after** `errorHandler`, before timeout and other resilience interceptors. When using `@connectum/auth`, compose the chain manually:
+:::
+
+```typescript
+// Manual chain with auth (ADR-024 order):
+// errorHandler → AUTH → AUTHZ → timeout → ...
+import {
+  createErrorHandlerInterceptor,
+  createTimeoutInterceptor,
+  createSerializerInterceptor,
+} from '@connectum/interceptors';
+import { createJwtAuthInterceptor, createAuthzInterceptor } from '@connectum/auth';
+
+const server = createServer({
+  services: [routes],
+  interceptors: [
+    createErrorHandlerInterceptor({ logErrors: true }),
+    createJwtAuthInterceptor({ jwksUri: '...', issuer: '...' }),
+    createAuthzInterceptor({ defaultPolicy: 'deny', rules: [...] }),
+    createTimeoutInterceptor({ duration: 5_000 }),
+    createSerializerInterceptor(),
   ],
 });
 ```
@@ -183,7 +206,6 @@ const server = createServer({
   services: [routes],
   interceptors: [
     createErrorHandlerInterceptor({ logErrors: true }),
-    createAuthInterceptor({ validateToken: verifyJwt }),
     createTimeoutInterceptor({ duration: 5_000 }),
     createSerializerInterceptor(),
   ],

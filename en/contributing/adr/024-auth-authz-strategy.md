@@ -3,6 +3,7 @@
 ## Status
 Accepted -- 2026-02-15
 Revised -- 2026-02-17 (v0.2.0: Gateway, Session interceptors, Security fixes)
+Revised -- 2026-02-20 (v0.3.0: Proto-based authorization, corrected dependencies, removed deleted trusted-headers, marked OTel as unimplemented)
 
 ## Context
 
@@ -33,8 +34,9 @@ Create a new `@connectum/auth` package (Layer 1) with interceptor factories, aut
 | Dependency | Type | Purpose |
 |---|---|---|
 | `jose` | dependency | JWT verification, JWKS, signing |
-| `@connectrpc/connect` | peer dependency | Interceptor type, ConnectError, Code |
-| `@connectum/otel` | optional peer | OTel span enrichment |
+| `@connectrpc/connect` | dependency | Interceptor type, ConnectError, Code |
+| `@connectum/core` | dependency | SanitizableError protocol |
+| `@bufbuild/protobuf` | dependency | Proto reflection for proto-based authz |
 
 ### 2. Interceptor Factories
 
@@ -193,6 +195,51 @@ export function createSessionAuthInterceptor(options: SessionAuthInterceptorOpti
 
 **Key difference from `createAuthInterceptor()`:** Passes full `Headers` object to `verifySession()` callback, enabling cookie-based authentication. Includes built-in LRU cache support.
 
+#### 2.6 `createProtoAuthzInterceptor()` — Proto-Based Authorization (v0.3.0)
+
+Reads authorization configuration from protobuf custom options (`connectum.auth.v1`) and applies declarative rules defined in `.proto` files. Falls back to programmatic rules and callbacks.
+
+Available via `@connectum/auth/proto` subpath export.
+
+```typescript
+export function createProtoAuthzInterceptor(options?: ProtoAuthzInterceptorOptions): Interceptor;
+```
+
+**9-step authorization decision flow:**
+
+```
+1. resolveMethodAuth(req.method)  -- read proto options (WeakMap-cached)
+2. public = true                  --> skip (allow without authn)
+3. Get auth context               -- lazy: don't throw yet
+4. requires defined, no context   --> throw Unauthenticated
+4b. requires defined, has context --> satisfiesRequirements? allow : deny
+5. policy = "allow"              --> allow
+6. policy = "deny"               --> deny
+7. Evaluate programmatic rules   -- unconditional rules work without context
+8. Fallback: authorize callback  --> requires auth context
+9. Apply defaultPolicy           --> deny without context = Unauthenticated
+```
+
+**Proto reader utilities** (also from `@connectum/auth/proto`):
+
+- `resolveMethodAuth(method: DescMethod): ResolvedMethodAuth` — resolve effective auth config by merging service-level defaults with method-level overrides. Results cached via `WeakMap`.
+- `getPublicMethods(services: DescService[]): string[]` — extract public method patterns from service descriptors. Returns patterns in `"ServiceTypeName/MethodName"` format for use with `skipMethods`.
+
+```typescript
+import { createProtoAuthzInterceptor, getPublicMethods, resolveMethodAuth } from '@connectum/auth/proto';
+
+// Proto options in .proto files control authorization:
+// option (connectum.auth.v1.method_auth) = { public: true };
+// option (connectum.auth.v1.service_auth) = { default_requires: { roles: ["admin"] } };
+
+const authz = createProtoAuthzInterceptor({
+  defaultPolicy: 'deny',
+  rules: [
+    { name: 'admin-fallback', methods: ['admin.v1.*/*'], requires: { roles: ['admin'] }, effect: 'allow' },
+  ],
+});
+```
+
 ### 3. Auth Context Propagation
 
 Two complementary mechanisms:
@@ -237,29 +284,17 @@ errorHandler → AUTH → AUTHZ → timeout → bulkhead → circuitBreaker → 
 2. `AUTH` second — reject unauthenticated requests before consuming timeout/bulkhead resources
 3. `AUTHZ` third — reject unauthorized requests before any processing
 
-### 5. Trusted Headers Reader (Deprecated in v0.2.0)
+### 5. Trusted Headers Reader (Removed)
 
-For services behind a proxy/mesh that injects auth headers:
+**Removed** in v0.3.0 (deleted from codebase). The original `createTrustedHeadersReader()` relied on `peerAddress` which is unavailable in ConnectRPC interceptors.
 
-```typescript
-export function createTrustedHeadersReader(options: {
-    trustedProxies: string[];  // IP/CIDR, REQUIRED — fail-closed
-}): (req: { header: Headers; peerAddress?: string }) => AuthContext | null;
-```
-
-**Fail-closed by default:** if `trustedProxies` is empty or the request doesn't come from a trusted proxy, returns `null`.
-
-> **Deprecated in v0.2.0:** Replaced by `createGatewayAuthInterceptor()` which uses header-based trust instead of `peerAddress` (unavailable in ConnectRPC interceptors).
+Use `createGatewayAuthInterceptor()` instead — it provides the same trusted-headers-reading functionality with header-based trust verification (shared secret or `x-real-ip` CIDR matching).
 
 ### 6. OpenTelemetry Integration
 
-When `otelEnrichment: true`, auth interceptor adds span attributes:
+**Not implemented** — the `otelEnrichment` option and `@connectum/otel` dependency are absent from the current implementation. Planned for future.
 
-| Attribute | Source | Convention |
-|---|---|---|
-| `enduser.id` | `AuthContext.subject` | OpenTelemetry Semantic Conventions |
-| `enduser.role` | `AuthContext.roles.join(",")` | OpenTelemetry Semantic Conventions |
-| `enduser.scope` | `AuthContext.scopes.join(" ")` | OpenTelemetry Semantic Conventions |
+The `getAuthContext()` API makes auth context available for custom OTel interceptors to enrich spans with `enduser.*` attributes if needed.
 
 ### 7. ext_authz: NOT Included
 
@@ -298,10 +333,16 @@ packages/auth/
 │   ├── jwt-auth-interceptor.ts
 │   ├── authz-interceptor.ts
 │   ├── headers.ts
-│   ├── trusted-headers.ts          # Deprecated in v0.2.0
+│   ├── errors.ts                   # AuthzDeniedError, AuthzDeniedDetails
+│   ├── method-match.ts             # matchesMethodPattern()
+│   ├── authz-utils.ts              # satisfiesRequirements()
 │   ├── gateway-auth-interceptor.ts
 │   ├── session-auth-interceptor.ts
 │   └── cache.ts
+├── src/proto/                      # @connectum/auth/proto subpath (v0.3.0)
+│   ├── index.ts
+│   ├── proto-authz-interceptor.ts  # createProtoAuthzInterceptor()
+│   └── reader.ts                   # resolveMethodAuth(), getPublicMethods()
 ├── src/testing/
 │   ├── index.ts
 │   ├── mock-context.ts
@@ -323,13 +364,14 @@ packages/auth/
 graph TB
     subgraph "Layer 0: @connectum/core"
         Server["Server.ts<br/>(lifecycle only)"]
-        Types["types.ts<br/>(interfaces)"]
+        Types["types.ts<br/>(SanitizableError protocol)"]
     end
 
     subgraph "Layer 1: @connectum/auth"
         AuthInt["createAuthInterceptor()<br/>Generic authentication"]
         JwtAuth["createJwtAuthInterceptor()<br/>JWT + JWKS verification"]
         Authz["createAuthzInterceptor()<br/>Declarative rules engine"]
+        ProtoAuthz["createProtoAuthzInterceptor()<br/>Proto-based authorization"]
         Context["getAuthContext()<br/>AsyncLocalStorage + Headers"]
         TestUtils["testing/<br/>createMockAuthContext, createTestJwt"]
         GatewayAuth["createGatewayAuthInterceptor()<br/>Gateway pre-auth headers"]
@@ -345,6 +387,7 @@ graph TB
     subgraph "External"
         Jose["jose<br/>(JWT library)"]
         ConnectRPC["@connectrpc/connect<br/>(Interceptor type)"]
+        BufProtobuf["@bufbuild/protobuf<br/>(Proto reflection)"]
     end
 
     JwtAuth --> AuthInt
@@ -353,6 +396,9 @@ graph TB
     AuthInt --> ConnectRPC
     Authz --> Context
     Authz --> ConnectRPC
+    ProtoAuthz --> Context
+    ProtoAuthz --> BufProtobuf
+    ProtoAuthz --> ConnectRPC
     GatewayAuth --> Context
     GatewayAuth --> ConnectRPC
     SessionAuth --> Context
@@ -360,6 +406,7 @@ graph TB
     SessionAuth --> ConnectRPC
     Defaults --> ConnectRPC
     MethodFilter --> ConnectRPC
+    AuthInt -.-> Types
 ```
 
 ### Interceptor Chain Flow
@@ -408,7 +455,7 @@ sequenceDiagram
 5. **Zero coupling with core** — only depends on `@connectrpc/connect` and `jose`
 6. **Composable** — standard ConnectRPC `Interceptor`, works with `createMethodFilterInterceptor()`
 7. **Testable** — built-in test utilities eliminate test boilerplate
-8. **OTel-aware** — optional span enrichment with semantic conventions
+8. **OTel-composable** — `getAuthContext()` makes auth data available for custom OTel interceptors to enrich spans
 
 ### Negative
 
@@ -423,7 +470,7 @@ sequenceDiagram
 1. **jose breaking changes** — Mitigation: pin `jose@^6`, wrap API internally
 2. **Security vulnerabilities** — Mitigation: rely on `jose` for crypto, security review, comprehensive tests
 3. **Overlap with infrastructure auth** — Mitigation: document when to use app-level vs infra-level auth
-4. **Header spoofing** — Mitigation: `createTrustedHeadersReader()` with mandatory `trustedProxies`, fail-closed
+4. **Header spoofing** — Mitigation: `createGatewayAuthInterceptor()` with `trustSource` verification (shared secret or CIDR), fail-closed
 5. **ALS fragility in streams** — Mitigation: context set at stream creation, documented
 
 ---
@@ -505,3 +552,4 @@ Too heavy for embedded devices. Declarative rules + callback cover same use case
 |------|--------|--------|
 | 2026-02-15 | Software Architect | Initial ADR: Auth/Authz Strategy |
 | 2026-02-17 | Software Architect | v0.2.0 Revision: Gateway/Session interceptors, LRU cache, Security fixes (SEC-001, SEC-002, SEC-005) |
+| 2026-02-20 | Software Architect | v0.3.0 Revision: Proto-based authorization (`createProtoAuthzInterceptor`, `@connectum/auth/proto`), corrected dependencies (`@connectum/core`, `@bufbuild/protobuf`), removed deleted `trusted-headers.ts`, marked OTel as unimplemented |

@@ -108,13 +108,13 @@ await server.start();
 
 **Purpose**: Authentication and authorization interceptors for ConnectRPC services.
 
-**Contains**: Interceptor factories -- `jwtAuth` (JWT Bearer token verification), `gatewayAuth` (trusted gateway header forwarding), `sessionAuth` (session-based authentication), `requireAuth` (declarative authorization guard), and `authComposite` (multi-strategy composition).
+**Contains**: Interceptor factories -- `createJwtAuthInterceptor` (JWT Bearer token verification via jose + JWKS), `createGatewayAuthInterceptor` (trusted gateway header forwarding), `createSessionAuthInterceptor` (session-based authentication), `createAuthzInterceptor` (declarative rule-based authorization), and `createProtoAuthzInterceptor` (proto-driven authorization via `@connectum/auth/proto` subpath). Auth context propagation via `AsyncLocalStorage` and cross-service headers.
 
 **Why separate**: Authentication and authorization are distinct cross-cutting concerns with their own dependency footprint (JWT libraries, session stores). Keeping them separate from `@connectum/interceptors` allows users to opt in only when needed, and avoids pulling auth-related dependencies into projects that handle auth at the gateway level.
 
-**Internal dependencies**: None
+**Internal dependencies**: `@connectum/core`
 
-**External dependencies**: `@connectrpc/connect`
+**External dependencies**: `@connectrpc/connect`, `jose`, `@bufbuild/protobuf`
 
 #### @connectum/healthcheck
 
