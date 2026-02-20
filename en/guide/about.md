@@ -50,6 +50,7 @@ Connectum provides:
 | Interceptors Chain | Standard ConnectRPC Interceptor API with ordered execution |
 | OpenTelemetry | Distributed tracing, RPC metrics, structured logging |
 | Server Reflection | gRPC Server Reflection for grpcurl and similar tools |
+| Auth & Authz | JWT, gateway, session auth; declarative RBAC; proto-based authorization |
 | Input Validation | protovalidate integration for automatic validation |
 | CLI Tools | Code generation, project scaffolding |
 | Testing | protofake integration, in-memory transport, test fixtures |
@@ -61,9 +62,11 @@ Connectum is composed of modular packages organized across dependency layers:
 ```
 @connectum/
 ├── core               # Layer 0: Server Foundation (zero internal deps)
+├── auth               # Layer 1: Authentication & Authorization
 ├── interceptors       # Layer 1: Interceptors chain
 ├── healthcheck        # Layer 1: gRPC Health Check
 ├── reflection         # Layer 1: Server Reflection
+├── cli                # Layer 2: CLI Tools
 ├── otel               # Layer 2: OpenTelemetry
 └── testing            # Layer 2: Testing utilities
 ```
@@ -96,8 +99,23 @@ import { createServer } from '@connectum/core';
 import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
 import { Reflection } from '@connectum/reflection';
 import { createDefaultInterceptors } from '@connectum/interceptors';
+import { createJwtAuthInterceptor, createAuthzInterceptor } from '@connectum/auth';
 import { createOtelInterceptor } from '@connectum/otel';
 import routes from '#gen/routes.js';
+
+const jwtAuth = createJwtAuthInterceptor({
+  jwksUri: 'https://auth.example.com/.well-known/jwks.json',
+  issuer: 'https://auth.example.com/',
+  audience: 'my-api',
+});
+
+const authz = createAuthzInterceptor({
+  defaultPolicy: 'deny',
+  rules: [
+    { name: 'public', methods: ['public.v1.PublicService/*'], effect: 'allow' },
+    { name: 'admin', methods: ['admin.v1.AdminService/*'], requires: { roles: ['admin'] }, effect: 'allow' },
+  ],
+});
 
 const server = createServer({
   services: [routes],
@@ -109,7 +127,9 @@ const server = createServer({
   protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
   interceptors: [
     ...createDefaultInterceptors(),
-    createOtelInterceptor({ serviceName: 'my-service' }),
+    jwtAuth,
+    authz,
+    createOtelInterceptor(), // Service name via OTEL_SERVICE_NAME env var
   ],
   shutdown: {
     autoShutdown: true,

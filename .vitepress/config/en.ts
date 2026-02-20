@@ -24,6 +24,8 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                     text: 'Essentials',
                     items: [
                         { text: 'Interceptors', link: '/en/guide/interceptors' },
+                        { text: 'Auth & Authz', link: '/en/guide/auth' },
+                        { text: 'Validation', link: '/en/guide/validation' },
                         { text: 'Health Checks', link: '/en/guide/health-checks' },
                         { text: 'Observability', link: '/en/guide/observability' },
                         { text: 'TLS/mTLS', link: '/en/guide/tls' },

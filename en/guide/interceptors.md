@@ -310,51 +310,9 @@ const streamAwareInterceptor: Interceptor = (next) => async (req) => {
 };
 ```
 
-### Authentication Interceptor Example
+### Authentication & Authorization
 
-::: tip Built-in Auth Package
-For production authentication, use **[@connectum/auth](/en/packages/auth)** which provides ready-made interceptor factories for JWT, gateway headers, and session-based auth with built-in caching and context propagation.
-:::
-
-A complete example of a custom authentication interceptor:
-
-```typescript
-import type { Interceptor } from '@connectrpc/connect';
-import { ConnectError, Code } from '@connectrpc/connect';
-
-export function createAuthInterceptor(): Interceptor {
-  return (next) => async (req) => {
-    // Extract token from headers
-    const token = req.header.get('Authorization');
-    if (!token) {
-      throw new ConnectError('Unauthorized', Code.Unauthenticated);
-    }
-
-    // Validate token (your logic here)
-    // const user = await validateToken(token);
-
-    // Continue to next interceptor
-    return await next(req);
-  };
-}
-```
-
-Use it with the default chain:
-
-```typescript
-import { createDefaultInterceptors } from '@connectum/interceptors';
-
-const server = createServer({
-  services: [routes],
-  port: 5000,
-  protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
-  interceptors: [
-    ...createDefaultInterceptors(),
-    createAuthInterceptor(),
-  ],
-  shutdown: { autoShutdown: true },
-});
-```
+For production authentication and authorization, use the **[@connectum/auth](/en/packages/auth)** package. It provides interceptor factories for JWT, gateway headers, session auth, and declarative RBAC. See the [Auth & Authz Guide](/en/guide/auth) for details.
 
 ## Execution Order
 

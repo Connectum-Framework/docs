@@ -48,6 +48,10 @@ Configure `package.json`:
   "name": "greeter-service",
   "version": "1.0.0",
   "type": "module",
+  "imports": {
+    "#gen/*": "./gen/*",
+    "#*": "./src/*"
+  },
   "scripts": {
     "start": "node src/index.ts",
     "dev": "node --watch src/index.ts",
@@ -133,7 +137,9 @@ version: v2
 plugins:
   - local: protoc-gen-es
     out: gen
-    opt: target=ts
+    opt:
+      - target=ts
+      - import_extension=.ts
 inputs:
   - directory: proto
 ```
@@ -144,7 +150,7 @@ Run code generation:
 pnpm run build:proto
 ```
 
-This produces `gen/greeter_pb.ts` (messages + schemas) and `gen/greeter_connect.ts` (service definition).
+This produces `gen/greeter_pb.ts` containing message schemas, types, and the service definition.
 
 ::: warning Proto enums and native TypeScript
 If your proto files use `enum`, the generated code contains non-erasable TypeScript. Use a [two-step generation process](/en/guide/typescript#proto-generation-and-enums).

@@ -28,9 +28,10 @@ graph TD
     CORE["@connectum/core"]
   end
 
-  TESTING --> CORE
-  INTERCEPTORS --> OTEL
-  HEALTHCHECK --> OTEL
+  AUTH --> CORE
+  INTERCEPTORS --> CORE
+  HEALTHCHECK --> CORE
+  REFLECTION --> CORE
 ```
 
 ## Package Overview
@@ -63,10 +64,11 @@ graph TD
 | Protocol plugins | Healthcheck/Reflection as separate packages | [ADR-022](/en/contributing/adr/022-protocol-extraction) |
 | Resilience chain | Fixed-order interceptor chain (cockatiel) | [ADR-006](/en/contributing/adr/006-resilience-pattern-implementation) |
 | Auth & Authz | Interceptor factories for JWT, gateway, session auth + declarative authorization | [ADR-024](/en/contributing/adr/024-auth-authz-strategy) |
+| Package versioning | Synchronized versioning via changesets with linked groups | [ADR-025](/en/contributing/adr/025-package-versioning-strategy) |
 
 
 ## Further Reading
 
-- [Core Principles](/en/guide/core-principles) -- all 12 design principles with code examples
+- [Core Principles](/en/guide/core-principles) -- all 13 design principles with code examples
 - [CLI Commands](/en/contributing/cli-commands) -- development commands for the monorepo
 - [Package Reference](/en/packages/core) -- detailed package documentation

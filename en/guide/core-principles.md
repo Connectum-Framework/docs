@@ -37,21 +37,22 @@ graph BT
   end
 
   subgraph L1["Layer 1 — Extensions"]
+    AUTH["@connectum/auth"]
     HC["@connectum/healthcheck"]
     REF["@connectum/reflection"]
     INT["@connectum/interceptors"]
   end
 
   subgraph L2["Layer 2 — Tools"]
+    CLI["@connectum/cli"]
     OTEL["@connectum/otel"]
     TEST["@connectum/testing"]
   end
 
+  AUTH --> CORE
   HC --> CORE
   REF --> CORE
   INT --> CORE
-  OTEL --> CORE
-  TEST --> CORE
 ```
 
 [ADR-003: Package Decomposition](/en/contributing/adr/003-package-decomposition)
@@ -116,25 +117,39 @@ createMethodFilterInterceptor({
 
 [ADR-014: Per-Method Interceptor Routing](/en/contributing/adr/014-method-filter-interceptor)
 
-## 8. Proto Generation with Buf CLI
+## 8. Auth & Authz
+
+Authentication and authorization are provided by `@connectum/auth` (Layer 1). Four interceptor factories cover the most common patterns: generic pluggable auth, JWT (via jose), gateway-injected headers, and session-based auth. A declarative `createAuthzInterceptor()` evaluates RBAC rules against `AuthContext`. Proto-based authorization reads custom method/service options directly from `.proto` files.
+
+Auth interceptors must be placed **immediately after** `errorHandler` in the chain — before timeout and other resilience interceptors.
+
+[ADR-024: Auth/Authz Strategy](/en/contributing/adr/024-auth-authz-strategy)
+
+## 9. Package Versioning
+
+All `@connectum/*` packages use synchronized versioning via [changesets](https://github.com/changesets/changesets) with a `fixed` group — every package always shares the same version number. Pre-release mode (`rc`) is used before stable releases. PR snapshots are published automatically via `pkg-pr-new`.
+
+[ADR-025: Package Versioning Strategy](/en/contributing/adr/025-package-versioning-strategy)
+
+## 10. Proto Generation with Buf CLI
 
 Buf CLI v2 manages proto code generation, linting (STANDARD rules), and breaking change detection. Two-step generation (protoc-gen-es → tsc) is required when proto files use `enum`.
 
 [ADR-009: Buf CLI Migration](/en/contributing/adr/009-buf-cli-migration)
 
-## 9. Testing with node:test
+## 11. Testing with node:test
 
 Native `node:test` runner with 90%+ coverage target. Unit tests for individual packages, integration tests for server lifecycle.
 
 [ADR-007: Testing Strategy](/en/contributing/adr/007-testing-strategy)
 
-## 10. Performance Benchmarking with k6
+## 12. Performance Benchmarking with k6
 
 k6 load testing with p95 < 100ms SLA and > 1000 req/sec throughput target. 5-server architecture for overhead profiling.
 
 [ADR-008: Performance Benchmarking](/en/contributing/adr/008-performance-benchmarking)
 
-## 11. Reflection-Based Proto Synchronization
+## 13. Reflection-Based Proto Synchronization
 
 4-phase roadmap: BSR dependencies (Phase 0), reflection server completion (Phase 1), CLI proto sync (Phase 2), OpenAPI generation (Phase 3).
 
