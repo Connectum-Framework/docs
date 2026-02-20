@@ -319,7 +319,6 @@ Use `"linked"` instead of `"fixed"` for the core group. With `linked`, packages 
 3. [Changesets documentation: Fixed packages](https://github.com/changesets/changesets/blob/main/docs/fixed-packages.md)
 4. [Changesets documentation: Linked packages](https://github.com/changesets/changesets/blob/main/docs/linked-packages.md)
 5. [NestJS versioning strategy](https://github.com/nestjs/nest) -- similar hybrid approach
-6. [Branching Strategy](./.claude/docs/024-branching-strategy.md) -- release workflow and CI/CD
 
 ---
 
