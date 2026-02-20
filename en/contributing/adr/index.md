@@ -23,6 +23,7 @@ Architecture Decision Records (ADRs) capture important design decisions with the
 | 022 | [Protocol Extraction](/en/contributing/adr/022-protocol-extraction) | 2026-02-11 | Healthcheck/Reflection as separate packages |
 | 023 | [Uniform Registration API](/en/contributing/adr/023-uniform-registration-api) | 2026-02-11 | createDefaultInterceptors(), explicit interceptor control |
 | 024 | [Auth/Authz Strategy](/en/contributing/adr/024-auth-authz-strategy) | 2026-02-15 | @connectum/auth package with JWT, RBAC, context propagation |
+| 025 | [Package Versioning Strategy](/en/contributing/adr/025-package-versioning-strategy) | 2026-02-20 | Two-phase versioning: Fixed for rc, Hybrid after 1.0.0 stable |
 
 ## Creating a New ADR
 
