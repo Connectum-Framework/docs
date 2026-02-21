@@ -55,7 +55,6 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
             { text: '@connectum/reflection', link: '/en/packages/reflection' },
             { text: '@connectum/otel', link: '/en/packages/otel' },
             { text: '@connectum/cli', link: '/en/packages/cli' },
-            { text: '@connectum/testing', link: '/en/packages/testing' },
         ],
     },
 ];
