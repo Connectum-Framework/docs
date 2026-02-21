@@ -9,6 +9,10 @@ Authentication and authorization interceptors for ConnectRPC services. Provides 
 
 **Layer**: 1 (Protocol)
 
+::: tip Full API Reference
+Complete TypeScript API documentation: [API Reference](/en/api/@connectum/auth/)
+:::
+
 ## Installation
 
 ```bash

@@ -9,6 +9,10 @@ Full OpenTelemetry instrumentation for Connectum services. Provides ConnectRPC i
 
 **Layer**: 0 (Independent Core)
 
+::: tip Full API Reference
+Complete TypeScript API documentation: [API Reference](/en/api/@connectum/otel/)
+:::
+
 ## Installation
 
 ```bash

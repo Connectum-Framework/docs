@@ -145,6 +145,21 @@ pnpm changeset publish --tag alpha
 pnpm changeset publish --tag beta
 ```
 
+### Documentation
+
+```bash
+# Generate API Reference from JSDoc comments (TypeDoc → docs/en/api/)
+pnpm docs:api
+
+# Or use the convenience script from workspace root (Connectum/)
+./gen-api-docs.sh
+
+# Skip proto rebuild if already done
+./gen-api-docs.sh --skip-proto
+```
+
+The generated API Reference is output to `docs/en/api/` and integrates with VitePress sidebar automatically via `typedoc-sidebar.json`.
+
 ## Package-Level Commands
 
 Commands for working with individual packages.

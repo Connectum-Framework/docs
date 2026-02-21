@@ -1,4 +1,5 @@
     import type { DefaultTheme, LocaleSpecificConfig } from 'vitepress';
+    import typedocSidebar from '../../en/api/typedoc-sidebar.json';
 
 export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
     title: 'Connectum',
@@ -7,6 +8,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         nav: [
             { text: 'Guide', link: '/en/guide/about' },
             { text: 'Packages', link: '/en/packages/core' },
+            { text: 'API', link: '/en/api/', activeMatch: '/en/api/' },
             { text: 'Contributing', link: '/en/contributing/', activeMatch: '/en/contributing/' },
             { text: 'Examples', link: 'https://github.com/Connectum-Framework/examples' },
         ],
@@ -79,6 +81,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                     ],
                 },
             ],
+            '/en/api/': typedocSidebar as DefaultTheme.SidebarItem[],
             '/en/contributing/': [
                 {
                     text: 'Contributing',

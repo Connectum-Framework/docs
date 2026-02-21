@@ -9,6 +9,10 @@ Command-line tools for the Connectum framework. Currently provides the `proto sy
 
 **Layer**: 3 (Development Tools)
 
+::: tip Full API Reference
+Complete TypeScript API documentation: [API Reference](/en/api/@connectum/cli/)
+:::
+
 ## Installation
 
 ```bash
