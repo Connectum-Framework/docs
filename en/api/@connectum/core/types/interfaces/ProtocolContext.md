@@ -2,7 +2,7 @@
 
 # Interface: ProtocolContext
 
-Defined in: [packages/core/src/types.ts:51](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L51)
+Defined in: [packages/core/src/types.ts:51](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/core/src/types.ts#L51)
 
 Context provided to protocol registration functions
 
@@ -15,6 +15,6 @@ may need (e.g., reflection needs DescFile[], healthcheck needs service names).
 
 > `readonly` **registry**: readonly `DescFile`[]
 
-Defined in: [packages/core/src/types.ts:53](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L53)
+Defined in: [packages/core/src/types.ts:53](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/core/src/types.ts#L53)
 
 Registered service file descriptors

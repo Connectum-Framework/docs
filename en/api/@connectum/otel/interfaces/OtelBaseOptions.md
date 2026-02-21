@@ -2,7 +2,7 @@
 
 # Interface: OtelBaseOptions
 
-Defined in: [packages/otel/src/types.ts:29](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/types.ts#L29)
+Defined in: [packages/otel/src/types.ts:29](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/types.ts#L29)
 
 Common options shared between server and client OTel interceptors
 
@@ -17,7 +17,7 @@ Common options shared between server and client OTel interceptors
 
 > `optional` **attributeFilter**: [`OtelAttributeFilter`](../type-aliases/OtelAttributeFilter.md)
 
-Defined in: [packages/otel/src/types.ts:40](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/types.ts#L40)
+Defined in: [packages/otel/src/types.ts:40](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/types.ts#L40)
 
 Filter callback to exclude specific attributes
 
@@ -27,7 +27,7 @@ Filter callback to exclude specific attributes
 
 > `optional` **filter**: [`OtelFilter`](../type-aliases/OtelFilter.md)
 
-Defined in: [packages/otel/src/types.ts:37](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/types.ts#L37)
+Defined in: [packages/otel/src/types.ts:37](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/types.ts#L37)
 
 Filter callback to skip specific requests
 
@@ -37,7 +37,7 @@ Filter callback to skip specific requests
 
 > `optional` **recordMessages**: `boolean`
 
-Defined in: [packages/otel/src/types.ts:47](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/types.ts#L47)
+Defined in: [packages/otel/src/types.ts:47](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/types.ts#L47)
 
 Include request/response message content in span events.
 WARNING: May contain sensitive data.
@@ -54,7 +54,7 @@ false
 
 > `optional` **withoutMetrics**: `boolean`
 
-Defined in: [packages/otel/src/types.ts:34](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/types.ts#L34)
+Defined in: [packages/otel/src/types.ts:34](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/types.ts#L34)
 
 Disable metric recording (tracing only)
 
@@ -64,6 +64,6 @@ Disable metric recording (tracing only)
 
 > `optional` **withoutTracing**: `boolean`
 
-Defined in: [packages/otel/src/types.ts:31](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/types.ts#L31)
+Defined in: [packages/otel/src/types.ts:31](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/types.ts#L31)
 
 Disable span creation (metrics only)

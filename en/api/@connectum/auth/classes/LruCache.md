@@ -2,7 +2,7 @@
 
 # Class: LruCache\<T\>
 
-Defined in: [packages/auth/src/cache.ts:13](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/cache.ts#L13)
+Defined in: [packages/auth/src/cache.ts:13](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/cache.ts#L13)
 
 ## Type Parameters
 
@@ -16,7 +16,7 @@ Defined in: [packages/auth/src/cache.ts:13](https://github.com/Connectum-Framewo
 
 > **new LruCache**\<`T`\>(`options`): `LruCache`\<`T`\>
 
-Defined in: [packages/auth/src/cache.ts:18](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/cache.ts#L18)
+Defined in: [packages/auth/src/cache.ts:18](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/cache.ts#L18)
 
 #### Parameters
 
@@ -42,7 +42,7 @@ Defined in: [packages/auth/src/cache.ts:18](https://github.com/Connectum-Framewo
 
 > **get** **size**(): `number`
 
-Defined in: [packages/auth/src/cache.ts:63](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/cache.ts#L63)
+Defined in: [packages/auth/src/cache.ts:63](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/cache.ts#L63)
 
 ##### Returns
 
@@ -54,7 +54,7 @@ Defined in: [packages/auth/src/cache.ts:63](https://github.com/Connectum-Framewo
 
 > **clear**(): `void`
 
-Defined in: [packages/auth/src/cache.ts:59](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/cache.ts#L59)
+Defined in: [packages/auth/src/cache.ts:59](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/cache.ts#L59)
 
 #### Returns
 
@@ -66,7 +66,7 @@ Defined in: [packages/auth/src/cache.ts:59](https://github.com/Connectum-Framewo
 
 > **get**(`key`): `T` \| `undefined`
 
-Defined in: [packages/auth/src/cache.ts:26](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/cache.ts#L26)
+Defined in: [packages/auth/src/cache.ts:26](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/cache.ts#L26)
 
 #### Parameters
 
@@ -84,7 +84,7 @@ Defined in: [packages/auth/src/cache.ts:26](https://github.com/Connectum-Framewo
 
 > **set**(`key`, `value`): `void`
 
-Defined in: [packages/auth/src/cache.ts:41](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/cache.ts#L41)
+Defined in: [packages/auth/src/cache.ts:41](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/cache.ts#L41)
 
 #### Parameters
 

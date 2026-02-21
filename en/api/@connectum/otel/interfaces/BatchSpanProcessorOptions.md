@@ -2,7 +2,7 @@
 
 # Interface: BatchSpanProcessorOptions
 
-Defined in: [packages/otel/src/config.ts:48](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/config.ts#L48)
+Defined in: [packages/otel/src/config.ts:48](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/config.ts#L48)
 
 Batch span processor options
 
@@ -12,7 +12,7 @@ Batch span processor options
 
 > **exportTimeoutMillis**: `number`
 
-Defined in: [packages/otel/src/config.ts:52](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/config.ts#L52)
+Defined in: [packages/otel/src/config.ts:52](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/config.ts#L52)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [packages/otel/src/config.ts:52](https://github.com/Connectum-Framew
 
 > **maxExportBatchSize**: `number`
 
-Defined in: [packages/otel/src/config.ts:49](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/config.ts#L49)
+Defined in: [packages/otel/src/config.ts:49](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/config.ts#L49)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [packages/otel/src/config.ts:49](https://github.com/Connectum-Framew
 
 > **maxQueueSize**: `number`
 
-Defined in: [packages/otel/src/config.ts:50](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/config.ts#L50)
+Defined in: [packages/otel/src/config.ts:50](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/config.ts#L50)
 
 ***
 
@@ -36,4 +36,4 @@ Defined in: [packages/otel/src/config.ts:50](https://github.com/Connectum-Framew
 
 > **scheduledDelayMillis**: `number`
 
-Defined in: [packages/otel/src/config.ts:51](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/config.ts#L51)
+Defined in: [packages/otel/src/config.ts:51](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/config.ts#L51)

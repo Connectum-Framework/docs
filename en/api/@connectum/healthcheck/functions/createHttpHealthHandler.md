@@ -4,7 +4,7 @@
 
 > **createHttpHealthHandler**(`manager`, `healthPaths?`): `HttpHandler`
 
-Defined in: [httpHandler.ts:57](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/healthcheck/src/httpHandler.ts#L57)
+Defined in: [httpHandler.ts:57](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/healthcheck/src/httpHandler.ts#L57)
 
 Create HTTP health handler that mirrors gRPC healthcheck status
 

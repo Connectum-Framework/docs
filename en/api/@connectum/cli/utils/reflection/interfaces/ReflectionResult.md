@@ -2,7 +2,7 @@
 
 # Interface: ReflectionResult
 
-Defined in: [utils/reflection.ts:19](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/cli/src/utils/reflection.ts#L19)
+Defined in: [utils/reflection.ts:19](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/cli/src/utils/reflection.ts#L19)
 
 Result of fetching proto descriptors from a running server.
 
@@ -12,7 +12,7 @@ Result of fetching proto descriptors from a running server.
 
 > **fileNames**: `string`[]
 
-Defined in: [utils/reflection.ts:25](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/cli/src/utils/reflection.ts#L25)
+Defined in: [utils/reflection.ts:25](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/cli/src/utils/reflection.ts#L25)
 
 Proto file names in the registry
 
@@ -22,7 +22,7 @@ Proto file names in the registry
 
 > **registry**: `FileRegistry`
 
-Defined in: [utils/reflection.ts:23](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/cli/src/utils/reflection.ts#L23)
+Defined in: [utils/reflection.ts:23](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/cli/src/utils/reflection.ts#L23)
 
 FileRegistry containing all discovered file descriptors
 
@@ -32,6 +32,6 @@ FileRegistry containing all discovered file descriptors
 
 > **services**: `string`[]
 
-Defined in: [utils/reflection.ts:21](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/cli/src/utils/reflection.ts#L21)
+Defined in: [utils/reflection.ts:21](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/cli/src/utils/reflection.ts#L21)
 
 List of fully-qualified service names

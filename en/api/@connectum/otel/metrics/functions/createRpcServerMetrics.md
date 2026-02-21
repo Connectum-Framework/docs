@@ -4,7 +4,7 @@
 
 > **createRpcServerMetrics**(`meter`): [`RpcServerMetrics`](../interfaces/RpcServerMetrics.md)
 
-Defined in: [packages/otel/src/metrics.ts:65](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/metrics.ts#L65)
+Defined in: [packages/otel/src/metrics.ts:65](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/metrics.ts#L65)
 
 Creates RPC server metric instruments from the given meter
 

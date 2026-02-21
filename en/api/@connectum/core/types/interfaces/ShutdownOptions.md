@@ -2,7 +2,7 @@
 
 # Interface: ShutdownOptions
 
-Defined in: [packages/core/src/types.ts:161](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L161)
+Defined in: [packages/core/src/types.ts:161](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/core/src/types.ts#L161)
 
 Graceful shutdown options
 
@@ -12,7 +12,7 @@ Graceful shutdown options
 
 > `optional` **autoShutdown**: `boolean`
 
-Defined in: [packages/core/src/types.ts:178](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L178)
+Defined in: [packages/core/src/types.ts:178](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/core/src/types.ts#L178)
 
 Enable automatic graceful shutdown on signals
 
@@ -28,7 +28,7 @@ false
 
 > `optional` **forceCloseOnTimeout**: `boolean`
 
-Defined in: [packages/core/src/types.ts:186](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L186)
+Defined in: [packages/core/src/types.ts:186](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/core/src/types.ts#L186)
 
 Force close all HTTP/2 sessions when shutdown timeout is exceeded.
 When true, sessions are destroyed after timeout. When false, server
@@ -46,7 +46,7 @@ true
 
 > `optional` **signals**: `Signals`[]
 
-Defined in: [packages/core/src/types.ts:172](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L172)
+Defined in: [packages/core/src/types.ts:172](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/core/src/types.ts#L172)
 
 Signals to listen for graceful shutdown
 
@@ -62,7 +62,7 @@ Signals to listen for graceful shutdown
 
 > `optional` **timeout**: `number`
 
-Defined in: [packages/core/src/types.ts:166](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L166)
+Defined in: [packages/core/src/types.ts:166](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/core/src/types.ts#L166)
 
 Timeout in milliseconds for graceful shutdown
 

@@ -2,7 +2,7 @@
 
 # Interface: RetryOptions
 
-Defined in: [types.ts:91](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/interceptors/src/types.ts#L91)
+Defined in: [types.ts:91](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/interceptors/src/types.ts#L91)
 
 Retry interceptor options
 
@@ -12,7 +12,7 @@ Retry interceptor options
 
 > `optional` **initialDelay**: `number`
 
-Defined in: [types.ts:102](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/interceptors/src/types.ts#L102)
+Defined in: [types.ts:102](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/interceptors/src/types.ts#L102)
 
 Initial delay in milliseconds for exponential backoff
 
@@ -28,7 +28,7 @@ Initial delay in milliseconds for exponential backoff
 
 > `optional` **maxDelay**: `number`
 
-Defined in: [types.ts:108](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/interceptors/src/types.ts#L108)
+Defined in: [types.ts:108](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/interceptors/src/types.ts#L108)
 
 Maximum delay in milliseconds for exponential backoff
 
@@ -44,7 +44,7 @@ Maximum delay in milliseconds for exponential backoff
 
 > `optional` **maxRetries**: `number`
 
-Defined in: [types.ts:96](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/interceptors/src/types.ts#L96)
+Defined in: [types.ts:96](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/interceptors/src/types.ts#L96)
 
 Maximum number of retries
 
@@ -60,7 +60,7 @@ Maximum number of retries
 
 > `optional` **retryableCodes**: `Code`[]
 
-Defined in: [types.ts:120](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/interceptors/src/types.ts#L120)
+Defined in: [types.ts:120](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/interceptors/src/types.ts#L120)
 
 Error codes that trigger a retry
 
@@ -76,7 +76,7 @@ Error codes that trigger a retry
 
 > `optional` **skipStreaming**: `boolean`
 
-Defined in: [types.ts:114](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/interceptors/src/types.ts#L114)
+Defined in: [types.ts:114](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/interceptors/src/types.ts#L114)
 
 Skip retry for streaming requests
 

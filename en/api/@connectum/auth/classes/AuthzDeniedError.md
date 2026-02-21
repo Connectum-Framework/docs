@@ -2,7 +2,7 @@
 
 # Class: AuthzDeniedError
 
-Defined in: [packages/auth/src/errors.ts:26](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/errors.ts#L26)
+Defined in: [packages/auth/src/errors.ts:26](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/errors.ts#L26)
 
 Authorization denied error.
 
@@ -23,7 +23,7 @@ exposing only "Access denied" to the client via SanitizableError protocol.
 
 > **new AuthzDeniedError**(`details`): `AuthzDeniedError`
 
-Defined in: [packages/auth/src/errors.ts:39](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/errors.ts#L39)
+Defined in: [packages/auth/src/errors.ts:39](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/errors.ts#L39)
 
 #### Parameters
 
@@ -45,7 +45,7 @@ Defined in: [packages/auth/src/errors.ts:39](https://github.com/Connectum-Framew
 
 > `readonly` **authzDetails**: [`AuthzDeniedDetails`](../interfaces/AuthzDeniedDetails.md)
 
-Defined in: [packages/auth/src/errors.ts:29](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/errors.ts#L29)
+Defined in: [packages/auth/src/errors.ts:29](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/errors.ts#L29)
 
 ***
 
@@ -69,7 +69,7 @@ don't leak the underlying error, but instead make it available for logging.
 
 > `readonly` **clientMessage**: `"Access denied"` = `"Access denied"`
 
-Defined in: [packages/auth/src/errors.ts:27](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/errors.ts#L27)
+Defined in: [packages/auth/src/errors.ts:27](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/errors.ts#L27)
 
 #### Implementation of
 
@@ -168,7 +168,7 @@ the message `[not found] hello`, and the rawMessage `hello`.
 
 > `readonly` **ruleName**: `string`
 
-Defined in: [packages/auth/src/errors.ts:28](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/errors.ts#L28)
+Defined in: [packages/auth/src/errors.ts:28](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/errors.ts#L28)
 
 ***
 
@@ -212,7 +212,7 @@ not capture any frames.
 
 > **get** **serverDetails**(): `Readonly`\<`Record`\<`string`, `unknown`\>\>
 
-Defined in: [packages/auth/src/errors.ts:31](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/errors.ts#L31)
+Defined in: [packages/auth/src/errors.ts:31](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/errors.ts#L31)
 
 ##### Returns
 

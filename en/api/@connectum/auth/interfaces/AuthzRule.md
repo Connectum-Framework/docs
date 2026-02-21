@@ -2,7 +2,7 @@
 
 # Interface: AuthzRule
 
-Defined in: [packages/auth/src/types.ts:81](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L81)
+Defined in: [packages/auth/src/types.ts:81](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L81)
 
 Authorization rule definition.
 
@@ -16,7 +16,7 @@ When a rule has `requires`, the match semantics are:
 
 > `readonly` **effect**: [`AuthzEffect`](../type-aliases/AuthzEffect.md)
 
-Defined in: [packages/auth/src/types.ts:87](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L87)
+Defined in: [packages/auth/src/types.ts:87](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L87)
 
 Effect when rule matches
 
@@ -26,7 +26,7 @@ Effect when rule matches
 
 > `readonly` **methods**: readonly `string`[]
 
-Defined in: [packages/auth/src/types.ts:85](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L85)
+Defined in: [packages/auth/src/types.ts:85](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L85)
 
 Method patterns to match (e.g., "admin.v1.AdminService/*", "user.v1.UserService/DeleteUser")
 
@@ -36,7 +36,7 @@ Method patterns to match (e.g., "admin.v1.AdminService/*", "user.v1.UserService/
 
 > `readonly` **name**: `string`
 
-Defined in: [packages/auth/src/types.ts:83](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L83)
+Defined in: [packages/auth/src/types.ts:83](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L83)
 
 Rule name for logging/debugging
 
@@ -46,7 +46,7 @@ Rule name for logging/debugging
 
 > `readonly` `optional` **requires**: `object`
 
-Defined in: [packages/auth/src/types.ts:94](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L94)
+Defined in: [packages/auth/src/types.ts:94](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L94)
 
 Required roles/scopes for this rule.
 

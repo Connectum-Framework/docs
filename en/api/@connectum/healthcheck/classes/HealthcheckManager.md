@@ -2,7 +2,7 @@
 
 # Class: HealthcheckManager
 
-Defined in: [HealthcheckManager.ts:26](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/healthcheck/src/HealthcheckManager.ts#L26)
+Defined in: [HealthcheckManager.ts:26](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/healthcheck/src/HealthcheckManager.ts#L26)
 
 Healthcheck manager
 
@@ -34,7 +34,7 @@ healthcheckManager.update(ServingStatus.SERVING);
 
 > **areAllHealthy**(): `boolean`
 
-Defined in: [HealthcheckManager.ts:80](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/healthcheck/src/HealthcheckManager.ts#L80)
+Defined in: [HealthcheckManager.ts:80](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/healthcheck/src/HealthcheckManager.ts#L80)
 
 Check if all services are healthy (SERVING)
 
@@ -50,7 +50,7 @@ True if all services are SERVING
 
 > **clear**(): `void`
 
-Defined in: [HealthcheckManager.ts:108](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/healthcheck/src/HealthcheckManager.ts#L108)
+Defined in: [HealthcheckManager.ts:108](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/healthcheck/src/HealthcheckManager.ts#L108)
 
 Clear all services
 
@@ -64,7 +64,7 @@ Clear all services
 
 > **getAllStatuses**(): `Map`\<`string`, [`ServiceStatus`](../interfaces/ServiceStatus.md)\>
 
-Defined in: [HealthcheckManager.ts:71](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/healthcheck/src/HealthcheckManager.ts#L71)
+Defined in: [HealthcheckManager.ts:71](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/healthcheck/src/HealthcheckManager.ts#L71)
 
 Get all services health status
 
@@ -80,7 +80,7 @@ Map of service name to health status
 
 > **getStatus**(`service`): [`ServiceStatus`](../interfaces/ServiceStatus.md) \| `undefined`
 
-Defined in: [HealthcheckManager.ts:62](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/healthcheck/src/HealthcheckManager.ts#L62)
+Defined in: [HealthcheckManager.ts:62](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/healthcheck/src/HealthcheckManager.ts#L62)
 
 Get service health status
 
@@ -104,7 +104,7 @@ Service status or undefined if not found
 
 > **initialize**(`serviceNames`): `void`
 
-Defined in: [HealthcheckManager.ts:96](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/healthcheck/src/HealthcheckManager.ts#L96)
+Defined in: [HealthcheckManager.ts:96](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/healthcheck/src/HealthcheckManager.ts#L96)
 
 Initialize services map
 
@@ -130,7 +130,7 @@ Array of service names to track
 
 > **update**(`status`, `service?`): `void`
 
-Defined in: [HealthcheckManager.ts:39](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/healthcheck/src/HealthcheckManager.ts#L39)
+Defined in: [HealthcheckManager.ts:39](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/healthcheck/src/HealthcheckManager.ts#L39)
 
 Update service health status
 

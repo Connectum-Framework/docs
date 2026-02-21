@@ -2,7 +2,7 @@
 
 # Interface: SessionAuthInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:326](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L326)
+Defined in: [packages/auth/src/types.ts:326](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L326)
 
 Session-based auth interceptor options.
 
@@ -14,7 +14,7 @@ Two-step authentication: verify session token, then map session data to AuthCont
 
 > `readonly` `optional` **cache**: [`CacheOptions`](CacheOptions.md)
 
-Defined in: [packages/auth/src/types.ts:349](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L349)
+Defined in: [packages/auth/src/types.ts:349](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L349)
 
 LRU cache for session verification results
 
@@ -24,7 +24,7 @@ LRU cache for session verification results
 
 > `readonly` `optional` **extractToken**: (`req`) => `string` \| `Promise`\<`string` \| `null`\> \| `null`
 
-Defined in: [packages/auth/src/types.ts:347](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L347)
+Defined in: [packages/auth/src/types.ts:347](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L347)
 
 Custom token extraction.
 Default: extracts Bearer token from Authorization header.
@@ -47,7 +47,7 @@ Default: extracts Bearer token from Authorization header.
 
 > `readonly` **mapSession**: (`session`) => [`AuthContext`](AuthContext.md) \| `Promise`\<[`AuthContext`](AuthContext.md)\>
 
-Defined in: [packages/auth/src/types.ts:342](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L342)
+Defined in: [packages/auth/src/types.ts:342](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L342)
 
 Map raw session data to AuthContext.
 
@@ -71,7 +71,7 @@ Normalized auth context
 
 > `readonly` `optional` **propagatedClaims**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:359](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L359)
+Defined in: [packages/auth/src/types.ts:359](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L359)
 
 Filter which claims are propagated in headers.
 When set, only listed claim keys are included in x-auth-claims header.
@@ -83,7 +83,7 @@ When not set, all claims are propagated.
 
 > `readonly` `optional` **propagateHeaders**: `boolean`
 
-Defined in: [packages/auth/src/types.ts:353](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L353)
+Defined in: [packages/auth/src/types.ts:353](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L353)
 
 Propagate auth context as headers for downstream services
 
@@ -93,7 +93,7 @@ Propagate auth context as headers for downstream services
 
 > `readonly` `optional` **skipMethods**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:351](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L351)
+Defined in: [packages/auth/src/types.ts:351](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L351)
 
 Methods to skip authentication for
 
@@ -103,7 +103,7 @@ Methods to skip authentication for
 
 > `readonly` **verifySession**: (`token`, `headers`) => `unknown`
 
-Defined in: [packages/auth/src/types.ts:335](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/auth/src/types.ts#L335)
+Defined in: [packages/auth/src/types.ts:335](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/types.ts#L335)
 
 Verify session token and return raw session data.
 Must throw on invalid/expired sessions.
