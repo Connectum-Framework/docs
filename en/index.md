@@ -1,11 +1,11 @@
 ---
 layout: home
-title: Connectum — Enterprise gRPC Framework
+title: Connectum — Microservices Framework
 pageClass: home-page
 
 hero:
   name: Connectum
-  text: Enterprise gRPC Framework
+  text: Microservices Framework
   tagline: Designed to empower modern engineering and platform teams that ship mission-critical business logic
   image:
     light: /assets/splash.png
