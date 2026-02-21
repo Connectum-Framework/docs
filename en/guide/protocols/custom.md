@@ -1,6 +1,5 @@
 ---
-title: Creating Custom Protocol Plugins
-description: How to create custom protocol plugins using the ProtocolRegistration interface in Connectum.
+outline: deep
 ---
 
 # Creating Custom Protocol Plugins
@@ -224,6 +223,8 @@ register(router, context): void {
 
 ## Related
 
-- [Custom Interceptors](./custom-interceptors.md) -- Creating custom interceptor middleware
-- [Method Filtering](./method-filtering.md) -- Per-method interceptor routing
-- [Configuration](./configuration.md) -- Environment-based server configuration
+- [Protocols Overview](/en/guide/protocols) -- back to overview
+- [Server Reflection](/en/guide/protocols/reflection) -- built-in reflection protocol
+- [Custom Interceptors](/en/guide/interceptors/custom) -- creating custom interceptor middleware
+- [@connectum/core](/en/packages/core) -- Package Guide
+- [@connectum/core API](/en/api/@connectum/core/) -- Full API Reference

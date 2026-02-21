@@ -143,6 +143,10 @@ message CreateOrderRequest {
 Common proto definitions such as `google.api.http`, `google.api.annotations`, `google.protobuf.*`, `buf.validate`, and `openapiv3` schemas are available through buf BSR deps. Add them to your `buf.yaml` as dependencies and import them directly without vendoring.
 :::
 
+::: tip Guide-Level Documentation
+For a quick introduction to inter-service calls, see [Service Communication](/en/guide/service-communication).
+:::
+
 ## Service Communication Patterns
 
 ### Synchronous: Unary gRPC

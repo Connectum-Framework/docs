@@ -1,32 +1,10 @@
 ---
-title: TLS Configuration
-description: Configure TLS and mTLS for secure gRPC/ConnectRPC communication in Connectum services.
 outline: deep
 ---
 
 # TLS Configuration
 
-Connectum supports TLS and mutual TLS (mTLS) for securing gRPC/ConnectRPC communication. TLS configuration is handled through the `tls` option in `createServer()` and utility functions from `@connectum/core`.
-
-## Quick Setup
-
-```typescript
-import { createServer } from '@connectum/core';
-import routes from '#gen/routes.js';
-
-const server = createServer({
-  services: [routes],
-  port: 5000,
-  tls: {
-    keyPath: './keys/server.key',
-    certPath: './keys/server.crt',
-  },
-});
-
-await server.start();
-```
-
-When TLS is configured, the server creates an HTTP/2 **secure** server (`http2.createSecureServer`). Without TLS, it creates a plaintext HTTP/2 server.
+Configure TLS for secure gRPC/ConnectRPC communication in Connectum services.
 
 ## TLS Options
 
@@ -160,7 +138,7 @@ const server = createServer({
 Self-signed certificates should only be used in development. For production, use certificates from a trusted Certificate Authority (CA) or a service like Let's Encrypt.
 :::
 
-### Testing with TLS
+## Testing with TLS
 
 When testing with grpcurl against a TLS-enabled server using self-signed certificates:
 
@@ -180,51 +158,6 @@ curl -k https://localhost:5000/healthz
 
 # Or provide the CA certificate
 curl --cacert keys/server.crt https://localhost:5000/healthz
-```
-
-## Mutual TLS (mTLS)
-
-For mutual TLS, where both client and server authenticate each other, use the `http2Options` parameter:
-
-```typescript
-import { readFileSync } from 'node:fs';
-import { createServer, readTLSCertificates } from '@connectum/core';
-
-const { key, cert } = readTLSCertificates({
-  keyPath: './keys/server.key',
-  certPath: './keys/server.crt',
-});
-
-const server = createServer({
-  services: [routes],
-  port: 5000,
-  tls: {
-    keyPath: './keys/server.key',
-    certPath: './keys/server.crt',
-  },
-  http2Options: {
-    // Require client certificates
-    requestCert: true,
-    rejectUnauthorized: true,
-    // CA certificate(s) used to verify client certificates
-    ca: readFileSync('./keys/ca.crt'),
-  },
-});
-
-await server.start();
-```
-
-### mTLS Client Configuration
-
-When connecting to an mTLS-enabled server:
-
-```bash
-# grpcurl with client certificate
-grpcurl \
-  -cacert keys/ca.crt \
-  -cert keys/client.crt \
-  -key keys/client.key \
-  localhost:5000 list
 ```
 
 ## Additional HTTP/2 Options
@@ -252,87 +185,6 @@ const server = createServer({
 });
 ```
 
-## Production TLS Best Practices
-
-### Use a Certificate Manager
-
-In production, manage certificates through:
-
-- **Kubernetes cert-manager** for automatic certificate provisioning and renewal
-- **Vault** (HashiCorp) for certificate management
-- **Let's Encrypt** for free, automated certificates
-
-### Environment-Based Configuration
-
-Use environment variables to avoid hardcoding paths:
-
-```typescript
-const server = createServer({
-  services: [routes],
-  port: 5000,
-  tls: process.env.TLS_ENABLED === 'true'
-    ? {
-        keyPath: process.env.TLS_KEY_PATH,
-        certPath: process.env.TLS_CERT_PATH,
-      }
-    : undefined,
-});
-```
-
-### Kubernetes TLS with Secrets
-
-Mount TLS certificates as Kubernetes secrets:
-
-```yaml
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-    - name: my-service
-      image: my-service:latest
-      env:
-        - name: TLS_DIR_PATH
-          value: /etc/tls
-      volumeMounts:
-        - name: tls-certs
-          mountPath: /etc/tls
-          readOnly: true
-  volumes:
-    - name: tls-certs
-      secret:
-        secretName: my-service-tls
-```
-
-```typescript
-const server = createServer({
-  services: [routes],
-  tls: {
-    dirPath: process.env.TLS_DIR_PATH,
-  },
-});
-```
-
-::: danger Security
-Never commit TLS private keys to version control. Use environment variables, secrets managers, or mounted volumes in production.
-:::
-
-### Enforce TLS 1.3
-
-For maximum security, enforce TLS 1.3:
-
-```typescript
-const server = createServer({
-  services: [routes],
-  tls: {
-    keyPath: './keys/server.key',
-    certPath: './keys/server.crt',
-  },
-  http2Options: {
-    minVersion: 'TLSv1.3',
-  },
-});
-```
-
 ## HTTP/1.1 Support
 
 By default, Connectum allows HTTP/1.1 connections (via ALPN negotiation). This is important for ConnectRPC clients that use HTTP/1.1 with JSON:
@@ -355,9 +207,9 @@ const server = createServer({
 });
 ```
 
-## Next Steps
+## Related
 
-- [Graceful Shutdown](/en/guide/graceful-shutdown) -- configure shutdown behavior
-- [Health Checks](/en/guide/health-checks) -- health monitoring and Kubernetes probes
-- [Observability](/en/guide/observability) -- distributed tracing and metrics
-- [Quickstart](/en/guide/quickstart) -- complete tutorial
+- [Security Overview](/en/guide/security) -- back to overview
+- [Mutual TLS (mTLS)](/en/guide/security/mtls) -- client certificate authentication, production best practices
+- [@connectum/core](/en/packages/core) -- Package Guide
+- [@connectum/core API](/en/api/@connectum/core/) -- Full API Reference

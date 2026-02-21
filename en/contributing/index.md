@@ -11,7 +11,7 @@ Thank you for your interest in contributing to Connectum! This guide will help y
 
 1. **[Development Setup](/en/contributing/development-setup)** -- clone repos, install dependencies, run tests
 2. **[CLI Commands](/en/contributing/cli-commands)** -- all commands for working with the monorepo
-3. **[Architecture Overview](/en/guide/advanced/architecture)** -- understand the package layers and design
+3. **[About Connectum](/en/guide/about)** -- understand the package layers and design
 
 ## Repository Structure
 

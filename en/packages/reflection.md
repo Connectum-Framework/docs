@@ -9,6 +9,11 @@ Implements the [gRPC Server Reflection Protocol](https://github.com/grpc/grpc/bl
 
 **Layer**: 1 (Protocol)
 
+::: tip Related Guides
+- [Protocols Overview](/en/guide/protocols) -- the protocol plugin system
+- [Server Reflection](/en/guide/protocols/reflection) -- grpcurl, buf curl, Postman usage
+:::
+
 ::: tip Full API Reference
 Complete TypeScript API documentation: [API Reference](/en/api/@connectum/reflection/)
 :::

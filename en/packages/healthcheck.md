@@ -9,6 +9,12 @@ Implements the [gRPC Health Checking Protocol](https://github.com/grpc/grpc/blob
 
 **Layer**: 1 (Protocol)
 
+::: tip Related Guides
+- [Health Checks Overview](/en/guide/health-checks) -- gRPC and HTTP health endpoints
+- [gRPC & HTTP Protocol](/en/guide/health-checks/protocol) -- detailed protocol configuration
+- [Kubernetes Integration](/en/guide/health-checks/kubernetes) -- probes, shutdown, zero-downtime
+:::
+
 ::: tip Full API Reference
 Complete TypeScript API documentation: [API Reference](/en/api/@connectum/healthcheck/)
 :::

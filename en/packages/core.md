@@ -9,6 +9,14 @@ The central package of the Connectum framework. Provides `createServer()` -- a f
 
 **Layer**: 0 (Server Foundation) -- zero internal dependencies
 
+::: tip Related Guides
+- [Server Overview](/en/guide/server) -- lifecycle, events, `createServer()` API
+- [Lifecycle & Events](/en/guide/server/lifecycle) -- server states and event handlers
+- [Configuration](/en/guide/server/configuration) -- environment variables and 12-Factor App
+- [Graceful Shutdown](/en/guide/server/graceful-shutdown) -- shutdown hooks, Kubernetes integration
+- [Security (TLS)](/en/guide/security) -- TLS and mTLS configuration
+:::
+
 ::: tip Full API Reference
 Complete TypeScript API documentation: [API Reference](/en/api/@connectum/core/)
 :::

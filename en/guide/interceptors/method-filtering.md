@@ -1,6 +1,5 @@
 ---
-title: Per-Method Interceptor Routing
-description: Apply interceptors selectively to specific services and methods using createMethodFilterInterceptor and other patterns.
+outline: deep
 ---
 
 # Per-Method Interceptor Routing
@@ -189,6 +188,9 @@ Do not confuse `skip*` options with method filtering. Setting `skipStreaming: tr
 
 ## Related
 
-- [Custom Interceptors](./custom-interceptors.md) -- Creating custom interceptors
-- [Custom Protocols](./custom-protocols.md) -- Creating protocol plugins
-- [Configuration](./configuration.md) -- Environment configuration
+- [Interceptors Overview](/en/guide/interceptors) -- quick start and key concepts
+- [Built-in Interceptors](/en/guide/interceptors/built-in) -- default chain reference
+- [Custom Interceptors](/en/guide/interceptors/custom) -- creating custom interceptors
+- [Custom Protocols](/en/guide/protocols/custom) -- creating protocol plugins
+- [@connectum/interceptors](/en/packages/interceptors) -- Package Guide
+- [ADR-014: Method Filter Interceptor](/en/contributing/adr/014-method-filter-interceptor) -- design rationale

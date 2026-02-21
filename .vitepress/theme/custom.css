@@ -47,6 +47,7 @@
 
 /* Hero image size override */
 .VPHero .image-container .image-src {
+    padding-left: 2vw;
     max-width: 100%;
     max-height: 100%;
     border-radius: 12px;

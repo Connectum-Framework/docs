@@ -1,6 +1,5 @@
 ---
-title: Environment Configuration
-description: Configure Connectum servers using environment variables with Zod validation, following 12-Factor App principles.
+outline: deep
 ---
 
 # Environment Configuration
@@ -270,6 +269,10 @@ Set `GRACEFUL_SHUTDOWN_TIMEOUT_MS` to a value lower than the Kubernetes `termina
 
 ## Related
 
-- [Custom Interceptors](./custom-interceptors.md) -- Creating custom interceptors
-- [Custom Protocols](./custom-protocols.md) -- Creating protocol plugins
-- [Method Filtering](./method-filtering.md) -- Per-method interceptor routing
+- [Server Overview](/en/guide/server) -- quick start and key concepts
+- [Graceful Shutdown](/en/guide/server/graceful-shutdown) -- shutdown hooks and Kubernetes integration
+- [Custom Interceptors](/en/guide/interceptors/custom) -- creating custom interceptors
+- [Custom Protocols](/en/guide/protocols/custom) -- creating protocol plugins
+- [Method Filtering](/en/guide/interceptors/method-filtering) -- per-method interceptor routing
+- [@connectum/core](/en/packages/core) -- Package Guide
+- [@connectum/core API](/en/api/@connectum/core/) -- Full API Reference
