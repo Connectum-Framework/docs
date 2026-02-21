@@ -2,17 +2,19 @@
 outline: deep
 ---
 
-# About Connectum
+# Connectum Framework
 
 ## What is Connectum?
 
-**Connectum** is a minimalistic, extensible framework for building production-ready gRPC/ConnectRPC microservices on Node.js 18+.
+**Connectum** is a production-ready framework for building gRPC/ConnectRPC microservices on Node.js 18+. It eliminates boilerplate by bundling health checks, observability, resilience, authentication, and graceful shutdown into a single `createServer()` call.
+
+Engineering teams with enterprise requirements -- observability, mTLS, RBAC, circuit breakers -- need a unified, well-designed framework instead of gluing together dozens of libraries. Connectum provides that foundation with a pluggable architecture where every capability is an explicit, optional package.
 
 ## The Problem
 
 Building production-ready gRPC/ConnectRPC microservices on Node.js requires:
 
-- A lot of boilerplate code
+- A lot of boilerplate code for every new service
 - Manual observability setup (tracing, metrics, logging)
 - Integration of health checks and graceful shutdown
 - TLS, validation, and reflection configuration
@@ -20,144 +22,73 @@ Building production-ready gRPC/ConnectRPC microservices on Node.js requires:
 
 Existing solutions (NestJS, tRPC) are either too heavy or lack native gRPC support.
 
-## The Solution
-
-Connectum provides:
-
-- **Zero boilerplate** for a basic service
-- **Production-ready out of the box** -- OTEL, health checks, TLS
-- **Pluggable architecture** via peerDependencies
-- **Native TypeScript** -- write TypeScript, publish compiled JavaScript + type declarations. Works on any runtime (Node.js 18+, Bun, Deno). Full source maps for IDE jump-to-source.
-- **Explicit Lifecycle** -- full control over server lifecycle
-
-## Target Audience
-
-- **Open-source community** -- developers of all experience levels
-- **API gateways** and business services
-- **Workers** and data pipelines
-- **DevOps/SRE** -- standard Kubernetes probes and OTEL collector
-
-## Key Features
-
-### Core
+## What Connectum Provides
 
 | Feature | Description |
 |---------|-------------|
 | gRPC/ConnectRPC Server | HTTP/2 server with gRPC, ConnectRPC, and gRPC-Web support |
 | TLS Support | Built-in TLS, mTLS, auto-reload certificates |
 | Health Checks | gRPC Health protocol + HTTP `/healthz`, `/readyz` endpoints |
-| Graceful Shutdown | Drain connections, configurable timeout, shutdown hooks |
-| Interceptors Chain | Standard ConnectRPC Interceptor API with ordered execution |
+| Graceful Shutdown | Drain connections, configurable timeout, ordered shutdown hooks |
+| Interceptors Chain | Resilience interceptors with fixed execution order |
 | OpenTelemetry | Distributed tracing, RPC metrics, structured logging |
 | Server Reflection | gRPC Server Reflection for grpcurl and similar tools |
 | Auth & Authz | JWT, gateway, session auth; declarative RBAC; proto-based authorization |
-| Input Validation | protovalidate integration for automatic validation |
-| CLI Tools | Code generation, project scaffolding |
-| Testing | protofake integration, in-memory transport, test fixtures |
+| Input Validation | protovalidate integration for automatic request validation |
+| CLI Tools | Code generation and project scaffolding |
 
-### Packages
+## Core Principles
 
-Connectum is composed of modular packages organized across dependency layers:
+These principles guide every design decision in Connectum. Each links to its Architecture Decision Record for full rationale.
 
+1. **Native TypeScript** -- write TypeScript natively on Node.js 25+; packages compile to JS + type declarations for consumers on Node.js 18+. [ADR-001](/en/contributing/adr/001-native-typescript-migration)
+
+2. **Modular Architecture** -- eight packages organized in dependency layers where each layer can only depend on lower layers. [ADR-003](/en/contributing/adr/003-package-decomposition)
+
+3. **Pluggable Protocols** -- health checks and server reflection are separate packages registered via the `protocols` array; custom protocols implement the same interface. [ADR-022](/en/contributing/adr/022-protocol-extraction)
+
+4. **Resilience by Default** -- a fixed-order interceptor chain (errorHandler, timeout, bulkhead, circuitBreaker, retry, fallback, validation) with per-interceptor configuration. [ADR-006](/en/contributing/adr/006-resilience-pattern-implementation)
+
+5. **Proto-First Validation** -- request validation uses protovalidate constraints defined directly in `.proto` files and enforced automatically by the validation interceptor. [ADR-005](/en/contributing/adr/005-input-validation-strategy)
+
+6. **Explicit Lifecycle** -- `createServer()` is the single entry point with no hidden defaults; interceptors and protocols are explicit parameters. [ADR-023](/en/contributing/adr/023-uniform-registration-api)
+
+7. **Observable by Design** -- OpenTelemetry instrumentation is a first-class package providing distributed tracing, RPC metrics, and structured logging out of the box.
+
+8. **Production-Ready** -- TLS/mTLS, graceful shutdown with dependency-ordered hooks, JWT/RBAC auth, and Kubernetes-compatible health probes are built-in capabilities.
+
+## Architecture Overview
+
+```mermaid
+graph BT
+  subgraph L0["Layer 0 — Foundation"]
+    CORE["@connectum/core"]
+  end
+
+  subgraph L1["Layer 1 — Extensions"]
+    AUTH["@connectum/auth"]
+    HC["@connectum/healthcheck"]
+    REF["@connectum/reflection"]
+    INT["@connectum/interceptors"]
+  end
+
+  subgraph L2["Layer 2 — Tools"]
+    CLI["@connectum/cli"]
+    OTEL["@connectum/otel"]
+    TEST["@connectum/testing"]
+  end
+
+  AUTH --> CORE
+  HC --> CORE
+  REF --> CORE
+  INT --> CORE
 ```
-@connectum/
-├── core               # Layer 0: Server Foundation (zero internal deps)
-├── auth               # Layer 1: Authentication & Authorization
-├── interceptors       # Layer 1: Interceptors chain
-├── healthcheck        # Layer 1: gRPC Health Check
-├── reflection         # Layer 1: Server Reflection
-├── cli                # Layer 2: CLI Tools
-├── otel               # Layer 2: OpenTelemetry
-└── testing            # Layer 2: Testing utilities
-```
 
-**Layer 0 (Server Foundation):** `core` -- zero internal dependencies, only external NPM packages.
+**Layer 0 (Foundation):** `@connectum/core` -- server factory with lifecycle control, zero internal dependencies.
 
-**Layer 1 (Extensions):** Interceptors, protocols -- depends on Layer 0 or external packages.
+**Layer 1 (Extensions):** Authentication, interceptors, health checks, reflection -- depends on Layer 0 or external packages only.
 
-**Layer 2 (Tools):** Observability, testing -- can depend on all layers.
-
-## Example: Hello World
-
-```typescript
-import { createServer } from '@connectum/core';
-import routes from '#gen/routes.js';
-
-const server = createServer({
-  services: [routes],
-  port: 5000,
-});
-
-await server.start();
-console.log(`Server running at ${server.address?.port}`);
-```
-
-## Example: Production
-
-```typescript
-import { createServer } from '@connectum/core';
-import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
-import { Reflection } from '@connectum/reflection';
-import { createDefaultInterceptors } from '@connectum/interceptors';
-import { createJwtAuthInterceptor, createAuthzInterceptor } from '@connectum/auth';
-import { createOtelInterceptor } from '@connectum/otel';
-import routes from '#gen/routes.js';
-
-const jwtAuth = createJwtAuthInterceptor({
-  jwksUri: 'https://auth.example.com/.well-known/jwks.json',
-  issuer: 'https://auth.example.com/',
-  audience: 'my-api',
-});
-
-const authz = createAuthzInterceptor({
-  defaultPolicy: 'deny',
-  rules: [
-    { name: 'public', methods: ['public.v1.PublicService/*'], effect: 'allow' },
-    { name: 'admin', methods: ['admin.v1.AdminService/*'], requires: { roles: ['admin'] }, effect: 'allow' },
-  ],
-});
-
-const server = createServer({
-  services: [routes],
-  port: Number(process.env.PORT) || 5000,
-  tls: {
-    cert: process.env.TLS_CERT,
-    key: process.env.TLS_KEY,
-  },
-  protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
-  interceptors: [
-    ...createDefaultInterceptors(),
-    jwtAuth,
-    authz,
-    createOtelInterceptor(), // Service name via OTEL_SERVICE_NAME env var
-  ],
-  shutdown: {
-    autoShutdown: true,
-    timeout: 30_000,
-    forceCloseOnTimeout: true,
-  },
-});
-
-// Shutdown hooks with dependency ordering
-server.onShutdown('cache', async () => {
-  await cache.flush();
-});
-
-server.onShutdown('database', ['cache'], async () => {
-  await db.close();
-});
-
-server.on('ready', () => {
-  healthcheckManager.update(ServingStatus.SERVING);
-  console.log(`Server ready at ${server.address?.port}`);
-});
-
-server.on('stopping', () => {
-  console.log('Server shutting down...');
-});
-
-await server.start();
-```
+**Layer 2 (Tools):** OpenTelemetry, CLI, testing utilities -- may depend on all lower layers.
 
 ## Non-Goals
 
@@ -168,9 +99,10 @@ await server.start();
 
 ## Next Steps
 
-- [Quickstart](/en/guide/quickstart) -- set up your first project in 5 minutes
-- [Interceptors Guide](/en/guide/interceptors) -- learn about the interceptor chain
-- [Architecture Overview](/en/guide/advanced/architecture) -- understand the design decisions
+- [Quickstart](/en/guide/quickstart) -- create your first service
+- [Server](/en/guide/server) -- understand server lifecycle
+- [Interceptors](/en/guide/interceptors) -- the interceptor chain
+- [Architecture Overview](#architecture-overview) -- package layers and dependency rules
 
 ## External Resources
 

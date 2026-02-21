@@ -9,6 +9,11 @@ Command-line tools for the Connectum framework. Currently provides the `proto sy
 
 **Layer**: 3 (Development Tools)
 
+::: tip Related Guides
+- [Quickstart](/en/guide/quickstart) -- CLI proto sync in the tutorial
+- [Server Reflection](/en/guide/protocols/reflection) -- reflection protocol used by proto sync
+:::
+
 ::: tip Full API Reference
 Complete TypeScript API documentation: [API Reference](/en/api/@connectum/cli/)
 :::

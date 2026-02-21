@@ -9,6 +9,15 @@ Authentication and authorization interceptors for ConnectRPC services. Provides 
 
 **Layer**: 1 (Protocol)
 
+::: tip Related Guides
+- [Auth & Authz Overview](/en/guide/auth) -- when and why to use authentication
+- [JWT](/en/guide/auth/jwt) -- JWKS, HMAC, public key configuration
+- [Gateway](/en/guide/auth/gateway) -- pre-authenticated gateway headers
+- [Session](/en/guide/auth/session) -- session-based auth with better-auth/lucia
+- [Authorization (RBAC)](/en/guide/auth/authorization) -- declarative rules and proto-based authz
+- [Context & Testing](/en/guide/auth/context) -- AsyncLocalStorage context propagation
+:::
+
 ::: tip Full API Reference
 Complete TypeScript API documentation: [API Reference](/en/api/@connectum/auth/)
 :::

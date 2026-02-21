@@ -1,6 +1,4 @@
 ---
-title: Graceful Shutdown
-description: Configure graceful shutdown with connection draining, shutdown hooks, and Kubernetes integration in Connectum.
 outline: deep
 ---
 
@@ -74,48 +72,6 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 6. Shutdown hooks     -- Execute registered hooks in dependency order
 7. Dispose            -- Clean up internal state
 8. STOP event         -- Server is fully stopped
-```
-
-### Lifecycle Events During Shutdown
-
-```typescript
-server.on('stopping', () => {
-  // Phase 1: Server begins shutdown
-  // Update health status so load balancers stop sending traffic
-  healthcheckManager.update(ServingStatus.NOT_SERVING);
-  console.log('Shutdown initiated...');
-});
-
-server.on('stop', () => {
-  // Phase 8: Server is fully stopped
-  console.log('Server stopped cleanly');
-});
-
-server.on('error', (err) => {
-  // Emitted if shutdown encounters an error
-  console.error('Shutdown error:', err);
-});
-```
-
-### The shutdownSignal
-
-The server provides an `AbortSignal` that is aborted when shutdown begins. Use it to cancel streaming RPCs and long-running operations:
-
-```typescript
-server.on('ready', () => {
-  // Pass to streaming handlers
-  startBackgroundWorker(server.shutdownSignal);
-});
-
-function startBackgroundWorker(signal: AbortSignal) {
-  const interval = setInterval(() => {
-    if (signal.aborted) {
-      clearInterval(interval);
-      return;
-    }
-    // Do periodic work
-  }, 5000);
-}
 ```
 
 ## Shutdown Hooks
@@ -415,9 +371,11 @@ server.on('error', (err) => {
 await server.start();
 ```
 
-## Next Steps
+## Related
 
-- [Health Checks](/en/guide/health-checks) -- configure health monitoring for Kubernetes
-- [TLS Configuration](/en/guide/tls) -- secure communication
-- [Observability](/en/guide/observability) -- flush telemetry on shutdown
-- [Quickstart](/en/guide/quickstart) -- complete tutorial
+- [Server Overview](/en/guide/server) -- quick start and key concepts
+- [Lifecycle](/en/guide/server/lifecycle) -- states, events, and the shutdownSignal
+- [Health Checks & Kubernetes](/en/guide/health-checks) -- configure health monitoring
+- [Configuration](/en/guide/server/configuration) -- environment variables and TLS
+- [@connectum/core](/en/packages/core) -- Package Guide
+- [@connectum/core API](/en/api/@connectum/core/) -- Full API Reference

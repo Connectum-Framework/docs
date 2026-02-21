@@ -1,6 +1,5 @@
 ---
-title: Creating Custom Interceptors
-description: How to create, compose, and test custom ConnectRPC interceptors with the Connectum framework.
+outline: deep
 ---
 
 # Creating Custom Interceptors
@@ -173,7 +172,7 @@ Auth interceptors must be placed **immediately after** `errorHandler`, before ti
 
 ```typescript
 // Manual chain with auth (ADR-024 order):
-// errorHandler → AUTH → AUTHZ → timeout → ...
+// errorHandler -> AUTH -> AUTHZ -> timeout -> ...
 import {
   createErrorHandlerInterceptor,
   createTimeoutInterceptor,
@@ -278,6 +277,9 @@ describe('createAuthInterceptor', () => {
 
 ## Related
 
-- [Method Filtering](./method-filtering.md) -- Apply interceptors to specific services/methods
-- [Configuration](./configuration.md) -- Environment-based configuration
-- [Custom Protocols](./custom-protocols.md) -- Creating protocol plugins
+- [Interceptors Overview](/en/guide/interceptors) -- quick start and key concepts
+- [Built-in Interceptors](/en/guide/interceptors/built-in) -- default chain reference
+- [Method Filtering](/en/guide/interceptors/method-filtering) -- per-method interceptor routing
+- [Custom Protocols](/en/guide/protocols/custom) -- creating protocol plugins
+- [@connectum/interceptors](/en/packages/interceptors) -- Package Guide
+- [@connectum/interceptors API](/en/api/@connectum/interceptors/) -- Full API Reference

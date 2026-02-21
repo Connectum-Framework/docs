@@ -617,5 +617,5 @@ pnpm --filter "!@connectum/testing" <cmd>
 
 ## See Also
 
-- [Architecture Overview](/en/guide/advanced/architecture) -- System architecture
+- [About Connectum](/en/guide/about) -- System architecture
 - [Development Setup](./development-setup) -- Environment setup guide

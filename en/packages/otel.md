@@ -9,6 +9,16 @@ Full OpenTelemetry instrumentation for Connectum services. Provides ConnectRPC i
 
 **Layer**: 0 (Independent Core)
 
+::: tip Related Guides
+- [Observability Overview](/en/guide/observability) -- tracing, metrics, and logging
+- [Service Communication](/en/guide/service-communication) -- inter-service calls with OTel instrumentation
+- [Client Interceptors](/en/guide/service-communication/client-interceptors) -- OTel client interceptor, resilience
+- [Distributed Tracing](/en/guide/observability/tracing) -- server/client interceptors, traced(), traceAll()
+- [Metrics](/en/guide/observability/metrics) -- counters, histograms, RPC metrics
+- [Logging](/en/guide/observability/logging) -- structured logging with OTel correlation
+- [Backends & Config](/en/guide/observability/backends) -- environment variables, Jaeger, Grafana
+:::
+
 ::: tip Full API Reference
 Complete TypeScript API documentation: [API Reference](/en/api/@connectum/otel/)
 :::

@@ -1,6 +1,4 @@
 ---
-title: Server Reflection
-description: Enable gRPC Server Reflection for runtime service discovery and tooling integration with Connectum.
 outline: deep
 ---
 
@@ -273,9 +271,10 @@ Under the hood, `Reflection()` returns a `ProtocolRegistration` object:
 
 The `context.registry` is populated by `@connectum/core` during server startup, containing file descriptors from all registered services.
 
-## Next Steps
+## Related
 
-- [Health Checks](/en/guide/health-checks) -- add health monitoring
-- [Observability](/en/guide/observability) -- add distributed tracing and metrics
-- [Graceful Shutdown](/en/guide/graceful-shutdown) -- configure shutdown behavior
-- [Quickstart](/en/guide/quickstart) -- complete tutorial
+- [Protocols Overview](/en/guide/protocols) -- back to overview
+- [Custom Protocols](/en/guide/protocols/custom) -- create your own protocol plugins
+- [Health Checks](/en/guide/health-checks) -- health monitoring
+- [@connectum/reflection](/en/packages/reflection) -- Package Guide
+- [@connectum/reflection API](/en/api/@connectum/reflection/) -- Full API Reference

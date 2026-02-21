@@ -53,4 +53,4 @@ pnpm dev
 ## Further Resources
 
 - [CLI Commands](./cli-commands) -- full command reference
-- [Architecture Overview](/en/guide/advanced/architecture) -- framework architecture
+- [About Connectum](/en/guide/about) -- framework architecture

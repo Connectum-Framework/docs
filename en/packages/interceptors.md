@@ -9,6 +9,13 @@ Production-ready ConnectRPC interceptors providing resilience patterns, error ha
 
 **Layer**: 1 (Protocol)
 
+::: tip Related Guides
+- [Interceptors Overview](/en/guide/interceptors) -- the interceptor chain explained
+- [Built-in Chain](/en/guide/interceptors/built-in) -- 8 production-ready interceptors
+- [Custom Interceptors](/en/guide/interceptors/custom) -- creating your own interceptors
+- [Method Filtering](/en/guide/interceptors/method-filtering) -- per-service/per-method routing
+:::
+
 ::: tip Full API Reference
 Complete TypeScript API documentation: [API Reference](/en/api/@connectum/interceptors/)
 :::
