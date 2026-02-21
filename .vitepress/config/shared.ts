@@ -63,6 +63,11 @@ export const sharedConfig = defineConfig({
             md.use(copyOrDownloadAsMarkdownButtons);
         },
     },
+    srcExclude: ['**/api/_media/**'],
+    ignoreDeadLinks: [
+        /localhost/,
+        /_media/,
+    ],
     cleanUrls: true,
     sitemap: {
         hostname: 'https://connectum.dev',

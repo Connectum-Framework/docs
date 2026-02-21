@@ -9,6 +9,10 @@ Implements the [gRPC Health Checking Protocol](https://github.com/grpc/grpc/blob
 
 **Layer**: 1 (Protocol)
 
+::: tip Full API Reference
+Complete TypeScript API documentation: [API Reference](/en/api/@connectum/healthcheck/)
+:::
+
 ## Installation
 
 ```bash

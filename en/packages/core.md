@@ -9,6 +9,10 @@ The central package of the Connectum framework. Provides `createServer()` -- a f
 
 **Layer**: 0 (Server Foundation) -- zero internal dependencies
 
+::: tip Full API Reference
+Complete TypeScript API documentation: [API Reference](/en/api/@connectum/core/)
+:::
+
 ## Installation
 
 ```bash

@@ -1,4 +1,63 @@
     import type { DefaultTheme, LocaleSpecificConfig } from 'vitepress';
+    import typedocSidebar from '../../en/api/typedoc-sidebar.json';
+
+const guideSidebar: DefaultTheme.SidebarItem[] = [
+    {
+        text: 'Introduction',
+        items: [
+            { text: 'About', link: '/en/guide/about' },
+            { text: 'Quickstart', link: '/en/guide/quickstart' },
+            { text: 'Core Principles', link: '/en/guide/core-principles' },
+        ],
+    },
+    {
+        text: 'Essentials',
+        items: [
+            { text: 'Interceptors', link: '/en/guide/interceptors' },
+            { text: 'Auth & Authz', link: '/en/guide/auth' },
+            { text: 'Validation', link: '/en/guide/validation' },
+            { text: 'Health Checks', link: '/en/guide/health-checks' },
+            { text: 'Observability', link: '/en/guide/observability' },
+            { text: 'TLS/mTLS', link: '/en/guide/tls' },
+            { text: 'Graceful Shutdown', link: '/en/guide/graceful-shutdown' },
+            { text: 'Server Reflection', link: '/en/guide/server-reflection' },
+            { text: 'TypeScript Best Practices', link: '/en/guide/typescript' },
+            { text: 'API Testing', link: '/en/guide/testing' },
+        ],
+    },
+    {
+        text: 'Advanced',
+        items: [
+            { text: 'Architecture Overview', link: '/en/guide/advanced/architecture' },
+            { text: 'Custom Interceptors', link: '/en/guide/advanced/custom-interceptors' },
+            { text: 'Custom Protocols', link: '/en/guide/advanced/custom-protocols' },
+            { text: 'Per-Method Filtering', link: '/en/guide/advanced/method-filtering' },
+            { text: 'Configuration', link: '/en/guide/advanced/configuration' },
+        ],
+    },
+    {
+        text: 'Production',
+        items: [
+            { text: 'Microservice Architecture', link: '/en/guide/production/architecture' },
+            { text: 'Docker', link: '/en/guide/production/docker' },
+            { text: 'Kubernetes', link: '/en/guide/production/kubernetes' },
+            { text: 'Envoy Gateway + OpenAPI', link: '/en/guide/production/envoy-gateway' },
+            { text: 'Service Mesh (Istio)', link: '/en/guide/production/service-mesh' },
+        ],
+    },
+    {
+        text: 'Packages',
+        items: [
+            { text: '@connectum/core', link: '/en/packages/core' },
+            { text: '@connectum/auth', link: '/en/packages/auth' },
+            { text: '@connectum/interceptors', link: '/en/packages/interceptors' },
+            { text: '@connectum/healthcheck', link: '/en/packages/healthcheck' },
+            { text: '@connectum/reflection', link: '/en/packages/reflection' },
+            { text: '@connectum/otel', link: '/en/packages/otel' },
+            { text: '@connectum/cli', link: '/en/packages/cli' },
+        ],
+    },
+];
 
 export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
     title: 'Connectum',
@@ -6,71 +65,13 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
     themeConfig: {
         nav: [
             { text: 'Guide', link: '/en/guide/about' },
-            { text: 'Packages', link: '/en/packages/core' },
+            { text: 'API', link: '/en/api/', activeMatch: '/en/api/' },
             { text: 'Contributing', link: '/en/contributing/', activeMatch: '/en/contributing/' },
             { text: 'Examples', link: 'https://github.com/Connectum-Framework/examples' },
         ],
         sidebar: {
-            '/en/guide/': [
-                {
-                    text: 'Introduction',
-                    items: [
-                        { text: 'About', link: '/en/guide/about' },
-                        { text: 'Quickstart', link: '/en/guide/quickstart' },
-                        { text: 'Core Principles', link: '/en/guide/core-principles' },
-                    ],
-                },
-                {
-                    text: 'Essentials',
-                    items: [
-                        { text: 'Interceptors', link: '/en/guide/interceptors' },
-                        { text: 'Auth & Authz', link: '/en/guide/auth' },
-                        { text: 'Validation', link: '/en/guide/validation' },
-                        { text: 'Health Checks', link: '/en/guide/health-checks' },
-                        { text: 'Observability', link: '/en/guide/observability' },
-                        { text: 'TLS/mTLS', link: '/en/guide/tls' },
-                        { text: 'Graceful Shutdown', link: '/en/guide/graceful-shutdown' },
-                        { text: 'Server Reflection', link: '/en/guide/server-reflection' },
-                        { text: 'TypeScript Best Practices', link: '/en/guide/typescript' },
-                        { text: 'API Testing', link: '/en/guide/testing' },
-                    ],
-                },
-                {
-                    text: 'Advanced',
-                    items: [
-                        { text: 'Architecture Overview', link: '/en/guide/advanced/architecture' },
-                        { text: 'Custom Interceptors', link: '/en/guide/advanced/custom-interceptors' },
-                        { text: 'Custom Protocols', link: '/en/guide/advanced/custom-protocols' },
-                        { text: 'Per-Method Filtering', link: '/en/guide/advanced/method-filtering' },
-                        { text: 'Configuration', link: '/en/guide/advanced/configuration' },
-                    ],
-                },
-                {
-                    text: 'Production',
-                    items: [
-                        { text: 'Microservice Architecture', link: '/en/guide/production/architecture' },
-                        { text: 'Docker', link: '/en/guide/production/docker' },
-                        { text: 'Kubernetes', link: '/en/guide/production/kubernetes' },
-                        { text: 'Envoy Gateway + OpenAPI', link: '/en/guide/production/envoy-gateway' },
-                        { text: 'Service Mesh (Istio)', link: '/en/guide/production/service-mesh' },
-                    ],
-                },
-            ],
-            '/en/packages/': [
-                {
-                    text: 'Packages',
-                    items: [
-                        { text: '@connectum/core', link: '/en/packages/core' },
-                        { text: '@connectum/auth', link: '/en/packages/auth' },
-                        { text: '@connectum/interceptors', link: '/en/packages/interceptors' },
-                        { text: '@connectum/healthcheck', link: '/en/packages/healthcheck' },
-                        { text: '@connectum/reflection', link: '/en/packages/reflection' },
-                        { text: '@connectum/otel', link: '/en/packages/otel' },
-                        { text: '@connectum/cli', link: '/en/packages/cli' },
-                        { text: '@connectum/testing', link: '/en/packages/testing' },
-                    ],
-                },
-            ],
+            '/en/guide/': guideSidebar,
+            '/en/packages/': guideSidebar,
             '/en/migration/': [
                 {
                     text: 'Migration',
@@ -79,6 +80,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                     ],
                 },
             ],
+            '/en/api/': typedocSidebar as DefaultTheme.SidebarItem[],
             '/en/contributing/': [
                 {
                     text: 'Contributing',
