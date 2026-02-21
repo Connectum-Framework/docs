@@ -4,7 +4,7 @@
 
 > **createTimeoutInterceptor**(`options?`): `Interceptor`
 
-Defined in: [timeout.ts:55](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/interceptors/src/timeout.ts#L55)
+Defined in: [timeout.ts:55](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/interceptors/src/timeout.ts#L55)
 
 Create timeout interceptor
 
@@ -15,7 +15,7 @@ Requests that exceed the timeout are cancelled and throw DeadlineExceeded error.
 
 ### options?
 
-[`TimeoutOptions`](../../@connectum/interceptors/interfaces/TimeoutOptions.md) = `{}`
+[`TimeoutOptions`](../../interfaces/TimeoutOptions.md) = `{}`
 
 Timeout options
 

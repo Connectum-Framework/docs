@@ -4,7 +4,7 @@
 
 > **createFallbackInterceptor**\<`T`\>(`options`): `Interceptor`
 
-Defined in: [fallback.ts:57](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/interceptors/src/fallback.ts#L57)
+Defined in: [fallback.ts:57](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/interceptors/src/fallback.ts#L57)
 
 Create fallback interceptor
 
@@ -20,7 +20,7 @@ Provides fallback response when service fails, enabling graceful degradation.
 
 ### options
 
-[`FallbackOptions`](../../@connectum/interceptors/interfaces/FallbackOptions.md)\<`T`\>
+[`FallbackOptions`](../../interfaces/FallbackOptions.md)\<`T`\>
 
 Fallback options
 

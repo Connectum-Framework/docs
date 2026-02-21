@@ -26,22 +26,22 @@ service/method-level authorization settings.
 
 ### createProtoAuthzInterceptor
 
-Re-exports [createProtoAuthzInterceptor](../@connectum/auth/functions/createProtoAuthzInterceptor.md)
+Re-exports [createProtoAuthzInterceptor](../functions/createProtoAuthzInterceptor.md)
 
 ***
 
 ### getPublicMethods
 
-Re-exports [getPublicMethods](../@connectum/auth/functions/getPublicMethods.md)
+Re-exports [getPublicMethods](../functions/getPublicMethods.md)
 
 ***
 
 ### ResolvedMethodAuth
 
-Re-exports [ResolvedMethodAuth](../@connectum/auth/interfaces/ResolvedMethodAuth.md)
+Re-exports [ResolvedMethodAuth](../interfaces/ResolvedMethodAuth.md)
 
 ***
 
 ### resolveMethodAuth
 
-Re-exports [resolveMethodAuth](../@connectum/auth/functions/resolveMethodAuth.md)
+Re-exports [resolveMethodAuth](../functions/resolveMethodAuth.md)

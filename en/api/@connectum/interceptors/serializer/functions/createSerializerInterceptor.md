@@ -4,7 +4,7 @@
 
 > **createSerializerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [serializer.ts:84](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/interceptors/src/serializer.ts#L84)
+Defined in: [serializer.ts:84](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/interceptors/src/serializer.ts#L84)
 
 Create serializer interceptor
 
@@ -15,7 +15,7 @@ Skips gRPC services by default (they use protobuf binary format).
 
 ### options?
 
-[`SerializerOptions`](../../@connectum/interceptors/interfaces/SerializerOptions.md) = `{}`
+[`SerializerOptions`](../../interfaces/SerializerOptions.md) = `{}`
 
 Serializer options
 

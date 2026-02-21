@@ -109,6 +109,5 @@ await executeProtoSync({
 
 ## Modules
 
-- [@connectum/cli](@connectum/cli/index.md)
 - [commands/proto-sync](commands/proto-sync/index.md)
 - [utils/reflection](utils/reflection/index.md)

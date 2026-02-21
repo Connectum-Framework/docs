@@ -2,7 +2,7 @@
 
 # Interface: Logger
 
-Defined in: [packages/otel/src/logger.ts:11](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/otel/src/logger.ts#L11)
+Defined in: [packages/otel/src/logger.ts:11](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/logger.ts#L11)
 
 ## Methods
 
@@ -10,7 +10,7 @@ Defined in: [packages/otel/src/logger.ts:11](https://github.com/Connectum-Framew
 
 > **debug**(`message`, `attributes?`): `void`
 
-Defined in: [packages/otel/src/logger.ts:15](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/otel/src/logger.ts#L15)
+Defined in: [packages/otel/src/logger.ts:15](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/logger.ts#L15)
 
 #### Parameters
 
@@ -32,7 +32,7 @@ Defined in: [packages/otel/src/logger.ts:15](https://github.com/Connectum-Framew
 
 > **emit**(`record`): `void`
 
-Defined in: [packages/otel/src/logger.ts:16](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/otel/src/logger.ts#L16)
+Defined in: [packages/otel/src/logger.ts:16](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/logger.ts#L16)
 
 #### Parameters
 
@@ -50,7 +50,7 @@ Defined in: [packages/otel/src/logger.ts:16](https://github.com/Connectum-Framew
 
 > **error**(`message`, `attributes?`): `void`
 
-Defined in: [packages/otel/src/logger.ts:14](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/otel/src/logger.ts#L14)
+Defined in: [packages/otel/src/logger.ts:14](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/logger.ts#L14)
 
 #### Parameters
 
@@ -72,7 +72,7 @@ Defined in: [packages/otel/src/logger.ts:14](https://github.com/Connectum-Framew
 
 > **info**(`message`, `attributes?`): `void`
 
-Defined in: [packages/otel/src/logger.ts:12](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/otel/src/logger.ts#L12)
+Defined in: [packages/otel/src/logger.ts:12](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/logger.ts#L12)
 
 #### Parameters
 
@@ -94,7 +94,7 @@ Defined in: [packages/otel/src/logger.ts:12](https://github.com/Connectum-Framew
 
 > **warn**(`message`, `attributes?`): `void`
 
-Defined in: [packages/otel/src/logger.ts:13](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/otel/src/logger.ts#L13)
+Defined in: [packages/otel/src/logger.ts:13](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/logger.ts#L13)
 
 #### Parameters
 

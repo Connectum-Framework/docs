@@ -2,7 +2,7 @@
 
 # Interface: CreateServerOptions
 
-Defined in: [packages/core/src/types.ts:192](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/core/src/types.ts#L192)
+Defined in: [packages/core/src/types.ts:192](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L192)
 
 Server configuration options for createServer()
 
@@ -12,7 +12,7 @@ Server configuration options for createServer()
 
 > `optional` **allowHTTP1**: `boolean`
 
-Defined in: [packages/core/src/types.ts:252](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/core/src/types.ts#L252)
+Defined in: [packages/core/src/types.ts:252](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L252)
 
 Allow HTTP/1.1 connections.
 
@@ -32,7 +32,7 @@ true
 
 > `optional` **handshakeTimeout**: `number`
 
-Defined in: [packages/core/src/types.ts:258](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/core/src/types.ts#L258)
+Defined in: [packages/core/src/types.ts:258](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L258)
 
 Handshake timeout in milliseconds
 
@@ -48,7 +48,7 @@ Handshake timeout in milliseconds
 
 > `optional` **host**: `string`
 
-Defined in: [packages/core/src/types.ts:208](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/core/src/types.ts#L208)
+Defined in: [packages/core/src/types.ts:208](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L208)
 
 Server host to bind
 
@@ -64,7 +64,7 @@ Server host to bind
 
 > `optional` **http2Options**: `SecureServerOptions`\<*typeof* `IncomingMessage`, *typeof* `ServerResponse`, *typeof* `Http2ServerRequest`, *typeof* `Http2ServerResponse`\>
 
-Defined in: [packages/core/src/types.ts:263](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/core/src/types.ts#L263)
+Defined in: [packages/core/src/types.ts:263](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L263)
 
 Additional HTTP/2 server options
 
@@ -74,7 +74,7 @@ Additional HTTP/2 server options
 
 > `optional` **interceptors**: `Interceptor`[]
 
-Defined in: [packages/core/src/types.ts:241](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/core/src/types.ts#L241)
+Defined in: [packages/core/src/types.ts:241](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L241)
 
 ConnectRPC interceptors.
 When omitted or `[]`, no interceptors are applied.
@@ -86,7 +86,7 @@ Use `createDefaultInterceptors()` from `@connectum/interceptors` to get the defa
 
 > `optional` **port**: `number`
 
-Defined in: [packages/core/src/types.ts:202](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/core/src/types.ts#L202)
+Defined in: [packages/core/src/types.ts:202](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L202)
 
 Server port
 
@@ -102,7 +102,7 @@ Server port
 
 > `optional` **protocols**: [`ProtocolRegistration`](ProtocolRegistration.md)[]
 
-Defined in: [packages/core/src/types.ts:229](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/core/src/types.ts#L229)
+Defined in: [packages/core/src/types.ts:229](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L229)
 
 Protocol registrations (healthcheck, reflection, custom)
 
@@ -124,7 +124,7 @@ const server = createServer({
 
 > **services**: [`ServiceRoute`](../type-aliases/ServiceRoute.md)[]
 
-Defined in: [packages/core/src/types.ts:196](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/core/src/types.ts#L196)
+Defined in: [packages/core/src/types.ts:196](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L196)
 
 Service routes to register
 
@@ -134,7 +134,7 @@ Service routes to register
 
 > `optional` **shutdown**: [`ShutdownOptions`](ShutdownOptions.md)
 
-Defined in: [packages/core/src/types.ts:234](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/core/src/types.ts#L234)
+Defined in: [packages/core/src/types.ts:234](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L234)
 
 Graceful shutdown configuration
 
@@ -144,6 +144,6 @@ Graceful shutdown configuration
 
 > `optional` **tls**: [`TLSOptions`](TLSOptions.md)
 
-Defined in: [packages/core/src/types.ts:213](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/core/src/types.ts#L213)
+Defined in: [packages/core/src/types.ts:213](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/core/src/types.ts#L213)
 
 TLS configuration

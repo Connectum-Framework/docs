@@ -4,7 +4,7 @@
 
 > **createDefaultInterceptors**(`options?`): `Interceptor`[]
 
-Defined in: [defaults.ts:128](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/interceptors/src/defaults.ts#L128)
+Defined in: [defaults.ts:128](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/interceptors/src/defaults.ts#L128)
 
 Creates the default interceptor chain with the specified configuration.
 

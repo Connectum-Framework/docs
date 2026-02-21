@@ -2,13 +2,13 @@
 
 # Function: getMeter()
 
-> **getMeter**(): [`Meter`](../../@connectum/otel/interfaces/Meter.md)
+> **getMeter**(): [`Meter`](../../interfaces/Meter.md)
 
-Defined in: [packages/otel/src/meter.ts:14](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/otel/src/meter.ts#L14)
+Defined in: [packages/otel/src/meter.ts:14](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/otel/src/meter.ts#L14)
 
 Returns the global Meter instance.
 Lazily initializes the OTel provider on first call.
 
 ## Returns
 
-[`Meter`](../../@connectum/otel/interfaces/Meter.md)
+[`Meter`](../../interfaces/Meter.md)

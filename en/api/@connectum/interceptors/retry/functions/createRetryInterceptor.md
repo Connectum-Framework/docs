@@ -4,7 +4,7 @@
 
 > **createRetryInterceptor**(`options?`): `Interceptor`
 
-Defined in: [retry.ts:44](https://github.com/Connectum-Framework/connectum/blob/96762e118a8bb27fc102c6480cb8fed0afa3ac8a/packages/interceptors/src/retry.ts#L44)
+Defined in: [retry.ts:44](https://github.com/Connectum-Framework/connectum/blob/4efc0ed8514c8d8d9e2d80b4e31b599e15d24c32/packages/interceptors/src/retry.ts#L44)
 
 Create retry interceptor
 
@@ -15,7 +15,7 @@ Only retries on configurable error codes (Unavailable and ResourceExhausted by d
 
 ### options?
 
-[`RetryOptions`](../../@connectum/interceptors/interfaces/RetryOptions.md) = `{}`
+[`RetryOptions`](../../interfaces/RetryOptions.md) = `{}`
 
 Retry options
 
