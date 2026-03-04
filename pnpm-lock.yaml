@@ -7,6 +7,7 @@ settings:
 overrides:
   lodash-es@<4.17.23: '>=4.17.23'
   rollup@>=4.0.0 <4.59.0: 4.59.0
+  minimatch@>=10.0.0 <10.2.3: 10.2.3
 
 importers:
 
@@ -1254,8 +1255,8 @@ packages:
     resolution: {integrity: sha512-H/E3J6t+DQs/F2YgfDhxUVZz/dF8JXPPKTLHL/yHCcLZLtCXJDUaqvhJXQwqOVBvbyNn4T0WjLpIHd7PAw7fBA==}
     hasBin: true
 
-  minimatch@10.2.4:
-    resolution: {integrity: sha512-oRjTw/97aTBN0RHbYCdtF1MQfvusSIBQM0IZEgzl6426+8jSC0nF1a/GmnVLpfB9yyr6g6FTqWqiZVbxrtaCIg==}
+  minimatch@10.2.3:
+    resolution: {integrity: sha512-Rwi3pnapEqirPSbWbrZaa6N3nmqq4Xer/2XooiOKyV3q12ML06f7MOuc5DVH8ONZIFhwIYQ3yzPH4nt7iWHaTg==}
     engines: {node: 18 || 20 || >=22}
 
   minisearch@7.2.0:
@@ -2920,7 +2921,7 @@ snapshots:
     dependencies:
       yargs: 17.7.2
 
-  minimatch@10.2.4:
+  minimatch@10.2.3:
     dependencies:
       brace-expansion: 5.0.3
 
@@ -3209,7 +3210,7 @@ snapshots:
       markdown-title: 1.0.2
       mdast-util-from-markdown: 2.0.2
       millify: 6.1.0
-      minimatch: 10.2.4
+      minimatch: 10.2.3
       path-to-regexp: 6.3.0
       picocolors: 1.1.1
       pretty-bytes: 7.1.0
