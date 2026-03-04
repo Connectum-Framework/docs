@@ -283,3 +283,4 @@ describe('createAuthInterceptor', () => {
 - [Custom Protocols](/en/guide/protocols/custom) -- creating protocol plugins
 - [@connectum/interceptors](/en/packages/interceptors) -- Package Guide
 - [@connectum/interceptors API](/en/api/@connectum/interceptors/) -- Full API Reference
+- [with-custom-interceptor example](https://github.com/Connectum-Framework/examples/tree/main/with-custom-interceptor) -- API key auth & rate limiting interceptors
