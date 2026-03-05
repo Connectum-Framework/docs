@@ -9,3 +9,4 @@
 - [@connectum/interceptors](@connectum/interceptors/index.md)
 - [@connectum/otel](@connectum/otel/index.md)
 - [@connectum/reflection](@connectum/reflection/index.md)
+- [@connectum/testing](@connectum/testing/index.md)
