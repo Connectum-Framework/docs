@@ -40,6 +40,7 @@ import {
   createMockRequest,
   createMockNext,
   createMockNextError,
+  createMockNextSlow,
   assertConnectError,
 } from '@connectum/testing';
 import { createTimeoutInterceptor } from '@connectum/interceptors';
@@ -58,7 +59,7 @@ describe('timeout interceptor', () => {
     assert.deepStrictEqual(res.message, { value: 42 });
   });
 
-  it('should abort slow responses', async () => {
+  it('should abort slow responses with DeadlineExceeded', async () => {
     const req = createMockRequest();
     const next = createMockNextSlow(500);
 
@@ -66,6 +67,18 @@ describe('timeout interceptor', () => {
 
     await assert.rejects(() => handler(req), (err: unknown) => {
       assertConnectError(err, Code.DeadlineExceeded);
+      return true;
+    });
+  });
+
+  it('should propagate upstream errors unchanged', async () => {
+    const req = createMockRequest();
+    const next = createMockNextError(Code.NotFound, 'User not found');
+
+    const handler = interceptor(next);
+
+    await assert.rejects(() => handler(req), (err: unknown) => {
+      assertConnectError(err, Code.NotFound, 'User not found');
       return true;
     });
   });
@@ -96,6 +109,7 @@ function createMockRequest(options?: MockRequestOptions): UnaryRequest;
 ```typescript
 // Minimal -- all defaults
 const req = createMockRequest();
+// → { url: 'http://localhost/test.TestService/TestMethod', stream: false, message: {}, ... }
 
 // Custom service and message
 const req = createMockRequest({
@@ -103,6 +117,9 @@ const req = createMockRequest({
   method: 'GetUser',
   message: { id: '123' },
 });
+
+// Streaming request
+const req = createMockRequest({ stream: true, message: createMockStream([{ id: '1' }, { id: '2' }]) });
 ```
 
 ### Mock Next Functions
@@ -120,6 +137,25 @@ function createMockNext(options?: MockNextOptions): MockFunction;
 | `message` | `unknown` | `{ result: 'success' }` | Response message |
 | `stream` | `boolean` | `false` | Streaming response flag |
 
+```typescript
+import { createMockNext, createMockNextError, createMockNextSlow } from '@connectum/testing';
+import { Code } from '@connectrpc/connect';
+
+// Success
+const next = createMockNext();
+const result = await handler(req, next);
+assert.strictEqual(next.mock.calls.length, 1);
+
+// Custom response message
+const next = createMockNext({ message: { id: 1, name: 'Alice' } });
+
+// Error
+const next = createMockNextError(Code.Internal, 'Database error');
+
+// Slow (for timeout testing)
+const next = createMockNextSlow(200, { message: { result: 'late' } });
+```
+
 #### `createMockNextError(code, message?)`
 
 Creates a mock `next` handler that throws a `ConnectError`.
@@ -128,20 +164,12 @@ Creates a mock `next` handler that throws a `ConnectError`.
 function createMockNextError(code: Code, message?: string): MockFunction;
 ```
 
-```typescript
-const next = createMockNextError(Code.NotFound, 'User not found');
-```
-
 #### `createMockNextSlow(delay, options?)`
 
 Creates a mock `next` handler that responds after a delay. Useful for timeout testing.
 
 ```typescript
 function createMockNextSlow(delay: number, options?: MockNextOptions): MockFunction;
-```
-
-```typescript
-const next = createMockNextSlow(200); // resolves after ~200ms
 ```
 
 ### Assertions
@@ -159,10 +187,17 @@ function assertConnectError(
 ```
 
 ```typescript
+// RegExp pattern matching
 await assert.rejects(() => handler(req, next), (err: unknown) => {
   assertConnectError(err, Code.InvalidArgument, /validation failed/i);
   return true;
 });
+
+// String pattern matching
+assertConnectError(err, Code.NotFound, 'user not found');
+
+// Code-only check (no message matching)
+assertConnectError(err, Code.PermissionDenied);
 ```
 
 ### Protobuf Descriptor Mocks
@@ -190,6 +225,14 @@ const schema = createMockDescMessage('test.UserMessage', {
     { name: 'email', type: 'string' },
   ],
 });
+
+// Use in interceptor request
+const req = createMockRequest({
+  method: 'GetUser',
+  message: { id: '123', email: 'test@example.com' },
+});
+req.method.input = schema;
+req.method.output = schema;
 ```
 
 #### `createMockDescField(localName, options?)`
@@ -209,6 +252,12 @@ function createMockDescField(
 | `fieldNumber` | `number` | Auto-incremented | Proto field number |
 | `type` | `string` | `'string'` | Field scalar type |
 
+```typescript
+const passwordField = createMockDescField('password', { isSensitive: true });
+const usernameField = createMockDescField('username');
+const idField = createMockDescField('userId', { type: 'int32', fieldNumber: 1 });
+```
+
 #### `createMockDescMethod(name, options?)`
 
 Creates a mock `DescMethod` descriptor. Auto-generates input/output message descriptors based on the method name.
@@ -226,6 +275,22 @@ function createMockDescMethod(
 | `output` | `DescMessage` | Auto-generated | Output message descriptor |
 | `kind` | `string` | `'unary'` | Method kind (`unary`, `server_streaming`, `client_streaming`, `bidi_streaming`) |
 | `useSensitiveRedaction` | `boolean` | `false` | Enable sensitive field redaction |
+
+```typescript
+const inputSchema = createMockDescMessage('test.LoginRequest');
+const outputSchema = createMockDescMessage('test.LoginResponse');
+
+const method = createMockDescMethod('Login', {
+  input: inputSchema,
+  output: outputSchema,
+  useSensitiveRedaction: true,
+});
+
+// Streaming method
+const streaming = createMockDescMethod('ListUsers', {
+  kind: 'server_streaming',
+});
+```
 
 ### Fake Service Descriptors
 
@@ -260,9 +325,14 @@ function createFakeMethod(
 | `register` | `boolean` | `false` | Register method in service.methods |
 
 ```typescript
-const svc = createFakeService();
-const method = createFakeMethod(svc, 'GetUser', { register: true });
-// svc.methods.length === 1
+const svc = createFakeService({ typeName: 'acme.v1.UserService' });
+const getUser = createFakeMethod(svc, 'GetUser', { register: true });
+const listUsers = createFakeMethod(svc, 'ListUsers', {
+  methodKind: 'server_streaming',
+  register: true,
+});
+// svc.methods.length === 2
+// svc.method.getUser === getUser
 ```
 
 ### Streaming
@@ -285,6 +355,12 @@ function createMockStream<T>(
 ```typescript
 const stream = createMockStream([{ id: '1' }, { id: '2' }]);
 const slow = createMockStream([{ id: '1' }], { delayMs: 100 });
+
+// In streaming interceptor test
+const req = createMockRequest({
+  stream: true,
+  message: createMockStream([{ value: 'a' }, { value: 'b' }]),
+});
 ```
 
 ### Test Server
@@ -318,15 +394,30 @@ interface TestServer {
 ```
 
 ```typescript
-const server = await createTestServer({
-  services: [myRoutes],
-  interceptors: [createValidationInterceptor()],
+import { createTestServer } from '@connectum/testing';
+import { createClient } from '@connectrpc/connect';
+import { MyService } from './gen/myservice_pb.js';
+
+describe('MyService integration', () => {
+  let server: TestServer;
+
+  beforeEach(async () => {
+    server = await createTestServer({
+      services: [myServiceRoutes],
+      interceptors: [createValidationInterceptor()],
+    });
+  });
+
+  afterEach(async () => {
+    await server.close();
+  });
+
+  it('should handle GetUser request', async () => {
+    const client = createClient(MyService, server.transport);
+    const response = await client.getUser({ id: '123' });
+    assert.strictEqual(response.name, 'Test User');
+  });
 });
-
-const client = createClient(MyService, server.transport);
-const response = await client.getUser({ id: '123' });
-
-await server.close();
 ```
 
 #### `withTestServer(options, testFn)`
