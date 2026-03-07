@@ -2,7 +2,7 @@
 
 # Interface: TestServer
 
-Defined in: [types.ts:114](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/testing/src/types.ts#L114)
+Defined in: [types.ts:114](https://github.com/Connectum-Framework/connectum/blob/fd380003ee89443a5c37d7e75042a06399e158b4/packages/testing/src/types.ts#L114)
 
 A running test server with transport and cleanup.
 
@@ -12,7 +12,7 @@ A running test server with transport and cleanup.
 
 > **baseUrl**: `string`
 
-Defined in: [types.ts:118](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/testing/src/types.ts#L118)
+Defined in: [types.ts:118](https://github.com/Connectum-Framework/connectum/blob/fd380003ee89443a5c37d7e75042a06399e158b4/packages/testing/src/types.ts#L118)
 
 Server base URL (e.g. `http://localhost:54321`).
 
@@ -22,7 +22,7 @@ Server base URL (e.g. `http://localhost:54321`).
 
 > **port**: `number`
 
-Defined in: [types.ts:120](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/testing/src/types.ts#L120)
+Defined in: [types.ts:120](https://github.com/Connectum-Framework/connectum/blob/fd380003ee89443a5c37d7e75042a06399e158b4/packages/testing/src/types.ts#L120)
 
 Assigned port number.
 
@@ -32,7 +32,7 @@ Assigned port number.
 
 > **transport**: `Transport`
 
-Defined in: [types.ts:116](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/testing/src/types.ts#L116)
+Defined in: [types.ts:116](https://github.com/Connectum-Framework/connectum/blob/fd380003ee89443a5c37d7e75042a06399e158b4/packages/testing/src/types.ts#L116)
 
 Pre-configured client transport connected to the test server.
 
@@ -42,7 +42,7 @@ Pre-configured client transport connected to the test server.
 
 > **close**(): `Promise`\<`void`\>
 
-Defined in: [types.ts:122](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/testing/src/types.ts#L122)
+Defined in: [types.ts:122](https://github.com/Connectum-Framework/connectum/blob/fd380003ee89443a5c37d7e75042a06399e158b4/packages/testing/src/types.ts#L122)
 
 Stop the server and close all connections.
 
