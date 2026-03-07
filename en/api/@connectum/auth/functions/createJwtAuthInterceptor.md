@@ -4,7 +4,7 @@
 
 > **createJwtAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/jwt-auth-interceptor.ts:168](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/auth/src/jwt-auth-interceptor.ts#L168)
+Defined in: [packages/auth/src/jwt-auth-interceptor.ts:168](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/auth/src/jwt-auth-interceptor.ts#L168)
 
 Create a JWT authentication interceptor.
 

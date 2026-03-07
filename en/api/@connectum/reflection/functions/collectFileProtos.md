@@ -4,7 +4,7 @@
 
 > **collectFileProtos**(`files`): `FileDescriptorProto`[]
 
-Defined in: [utils.ts:19](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/reflection/src/utils.ts#L19)
+Defined in: [utils.ts:19](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/reflection/src/utils.ts#L19)
 
 Recursively collect FileDescriptorProto objects from DescFile entries,
 including transitive dependencies.

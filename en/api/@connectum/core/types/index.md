@@ -7,6 +7,7 @@ Public API types for Server
 ## Interfaces
 
 - [CreateServerOptions](interfaces/CreateServerOptions.md)
+- [EventBusLike](interfaces/EventBusLike.md)
 - [ProtocolContext](interfaces/ProtocolContext.md)
 - [ProtocolRegistration](interfaces/ProtocolRegistration.md)
 - [Server](interfaces/Server.md)

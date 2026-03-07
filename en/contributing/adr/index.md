@@ -24,6 +24,7 @@ Architecture Decision Records (ADRs) capture important design decisions with the
 | 023 | [Uniform Registration API](/en/contributing/adr/023-uniform-registration-api) | 2026-02-11 | createDefaultInterceptors(), explicit interceptor control |
 | 024 | [Auth/Authz Strategy](/en/contributing/adr/024-auth-authz-strategy) | 2026-02-15 | @connectum/auth package with JWT, RBAC, context propagation |
 | 025 | [Package Versioning Strategy](/en/contributing/adr/025-package-versioning-strategy) | 2026-02-20 | Two-phase versioning: Fixed for rc, Hybrid after 1.0.0 stable |
+| 026 | [EventBus Architecture](/en/contributing/adr/026-eventbus-architecture) | 2026-03-07 | Proto-first EventBus with pluggable broker adapters |
 
 ## Creating a New ADR
 

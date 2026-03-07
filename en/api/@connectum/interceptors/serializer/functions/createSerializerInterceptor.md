@@ -4,7 +4,7 @@
 
 > **createSerializerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [serializer.ts:84](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/interceptors/src/serializer.ts#L84)
+Defined in: [serializer.ts:84](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/interceptors/src/serializer.ts#L84)
 
 Create serializer interceptor
 

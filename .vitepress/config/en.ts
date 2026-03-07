@@ -39,6 +39,17 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
         ],
     },
     {
+        text: 'Events',
+        link: '/en/guide/events',
+        collapsed: true,
+        items: [
+            { text: 'Getting Started', link: '/en/guide/events/getting-started' },
+            { text: 'Custom Topics', link: '/en/guide/events/custom-topics' },
+            { text: 'Middleware', link: '/en/guide/events/middleware' },
+            { text: 'Adapters', link: '/en/guide/events/adapters' },
+        ],
+    },
+    {
         text: 'Auth & Authz',
         link: '/en/guide/auth',
         collapsed: true,
@@ -132,6 +143,10 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
             { text: '@connectum/otel', link: '/en/packages/otel' },
             { text: '@connectum/cli', link: '/en/packages/cli' },
             { text: '@connectum/testing', link: '/en/packages/testing' },
+            { text: '@connectum/events', link: '/en/packages/events' },
+            { text: '@connectum/events-nats', link: '/en/packages/events-nats' },
+            { text: '@connectum/events-kafka', link: '/en/packages/events-kafka' },
+            { text: '@connectum/events-redis', link: '/en/packages/events-redis' },
         ],
     },
 ];
@@ -186,6 +201,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'ADR-023: Uniform Registration API', link: '/en/contributing/adr/023-uniform-registration-api' },
                         { text: 'ADR-024: Auth & Authz Strategy', link: '/en/contributing/adr/024-auth-authz-strategy' },
                         { text: 'ADR-025: Package Versioning Strategy', link: '/en/contributing/adr/025-package-versioning-strategy' },
+                        { text: 'ADR-026: EventBus Architecture', link: '/en/contributing/adr/026-eventbus-architecture' },
                     ],
                 },
             ],

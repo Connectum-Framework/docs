@@ -4,7 +4,7 @@
 
 > **Healthcheck**(`options?`): `ProtocolRegistration`
 
-Defined in: [Healthcheck.ts:83](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/healthcheck/src/Healthcheck.ts#L83)
+Defined in: [Healthcheck.ts:84](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/healthcheck/src/Healthcheck.ts#L84)
 
 Create healthcheck protocol registration
 
@@ -16,7 +16,7 @@ Use the singleton `healthcheckManager` export to control health status.
 
 ### options?
 
-[`HealthcheckOptions`](../interfaces/HealthcheckOptions.md) = `{}`
+[`HealthcheckOptions`](../types/interfaces/HealthcheckOptions.md) = `{}`
 
 Healthcheck configuration options
 
