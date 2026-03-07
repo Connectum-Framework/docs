@@ -142,6 +142,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
             { text: '@connectum/reflection', link: '/en/packages/reflection' },
             { text: '@connectum/otel', link: '/en/packages/otel' },
             { text: '@connectum/cli', link: '/en/packages/cli' },
+            { text: '@connectum/testing', link: '/en/packages/testing' },
             { text: '@connectum/events', link: '/en/packages/events' },
             { text: '@connectum/events-nats', link: '/en/packages/events-nats' },
             { text: '@connectum/events-kafka', link: '/en/packages/events-kafka' },

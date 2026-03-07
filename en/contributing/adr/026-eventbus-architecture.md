@@ -110,10 +110,10 @@ The `resolveTopicName()` function checks for the custom option first, falling ba
 
 #### 4. Middleware Pipeline
 
-Composable middleware using an onion model (Express/Koa style), applied via `composeMiddleware()` with `reduceRight`:
+Composable middleware using an onion model (Express/Koa style), applied via `composeMiddleware()` with dispatch:
 
 ```
-custom (outermost) → retry → DLQ (innermost) → handler
+custom (outermost) → DLQ → retry (innermost) → handler
 ```
 
 Built-in middleware:
@@ -143,7 +143,7 @@ interface EventContext {
 }
 ```
 
-No implicit acknowledgment -- the handler must explicitly call `ack()` or `nack()`. This prevents silent message loss.
+Supports explicit ack/nack. Auto-ack on successful handler completion if neither called.
 
 #### 6. Wildcard Topic Matching
 
@@ -254,7 +254,7 @@ graph TB
 1. **Adapter abstraction limits broker-specific features** -- advanced features like Kafka exactly-once semantics, NATS Key-Value, or Redis Streams XCLAIM require escape hatches or adapter-specific extensions
 2. **Additional complexity for simple pub/sub** -- the proto-first approach requires proto definitions even for simple fire-and-forget events
 3. **Each new broker requires a separate package** -- new adapter packages must be created, published, and maintained independently
-4. **No implicit ack** -- handlers must explicitly call `ack()` or `nack()`, which adds boilerplate but prevents silent message loss
+4. **Auto-ack on success** -- handlers auto-ack on successful completion if neither `ack()` nor `nack()` is called explicitly; explicit control is available when needed
 5. **Single consumer group per EventBus** -- all routes in one EventBus share the same consumer group; multiple groups require multiple EventBus instances
 
 ### Risks

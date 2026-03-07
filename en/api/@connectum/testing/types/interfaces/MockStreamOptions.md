@@ -2,7 +2,7 @@
 
 # Interface: MockStreamOptions
 
-Defined in: [types.ts:84](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/testing/src/types.ts#L84)
+Defined in: [types.ts:84](https://github.com/Connectum-Framework/connectum/blob/fd380003ee89443a5c37d7e75042a06399e158b4/packages/testing/src/types.ts#L84)
 
 Options for createMockStream.
 
@@ -12,6 +12,6 @@ Options for createMockStream.
 
 > `optional` **delayMs**: `number`
 
-Defined in: [types.ts:86](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/testing/src/types.ts#L86)
+Defined in: [types.ts:86](https://github.com/Connectum-Framework/connectum/blob/fd380003ee89443a5c37d7e75042a06399e158b4/packages/testing/src/types.ts#L86)
 
 Delay in milliseconds between yielded items.

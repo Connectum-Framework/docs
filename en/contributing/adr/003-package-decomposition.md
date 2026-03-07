@@ -48,9 +48,13 @@ Connectum is a **universal** framework for ANY gRPC/ConnectRPC services:
 ├── interceptors/       # Layer 1: ConnectRPC interceptors
 ├── healthcheck/        # Layer 1: gRPC Health Check protocol
 ├── reflection/         # Layer 1: gRPC Server Reflection protocol
+├── events/             # Layer 1: EventBus core, router, middleware, MemoryAdapter
 ├── cli/                # Layer 2: CLI tooling
 ├── otel/               # Layer 2: OpenTelemetry instrumentation
-└── testing/            # Layer 2: Testing utilities
+├── testing/            # Layer 2: Testing utilities
+├── events-nats/        # Layer 2: NATS JetStream adapter
+├── events-kafka/       # Layer 2: Kafka/Redpanda adapter
+└── events-redis/       # Layer 2: Redis Streams adapter
 ```
 
 ### Layer 0: Server Foundation
@@ -318,3 +322,4 @@ packages/<name>/
 | 2026-02-17 | Claude | Added @connectum/auth (Layer 1): 5 interceptor factories for JWT, gateway headers, session-based auth, and declarative authorization |
 | 2026-02-17 | Claude | Added @connectum/cli (Layer 2): CLI tooling |
 | 2026-02-17 | Claude | Updated package count: 6 -> 8 |
+| 2026-03-07 | Claude | Added @connectum/events (Layer 1), @connectum/events-nats, @connectum/events-kafka, @connectum/events-redis (Layer 2): EventBus with pluggable broker adapters (ADR-026). Package count: 8 -> 12 |

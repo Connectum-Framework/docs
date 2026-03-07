@@ -71,10 +71,11 @@ Pass the result to `createEventBus({ adapter: ... })`.
 |--------|------|---------|-------------|
 | `brokers` | `string[]` | -- | **Required.** Kafka broker addresses (e.g., `["localhost:9092"]`) |
 | `clientId` | `string` | `"connectum"` | Client ID for this producer/consumer |
-| `kafkaConfig` | `Partial<KafkaConfig>` | -- | Additional KafkaJS configuration overrides (merged with `brokers` and `clientId`) |
+| `kafkaConfig` | `Omit<Partial<KafkaConfig>, "brokers" \| "clientId">` | -- | Additional KafkaJS configuration overrides (merged with `brokers` and `clientId`) |
 | `producerOptions.compression` | `CompressionTypes` | -- | Compression type for produced messages (e.g., `CompressionTypes.GZIP`) |
 | `consumerOptions.sessionTimeout` | `number` | `30000` | Session timeout in milliseconds |
 | `consumerOptions.fromBeginning` | `boolean` | `false` | Whether to start consuming from the beginning of topics |
+| `consumerOptions.allowAutoTopicCreation` | `boolean` | `false` | Allow automatic topic creation when subscribing |
 
 ### EventAdapter Interface
 

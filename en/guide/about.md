@@ -35,6 +35,7 @@ Existing solutions (NestJS, tRPC) are either too heavy or lack native gRPC suppo
 | Server Reflection | gRPC Server Reflection for grpcurl and similar tools |
 | Auth & Authz | JWT, gateway, session auth; declarative RBAC; proto-based authorization |
 | Input Validation | protovalidate integration for automatic request validation |
+| Event-Driven Communication | Proto-first pub/sub with pluggable broker adapters (NATS, Kafka, Redis) |
 | CLI Tools | Code generation and project scaffolding |
 
 ## Core Principles
@@ -43,7 +44,7 @@ These principles guide every design decision in Connectum. Each links to its Arc
 
 1. **Native TypeScript** -- write TypeScript natively on Node.js 25+; packages compile to JS + type declarations for consumers on Node.js 18+. [ADR-001](/en/contributing/adr/001-native-typescript-migration)
 
-2. **Modular Architecture** -- eight packages organized in dependency layers where each layer can only depend on lower layers. [ADR-003](/en/contributing/adr/003-package-decomposition)
+2. **Modular Architecture** -- twelve packages organized in dependency layers where each layer can only depend on lower layers. [ADR-003](/en/contributing/adr/003-package-decomposition)
 
 3. **Pluggable Protocols** -- health checks and server reflection are separate packages registered via the `protocols` array; custom protocols implement the same interface. [ADR-022](/en/contributing/adr/022-protocol-extraction)
 
@@ -70,18 +71,26 @@ graph BT
     HC["@connectum/healthcheck"]
     REF["@connectum/reflection"]
     INT["@connectum/interceptors"]
+    EVT["@connectum/events"]
   end
 
   subgraph L2["Layer 2 — Tools"]
     CLI["@connectum/cli"]
     OTEL["@connectum/otel"]
     TEST["@connectum/testing"]
+    ENATS["@connectum/events-nats"]
+    EKAFKA["@connectum/events-kafka"]
+    EREDIS["@connectum/events-redis"]
   end
 
   AUTH --> CORE
   HC --> CORE
   REF --> CORE
   INT --> CORE
+  EVT --> CORE
+  ENATS --> EVT
+  EKAFKA --> EVT
+  EREDIS --> EVT
 ```
 
 **Layer 0 (Foundation):** `@connectum/core` -- server factory with lifecycle control, zero internal dependencies.

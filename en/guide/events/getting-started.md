@@ -140,8 +140,8 @@ export const notificationEvents: EventRoute = (events) => {
 };
 ```
 
-::: warning Important
-Always call `ctx.ack()` or `ctx.nack()` in your handlers. Without acknowledgment, the broker may redeliver the message or it may be lost, depending on the adapter.
+::: tip Acknowledgment
+Explicit ack/nack is optional. Successful handler completion auto-acks the event. Use `ctx.ack()` or `ctx.nack()` when you need explicit control over acknowledgment timing.
 :::
 
 ## Step 5: Create the EventBus

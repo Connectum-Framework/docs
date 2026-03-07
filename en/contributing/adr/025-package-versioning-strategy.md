@@ -6,11 +6,11 @@ Accepted -- 2026-02-20
 
 ## Context
 
-Connectum is a universal gRPC/ConnectRPC framework composed of 8 `@connectum/*` packages in a pnpm monorepo, managed by [changesets](https://github.com/changesets/changesets) for versioning and publishing. Packages are compiled via tsup before publication (compile-before-publish, see [ADR-001](./001-native-typescript-migration.md)).
+Connectum is a universal gRPC/ConnectRPC framework composed of 12 `@connectum/*` packages in a pnpm monorepo, managed by [changesets](https://github.com/changesets/changesets) for versioning and publishing. Packages are compiled via tsup before publication (compile-before-publish, see [ADR-001](./001-native-typescript-migration.md)).
 
 ### Current State
 
-All 8 packages use a **fixed versioning** strategy (`"fixed": [["@connectum/*"]]`), meaning every package always shares the same version number. The project is currently in a **pre-release (rc) phase** with all packages at `1.0.0-rc.4`.
+All 12 packages use a **fixed versioning** strategy (`"fixed": [["@connectum/*"]]`), meaning every package always shares the same version number. The project is currently in a **pre-release (rc) phase** with all packages at `1.0.0-rc.4`.
 
 Current `.changeset/config.json`:
 
@@ -24,7 +24,7 @@ Current `.changeset/config.json`:
 
 ### Package Dependency Graph
 
-The 8 packages are organized in 3 layers with varying degrees of coupling:
+The 12 packages are organized in 3 layers with varying degrees of coupling:
 
 ```mermaid
 graph TB
@@ -37,19 +37,28 @@ graph TB
         Healthcheck["@connectum/healthcheck"]
         Reflection["@connectum/reflection"]
         Auth["@connectum/auth"]
+        Events["@connectum/events"]
         Testing["@connectum/testing<br/>(private)"]
     end
 
     subgraph "Layer 2: Tools"
         Otel["@connectum/otel"]
         CLI["@connectum/cli"]
+        EventsNats["@connectum/events-nats"]
+        EventsKafka["@connectum/events-kafka"]
+        EventsRedis["@connectum/events-redis"]
     end
 
     Interceptors -- "dependency" --> Core
     Healthcheck -. "peerDependency" .-> Core
     Reflection -. "peerDependency" .-> Core
     Auth -- "dependency" --> Core
+    Events -- "dependency" --> Core
     Testing -- "dependency" --> Core
+
+    EventsNats -- "dependency" --> Events
+    EventsKafka -- "dependency" --> Events
+    EventsRedis -- "dependency" --> Events
 
     Otel -.- |"zero @connectum deps"| Otel
     CLI -.- |"devDeps only"| CLI
@@ -59,14 +68,18 @@ graph TB
     style Healthcheck fill:#4a90d9,color:#fff
     style Reflection fill:#4a90d9,color:#fff
     style Auth fill:#7fb069,color:#fff
+    style Events fill:#7fb069,color:#fff
     style Otel fill:#7fb069,color:#fff
     style CLI fill:#7fb069,color:#fff
+    style EventsNats fill:#7fb069,color:#fff
+    style EventsKafka fill:#7fb069,color:#fff
+    style EventsRedis fill:#7fb069,color:#fff
     style Testing fill:#999,color:#fff
 ```
 
 ### The Problem
 
-With the current fixed strategy, **all** 8 packages are bumped together. This means:
+With the current fixed strategy, **all** 12 packages are bumped together. This means:
 
 1. A patch fix in `@connectum/auth` bumps `@connectum/otel` even though otel has zero `@connectum` dependencies
 2. A new feature in `@connectum/cli` bumps `@connectum/core` even though core is unchanged
@@ -148,6 +161,10 @@ Packages that are **optional extensions** with distinct lifecycles:
 | Package | Reason for independence |
 |---------|----------------------|
 | `@connectum/auth` | Optional authentication/authorization; consumers may handle auth at the gateway level |
+| `@connectum/events` | Optional EventBus; consumers may use external message brokers directly |
+| `@connectum/events-nats` | NATS adapter for EventBus; depends on `@connectum/events` |
+| `@connectum/events-kafka` | Kafka adapter for EventBus; depends on `@connectum/events` |
+| `@connectum/events-redis` | Redis Streams adapter for EventBus; depends on `@connectum/events` |
 | `@connectum/otel` | Zero `@connectum` dependencies; pure OpenTelemetry instrumentation |
 | `@connectum/cli` | Developer tool; only `devDependencies`; not a runtime concern |
 | `@connectum/testing` | Private package; `devDependency` only; never published |
@@ -190,6 +207,10 @@ graph LR
     subgraph "Independent Versioning"
         direction TB
         A["@connectum/auth<br/>v1.1.0"]
+        E["@connectum/events<br/>v1.0.1"]
+        EN["@connectum/events-nats<br/>v1.0.0"]
+        EK["@connectum/events-kafka<br/>v1.0.0"]
+        ER["@connectum/events-redis<br/>v1.0.0"]
         O["@connectum/otel<br/>v1.0.3"]
         CLI["@connectum/cli<br/>v1.3.0"]
     end
@@ -199,6 +220,10 @@ graph LR
     C -.->|"same version<br/>always"| R
 
     A -->|"dep: core ^1.0.0"| C
+    E -->|"dep: core ^1.0.0"| C
+    EN -->|"dep: events ^1.0.0"| E
+    EK -->|"dep: events ^1.0.0"| E
+    ER -->|"dep: events ^1.0.0"| E
     O -.-|"no @connectum deps"| O
     CLI -.-|"devDeps only"| CLI
 
@@ -207,6 +232,10 @@ graph LR
     style H fill:#4a90d9,color:#fff
     style R fill:#4a90d9,color:#fff
     style A fill:#7fb069,color:#fff
+    style E fill:#7fb069,color:#fff
+    style EN fill:#7fb069,color:#fff
+    style EK fill:#7fb069,color:#fff
+    style ER fill:#7fb069,color:#fff
     style O fill:#7fb069,color:#fff
     style CLI fill:#7fb069,color:#fff
 ```
@@ -237,7 +266,7 @@ When transitioning from Phase 1 to Phase 2 (after `1.0.0` stable release):
 
 - [ ] Update `.changeset/config.json` with the hybrid configuration above
 - [ ] Update `release.yml` to use `select(.name == "@connectum/core")` for version extraction
-- [ ] Verify all 8 packages are at `1.0.0` before the switch
+- [ ] Verify all 12 packages are at `1.0.0` before the switch
 - [ ] Update `docs/en/contributing/development-setup.md` with versioning guidelines
 - [ ] Add a note to each independent package README explaining its versioning policy
 - [ ] Create a compatibility matrix in documentation (core group version vs auth/otel/cli versions)
