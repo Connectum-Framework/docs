@@ -1,4 +1,4 @@
-[Connectum API Reference](../../../../../index.md) / [@connectum/healthcheck](../../../index.md) / [@connectum/healthcheck](../index.md) / parseServiceFromUrl
+[Connectum API Reference](../../../index.md) / [@connectum/healthcheck](../index.md) / parseServiceFromUrl
 
 # Function: parseServiceFromUrl()
 

@@ -1,4 +1,4 @@
-[Connectum API Reference](../../../../../../index.md) / [@connectum/healthcheck](../../../../index.md) / [@connectum/healthcheck/types](../index.md) / ServingStatus
+[Connectum API Reference](../../../../index.md) / [@connectum/healthcheck](../../../../index.md) / [@connectum/healthcheck/types](../index.md) / ServingStatus
 
 # Variable: ServingStatus
 

@@ -1,4 +1,4 @@
-[Connectum API Reference](../../../../../index.md) / [@connectum/healthcheck](../../../index.md) / @connectum/healthcheck/types
+[Connectum API Reference](../../../index.md) / [@connectum/healthcheck](../../../index.md) / @connectum/healthcheck/types
 
 # @connectum/healthcheck/types
 
