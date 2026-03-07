@@ -4,7 +4,7 @@
 
 > **executeProtoSync**(`options`): `Promise`\<`void`\>
 
-Defined in: [commands/proto-sync.ts:41](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/cli/src/commands/proto-sync.ts#L41)
+Defined in: [commands/proto-sync.ts:41](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/cli/src/commands/proto-sync.ts#L41)
 
 Execute the proto sync pipeline.
 

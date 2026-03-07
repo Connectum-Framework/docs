@@ -4,7 +4,7 @@
 
 > **fetchFileDescriptorSetBinary**(`url`): `Promise`\<`Uint8Array`\<`ArrayBufferLike`\>\>
 
-Defined in: [utils/reflection.ts:72](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/cli/src/utils/reflection.ts#L72)
+Defined in: [utils/reflection.ts:72](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/cli/src/utils/reflection.ts#L72)
 
 Fetch FileDescriptorSet as binary (.binpb) from a running server via reflection.
 

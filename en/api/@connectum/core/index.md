@@ -42,6 +42,12 @@ Re-exports [CreateServerOptions](types/interfaces/CreateServerOptions.md)
 
 ***
 
+### EventBusLike
+
+Re-exports [EventBusLike](types/interfaces/EventBusLike.md)
+
+***
+
 ### HttpHandler
 
 Re-exports [HttpHandler](types/type-aliases/HttpHandler.md)

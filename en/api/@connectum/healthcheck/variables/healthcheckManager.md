@@ -1,10 +1,10 @@
-[Connectum API Reference](../../../index.md) / [@connectum/healthcheck](../index.md) / healthcheckManager
+[Connectum API Reference](../../../../../index.md) / [@connectum/healthcheck](../../../index.md) / [@connectum/healthcheck](../index.md) / healthcheckManager
 
 # Variable: healthcheckManager
 
 > `const` **healthcheckManager**: [`HealthcheckManager`](../classes/HealthcheckManager.md)
 
-Defined in: [Healthcheck.ts:40](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/healthcheck/src/Healthcheck.ts#L40)
+Defined in: [Healthcheck.ts:41](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/healthcheck/src/Healthcheck.ts#L41)
 
 Module-level singleton health manager
 

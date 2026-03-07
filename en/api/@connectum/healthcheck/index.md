@@ -8,17 +8,17 @@
 
 ## Interfaces
 
-- [HealthcheckOptions](interfaces/HealthcheckOptions.md)
-- [ServiceStatus](interfaces/ServiceStatus.md)
+- [HealthcheckOptions](types/interfaces/HealthcheckOptions.md)
+- [ServiceStatus](types/interfaces/ServiceStatus.md)
 
 ## Type Aliases
 
-- [ServingStatus](type-aliases/ServingStatus.md)
+- [ServingStatus](types/type-aliases/ServingStatus.md)
 
 ## Variables
 
 - [healthcheckManager](variables/healthcheckManager.md)
-- [ServingStatus](variables/ServingStatus.md)
+- [ServingStatus](types/variables/ServingStatus.md)
 
 ## Functions
 

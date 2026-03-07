@@ -4,7 +4,7 @@
 
 > **OtelFilter** = (`context`) => `boolean`
 
-Defined in: [packages/otel/src/types.ts:15](https://github.com/Connectum-Framework/connectum/blob/47e0b0ef40389913ccd23186e0f4d580f701e822/packages/otel/src/types.ts#L15)
+Defined in: [packages/otel/src/types.ts:15](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/otel/src/types.ts#L15)
 
 Filter callback to skip specific RPC requests from instrumentation
 
