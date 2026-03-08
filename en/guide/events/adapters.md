@@ -112,10 +112,11 @@ const adapter = KafkaAdapter({
 |--------|------|---------|-------------|
 | `brokers` | `string[]` | *required* | Kafka broker addresses |
 | `clientId` | `string` | `"connectum"` | Client identifier for the producer/consumer |
-| `kafkaConfig` | `Partial<KafkaConfig>` | `undefined` | Additional KafkaJS configuration overrides |
+| `kafkaConfig` | `Omit<Partial<KafkaConfig>, "brokers" \| "clientId">` | `undefined` | Additional KafkaJS configuration overrides |
 | `producerOptions.compression` | `CompressionTypes` | `undefined` | Message compression type |
 | `consumerOptions.sessionTimeout` | `number` | `30000` | Session timeout in ms |
 | `consumerOptions.fromBeginning` | `boolean` | `false` | Start consuming from beginning of topics |
+| `consumerOptions.allowAutoTopicCreation` | `boolean` | `false` | Allow automatic topic creation when subscribing |
 
 ### Redpanda Compatibility
 

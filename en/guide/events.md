@@ -110,7 +110,7 @@ const adapter = MemoryAdapter();
 Middleware wraps event handlers in an onion model. Built-in middleware provides retry with configurable backoff and dead letter queue routing:
 
 ```
-Custom → Retry → DLQ → Handler
+Custom → DLQ → Retry → Handler
 ```
 
 Each middleware receives the raw event, the event context, and a `next()` function to call the inner handler.

@@ -25,31 +25,7 @@ export const sharedConfig = defineConfig({
             provider: 'local',
             options: {
                 detailedView: true,
-                locales: {
-                    ru: {
-                        translations: {
-                            button: {
-                                buttonText: 'Поиск',
-                                buttonAriaLabel: 'Поиск',
-                            },
-                            modal: {
-                                displayDetails: 'Подробный список',
-                                resetButtonTitle: 'Сбросить',
-                                backButtonTitle: 'Закрыть',
-                                noResultsText: 'Ничего не найдено',
-                                footer: {
-                                    selectText: 'выбрать',
-                                    selectKeyAriaLabel: 'Enter',
-                                    navigateText: 'навигация',
-                                    navigateUpKeyAriaLabel: 'стрелка вверх',
-                                    navigateDownKeyAriaLabel: 'стрелка вниз',
-                                    closeText: 'закрыть',
-                                    closeKeyAriaLabel: 'Escape',
-                                },
-                            },
-                        },
-                    },
-                },
+                locales: {},
             },
         },
         footer: {
@@ -74,7 +50,7 @@ export const sharedConfig = defineConfig({
     },
     vite: {
         plugins: [llmstxt({
-            ignoreFiles: ['ru/*', 'ru.md', 'index.md', 'README.md'],
+            ignoreFiles: ['index.md', 'README.md'],
         })],
         build: {
             chunkSizeWarningLimit: 3000,

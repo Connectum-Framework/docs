@@ -130,6 +130,8 @@ function createEventBus(options: EventBusOptions): EventBus & EventBusLike;
 | `adapter` | `EventAdapter` | *required* | Adapter instance (e.g., `NatsAdapter`, `KafkaAdapter`, `MemoryAdapter`) |
 | `routes` | `EventRoute[]` | `[]` | Event routes to register |
 | `group` | `string` | `undefined` | Consumer group name for load-balanced consumption |
+| `signal` | `AbortSignal` | `undefined` | Abort signal for graceful shutdown |
+| `handlerTimeout` | `number` | `undefined` | Timeout in ms for event handler execution |
 | `middleware` | `MiddlewareConfig` | `undefined` | Middleware configuration (retry, DLQ, custom) |
 
 ### `EventBus`
@@ -145,6 +147,7 @@ function createEventBus(options: EventBusOptions): EventBus & EventBusLike;
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `topic` | `string` | `schema.typeName` | Override topic name |
+| `key` | `string` | `undefined` | Partition/routing key for ordered delivery |
 | `sync` | `boolean` | `false` | Wait for broker confirmation |
 | `group` | `string` | `undefined` | Named group tag for workflow grouping |
 | `metadata` | `Record<string, string>` | `undefined` | Additional metadata / headers |
@@ -186,18 +189,19 @@ function createEventBus(options: EventBusOptions): EventBus & EventBusLike;
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `topic` | `string` | *required* | DLQ topic name |
+| `errorSerializer` | `(error: unknown) => Record<string, unknown>` | `undefined` | Custom error serializer for DLQ metadata |
 
 ## Middleware
 
 The middleware pipeline uses an onion model (outer to inner):
 
 ```
-Custom → Retry → DLQ → Handler
+Custom → DLQ → Retry → Handler
 ```
 
 - **Custom middleware** runs outermost, wrapping everything
-- **Retry** catches handler errors and retries with configurable backoff
 - **DLQ** catches errors after all retries are exhausted and publishes to a dead letter topic
+- **Retry** catches handler errors and retries with configurable backoff
 
 See [Middleware Guide](/en/guide/events/middleware) for detailed configuration and custom middleware examples.
 

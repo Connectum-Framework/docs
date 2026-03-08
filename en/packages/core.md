@@ -79,6 +79,7 @@ The server is created in `CREATED` state. Call `server.start()` to begin accepti
 | `interceptors` | `Interceptor[]` | `[]` | ConnectRPC interceptors. When omitted or `[]`, no interceptors are applied. Use `createDefaultInterceptors()` from `@connectum/interceptors` for the production-ready chain. |
 | `allowHTTP1` | `boolean` | `true` | Allow HTTP/1.1 connections |
 | `handshakeTimeout` | `number` | `30000` | Handshake timeout in milliseconds |
+| `eventBus` | `EventBusLike` | `undefined` | Event bus for lifecycle management |
 | `http2Options` | `SecureServerOptions` | `undefined` | Additional HTTP/2 server options |
 
 ### `Server` Interface
@@ -121,6 +122,9 @@ interface Server {
 
   /** Registered protocols */
   readonly protocols: ReadonlyArray<ProtocolRegistration>;
+
+  /** Event bus instance (null if not configured) */
+  readonly eventBus: EventBusLike | null;
 }
 ```
 
@@ -316,6 +320,7 @@ See [Runtime Support: Node.js vs Bun vs tsx](/en/guide/typescript#runtime-suppor
 | `LifecycleEvent` | `.` | Lifecycle event name constants |
 | `isSanitizableError` | `.` | Type guard for `SanitizableError` protocol |
 | `getTLSPath`, `readTLSCertificates`, `tlsPath` | `.` | TLS utilities |
+| `EventBusLike` | `.` | Event bus lifecycle interface |
 | `SanitizableError`, `Server`, `CreateServerOptions`, `ShutdownOptions`, etc. | `.` | TypeScript types |
 | `parseEnvConfig`, `safeParseEnvConfig`, schemas | `./config` | Env configuration |
 
@@ -324,4 +329,5 @@ See [Runtime Support: Node.js vs Bun vs tsx](/en/guide/typescript#runtime-suppor
 - **[@connectum/interceptors](./interceptors.md)** -- Resilience interceptor chain (Layer 1, optional)
 - **[@connectum/healthcheck](./healthcheck.md)** -- Healthcheck protocol plugin (Layer 1, optional)
 - **[@connectum/reflection](./reflection.md)** -- Server Reflection protocol plugin (Layer 1, optional)
+- **[@connectum/events](./events.md)** -- Event-driven communication (Layer 1, optional)
 - **[@connectum/otel](./otel.md)** -- OpenTelemetry instrumentation (Layer 2, optional)

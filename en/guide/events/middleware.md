@@ -11,18 +11,18 @@ The EventBus middleware pipeline wraps event handlers in a composable onion mode
 Middleware executes from outermost to innermost:
 
 ```
-Custom[0] → Custom[1] → ... → Retry → DLQ → Handler
+Custom[0] → Custom[1] → ... → DLQ → Retry → Handler
 ```
 
 ```mermaid
 graph LR
     E["Raw Event"] --> C1["Custom Middleware"]
     C1 --> C2["..."]
-    C2 --> R["Retry Middleware"]
-    R --> D["DLQ Middleware"]
-    D --> H["Event Handler"]
-    H -->|ack/nack| D
-    D -->|error after retries| DLQ["DLQ Topic"]
+    C2 --> D["DLQ Middleware"]
+    D --> R["Retry Middleware"]
+    R --> H["Event Handler"]
+    H -->|ack/nack| R
+    R -->|error after retries| DLQ["DLQ Topic"]
 ```
 
 Each middleware receives three arguments:
@@ -125,6 +125,7 @@ const eventBus = createEventBus({
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `topic` | `string` | *required* | Topic name for dead letter events |
+| `errorSerializer` | `(error: unknown) => Record<string, unknown>` | `undefined` | Custom error serializer for DLQ metadata |
 
 ### DLQ Metadata
 
@@ -175,26 +176,22 @@ Execution flow on handler error:
 ```mermaid
 sequenceDiagram
     participant Broker
-    participant Retry as Retry Middleware
     participant DLQ as DLQ Middleware
+    participant Retry as Retry Middleware
     participant Handler
 
-    Broker->>Retry: deliver event
-    Retry->>DLQ: next()
-    DLQ->>Handler: next()
-    Handler->>DLQ: throw Error
-    DLQ->>Retry: re-throw
+    Broker->>DLQ: deliver event
+    DLQ->>Retry: next()
+    Retry->>Handler: next()
+    Handler->>Retry: throw Error
 
     Note over Retry: Attempt 2 (after delay)
-    Retry->>DLQ: next()
-    DLQ->>Handler: next()
-    Handler->>DLQ: throw Error
-    DLQ->>Retry: re-throw
+    Retry->>Handler: next()
+    Handler->>Retry: throw Error
 
     Note over Retry: Attempt 3 (after delay)
-    Retry->>DLQ: next()
-    DLQ->>Handler: next()
-    Handler->>DLQ: throw Error
+    Retry->>Handler: next()
+    Handler->>Retry: throw Error
 
     Note over Retry: maxRetries exhausted
     Retry->>DLQ: re-throw
@@ -243,7 +240,7 @@ const eventBus = createEventBus({
 });
 ```
 
-Execution order: `loggingMiddleware → metricsMiddleware → retry → DLQ → handler`
+Execution order: `loggingMiddleware → metricsMiddleware → DLQ → retry → handler`
 
 ### Metrics Middleware Example
 
