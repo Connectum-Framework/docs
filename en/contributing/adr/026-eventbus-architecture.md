@@ -119,6 +119,7 @@ custom (outermost) → DLQ → retry (innermost) → handler
 Built-in middleware:
 - **retryMiddleware** -- configurable backoff (exponential, linear, fixed), max retries, retryable error filter
 - **dlqMiddleware** -- publishes failed events to DLQ topic with error metadata, then acks original
+- **Typed error classes** -- `NonRetryableError` and `RetryableError` provide declarative retry control via `Symbol.for()` branding
 
 Custom middleware follows the standard signature:
 
@@ -183,6 +184,8 @@ const server = createServer({
 ```
 
 The server starts the event bus after transport is ready and stops it during graceful shutdown (via `ShutdownManager`).
+
+During graceful shutdown, the EventBus tracks in-flight message handlers via an `inFlight` Set. The `stop()` method follows a drain sequence: (1) stop accepting new messages (nack with requeue), (2) wait for in-flight handlers up to `drainTimeout` (default: 30s), (3) force-abort remaining via AbortSignal if timeout exceeded, (4) disconnect adapter. The `drainTimeout: 0` option skips the drain for immediate shutdown.
 
 #### 8. MemoryAdapter for Testing
 
@@ -331,3 +334,4 @@ Use the CloudEvents specification as the event envelope instead of raw protobuf.
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-03-07 | Software Architect | Initial ADR: EventBus architecture with pluggable adapter pattern |
+| 2026-03-09 | Software Architect | Added typed error classes (#48) and graceful drain (#47) |
