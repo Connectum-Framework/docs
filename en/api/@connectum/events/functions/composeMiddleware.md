@@ -4,12 +4,14 @@
 
 > **composeMiddleware**(`middlewares`, `handler`): (`event`, `ctx`) => `Promise`\<`void`\>
 
-Defined in: [middleware.ts:22](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/middleware.ts#L22)
+Defined in: [packages/events/src/middleware.ts:24](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/middleware.ts#L24)
 
 Compose an array of middleware into a single handler.
 
 Middleware is applied from left to right (outer to inner).
 The innermost function is the actual event handler.
+
+Uses a dispatch pattern that guards against double next() invocation.
 
 ## Parameters
 

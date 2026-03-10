@@ -4,7 +4,7 @@
 
 > **parseEnvConfig**(`env?`): `object`
 
-Defined in: [packages/core/src/config/envSchema.ts:145](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/core/src/config/envSchema.ts#L145)
+Defined in: [packages/core/src/config/envSchema.ts:145](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/core/src/config/envSchema.ts#L145)
 
 Parse and validate environment configuration
 

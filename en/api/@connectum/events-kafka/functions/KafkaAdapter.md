@@ -4,7 +4,7 @@
 
 > **KafkaAdapter**(`options`): `EventAdapter`
 
-Defined in: [KafkaAdapter.ts:102](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events-kafka/src/KafkaAdapter.ts#L102)
+Defined in: [KafkaAdapter.ts:122](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events-kafka/src/KafkaAdapter.ts#L122)
 
 Create a Kafka/Redpanda adapter for @connectum/events.
 

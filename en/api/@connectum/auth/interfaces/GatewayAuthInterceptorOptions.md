@@ -2,7 +2,7 @@
 
 # Interface: GatewayAuthInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:301](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/auth/src/types.ts#L301)
+Defined in: [packages/auth/src/types.ts:301](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/auth/src/types.ts#L301)
 
 Gateway auth interceptor options.
 
@@ -15,7 +15,7 @@ Extracts auth context from gateway-injected headers.
 
 > `readonly` `optional` **defaultType**: `string`
 
-Defined in: [packages/auth/src/types.ts:318](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/auth/src/types.ts#L318)
+Defined in: [packages/auth/src/types.ts:318](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/auth/src/types.ts#L318)
 
 Default credential type when not provided by gateway
 
@@ -25,7 +25,7 @@ Default credential type when not provided by gateway
 
 > `readonly` **headerMapping**: [`GatewayHeaderMapping`](GatewayHeaderMapping.md)
 
-Defined in: [packages/auth/src/types.ts:303](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/auth/src/types.ts#L303)
+Defined in: [packages/auth/src/types.ts:303](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/auth/src/types.ts#L303)
 
 Mapping from AuthContext fields to gateway header names
 
@@ -35,7 +35,7 @@ Mapping from AuthContext fields to gateway header names
 
 > `readonly` `optional` **propagateHeaders**: `boolean`
 
-Defined in: [packages/auth/src/types.ts:316](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/auth/src/types.ts#L316)
+Defined in: [packages/auth/src/types.ts:316](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/auth/src/types.ts#L316)
 
 Propagate auth context as headers for downstream services
 
@@ -45,7 +45,7 @@ Propagate auth context as headers for downstream services
 
 > `readonly` `optional` **skipMethods**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:314](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/auth/src/types.ts#L314)
+Defined in: [packages/auth/src/types.ts:314](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/auth/src/types.ts#L314)
 
 Methods to skip authentication for
 
@@ -55,7 +55,7 @@ Methods to skip authentication for
 
 > `readonly` `optional` **stripHeaders**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:312](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/auth/src/types.ts#L312)
+Defined in: [packages/auth/src/types.ts:312](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/auth/src/types.ts#L312)
 
 Headers to strip from the request after extraction (prevent spoofing)
 
@@ -65,7 +65,7 @@ Headers to strip from the request after extraction (prevent spoofing)
 
 > `readonly` **trustSource**: `object`
 
-Defined in: [packages/auth/src/types.ts:305](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/auth/src/types.ts#L305)
+Defined in: [packages/auth/src/types.ts:305](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/auth/src/types.ts#L305)
 
 Trust verification: check that request came from a trusted gateway
 

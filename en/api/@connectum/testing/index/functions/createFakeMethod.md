@@ -4,7 +4,7 @@
 
 > **createFakeMethod**(`service`, `name`, `options?`): `DescMethod`
 
-Defined in: [fake-service.ts:72](https://github.com/Connectum-Framework/connectum/blob/fd380003ee89443a5c37d7e75042a06399e158b4/packages/testing/src/fake-service.ts#L72)
+Defined in: [fake-service.ts:72](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/testing/src/fake-service.ts#L72)
 
 Create a fake DescMethod descriptor attached to a service.
 
