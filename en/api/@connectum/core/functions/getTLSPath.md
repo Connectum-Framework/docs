@@ -4,7 +4,7 @@
 
 > **getTLSPath**(): `string`
 
-Defined in: [packages/core/src/TLSConfig.ts:20](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/core/src/TLSConfig.ts#L20)
+Defined in: [packages/core/src/TLSConfig.ts:20](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/core/src/TLSConfig.ts#L20)
 
 Get TLS directory path
 

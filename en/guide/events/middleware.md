@@ -103,6 +103,47 @@ middleware: {
 
 Non-retryable errors are thrown immediately without delay.
 
+### Typed Error Classes
+
+Instead of (or in addition to) the `retryableErrors` predicate, you can use typed error classes for declarative retry control:
+
+```typescript
+import { NonRetryableError, RetryableError } from '@connectum/events';
+
+// Handler that uses typed errors
+const orderEvents: EventRoute = (events) => {
+  events.service(OrderEventHandlers, {
+    onOrderCreated: async (msg, ctx) => {
+      // Validation errors -- never retry
+      if (!msg.orderId) {
+        throw new NonRetryableError('Missing orderId');
+      }
+
+      try {
+        await db.insertOrder(msg);
+      } catch (err) {
+        // Transient DB errors -- always retry
+        if (isConnectionError(err)) {
+          throw new RetryableError('DB connection lost', { cause: err });
+        }
+        throw err; // Other errors use predicate or default behavior
+      }
+    },
+  });
+};
+```
+
+**Priority order** (first match wins):
+
+| Priority | Check | Behavior |
+|----------|-------|----------|
+| 1 | `NonRetryableError` | Skip retry, throw immediately |
+| 2 | `RetryableError` | Force retry (ignores `retryableErrors` predicate) |
+| 3 | `retryableErrors` predicate | Retry if predicate returns `true` |
+| 4 | Default | Retry all errors |
+
+Both classes use `Symbol.for()` branding, so they work across module boundaries and realms.
+
 ## DLQ Middleware
 
 When a handler fails after all retries are exhausted, the DLQ middleware publishes the failed event to a dedicated dead letter topic and acknowledges the original event. This prevents poison messages from blocking the queue.

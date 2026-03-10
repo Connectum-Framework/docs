@@ -2,7 +2,7 @@
 
 # Interface: RawEvent
 
-Defined in: [types.ts:16](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L16)
+Defined in: [packages/events/src/types.ts:16](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L16)
 
 Raw event data delivered by the adapter
 
@@ -12,7 +12,7 @@ Raw event data delivered by the adapter
 
 > `readonly` **attempt**: `number`
 
-Defined in: [types.ts:26](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L26)
+Defined in: [packages/events/src/types.ts:26](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L26)
 
 Delivery attempt number (1-based)
 
@@ -22,7 +22,7 @@ Delivery attempt number (1-based)
 
 > `readonly` **eventId**: `string`
 
-Defined in: [types.ts:18](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L18)
+Defined in: [packages/events/src/types.ts:18](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L18)
 
 Unique event identifier
 
@@ -32,7 +32,7 @@ Unique event identifier
 
 > `readonly` **eventType**: `string`
 
-Defined in: [types.ts:20](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L20)
+Defined in: [packages/events/src/types.ts:20](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L20)
 
 Event type / topic name
 
@@ -42,7 +42,7 @@ Event type / topic name
 
 > `readonly` **metadata**: `ReadonlyMap`\<`string`, `string`\>
 
-Defined in: [types.ts:28](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L28)
+Defined in: [packages/events/src/types.ts:28](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L28)
 
 Event metadata (headers)
 
@@ -52,7 +52,7 @@ Event metadata (headers)
 
 > `readonly` **payload**: `Uint8Array`
 
-Defined in: [types.ts:22](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L22)
+Defined in: [packages/events/src/types.ts:22](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L22)
 
 Serialized protobuf payload
 
@@ -62,6 +62,6 @@ Serialized protobuf payload
 
 > `readonly` **publishedAt**: `Date`
 
-Defined in: [types.ts:24](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L24)
+Defined in: [packages/events/src/types.ts:24](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L24)
 
 When the event was published

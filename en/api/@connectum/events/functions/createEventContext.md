@@ -4,7 +4,7 @@
 
 > **createEventContext**(`init`): [`EventContext`](../types/interfaces/EventContext.md)
 
-Defined in: [EventContext.ts:18](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/EventContext.ts#L18)
+Defined in: [packages/events/src/EventContext.ts:18](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/EventContext.ts#L18)
 
 Create an EventContext from raw event data.
 

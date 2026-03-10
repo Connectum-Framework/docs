@@ -163,6 +163,7 @@ export const eventBus = createEventBus({
   adapter,
   routes: [notificationEvents],
   group: 'notification-service',
+  drainTimeout: 15_000, // Wait up to 15s for in-flight handlers on shutdown
   middleware: {
     retry: { maxRetries: 3, backoff: 'exponential' },
     dlq: { topic: 'notification-service.dlq' },

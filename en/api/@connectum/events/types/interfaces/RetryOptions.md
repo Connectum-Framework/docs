@@ -2,7 +2,7 @@
 
 # Interface: RetryOptions
 
-Defined in: [types.ts:202](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L202)
+Defined in: [packages/events/src/types.ts:207](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L207)
 
 Retry middleware options
 
@@ -12,7 +12,7 @@ Retry middleware options
 
 > `optional` **backoff**: `"exponential"` \| `"linear"` \| `"fixed"`
 
-Defined in: [types.ts:206](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L206)
+Defined in: [packages/events/src/types.ts:211](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L211)
 
 Backoff strategy
 
@@ -22,7 +22,7 @@ Backoff strategy
 
 > `optional` **initialDelay**: `number`
 
-Defined in: [types.ts:208](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L208)
+Defined in: [packages/events/src/types.ts:213](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L213)
 
 Initial delay in ms (default: 1000)
 
@@ -32,7 +32,7 @@ Initial delay in ms (default: 1000)
 
 > `optional` **maxDelay**: `number`
 
-Defined in: [types.ts:210](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L210)
+Defined in: [packages/events/src/types.ts:215](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L215)
 
 Maximum delay in ms (default: 30000)
 
@@ -42,7 +42,7 @@ Maximum delay in ms (default: 30000)
 
 > `optional` **maxRetries**: `number`
 
-Defined in: [types.ts:204](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L204)
+Defined in: [packages/events/src/types.ts:209](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L209)
 
 Maximum retry attempts (default: 3)
 
@@ -52,7 +52,7 @@ Maximum retry attempts (default: 3)
 
 > `optional` **multiplier**: `number`
 
-Defined in: [types.ts:212](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L212)
+Defined in: [packages/events/src/types.ts:217](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L217)
 
 Multiplier for exponential backoff (default: 2)
 
@@ -62,7 +62,7 @@ Multiplier for exponential backoff (default: 2)
 
 > `optional` **retryableErrors**: (`error`) => `boolean`
 
-Defined in: [types.ts:214](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L214)
+Defined in: [packages/events/src/types.ts:219](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L219)
 
 Filter: only retry for these error types
 

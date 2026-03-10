@@ -132,6 +132,7 @@ function createEventBus(options: EventBusOptions): EventBus & EventBusLike;
 | `group` | `string` | `undefined` | Consumer group name for load-balanced consumption |
 | `signal` | `AbortSignal` | `undefined` | Abort signal for graceful shutdown |
 | `handlerTimeout` | `number` | `undefined` | Timeout in ms for event handler execution |
+| `drainTimeout` | `number` | `30000` | Max ms to wait for in-flight handlers during `stop()` |
 | `middleware` | `MiddlewareConfig` | `undefined` | Middleware configuration (retry, DLQ, custom) |
 
 ### `EventBus`
@@ -246,6 +247,8 @@ const eventBus = createEventBus({
 | `composeMiddleware` | Middleware composition utility |
 | `resolveTopicName` | Topic resolution from proto method descriptors |
 | `matchPattern` | Wildcard pattern matching for topics |
+| `NonRetryableError` | Error class that skips retry middleware |
+| `RetryableError` | Error class that forces retry regardless of predicate |
 
 ### Type Exports
 

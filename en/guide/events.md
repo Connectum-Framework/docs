@@ -49,7 +49,7 @@ The EventBus sits between your service handlers and the message broker. It handl
 - **Serialization** -- automatically serializes/deserializes protobuf messages
 - **Routing** -- maps proto service methods to topic subscriptions
 - **Middleware** -- applies retry, DLQ, and custom middleware to every event
-- **Lifecycle** -- manages adapter connect/disconnect with the server
+- **Lifecycle** -- manages adapter connect/disconnect with the server, graceful drain on shutdown
 
 ## Core Concepts
 

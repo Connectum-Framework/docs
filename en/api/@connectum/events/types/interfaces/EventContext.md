@@ -2,12 +2,13 @@
 
 # Interface: EventContext
 
-Defined in: [types.ts:105](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L105)
+Defined in: [packages/events/src/types.ts:106](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L106)
 
 Per-event context with explicit ack/nack control.
 
 Passed to event handlers alongside the deserialized message.
-No implicit acknowledgment -- handler must call ack() or nack().
+Supports explicit ack/nack control. If the handler completes
+without calling either, the event is automatically acknowledged.
 
 ## Properties
 
@@ -15,7 +16,7 @@ No implicit acknowledgment -- handler must call ack() or nack().
 
 > `readonly` **attempt**: `number`
 
-Defined in: [types.ts:115](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L115)
+Defined in: [packages/events/src/types.ts:116](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L116)
 
 Delivery attempt number (1-based)
 
@@ -25,7 +26,7 @@ Delivery attempt number (1-based)
 
 > `readonly` **eventId**: `string`
 
-Defined in: [types.ts:109](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L109)
+Defined in: [packages/events/src/types.ts:110](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L110)
 
 Unique event identifier
 
@@ -35,7 +36,7 @@ Unique event identifier
 
 > `readonly` **eventType**: `string`
 
-Defined in: [types.ts:111](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L111)
+Defined in: [packages/events/src/types.ts:112](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L112)
 
 Event type / topic name
 
@@ -45,7 +46,7 @@ Event type / topic name
 
 > `readonly` **metadata**: `ReadonlyMap`\<`string`, `string`\>
 
-Defined in: [types.ts:117](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L117)
+Defined in: [packages/events/src/types.ts:118](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L118)
 
 Event metadata (headers)
 
@@ -55,7 +56,7 @@ Event metadata (headers)
 
 > `readonly` **publishedAt**: `Date`
 
-Defined in: [types.ts:113](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L113)
+Defined in: [packages/events/src/types.ts:114](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L114)
 
 When the event was published
 
@@ -65,7 +66,7 @@ When the event was published
 
 > `readonly` **signal**: `AbortSignal`
 
-Defined in: [types.ts:107](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L107)
+Defined in: [packages/events/src/types.ts:108](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L108)
 
 Abort signal (aborted when server is shutting down)
 
@@ -75,7 +76,7 @@ Abort signal (aborted when server is shutting down)
 
 > **ack**(): `Promise`\<`void`\>
 
-Defined in: [types.ts:119](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L119)
+Defined in: [packages/events/src/types.ts:120](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L120)
 
 Acknowledge successful processing
 
@@ -89,7 +90,7 @@ Acknowledge successful processing
 
 > **nack**(`requeue?`): `Promise`\<`void`\>
 
-Defined in: [types.ts:121](https://github.com/Connectum-Framework/connectum/blob/25992b4d8beaf6921b9497536cc758b5144d1a7c/packages/events/src/types.ts#L121)
+Defined in: [packages/events/src/types.ts:122](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L122)
 
 Negative acknowledge -- request redelivery or send to DLQ
 

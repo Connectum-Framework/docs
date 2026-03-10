@@ -9,6 +9,8 @@
 ## Classes
 
 - [EventRouterImpl](classes/EventRouterImpl.md)
+- [NonRetryableError](classes/NonRetryableError.md)
+- [RetryableError](classes/RetryableError.md)
 
 ## Functions
 
