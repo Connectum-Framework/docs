@@ -70,7 +70,7 @@ Pass the result to `createEventBus({ adapter })`.
 |--------|------|---------|-------------|
 | `servers` | `string \| string[]` | *(required)* | NATS server URL(s). Accepts a single string or an array for cluster connections |
 | `stream` | `string` | `"events"` | JetStream stream name. Subjects are prefixed with `{stream}.` and the stream is auto-created on `connect()` if it does not exist |
-| `connectionOptions` | `Partial<NodeConnectionOptions>` | `undefined` | NATS connection options (escape hatch for advanced config). The `servers` field is overridden by the top-level `servers` option |
+| `connectionOptions` | `Partial<NodeConnectionOptions>` | `undefined` | NATS connection options (escape hatch for advanced config). The `servers` field is overridden by the top-level `servers` option. If `name` is not set, it defaults to the service name derived from proto descriptors (e.g., `order.v1@pod-abc123`), which appears in NATS monitoring (`/connz`). See [Automatic Client Identification](/en/guide/events/adapters#automatic-client-identification). |
 | `consumerOptions` | `NatsConsumerOptions` | `undefined` | JetStream consumer tuning options |
 
 ### `NatsConsumerOptions`
@@ -159,7 +159,7 @@ connect() → publish() / subscribe() → disconnect()
 
 | Method | Description |
 |--------|-------------|
-| `connect()` | Connects to NATS, initializes JetStream client and manager, auto-creates the stream if it does not exist |
+| `connect(context?)` | Connects to NATS, initializes JetStream client and manager, auto-creates the stream if it does not exist. Uses `context.serviceName` as the connection name if `connectionOptions.name` is not set. |
 | `disconnect()` | Unsubscribes all active subscriptions, drains the NATS connection, and releases resources |
 | `publish()` | Publishes a serialized event to `{stream}.{eventType}`. Metadata is propagated as NATS headers |
 | `subscribe()` | Creates durable JetStream consumers for each topic pattern. Delivers messages through `RawEventHandler` with explicit ack/nak |

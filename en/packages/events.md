@@ -94,7 +94,7 @@ The central component managing adapter lifecycle, event routes, middleware pipel
 
 ### EventAdapter
 
-A minimal interface for message brokers. Each adapter (NATS, Kafka, Redis, Memory) implements `connect()`, `disconnect()`, `publish()`, and `subscribe()`. Broker-specific configuration is passed to the adapter constructor, not to the interface methods.
+A minimal interface for message brokers. Each adapter (NATS, Kafka, Redis, Memory) implements `connect(context?)`, `disconnect()`, `publish()`, and `subscribe()`. The optional `AdapterContext` parameter on `connect()` carries service-level information (like `serviceName`) derived from registered proto service descriptors, enabling adapters to identify themselves to brokers automatically. Broker-specific configuration is passed to the adapter constructor, not to the interface methods.
 
 ### EventRouter
 
@@ -239,6 +239,7 @@ const eventBus = createEventBus({
 | Export | Description |
 |--------|-------------|
 | `createEventBus` | EventBus factory function |
+| `deriveServiceName` | Derives a service identifier from proto service type names (format: `{packages}@{hostname}`) |
 | `createEventContext` | EventContext factory (advanced) |
 | `EventRouterImpl` | EventRouter implementation class |
 | `MemoryAdapter` | In-memory adapter for testing |
@@ -256,6 +257,7 @@ const eventBus = createEventBus({
 |------|-------------|
 | `EventBus` | EventBus interface |
 | `EventBusOptions` | EventBus configuration |
+| `AdapterContext` | Context passed to adapters on connect (contains `serviceName`) |
 | `EventAdapter` | Adapter interface |
 | `EventRouter` | Router interface |
 | `EventRoute` | Route function type |
