@@ -46,9 +46,13 @@ Implement a pluggable adapter-based EventBus as a set of 4 packages following th
 The adapter interface is intentionally minimal, inspired by Watermill:
 
 ```typescript
+interface AdapterContext {
+    readonly serviceName?: string; // e.g., "order.v1@pod-abc123"
+}
+
 interface EventAdapter {
     readonly name: string;
-    connect(): Promise<void>;
+    connect(context?: AdapterContext): Promise<void>;
     disconnect(): Promise<void>;
     publish(eventType: string, payload: Uint8Array, options?: PublishOptions): Promise<void>;
     subscribe(patterns: string[], handler: RawEventHandler, options?: RawSubscribeOptions): Promise<EventSubscription>;
@@ -56,6 +60,8 @@ interface EventAdapter {
 ```
 
 Broker-specific configuration (connection strings, TLS, consumer options) lives in each adapter's constructor options, not in the interface methods. This keeps the interface stable while allowing full broker-level tuning.
+
+The `connect()` method accepts an optional `AdapterContext` containing service-level metadata. The EventBus derives `serviceName` from registered proto service descriptors using `deriveServiceName()` -- extracting unique package names and appending the hostname for replica disambiguation. Adapters use this for broker-level client identification (Kafka `clientId`, NATS connection `name`, Redis `CLIENT SETNAME`). Explicit adapter options always take priority.
 
 #### 2. Proto-First Event Routing
 
@@ -335,3 +341,4 @@ Use the CloudEvents specification as the event envelope instead of raw protobuf.
 |------|--------|--------|
 | 2026-03-07 | Software Architect | Initial ADR: EventBus architecture with pluggable adapter pattern |
 | 2026-03-09 | Software Architect | Added typed error classes (#48) and graceful drain (#47) |
+| 2026-03-22 | Software Architect | Added AdapterContext for automatic broker-level client identification |

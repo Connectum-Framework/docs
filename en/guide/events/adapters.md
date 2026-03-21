@@ -223,6 +223,28 @@ flowchart TD
 | Event sourcing / audit log | `KafkaAdapter` |
 | Minimal infrastructure | `NatsAdapter` (single binary) |
 
+## Automatic Client Identification
+
+When the EventBus starts, it derives a service name from registered proto service descriptors and passes it to the adapter via `AdapterContext`. Adapters use this for broker-level client identification, which improves observability in broker dashboards and monitoring tools.
+
+The derived name follows the format `{packageNames}@{hostname}`:
+
+| Registered Services | Derived Name |
+|---------------------|--------------|
+| `order.v1.OrderEventService` | `order.v1@pod-abc123` |
+| `order.v1.OrderEventService` + `payment.v1.PaymentEventService` | `order.v1/payment.v1@pod-abc123` |
+
+Each adapter maps this to the appropriate broker concept:
+
+| Adapter | Broker Concept | Config Override |
+|---------|---------------|-----------------|
+| Kafka | `clientId` | `KafkaAdapterOptions.clientId` |
+| NATS | Connection `name` (visible in `/connz`) | `connectionOptions.name` |
+| Redis | `CLIENT SETNAME` | `redisOptions.connectionName` |
+| Memory | Not used | -- |
+
+Explicit adapter options always take priority over the derived name. If you set `clientId`, `connectionOptions.name`, or `redisOptions.connectionName` directly, the adapter uses your value.
+
 ## EventAdapter Interface
 
 All adapters implement this interface:
@@ -233,7 +255,7 @@ interface EventAdapter {
   readonly name: string;
 
   /** Connect to the message broker */
-  connect(): Promise<void>;
+  connect(context?: AdapterContext): Promise<void>;
 
   /** Disconnect from the message broker */
   disconnect(): Promise<void>;

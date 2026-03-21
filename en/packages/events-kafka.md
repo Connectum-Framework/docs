@@ -70,7 +70,7 @@ Pass the result to `createEventBus({ adapter: ... })`.
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `brokers` | `string[]` | -- | **Required.** Kafka broker addresses (e.g., `["localhost:9092"]`) |
-| `clientId` | `string` | `"connectum"` | Client ID for this producer/consumer |
+| `clientId` | `string` | derived from proto | Client ID for this producer/consumer. Defaults to the service name derived from proto descriptors (e.g., `order.v1@pod-abc123`), falling back to `"connectum"` when no services are registered. See [Automatic Client Identification](/en/guide/events/adapters#automatic-client-identification). |
 | `kafkaConfig` | `Omit<Partial<KafkaConfig>, "brokers" \| "clientId">` | -- | Additional KafkaJS configuration overrides (merged with `brokers` and `clientId`) |
 | `producerOptions.compression` | `CompressionTypes` | -- | Compression type for produced messages (e.g., `CompressionTypes.GZIP`) |
 | `consumerOptions.sessionTimeout` | `number` | `30000` | Session timeout in milliseconds |
@@ -83,13 +83,15 @@ The returned adapter implements the standard `EventAdapter` interface from `@con
 
 ```typescript
 interface EventAdapter {
-  readonly name: string;       // "kafka"
-  connect(): Promise<void>;    // Connect producer to broker
-  disconnect(): Promise<void>; // Disconnect all consumers and producer
+  readonly name: string;                        // "kafka"
+  connect(context?: AdapterContext): Promise<void>;  // Connect producer to broker
+  disconnect(): Promise<void>;                  // Disconnect all consumers and producer
   publish(eventType: string, payload: Uint8Array, options?: PublishOptions): Promise<void>;
   subscribe(patterns: string[], handler: RawEventHandler, options?: RawSubscribeOptions): Promise<EventSubscription>;
 }
 ```
+
+The `AdapterContext` is provided automatically by the EventBus and contains a `serviceName` derived from proto service descriptors. The Kafka adapter uses it as the default `clientId` when none is explicitly configured.
 
 ### Topic Pattern Matching
 

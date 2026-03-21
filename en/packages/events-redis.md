@@ -67,7 +67,7 @@ Pass the result to `createEventBus({ adapter: ... })`.
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `url` | `string` | `undefined` | Redis connection URL (e.g., `"redis://localhost:6379"`). Takes precedence over `redisOptions.host` / `redisOptions.port` when both are provided. |
-| `redisOptions` | `RedisOptions` (ioredis) | `undefined` | Redis connection options passed directly to `new Redis()`. When `url` is also set, these options are merged as the second argument. |
+| `redisOptions` | `RedisOptions` (ioredis) | `undefined` | Redis connection options passed directly to `new Redis()`. When `url` is also set, these options are merged as the second argument. If `connectionName` is not set, it defaults to the service name derived from proto descriptors (e.g., `order.v1@pod-abc123`), which appears in `CLIENT LIST` output. See [Automatic Client Identification](/en/guide/events/adapters#automatic-client-identification). |
 | `brokerOptions` | `RedisBrokerOptions` | `undefined` | Broker-specific tuning for Redis Streams consumption. |
 
 ### `RedisBrokerOptions`
