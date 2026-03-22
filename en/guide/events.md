@@ -100,6 +100,10 @@ const adapter = KafkaAdapter({ brokers: ['localhost:9092'], clientId: 'my-servic
 import { RedisAdapter } from '@connectum/events-redis';
 const adapter = RedisAdapter({ url: 'redis://localhost:6379' });
 
+// AMQP / RabbitMQ / LavinMQ
+import { AmqpAdapter } from '@connectum/events-amqp';
+const adapter = AmqpAdapter({ url: 'amqp://localhost:5672' });
+
 // In-memory (testing)
 import { MemoryAdapter } from '@connectum/events';
 const adapter = MemoryAdapter();
@@ -134,16 +138,16 @@ Both `ack()` and `nack()` are idempotent -- calling either multiple times after 
 
 ## Adapter Comparison
 
-| Feature | Memory | NATS JetStream | Kafka | Redis Streams |
-|---------|--------|---------------|-------|---------------|
-| **Package** | `@connectum/events` | `@connectum/events-nats` | `@connectum/events-kafka` | `@connectum/events-redis` |
-| **Use case** | Testing | Low-latency, cloud-native | High-throughput, event sourcing | Simple streaming, caching stack |
-| **Persistence** | No | Yes (JetStream) | Yes (log-based) | Yes (AOF/RDB) |
-| **Consumer groups** | No | Yes (durable consumers) | Yes (native) | Yes (XREADGROUP) |
-| **Ordering** | Per-publish | Per-subject | Per-partition | Per-stream |
-| **Wildcard topics** | Yes (`*`, `>`) | Yes (NATS native) | No | No |
-| **Delivery guarantee** | At-most-once | At-least-once | At-least-once | At-least-once |
-| **Compatible with** | -- | NATS 2.x+ | Apache Kafka, Redpanda | Redis 5+, Valkey |
+| Feature | Memory | NATS JetStream | Kafka | Redis Streams | AMQP / RabbitMQ |
+|---------|--------|---------------|-------|---------------|-----------------|
+| **Package** | `@connectum/events` | `@connectum/events-nats` | `@connectum/events-kafka` | `@connectum/events-redis` | `@connectum/events-amqp` |
+| **Use case** | Testing | Low-latency, cloud-native | High-throughput, event sourcing | Simple streaming, caching stack | Complex routing, enterprise integration |
+| **Persistence** | No | Yes (JetStream) | Yes (log-based) | Yes (AOF/RDB) | Yes (durable queues) |
+| **Consumer groups** | No | Yes (durable consumers) | Yes (native) | Yes (XREADGROUP) | Yes (competing consumers) |
+| **Ordering** | Per-publish | Per-subject | Per-partition | Per-stream | Per-queue |
+| **Wildcard topics** | Yes (`*`, `>`) | Yes (NATS native) | No | No | Yes (`*`, `#`) |
+| **Delivery guarantee** | At-most-once | At-least-once | At-least-once | At-least-once | At-least-once |
+| **Compatible with** | -- | NATS 2.x+ | Apache Kafka, Redpanda | Redis 5+, Valkey | RabbitMQ 3.x+, LavinMQ |
 
 ## When to Use Events
 

@@ -11,7 +11,7 @@ Apache Kafka / Redpanda adapter for the Connectum EventBus. Implements the `Even
 
 ::: tip Related Guides
 - [Events Overview](/en/guide/events) -- event-driven architecture with Connectum
-- [Adapters Comparison](/en/guide/events/adapters) -- choosing between NATS, Kafka, Redis, and in-memory adapters
+- [Adapters Comparison](/en/guide/events/adapters) -- choosing between NATS, Kafka, Redis, AMQP, and in-memory adapters
 - [@connectum/events](/en/packages/events) -- core EventBus API and routing
 :::
 
@@ -31,6 +31,10 @@ pnpm add @connectum/events-kafka
 
 ## Quick Start
 
+::: warning Topic Creation
+Kafka does not create topics automatically by default (`allowAutoTopicCreation: false`). You must create topics before publishing. Use `kafka-topics --create` or set `allowAutoTopicCreation: true` for development.
+:::
+
 ```typescript
 import { createEventBus } from '@connectum/events';
 import { KafkaAdapter } from '@connectum/events-kafka';
@@ -38,6 +42,8 @@ import { KafkaAdapter } from '@connectum/events-kafka';
 const adapter = KafkaAdapter({
   brokers: ['localhost:9092'],
   clientId: 'my-service',
+  // Enable auto-creation for development (not recommended for production)
+  // consumerOptions: { allowAutoTopicCreation: true },
 });
 
 const eventBus = createEventBus({
@@ -230,4 +236,5 @@ await server.start();
 - **[@connectum/events](/en/packages/events)** -- Core EventBus, routing, middleware, MemoryAdapter (peer dependency)
 - **[@connectum/events-nats](/en/packages/events-nats)** -- NATS JetStream adapter (alternative)
 - **[@connectum/events-redis](/en/packages/events-redis)** -- Redis Streams adapter (alternative)
+- **[@connectum/events-amqp](/en/packages/events-amqp)** -- AMQP / RabbitMQ adapter (alternative)
 - **[@connectum/core](/en/packages/core)** -- Server with EventBus integration

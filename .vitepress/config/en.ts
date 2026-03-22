@@ -147,6 +147,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
             { text: '@connectum/events-nats', link: '/en/packages/events-nats' },
             { text: '@connectum/events-kafka', link: '/en/packages/events-kafka' },
             { text: '@connectum/events-redis', link: '/en/packages/events-redis' },
+            { text: '@connectum/events-amqp', link: '/en/packages/events-amqp' },
         ],
     },
 ];

@@ -10,7 +10,7 @@ Connectum is a universal gRPC/ConnectRPC framework composed of 12 `@connectum/*`
 
 ### Current State
 
-All 12 packages use a **fixed versioning** strategy (`"fixed": [["@connectum/*"]]`), meaning every package always shares the same version number. The project is currently in a **pre-release (rc) phase** with all packages at `1.0.0-rc.4`.
+All 13 packages use a **fixed versioning** strategy (`"fixed": [["@connectum/*"]]`), meaning every package always shares the same version number. The project is currently in a **pre-release (rc) phase** with all packages at `1.0.0-rc.4`.
 
 Current `.changeset/config.json`:
 
@@ -24,7 +24,7 @@ Current `.changeset/config.json`:
 
 ### Package Dependency Graph
 
-The 12 packages are organized in 3 layers with varying degrees of coupling:
+The 13 packages are organized in 3 layers with varying degrees of coupling:
 
 ```mermaid
 graph TB
@@ -79,7 +79,7 @@ graph TB
 
 ### The Problem
 
-With the current fixed strategy, **all** 12 packages are bumped together. This means:
+With the current fixed strategy, **all** 13 packages are bumped together. This means:
 
 1. A patch fix in `@connectum/auth` bumps `@connectum/otel` even though otel has zero `@connectum` dependencies
 2. A new feature in `@connectum/cli` bumps `@connectum/core` even though core is unchanged
@@ -266,7 +266,7 @@ When transitioning from Phase 1 to Phase 2 (after `1.0.0` stable release):
 
 - [ ] Update `.changeset/config.json` with the hybrid configuration above
 - [ ] Update `release.yml` to use `select(.name == "@connectum/core")` for version extraction
-- [ ] Verify all 12 packages are at `1.0.0` before the switch
+- [ ] Verify all 13 packages are at `1.0.0` before the switch
 - [ ] Update `docs/en/contributing/development-setup.md` with versioning guidelines
 - [ ] Add a note to each independent package README explaining its versioning policy
 - [ ] Create a compatibility matrix in documentation (core group version vs auth/otel/cli versions)

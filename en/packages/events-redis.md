@@ -234,3 +234,4 @@ const routes: EventRoute = (events) => {
 - **[@connectum/events](/en/packages/events)** -- Core EventBus that hosts this adapter (peer dependency)
 - **[@connectum/events-nats](/en/packages/events-nats)** -- NATS JetStream adapter (alternative)
 - **[@connectum/events-kafka](/en/packages/events-kafka)** -- Apache Kafka adapter (alternative)
+- **[@connectum/events-amqp](/en/packages/events-amqp)** -- AMQP / RabbitMQ adapter (alternative)
