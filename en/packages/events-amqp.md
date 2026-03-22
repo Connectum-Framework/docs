@@ -312,6 +312,7 @@ const routes = (events: EventRouter) => {
 | Export | Description |
 |--------|-------------|
 | `AmqpAdapter` | Factory function that creates an AMQP adapter |
+| `toAmqpPattern` | Converts EventBus wildcard pattern (`>`) to AMQP routing key pattern (`#`) |
 | `AmqpAdapterOptions` | Configuration options type |
 | `AmqpExchangeOptions` | Exchange declaration options type |
 | `AmqpQueueOptions` | Queue declaration options type |

@@ -7,6 +7,114 @@ description: Migration guides and breaking changes for Connectum releases
 
 This page covers breaking changes and migration steps between Connectum releases.
 
+## RC.6 to RC.7
+
+### New Package: `@connectum/events-amqp`
+
+AMQP/RabbitMQ adapter for the EventBus. Supports durable queues, topic exchanges, dead letter exchanges, and competing consumers via shared queue names.
+
+```typescript
+import { createEventBus } from '@connectum/events';
+import { AmqpAdapter } from '@connectum/events-amqp';
+
+const bus = createEventBus({
+  adapter: AmqpAdapter({ url: 'amqp://localhost:5672' }),
+  routes: [myRoutes],
+});
+```
+
+See [@connectum/events-amqp documentation](/en/packages/events-amqp) for details.
+
+### EventBus: Auto-Derive Broker Client Identity
+
+`@connectum/events` now automatically derives broker client identity (connection name, client ID) from protobuf service names registered in event routes. This improves observability in broker management UIs without manual configuration.
+
+### OpenTelemetry: Idempotent `initProvider()`
+
+`initProvider()` in `@connectum/otel` is now idempotent -- subsequent calls are no-ops if the provider is already active. This simplifies initialization in tests and multi-module setups.
+
+**No breaking changes in this release.**
+
+---
+
+## RC.5 to RC.6
+
+### New Package: `@connectum/events`
+
+Universal event adapter layer with proto-first pub/sub, pluggable broker adapters, middleware pipeline, and DLQ support. See [ADR-026](/en/contributing/adr/026-eventbus-architecture) for design rationale.
+
+Three broker adapters ship alongside the core package:
+
+- `@connectum/events-nats` -- NATS JetStream adapter
+- `@connectum/events-kafka` -- Kafka / Redpanda adapter
+- `@connectum/events-redis` -- Redis Streams adapter
+
+```typescript
+import { createEventBus, MemoryAdapter } from '@connectum/events';
+
+const bus = createEventBus({
+  adapter: MemoryAdapter(),
+  routes: [myRoutes],
+});
+```
+
+See [Events Getting Started](/en/guide/events/getting-started) for a step-by-step guide.
+
+### New Package: `@connectum/testing`
+
+Testing utilities for ConnectRPC interceptors and services: mock factories for requests, streams, next functions, protobuf descriptors, plus a lightweight test server with automatic lifecycle management.
+
+See [@connectum/testing documentation](/en/packages/testing) for details.
+
+### EventBus: Error Classes and Graceful Drain
+
+`@connectum/events` includes `NonRetryableError` and `RetryableError` typed error classes for explicit retry control in event handlers. Active message tracking ensures in-flight handlers complete during shutdown (configurable via `drainTimeout`).
+
+### `@connectum/core`: EventBusLike Integration
+
+`createServer()` now accepts an `eventBus` option. When provided, the server manages the event bus lifecycle (start/stop) alongside the gRPC server, passing its shutdown signal for coordinated graceful shutdown.
+
+**No breaking changes in this release.**
+
+---
+
+## RC.4 to RC.5
+
+### `@connectum/auth`: JWT Key Resolution Priority Change
+
+The JWT auth interceptor changed the key resolution priority:
+
+| | Before (rc.4) | After (rc.5) |
+|---|--------|-------|
+| **Priority** | `jwksUri` > `secret` > `publicKey` | `jwksUri` > `publicKey` > `secret` |
+
+This is **potentially breaking** if you provide both `publicKey` and `secret`. See [Key Resolution Priority Change](#key-resolution-priority-change-connectumauth) below for migration details.
+
+### `@connectum/auth`: Proto-Based Authorization
+
+New `createProtoAuthzInterceptor()` factory reads authorization rules directly from `.proto` file custom options (`connectum.auth.v1`), eliminating the need for hardcoded rule arrays in application code.
+
+See [Proto-Based Authorization](/en/guide/auth/proto-authz) for details.
+
+### `@connectum/core`: HTTP/1.1 Plaintext Transport Mode
+
+The server now supports three transport modes:
+
+| Mode | Description | Use Case |
+|------|-------------|----------|
+| TLS (default) | HTTP/2 with TLS | Production |
+| h2c | HTTP/2 cleartext | Development, service mesh |
+| HTTP/1.1 | HTTP/1.1 plaintext | Legacy clients, ConnectRPC JSON |
+
+### Security Fixes
+
+- `minimatch` overridden to >=10.2.1 (ReDoS vulnerability)
+- `ajv` bumped to 8.18.0 (CVE-2025-69873)
+
+**No other breaking changes in this release.**
+
+---
+
 ## RC.3 to RC.4
 
 ### Compile-Before-Publish with tsup
@@ -210,4 +318,4 @@ For detailed changelog, see the [CHANGELOG.md](https://github.com/Connectum-Fram
 
 All significant architectural decisions are documented as ADRs:
 
-- [ADR Index](/en/contributing/adr/) -- Complete list of 23 Architecture Decision Records
+- [ADR Index](/en/contributing/adr/) -- Complete list of all accepted Architecture Decision Records
