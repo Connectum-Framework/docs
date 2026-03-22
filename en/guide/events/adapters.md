@@ -8,18 +8,18 @@ The EventBus uses pluggable adapters to communicate with different message broke
 
 ## Adapter Comparison
 
-| Feature | Memory | NATS JetStream | Kafka | Redis Streams |
-|---------|--------|---------------|-------|---------------|
-| **Package** | `@connectum/events` | `@connectum/events-nats` | `@connectum/events-kafka` | `@connectum/events-redis` |
-| **Broker** | None (in-process) | NATS 2.x+ | Apache Kafka | Redis 5+ |
-| **Compatible with** | -- | -- | Redpanda | Valkey |
-| **Client library** | -- | `@nats-io/transport-node` | KafkaJS | ioredis |
-| **Persistence** | No | Yes (JetStream) | Yes (log-based) | Yes (AOF/RDB) |
-| **Consumer groups** | No | Yes (durable consumers) | Yes (native) | Yes (XREADGROUP) |
-| **Ordering** | Per-publish | Per-subject | Per-partition | Per-stream |
-| **Wildcard topics** | Yes (`*`, `>`) | Yes (NATS native) | No | No |
-| **Delivery guarantee** | At-most-once | At-least-once | At-least-once | At-least-once |
-| **Ideal for** | Unit tests, dev | Low-latency, cloud-native | High-throughput, event sourcing | Existing Redis stack |
+| Feature | Memory | NATS JetStream | Kafka | Redis Streams | AMQP / RabbitMQ |
+|---------|--------|---------------|-------|---------------|-----------------|
+| **Package** | `@connectum/events` | `@connectum/events-nats` | `@connectum/events-kafka` | `@connectum/events-redis` | `@connectum/events-amqp` |
+| **Broker** | None (in-process) | NATS 2.x+ | Apache Kafka | Redis 5+ | RabbitMQ 3.x+ |
+| **Compatible with** | -- | -- | Redpanda | Valkey | LavinMQ |
+| **Client library** | -- | `@nats-io/transport-node` | KafkaJS | ioredis | amqplib |
+| **Persistence** | No | Yes (JetStream) | Yes (log-based) | Yes (AOF/RDB) | Yes (durable queues) |
+| **Consumer groups** | No | Yes (durable consumers) | Yes (native) | Yes (XREADGROUP) | Yes (competing consumers) |
+| **Ordering** | Per-publish | Per-subject | Per-partition | Per-stream | Per-queue |
+| **Wildcard topics** | Yes (`*`, `>`) | Yes (NATS native) | No | No | Yes (`*`, `#`) |
+| **Delivery guarantee** | At-most-once | At-least-once | At-least-once | At-least-once | At-least-once |
+| **Ideal for** | Unit tests, dev | Low-latency, cloud-native | High-throughput, event sourcing | Existing Redis stack | Complex routing, enterprise integration |
 
 ## Memory Adapter
 
@@ -192,6 +192,61 @@ const adapter = RedisAdapter({
 - **Ordered delivery** within a single stream
 - **Moderate throughput** with low operational overhead
 
+## AMQP / RabbitMQ Adapter
+
+Uses the AMQP 0-9-1 protocol via [amqplib](https://amqp-node.github.io/amqplib/) for durable messaging with topic exchanges, competing consumers, and native dead letter exchange (DLX) support.
+
+```bash
+pnpm add @connectum/events-amqp
+```
+
+```typescript
+import { AmqpAdapter } from '@connectum/events-amqp';
+
+const adapter = AmqpAdapter({
+  url: 'amqp://guest:guest@localhost:5672',
+  exchange: 'orders.events',
+  queueOptions: {
+    durable: true,
+    deadLetterExchange: 'orders.dlx',
+  },
+  consumerOptions: {
+    prefetch: 50,
+  },
+});
+```
+
+### AmqpAdapterOptions
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `url` | `string` | *required* | AMQP connection URL |
+| `socketOptions` | `Record<string, unknown>` | `undefined` | Socket options for TLS and advanced config |
+| `exchange` | `string` | `"connectum.events"` | Exchange name (auto-created on connect) |
+| `exchangeType` | `"topic" \| "direct" \| "fanout" \| "headers"` | `"topic"` | Exchange type |
+| `exchangeOptions` | `AmqpExchangeOptions` | `undefined` | Exchange declaration options |
+| `queueOptions` | `AmqpQueueOptions` | `undefined` | Queue declaration options (durable, TTL, max length, DLX) |
+| `consumerOptions` | `AmqpConsumerOptions` | `undefined` | Consumer tuning (prefetch, exclusive) |
+| `publisherOptions` | `AmqpPublisherOptions` | `undefined` | Publisher options (persistent, mandatory) |
+
+### LavinMQ Compatibility
+
+[LavinMQ](https://lavinmq.com/) is a lightweight, high-performance AMQP 0-9-1 broker compatible with RabbitMQ. The `AmqpAdapter` works with LavinMQ without modification:
+
+```typescript
+const adapter = AmqpAdapter({
+  url: 'amqp://guest:guest@lavinmq-host:5672',
+});
+```
+
+### When to Use AMQP / RabbitMQ
+
+- **Complex routing** with topic exchanges, headers-based routing, or multi-exchange topologies
+- **Enterprise integration** patterns (DLX, TTL, priority queues, message deduplication)
+- **Existing RabbitMQ infrastructure** or AMQP-compatible brokers (LavinMQ)
+- **Wildcard routing** with per-queue ordering and competing consumers
+- **Mature ecosystem** with management UI, federation, and shovel plugins
+
 ## Choosing an Adapter
 
 ### Decision Tree
@@ -204,10 +259,12 @@ flowchart TD
     C -->|"Kafka / Redpanda"| K["KafkaAdapter"]
     C -->|"Redis / Valkey"| R["RedisAdapter"]
     C -->|"NATS"| N["NatsAdapter"]
+    C -->|"RabbitMQ / AMQP"| AQ["AmqpAdapter"]
     C -->|"Greenfield"| D{"Priority?"}
     D -->|"Low latency, simplicity"| N
     D -->|"High throughput, event sourcing"| K
     D -->|"Minimal ops, existing cache"| R
+    D -->|"Complex routing, enterprise"| AQ
 ```
 
 ### Quick Reference
@@ -219,7 +276,9 @@ flowchart TD
 | High-throughput event streaming | `KafkaAdapter` |
 | Redpanda deployment | `KafkaAdapter` |
 | Already running Redis/Valkey | `RedisAdapter` |
-| Wildcard topic routing needed | `NatsAdapter` or `MemoryAdapter` |
+| Already running RabbitMQ/LavinMQ | `AmqpAdapter` |
+| Wildcard topic routing needed | `NatsAdapter`, `AmqpAdapter`, or `MemoryAdapter` |
+| Complex routing, enterprise integration | `AmqpAdapter` |
 | Event sourcing / audit log | `KafkaAdapter` |
 | Minimal infrastructure | `NatsAdapter` (single binary) |
 
@@ -241,6 +300,7 @@ Each adapter maps this to the appropriate broker concept:
 | Kafka | `clientId` | `KafkaAdapterOptions.clientId` |
 | NATS | Connection `name` (visible in `/connz`) | `connectionOptions.name` |
 | Redis | `CLIENT SETNAME` | `redisOptions.connectionName` |
+| AMQP | Connection name (`clientProperties.connection_name`, visible in Management UI) | `socketOptions` |
 | Memory | Not used | -- |
 
 Explicit adapter options always take priority over the derived name. If you set `clientId`, `connectionOptions.name`, or `redisOptions.connectionName` directly, the adapter uses your value.
@@ -251,7 +311,7 @@ All adapters implement this interface:
 
 ```typescript
 interface EventAdapter {
-  /** Adapter name (e.g., "nats", "kafka", "redis", "memory") */
+  /** Adapter name (e.g., "nats", "kafka", "redis", "amqp", "memory") */
   readonly name: string;
 
   /** Connect to the message broker */

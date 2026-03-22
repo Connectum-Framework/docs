@@ -30,6 +30,10 @@ pnpm add @connectum/events @connectum/events-kafka
 pnpm add @connectum/events @connectum/events-redis
 ```
 
+```bash [AMQP / RabbitMQ]
+pnpm add @connectum/events @connectum/events-amqp
+```
+
 ```bash [Memory (testing)]
 pnpm add @connectum/events
 # MemoryAdapter is built-in — no extra package needed
@@ -103,6 +107,14 @@ import { RedisAdapter } from '@connectum/events-redis';
 
 const adapter = RedisAdapter({
   url: process.env.REDIS_URL ?? 'redis://localhost:6379',
+});
+```
+
+```typescript [AMQP / RabbitMQ]
+import { AmqpAdapter } from '@connectum/events-amqp';
+
+const adapter = AmqpAdapter({
+  url: process.env.AMQP_URL ?? 'amqp://localhost:5672',
 });
 ```
 

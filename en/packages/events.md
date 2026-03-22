@@ -14,7 +14,7 @@ Universal event adapter layer for Connectum. Provides proto-first pub/sub with p
 - [Getting Started](/en/guide/events/getting-started) -- step-by-step setup
 - [Middleware](/en/guide/events/middleware) -- retry, DLQ, custom middleware
 - [Custom Topics](/en/guide/events/custom-topics) -- proto options for topic naming
-- [Adapters](/en/guide/events/adapters) -- Memory, NATS, Kafka, Redis comparison
+- [Adapters](/en/guide/events/adapters) -- Memory, NATS, Kafka, Redis, AMQP comparison
 :::
 
 ::: tip Full API Reference
@@ -36,6 +36,7 @@ You also need at least one adapter package for production use:
 pnpm add @connectum/events-nats    # NATS JetStream
 pnpm add @connectum/events-kafka   # Kafka / Redpanda
 pnpm add @connectum/events-redis   # Redis Streams / Valkey
+pnpm add @connectum/events-amqp    # AMQP / RabbitMQ
 ```
 
 The built-in `MemoryAdapter` is included in `@connectum/events` for testing.
@@ -94,7 +95,7 @@ The central component managing adapter lifecycle, event routes, middleware pipel
 
 ### EventAdapter
 
-A minimal interface for message brokers. Each adapter (NATS, Kafka, Redis, Memory) implements `connect(context?)`, `disconnect()`, `publish()`, and `subscribe()`. The optional `AdapterContext` parameter on `connect()` carries service-level information (like `serviceName`) derived from registered proto service descriptors, enabling adapters to identify themselves to brokers automatically. Broker-specific configuration is passed to the adapter constructor, not to the interface methods.
+A minimal interface for message brokers. Each adapter (NATS, Kafka, Redis, AMQP, Memory) implements `connect(context?)`, `disconnect()`, `publish()`, and `subscribe()`. The optional `AdapterContext` parameter on `connect()` carries service-level information (like `serviceName`) derived from registered proto service descriptors, enabling adapters to identify themselves to brokers automatically. Broker-specific configuration is passed to the adapter constructor, not to the interface methods.
 
 ### EventRouter
 
@@ -277,7 +278,7 @@ const eventBus = createEventBus({
 - [Getting Started](/en/guide/events/getting-started) -- step-by-step tutorial
 - [Custom Topics](/en/guide/events/custom-topics) -- proto options for topic naming
 - [Middleware](/en/guide/events/middleware) -- retry, DLQ, custom middleware
-- [Adapters](/en/guide/events/adapters) -- Memory, NATS, Kafka, Redis comparison
+- [Adapters](/en/guide/events/adapters) -- Memory, NATS, Kafka, Redis, AMQP comparison
 - [with-events-redpanda](https://github.com/Connectum-Framework/examples/tree/main/with-events-redpanda) -- Saga pattern example with Redpanda
 - [with-events-dlq](https://github.com/Connectum-Framework/examples/tree/main/with-events-dlq) -- DLQ example with NATS JetStream
 
@@ -287,3 +288,4 @@ const eventBus = createEventBus({
 - **[@connectum/events-nats](/en/packages/events-nats)** -- NATS JetStream adapter
 - **[@connectum/events-kafka](/en/packages/events-kafka)** -- Kafka / Redpanda adapter
 - **[@connectum/events-redis](/en/packages/events-redis)** -- Redis Streams / Valkey adapter
+- **[@connectum/events-amqp](/en/packages/events-amqp)** -- AMQP / RabbitMQ adapter

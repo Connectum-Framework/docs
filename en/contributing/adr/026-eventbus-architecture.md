@@ -30,13 +30,14 @@ The Go ecosystem's [Watermill](https://github.com/ThreeDotsLabs/watermill) libra
 
 ## Decision
 
-Implement a pluggable adapter-based EventBus as a set of 4 packages following the existing layer architecture:
+Implement a pluggable adapter-based EventBus as a set of 5 packages following the existing layer architecture:
 
 ```
 @connectum/events         # Layer 1: Core EventBus, router, middleware, MemoryAdapter
 @connectum/events-nats    # Layer 2: NATS JetStream adapter
 @connectum/events-kafka   # Layer 2: Kafka/Redpanda adapter (KafkaJS)
 @connectum/events-redis   # Layer 2: Redis Streams adapter (ioredis)
+@connectum/events-amqp    # Layer 2: AMQP/RabbitMQ adapter (amqplib)
 ```
 
 ### Key Architectural Decisions
@@ -213,6 +214,7 @@ The MemoryAdapter delivers events synchronously to matching subscribers using th
 | `@connectum/events-nats` | NATS JetStream | `@nats-io/transport-node`, `@nats-io/jetstream` | Durable consumers, wildcard subjects, ack/nak per message |
 | `@connectum/events-kafka` | Apache Kafka / Redpanda | `kafkajs` | Consumer groups, regex topic subscription, compression |
 | `@connectum/events-redis` | Redis Streams / Valkey | `ioredis` | XREADGROUP with consumer groups, dedicated blocking connection, MAXLEN trimming |
+| `@connectum/events-amqp` | RabbitMQ 3.x+ / LavinMQ | `amqplib` | Topic exchanges, competing consumers, dead letter exchange (DLX), wildcard binding |
 
 All adapters implement the same `EventAdapter` interface and are interchangeable.
 
@@ -232,18 +234,21 @@ graph TB
         Nats["@connectum/events-nats"]
         Kafka["@connectum/events-kafka"]
         Redis["@connectum/events-redis"]
+        Amqp["@connectum/events-amqp"]
     end
 
     Events -- "dependency" --> Core
     Nats -- "peerDependency" --> Events
     Kafka -- "peerDependency" --> Events
     Redis -- "peerDependency" --> Events
+    Amqp -- "peerDependency" --> Events
 
     style Core fill:#4a90d9,color:#fff
     style Events fill:#7fb069,color:#fff
     style Nats fill:#e0a458,color:#fff
     style Kafka fill:#e0a458,color:#fff
     style Redis fill:#e0a458,color:#fff
+    style Amqp fill:#e0a458,color:#fff
 ```
 
 ## Consequences

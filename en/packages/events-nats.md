@@ -11,7 +11,7 @@ NATS JetStream adapter for the `@connectum/events` event bus. Provides persisten
 
 ::: tip Related Guides
 - [Events Overview](/en/guide/events) -- event-driven architecture with Connectum
-- [Adapters Comparison](/en/guide/events/adapters) -- choosing between NATS, Kafka, Redis, and in-memory adapters
+- [Adapters Comparison](/en/guide/events/adapters) -- choosing between NATS, Kafka, Redis, AMQP, and in-memory adapters
 - [@connectum/events](/en/packages/events) -- core EventBus API and routing
 :::
 
@@ -236,6 +236,7 @@ const routes = (events: EventRouter) => {
 - **[@connectum/events](./events.md)** -- Core EventBus API, routing, and middleware (peer dependency)
 - **[@connectum/events-kafka](./events-kafka.md)** -- Kafka adapter alternative
 - **[@connectum/events-redis](./events-redis.md)** -- Redis Streams adapter alternative
+- **[@connectum/events-amqp](./events-amqp.md)** -- AMQP / RabbitMQ adapter alternative
 - **[@connectum/core](./core.md)** -- Server framework for hosting services alongside the event bus
 
 ## Learn More
