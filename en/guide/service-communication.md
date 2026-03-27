@@ -75,7 +75,7 @@ Not all server interceptors are appropriate for client transports. When using `c
 | **retry** | Yes | Yes | Retries transient errors |
 | **fallback** | Yes | No | Requires server-side handler |
 | **validation** | Yes | No | Validates incoming requests -- not outgoing |
-| **serializer** | Yes | No | Server-side JSON serialization |
+| **serializer** | Opt-in | No | Server-side JSON serialization (disabled by default; enable for Connect protocol) |
 
 ### Service Discovery
 

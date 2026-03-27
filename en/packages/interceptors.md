@@ -77,7 +77,7 @@ errorHandler -> timeout -> bulkhead -> circuitBreaker -> retry -> fallback -> va
 | 5 | **retry** | Retry transient failures with backoff | Enabled (3 retries) |
 | 6 | **fallback** | Graceful degradation | **Disabled** |
 | 7 | **validation** | Validate request messages (@connectrpc/validate) | Enabled |
-| 8 | **serializer** | JSON serialization (innermost) | Enabled |
+| 8 | **serializer** | JSON serialization (innermost) | **Disabled** |
 
 ## API Reference
 
@@ -102,7 +102,7 @@ interface DefaultInterceptorOptions {
   retry?: boolean | RetryOptions;                    // default: true
   fallback?: boolean | FallbackOptions;              // default: false
   validation?: boolean;                              // default: true
-  serializer?: boolean | SerializerOptions;          // default: true
+  serializer?: boolean | SerializerOptions;          // default: false
 }
 ```
 
@@ -240,7 +240,29 @@ const interceptor = createValidateInterceptor();
 
 ### Serializer
 
-Auto-serializes ConnectRPC responses to JSON format.
+Auto-serializes ConnectRPC responses to JSON format. **Disabled by default** (opt-in).
+
+> **When to enable**: Enable the serializer when your service uses the **Connect protocol** (HTTP/1.1 JSON) and you need automatic protobuf ↔ JSON conversion. Not needed for pure **gRPC** services (binary protobuf format).
+
+```typescript
+// Connect protocol service with JSON responses — enable serializer
+const interceptors = createDefaultInterceptors({
+  serializer: true,
+});
+
+// gRPC service (binary protobuf) — serializer not needed (default)
+const interceptors = createDefaultInterceptors();
+
+// Custom serializer options
+const interceptors = createDefaultInterceptors({
+  serializer: {
+    alwaysEmitImplicit: true,
+    ignoreUnknownFields: false,
+  },
+});
+```
+
+Standalone usage:
 
 ```typescript
 import { createSerializerInterceptor } from '@connectum/interceptors';

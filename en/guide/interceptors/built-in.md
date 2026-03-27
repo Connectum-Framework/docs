@@ -21,9 +21,31 @@ errorHandler -> timeout -> bulkhead -> circuitBreaker -> retry -> fallback -> va
 | 5 | **retry** | Retries transient failures with exponential backoff | Enabled (3 retries) |
 | 6 | **fallback** | Graceful degradation | Disabled |
 | 7 | **validation** | Validates via `@connectrpc/validate` | Enabled |
-| 8 | **serializer** | JSON serialization for protobuf | Enabled |
+| 8 | **serializer** | JSON serialization for protobuf | **Disabled** |
 
 The order is deliberate: `errorHandler` is outermost (catches everything), `serializer` is innermost (closest to the handler).
+
+::: tip When to enable the serializer
+Enable the serializer when your service uses the **Connect protocol** (HTTP/1.1 JSON) and you need automatic protobuf ↔ JSON conversion. Not needed for pure **gRPC** services (binary protobuf format).
+
+```typescript
+// Connect protocol service with JSON responses — enable serializer
+const interceptors = createDefaultInterceptors({
+  serializer: true,
+});
+
+// gRPC service (binary protobuf) — serializer not needed (default)
+const interceptors = createDefaultInterceptors();
+
+// Custom serializer options
+const interceptors = createDefaultInterceptors({
+  serializer: {
+    alwaysEmitImplicit: true,
+    ignoreUnknownFields: false,
+  },
+});
+```
+:::
 
 ## Using with createServer
 
