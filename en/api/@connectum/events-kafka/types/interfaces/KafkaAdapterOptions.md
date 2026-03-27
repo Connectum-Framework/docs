@@ -2,7 +2,7 @@
 
 # Interface: KafkaAdapterOptions
 
-Defined in: [types.ts:12](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events-kafka/src/types.ts#L12)
+Defined in: [types.ts:12](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events-kafka/src/types.ts#L12)
 
 Options for creating a KafkaAdapter instance.
 
@@ -12,7 +12,7 @@ Options for creating a KafkaAdapter instance.
 
 > `readonly` **brokers**: `string`[]
 
-Defined in: [types.ts:14](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events-kafka/src/types.ts#L14)
+Defined in: [types.ts:14](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events-kafka/src/types.ts#L14)
 
 Kafka broker addresses (e.g., ["localhost:9092"])
 
@@ -22,7 +22,7 @@ Kafka broker addresses (e.g., ["localhost:9092"])
 
 > `readonly` `optional` **clientId**: `string`
 
-Defined in: [types.ts:17](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events-kafka/src/types.ts#L17)
+Defined in: [types.ts:17](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events-kafka/src/types.ts#L17)
 
 Client ID for this producer/consumer (default: "connectum")
 
@@ -32,7 +32,7 @@ Client ID for this producer/consumer (default: "connectum")
 
 > `readonly` `optional` **consumerOptions**: `object`
 
-Defined in: [types.ts:32](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events-kafka/src/types.ts#L32)
+Defined in: [types.ts:32](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events-kafka/src/types.ts#L32)
 
 Consumer-specific options
 
@@ -60,7 +60,7 @@ Session timeout in milliseconds (default: 30000)
 
 > `readonly` `optional` **kafkaConfig**: `Omit`\<`Partial`\<`KafkaConfig`\>, `"brokers"` \| `"clientId"`\>
 
-Defined in: [types.ts:23](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events-kafka/src/types.ts#L23)
+Defined in: [types.ts:23](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events-kafka/src/types.ts#L23)
 
 Additional KafkaJS configuration overrides.
 Merged with brokers and clientId.
@@ -71,7 +71,7 @@ Merged with brokers and clientId.
 
 > `readonly` `optional` **producerOptions**: `object`
 
-Defined in: [types.ts:26](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events-kafka/src/types.ts#L26)
+Defined in: [types.ts:26](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events-kafka/src/types.ts#L26)
 
 Producer-specific options
 

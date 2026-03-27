@@ -4,13 +4,14 @@
 
 > **initProvider**(`options?`): `void`
 
-Defined in: [packages/otel/src/provider.ts:261](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/otel/src/provider.ts#L261)
+Defined in: [packages/otel/src/provider.ts:261](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/otel/src/provider.ts#L261)
 
 Initialize the OpenTelemetry provider with explicit options.
 
-Must be called before any telemetry is emitted if custom configuration
-is needed. Throws if already initialized -- call [shutdownProvider](shutdownProvider.md)
-first to re-initialize.
+Optional -- [getProvider](getProvider.md), [getMeter](../../meter/functions/getMeter.md), [getTracer](../../tracer/functions/getTracer.md),
+and [getLogger](../../logger/functions/getLogger.md) auto-initialize with environment-based defaults.
+Idempotent: subsequent calls are no-ops if provider is already active.
+Call [shutdownProvider](shutdownProvider.md) first to re-initialize with new options.
 
 ## Parameters
 
@@ -23,7 +24,3 @@ Optional provider configuration overrides
 ## Returns
 
 `void`
-
-## Throws
-
-Error if provider is already initialized

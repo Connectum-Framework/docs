@@ -2,7 +2,7 @@
 
 # Interface: ProtoAuthzInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:368](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/auth/src/types.ts#L368)
+Defined in: [packages/auth/src/types.ts:368](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L368)
 
 Proto-based authorization interceptor options.
 
@@ -15,7 +15,7 @@ rules defined in .proto files. Falls back to programmatic rules and callbacks.
 
 > `optional` **authorize**: (`context`, `req`) => `boolean` \| `Promise`\<`boolean`\>
 
-Defined in: [packages/auth/src/types.ts:387](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/auth/src/types.ts#L387)
+Defined in: [packages/auth/src/types.ts:387](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L387)
 
 Programmatic authorization callback.
 Called when neither proto options nor programmatic rules match.
@@ -52,7 +52,7 @@ true if authorized, false otherwise
 
 > `optional` **defaultPolicy**: [`AuthzEffect`](../type-aliases/AuthzEffect.md)
 
-Defined in: [packages/auth/src/types.ts:373](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/auth/src/types.ts#L373)
+Defined in: [packages/auth/src/types.ts:373](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L373)
 
 Default policy when no proto option and no rule match.
 
@@ -68,7 +68,7 @@ Default policy when no proto option and no rule match.
 
 > `optional` **rules**: [`AuthzRule`](AuthzRule.md)[]
 
-Defined in: [packages/auth/src/types.ts:378](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/auth/src/types.ts#L378)
+Defined in: [packages/auth/src/types.ts:378](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L378)
 
 Additional programmatic rules, evaluated after proto options.
 Rules are evaluated in order; first matching rule wins.

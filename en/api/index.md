@@ -14,3 +14,23 @@
 - [@connectum/otel](@connectum/otel/index.md)
 - [@connectum/reflection](@connectum/reflection/index.md)
 - [@connectum/testing](@connectum/testing/index.md)
+- [AmqpAdapterOptions](interfaces/AmqpAdapterOptions.md)
+- [AmqpConsumerOptions](interfaces/AmqpConsumerOptions.md)
+- [AmqpExchangeOptions](interfaces/AmqpExchangeOptions.md)
+- [AmqpPublisherOptions](interfaces/AmqpPublisherOptions.md)
+- [AmqpQueueOptions](interfaces/AmqpQueueOptions.md)
+- [AmqpAdapter](functions/AmqpAdapter.md)
+- [toAmqpPattern](functions/toAmqpPattern.md)
+
+## Interfaces
+
+- [AmqpAdapterOptions](interfaces/AmqpAdapterOptions.md)
+- [AmqpConsumerOptions](interfaces/AmqpConsumerOptions.md)
+- [AmqpExchangeOptions](interfaces/AmqpExchangeOptions.md)
+- [AmqpPublisherOptions](interfaces/AmqpPublisherOptions.md)
+- [AmqpQueueOptions](interfaces/AmqpQueueOptions.md)
+
+## Functions
+
+- [AmqpAdapter](functions/AmqpAdapter.md)
+- [toAmqpPattern](functions/toAmqpPattern.md)

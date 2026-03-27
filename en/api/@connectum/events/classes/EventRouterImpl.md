@@ -2,7 +2,7 @@
 
 # Class: EventRouterImpl
 
-Defined in: [packages/events/src/EventRouter.ts:17](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/EventRouter.ts#L17)
+Defined in: [packages/events/src/EventRouter.ts:17](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/EventRouter.ts#L17)
 
 EventRouter implementation that collects route entries.
 
@@ -26,7 +26,15 @@ EventRouter implementation that collects route entries.
 
 > `readonly` **entries**: [`EventRouteEntry`](../types/interfaces/EventRouteEntry.md)[] = `[]`
 
-Defined in: [packages/events/src/EventRouter.ts:18](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/EventRouter.ts#L18)
+Defined in: [packages/events/src/EventRouter.ts:18](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/EventRouter.ts#L18)
+
+***
+
+### serviceNames
+
+> `readonly` **serviceNames**: `string`[] = `[]`
+
+Defined in: [packages/events/src/EventRouter.ts:19](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/EventRouter.ts#L19)
 
 ## Methods
 
@@ -34,7 +42,7 @@ Defined in: [packages/events/src/EventRouter.ts:18](https://github.com/Connectum
 
 > **service**\<`S`\>(`serviceDesc`, `handlers`): `void`
 
-Defined in: [packages/events/src/EventRouter.ts:20](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/EventRouter.ts#L20)
+Defined in: [packages/events/src/EventRouter.ts:21](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/EventRouter.ts#L21)
 
 Register event handlers for a service
 

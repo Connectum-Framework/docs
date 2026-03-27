@@ -2,7 +2,7 @@
 
 # Interface: EventBusOptions
 
-Defined in: [packages/events/src/types.ts:252](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L252)
+Defined in: [packages/events/src/types.ts:279](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L279)
 
 EventBus configuration options for createEventBus()
 
@@ -12,7 +12,7 @@ EventBus configuration options for createEventBus()
 
 > **adapter**: [`EventAdapter`](EventAdapter.md)
 
-Defined in: [packages/events/src/types.ts:254](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L254)
+Defined in: [packages/events/src/types.ts:281](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L281)
 
 Adapter instance (e.g., NatsAdapter, KafkaAdapter, MemoryAdapter)
 
@@ -22,7 +22,7 @@ Adapter instance (e.g., NatsAdapter, KafkaAdapter, MemoryAdapter)
 
 > `optional` **drainTimeout**: `number`
 
-Defined in: [packages/events/src/types.ts:283](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L283)
+Defined in: [packages/events/src/types.ts:310](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L310)
 
 Maximum time in milliseconds to wait for in-flight event handlers
 to complete during shutdown. After this timeout, remaining handlers
@@ -36,7 +36,7 @@ Default: 30000 (30 seconds). Set to 0 for immediate abort.
 
 > `optional` **group**: `string`
 
-Defined in: [packages/events/src/types.ts:258](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L258)
+Defined in: [packages/events/src/types.ts:285](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L285)
 
 Consumer group name
 
@@ -46,7 +46,7 @@ Consumer group name
 
 > `optional` **handlerTimeout**: `number`
 
-Defined in: [packages/events/src/types.ts:275](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L275)
+Defined in: [packages/events/src/types.ts:302](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L302)
 
 Per-event handler timeout in milliseconds.
 
@@ -59,7 +59,7 @@ this duration. Default: 30000 (30 seconds).
 
 > `optional` **middleware**: [`MiddlewareConfig`](MiddlewareConfig.md)
 
-Defined in: [packages/events/src/types.ts:260](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L260)
+Defined in: [packages/events/src/types.ts:287](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L287)
 
 Middleware configuration
 
@@ -69,7 +69,7 @@ Middleware configuration
 
 > `optional` **routes**: [`EventRoute`](../type-aliases/EventRoute.md)[]
 
-Defined in: [packages/events/src/types.ts:256](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L256)
+Defined in: [packages/events/src/types.ts:283](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L283)
 
 Event routes to register
 
@@ -79,7 +79,7 @@ Event routes to register
 
 > `optional` **signal**: `AbortSignal`
 
-Defined in: [packages/events/src/types.ts:268](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L268)
+Defined in: [packages/events/src/types.ts:295](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L295)
 
 Abort signal for graceful shutdown.
 

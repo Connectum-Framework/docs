@@ -2,7 +2,7 @@
 
 # Interface: ProtocolRegistration
 
-Defined in: [packages/core/src/types.ts:84](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/core/src/types.ts#L84)
+Defined in: [packages/core/src/types.ts:84](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L84)
 
 Protocol registration interface
 
@@ -31,7 +31,7 @@ const server = createServer({
 
 > `optional` **httpHandler**: [`HttpHandler`](../type-aliases/HttpHandler.md)
 
-Defined in: [packages/core/src/types.ts:92](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/core/src/types.ts#L92)
+Defined in: [packages/core/src/types.ts:92](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L92)
 
 Optional HTTP handler for fallback routing (e.g., /healthz endpoint)
 
@@ -41,7 +41,7 @@ Optional HTTP handler for fallback routing (e.g., /healthz endpoint)
 
 > `readonly` **name**: `string`
 
-Defined in: [packages/core/src/types.ts:86](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/core/src/types.ts#L86)
+Defined in: [packages/core/src/types.ts:86](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L86)
 
 Protocol name for identification (e.g., "healthcheck", "reflection")
 
@@ -51,7 +51,7 @@ Protocol name for identification (e.g., "healthcheck", "reflection")
 
 > **register**(`router`, `context`): `void`
 
-Defined in: [packages/core/src/types.ts:89](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/core/src/types.ts#L89)
+Defined in: [packages/core/src/types.ts:89](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L89)
 
 Register protocol services on the router
 

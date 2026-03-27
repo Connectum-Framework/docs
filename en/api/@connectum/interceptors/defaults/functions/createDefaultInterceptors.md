@@ -4,7 +4,7 @@
 
 > **createDefaultInterceptors**(`options?`): `Interceptor`[]
 
-Defined in: [defaults.ts:128](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/interceptors/src/defaults.ts#L128)
+Defined in: [defaults.ts:129](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/defaults.ts#L129)
 
 Creates the default interceptor chain with the specified configuration.
 
@@ -16,7 +16,7 @@ The interceptor order is fixed and intentional:
 5. **retry** - Retry transient failures (exponential backoff)
 6. **fallback** - Graceful degradation (DISABLED by default)
 7. **validation** - @connectrpc/validate (createValidateInterceptor)
-8. **serializer** - JSON serialization (innermost)
+8. **serializer** - JSON serialization (innermost, DISABLED by default)
 
 ## Parameters
 
