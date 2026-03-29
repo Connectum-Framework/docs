@@ -2,7 +2,7 @@
 
 # Interface: DlqOptions
 
-Defined in: [packages/events/src/types.ts:225](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L225)
+Defined in: [packages/events/src/types.ts:252](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L252)
 
 Dead letter queue middleware options
 
@@ -12,7 +12,7 @@ Dead letter queue middleware options
 
 > `optional` **errorSerializer**: (`error`) => `string`
 
-Defined in: [packages/events/src/types.ts:234](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L234)
+Defined in: [packages/events/src/types.ts:261](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L261)
 
 Custom error serializer for DLQ metadata.
 Defaults to `error.name` only (e.g. "TypeError") to prevent credential leaks.
@@ -35,6 +35,6 @@ For production, provide a custom serializer that redacts sensitive data
 
 > **topic**: `string`
 
-Defined in: [packages/events/src/types.ts:227](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L227)
+Defined in: [packages/events/src/types.ts:254](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L254)
 
 DLQ topic name

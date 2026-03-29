@@ -4,7 +4,7 @@
 
 > **createEventBus**(`options`): [`EventBus`](../types/interfaces/EventBus.md) & `EventBusLike`
 
-Defined in: [packages/events/src/EventBus.ts:46](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/EventBus.ts#L46)
+Defined in: [packages/events/src/EventBus.ts:71](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/EventBus.ts#L71)
 
 Create an EventBus instance.
 

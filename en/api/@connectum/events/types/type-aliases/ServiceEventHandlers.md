@@ -4,7 +4,7 @@
 
 > **ServiceEventHandlers**\<`S`\> = `{ [K in S["methods"][number] as K["localName"]]: TypedEventHandler<MessageShape<K["input"]>> }`
 
-Defined in: [packages/events/src/types.ts:150](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/events/src/types.ts#L150)
+Defined in: [packages/events/src/types.ts:177](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L177)
 
 Maps service methods to typed event handlers.
 

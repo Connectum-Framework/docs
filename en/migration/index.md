@@ -7,6 +7,37 @@ description: Migration guides and breaking changes for Connectum releases
 
 This page covers breaking changes and migration steps between Connectum releases.
 
+## RC.7 to RC.8
+
+### BREAKING: Serializer interceptor disabled by default
+
+The serializer interceptor is now **disabled by default** in `createDefaultInterceptors()`.
+
+**Why**: Implicit JSON serialization caused issues with streaming between microservices and was unexpected for gRPC services using binary protobuf format.
+
+**When to enable**:
+- Your service uses the **Connect protocol** (HTTP/1.1 JSON) and needs protobuf ↔ JSON conversion
+- You serve both Connect and gRPC clients and want JSON responses for Connect
+
+**When NOT needed** (no action required):
+- Pure gRPC services (binary protobuf)
+- Services using `serializer: false` already
+
+**Migration**:
+
+```typescript
+// Before (serializer was auto-enabled)
+createDefaultInterceptors()
+
+// After — if you need JSON serialization
+createDefaultInterceptors({ serializer: true })
+
+// After — if you use gRPC only (no change needed)
+createDefaultInterceptors()
+```
+
+---
+
 ## RC.6 to RC.7
 
 ### New Package: `@connectum/events-amqp`

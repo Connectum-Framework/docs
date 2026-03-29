@@ -17,6 +17,7 @@
 - [composeMiddleware](functions/composeMiddleware.md)
 - [createEventBus](functions/createEventBus.md)
 - [createEventContext](functions/createEventContext.md)
+- [deriveServiceName](functions/deriveServiceName.md)
 - [dlqMiddleware](functions/dlqMiddleware.md)
 - [matchPattern](functions/matchPattern.md)
 - [MemoryAdapter](functions/MemoryAdapter.md)
@@ -24,6 +25,12 @@
 - [retryMiddleware](functions/retryMiddleware.md)
 
 ## References
+
+### AdapterContext
+
+Re-exports [AdapterContext](types/interfaces/AdapterContext.md)
+
+***
 
 ### DlqOptions
 

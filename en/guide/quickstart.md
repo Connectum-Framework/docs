@@ -388,7 +388,7 @@ See [Graceful Shutdown](/en/guide/server/graceful-shutdown) for dependency graph
 | 5 | **retry** | 3 retries | Exponential backoff for transients |
 | 6 | **fallback** | off | Graceful degradation (requires handler) |
 | 7 | **validation** | on | Proto constraint validation |
-| 8 | **serializer** | on | JSON serialization |
+| 8 | **serializer** | off | JSON serialization (opt-in for Connect protocol) |
 
 ```typescript
 const interceptors = createDefaultInterceptors({

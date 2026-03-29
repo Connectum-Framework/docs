@@ -4,7 +4,7 @@
 
 > **createCircuitBreakerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [circuit-breaker.ts:61](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/interceptors/src/circuit-breaker.ts#L61)
+Defined in: [circuit-breaker.ts:61](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/circuit-breaker.ts#L61)
 
 Create circuit breaker interceptor
 

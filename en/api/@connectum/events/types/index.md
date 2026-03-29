@@ -6,6 +6,7 @@ Type definitions for the event adapter layer.
 
 ## Interfaces
 
+- [AdapterContext](interfaces/AdapterContext.md)
 - [DlqOptions](interfaces/DlqOptions.md)
 - [EventAdapter](interfaces/EventAdapter.md)
 - [EventBus](interfaces/EventBus.md)

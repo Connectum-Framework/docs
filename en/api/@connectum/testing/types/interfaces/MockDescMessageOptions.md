@@ -2,7 +2,7 @@
 
 # Interface: MockDescMessageOptions
 
-Defined in: [types.ts:46](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/testing/src/types.ts#L46)
+Defined in: [types.ts:46](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L46)
 
 Options for createMockDescMessage.
 
@@ -12,7 +12,7 @@ Options for createMockDescMessage.
 
 > `optional` **fields**: `object`[]
 
-Defined in: [types.ts:48](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/testing/src/types.ts#L48)
+Defined in: [types.ts:48](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L48)
 
 Field definitions. Default: `[]`
 
@@ -34,6 +34,6 @@ Field definitions. Default: `[]`
 
 > `optional` **oneofs**: `string`[]
 
-Defined in: [types.ts:54](https://github.com/Connectum-Framework/connectum/blob/31aac2b81d5ae69bfa6a1667e3a8107cdea942d5/packages/testing/src/types.ts#L54)
+Defined in: [types.ts:54](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L54)
 
 Oneof group names. Default: `[]`

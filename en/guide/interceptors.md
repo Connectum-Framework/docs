@@ -50,7 +50,7 @@ Response <- interceptor1 <- interceptor2 <- ... <- handler
 | 5 | **retry** | Retries transient failures with exponential backoff | Enabled (3 retries) |
 | 6 | **fallback** | Graceful degradation | Disabled |
 | 7 | **validation** | Validates via @connectrpc/validate | Enabled |
-| 8 | **serializer** | JSON serialization for protobuf | Enabled |
+| 8 | **serializer** | JSON serialization for protobuf | **Disabled** |
 
 ### Per-Method Routing
 
