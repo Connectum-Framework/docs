@@ -4,7 +4,7 @@
 
 > **wrapAsyncIterable**\<`T`\>(`iterable`, `span`, `direction`, `recordMessages`, `endSpanOnComplete?`): `AsyncGenerator`\<`T`\>
 
-Defined in: [packages/otel/src/shared.ts:81](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/otel/src/shared.ts#L81)
+Defined in: [packages/otel/src/shared.ts:81](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/shared.ts#L81)
 
 Wraps an AsyncIterable to track streaming messages with OTel span events.
 
@@ -37,9 +37,9 @@ The OTel span to record events on
 
 ### direction
 
-'SENT' for outgoing, 'RECEIVED' for incoming messages
+`"SENT"` \| `"RECEIVED"`
 
-`"SENT"` | `"RECEIVED"`
+'SENT' for outgoing, 'RECEIVED' for incoming messages
 
 ### recordMessages
 

@@ -23,7 +23,7 @@ from field: optional string default_policy = 1;
 
 ### defaultRequires?
 
-> `optional` **defaultRequires**: [`AuthRequirements`](AuthRequirements.md)
+> `optional` **defaultRequires?**: [`AuthRequirements`](AuthRequirements.md)
 
 Default access requirements applied to all methods
 unless overridden at the method level.

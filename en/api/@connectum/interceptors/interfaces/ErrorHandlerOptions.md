@@ -2,7 +2,7 @@
 
 # Interface: ErrorHandlerOptions
 
-Defined in: [types.ts:21](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/types.ts#L21)
+Defined in: [types.ts:21](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/types.ts#L21)
 
 Error handler interceptor options
 
@@ -10,9 +10,9 @@ Error handler interceptor options
 
 ### includeStackTrace?
 
-> `optional` **includeStackTrace**: `boolean`
+> `optional` **includeStackTrace?**: `boolean`
 
-Defined in: [types.ts:33](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/types.ts#L33)
+Defined in: [types.ts:33](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/types.ts#L33)
 
 Include stack trace in logs
 
@@ -26,9 +26,9 @@ process.env.NODE_ENV !== "production"
 
 ### ~~logErrors?~~
 
-> `optional` **logErrors**: `boolean`
+> `optional` **logErrors?**: `boolean`
 
-Defined in: [types.ts:27](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/types.ts#L27)
+Defined in: [types.ts:27](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/types.ts#L27)
 
 Log errors to console.
 
@@ -44,11 +44,11 @@ Use onError callback instead
 
 ***
 
-### onError()?
+### onError?
 
-> `optional` **onError**: (`info`) => `void`
+> `optional` **onError?**: (`info`) => `void`
 
-Defined in: [types.ts:39](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/types.ts#L39)
+Defined in: [types.ts:39](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/types.ts#L39)
 
 Callback for error logging. Replaces console.error when provided.
 Receives rich error info including serverDetails from SanitizableError.

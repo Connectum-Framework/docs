@@ -2,7 +2,7 @@
 
 # Interface: MiddlewareConfig
 
-Defined in: [packages/events/src/types.ts:267](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L267)
+Defined in: [packages/events/src/types.ts:284](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L284)
 
 Built-in middleware configuration
 
@@ -10,9 +10,9 @@ Built-in middleware configuration
 
 ### custom?
 
-> `optional` **custom**: [`EventMiddleware`](../type-aliases/EventMiddleware.md)[]
+> `optional` **custom?**: [`EventMiddleware`](../type-aliases/EventMiddleware.md)[]
 
-Defined in: [packages/events/src/types.ts:273](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L273)
+Defined in: [packages/events/src/types.ts:290](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L290)
 
 Custom user middleware (executed outermost)
 
@@ -20,9 +20,9 @@ Custom user middleware (executed outermost)
 
 ### dlq?
 
-> `optional` **dlq**: [`DlqOptions`](DlqOptions.md)
+> `optional` **dlq?**: [`DlqOptions`](DlqOptions.md)
 
-Defined in: [packages/events/src/types.ts:271](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L271)
+Defined in: [packages/events/src/types.ts:288](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L288)
 
 Dead letter queue configuration
 
@@ -30,8 +30,8 @@ Dead letter queue configuration
 
 ### retry?
 
-> `optional` **retry**: [`RetryOptions`](RetryOptions.md)
+> `optional` **retry?**: [`RetryOptions`](RetryOptions.md)
 
-Defined in: [packages/events/src/types.ts:269](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L269)
+Defined in: [packages/events/src/types.ts:286](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L286)
 
 Retry configuration

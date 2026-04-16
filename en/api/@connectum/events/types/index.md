@@ -13,6 +13,7 @@ Type definitions for the event adapter layer.
 - [EventBusOptions](interfaces/EventBusOptions.md)
 - [EventContext](interfaces/EventContext.md)
 - [EventContextInit](interfaces/EventContextInit.md)
+- [EventHandlerConfig](interfaces/EventHandlerConfig.md)
 - [EventRouteEntry](interfaces/EventRouteEntry.md)
 - [EventRouter](interfaces/EventRouter.md)
 - [EventSubscription](interfaces/EventSubscription.md)

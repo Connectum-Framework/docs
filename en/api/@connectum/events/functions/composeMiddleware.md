@@ -4,7 +4,7 @@
 
 > **composeMiddleware**(`middlewares`, `handler`): (`event`, `ctx`) => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/middleware.ts:24](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/middleware.ts#L24)
+Defined in: [packages/events/src/middleware.ts:24](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/middleware.ts#L24)
 
 Compose an array of middleware into a single handler.
 
@@ -31,18 +31,4 @@ The final handler (innermost)
 
 Composed handler function
 
-> (`event`, `ctx`): `Promise`\<`void`\>
-
-### Parameters
-
-#### event
-
-[`RawEvent`](../types/interfaces/RawEvent.md)
-
-#### ctx
-
-[`EventContext`](../types/interfaces/EventContext.md)
-
-### Returns
-
-`Promise`\<`void`\>
+(`event`, `ctx`) => `Promise`\<`void`\>
