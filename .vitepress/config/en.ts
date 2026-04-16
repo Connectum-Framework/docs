@@ -101,6 +101,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
         ],
     },
     { text: 'Validation', link: '/en/guide/validation' },
+    { text: 'Runtime Compatibility', link: '/en/guide/runtime-compatibility' },
     {
         text: 'TypeScript',
         link: '/en/guide/typescript',
