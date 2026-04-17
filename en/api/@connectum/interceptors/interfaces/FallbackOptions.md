@@ -2,7 +2,7 @@
 
 # Interface: FallbackOptions\<T\>
 
-Defined in: [types.ts:189](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/types.ts#L189)
+Defined in: [types.ts:189](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/types.ts#L189)
 
 Fallback interceptor options
 
@@ -14,11 +14,11 @@ Fallback interceptor options
 
 ## Properties
 
-### handler()
+### handler
 
 > **handler**: (`error`) => `T` \| `Promise`\<`T`\>
 
-Defined in: [types.ts:193](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/types.ts#L193)
+Defined in: [types.ts:193](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/types.ts#L193)
 
 Fallback function to call on error
 
@@ -36,9 +36,9 @@ Fallback function to call on error
 
 ### skipStreaming?
 
-> `optional` **skipStreaming**: `boolean`
+> `optional` **skipStreaming?**: `boolean`
 
-Defined in: [types.ts:199](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/types.ts#L199)
+Defined in: [types.ts:199](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/types.ts#L199)
 
 Skip fallback for streaming calls
 

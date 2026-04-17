@@ -2,7 +2,7 @@
 
 # Interface: RpcClientMetrics
 
-Defined in: [packages/otel/src/metrics.ts:34](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/otel/src/metrics.ts#L34)
+Defined in: [packages/otel/src/metrics.ts:34](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/metrics.ts#L34)
 
 Pre-configured RPC client metric instruments
 
@@ -15,7 +15,7 @@ following OpenTelemetry RPC semantic conventions.
 
 > **callDuration**: `Histogram`
 
-Defined in: [packages/otel/src/metrics.ts:36](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/otel/src/metrics.ts#L36)
+Defined in: [packages/otel/src/metrics.ts:36](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/metrics.ts#L36)
 
 Histogram measuring duration of RPC client calls (unit: seconds)
 
@@ -25,7 +25,7 @@ Histogram measuring duration of RPC client calls (unit: seconds)
 
 > **requestSize**: `Histogram`
 
-Defined in: [packages/otel/src/metrics.ts:38](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/otel/src/metrics.ts#L38)
+Defined in: [packages/otel/src/metrics.ts:38](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/metrics.ts#L38)
 
 Histogram measuring size of RPC client request messages (unit: bytes)
 
@@ -35,6 +35,6 @@ Histogram measuring size of RPC client request messages (unit: bytes)
 
 > **responseSize**: `Histogram`
 
-Defined in: [packages/otel/src/metrics.ts:40](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/otel/src/metrics.ts#L40)
+Defined in: [packages/otel/src/metrics.ts:40](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/metrics.ts#L40)
 
 Histogram measuring size of RPC client response messages (unit: bytes)

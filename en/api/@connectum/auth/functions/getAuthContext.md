@@ -4,7 +4,7 @@
 
 > **getAuthContext**(): [`AuthContext`](../interfaces/AuthContext.md) \| `undefined`
 
-Defined in: [packages/auth/src/context.ts:44](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/context.ts#L44)
+Defined in: [packages/auth/src/context.ts:111](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/context.ts#L111)
 
 Get the current auth context.
 

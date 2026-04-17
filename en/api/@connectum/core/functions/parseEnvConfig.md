@@ -4,7 +4,7 @@
 
 > **parseEnvConfig**(`env?`): `object`
 
-Defined in: [packages/core/src/config/envSchema.ts:145](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/config/envSchema.ts#L145)
+Defined in: [packages/core/src/config/envSchema.ts:145](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/core/src/config/envSchema.ts#L145)
 
 Parse and validate environment configuration
 
@@ -79,7 +79,7 @@ Listen address
 
 ### LOG\_BACKEND
 
-> **LOG\_BACKEND**: `"otel"` \| `"pino"` \| `"console"` = `LoggerBackendSchema`
+> **LOG\_BACKEND**: `"console"` \| `"otel"` \| `"pino"` = `LoggerBackendSchema`
 
 Logger backend
 
@@ -127,13 +127,13 @@ Node environment
 
 ### OTEL\_EXPORTER\_OTLP\_ENDPOINT?
 
-> `optional` **OTEL\_EXPORTER\_OTLP\_ENDPOINT**: `string`
+> `optional` **OTEL\_EXPORTER\_OTLP\_ENDPOINT?**: `string`
 
 OpenTelemetry exporter endpoint
 
 ### OTEL\_SERVICE\_NAME?
 
-> `optional` **OTEL\_SERVICE\_NAME**: `string`
+> `optional` **OTEL\_SERVICE\_NAME?**: `string`
 
 OpenTelemetry service name
 

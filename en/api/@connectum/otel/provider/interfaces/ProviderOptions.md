@@ -2,7 +2,7 @@
 
 # Interface: ProviderOptions
 
-Defined in: [packages/otel/src/provider.ts:31](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/otel/src/provider.ts#L31)
+Defined in: [packages/otel/src/provider.ts:31](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/provider.ts#L31)
 
 Options for initializing the OpenTelemetry provider
 
@@ -10,9 +10,9 @@ Options for initializing the OpenTelemetry provider
 
 ### serviceName?
 
-> `optional` **serviceName**: `string`
+> `optional` **serviceName?**: `string`
 
-Defined in: [packages/otel/src/provider.ts:33](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/otel/src/provider.ts#L33)
+Defined in: [packages/otel/src/provider.ts:33](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/provider.ts#L33)
 
 Override service name (defaults to OTEL_SERVICE_NAME or npm_package_name)
 
@@ -20,9 +20,9 @@ Override service name (defaults to OTEL_SERVICE_NAME or npm_package_name)
 
 ### serviceVersion?
 
-> `optional` **serviceVersion**: `string`
+> `optional` **serviceVersion?**: `string`
 
-Defined in: [packages/otel/src/provider.ts:35](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/otel/src/provider.ts#L35)
+Defined in: [packages/otel/src/provider.ts:35](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/provider.ts#L35)
 
 Override service version (defaults to npm_package_version)
 
@@ -30,8 +30,8 @@ Override service version (defaults to npm_package_version)
 
 ### settings?
 
-> `optional` **settings**: `Partial`\<[`OTLPSettings`](../../interfaces/OTLPSettings.md)\>
+> `optional` **settings?**: `Partial`\<[`OTLPSettings`](../../interfaces/OTLPSettings.md)\>
 
-Defined in: [packages/otel/src/provider.ts:37](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/otel/src/provider.ts#L37)
+Defined in: [packages/otel/src/provider.ts:37](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/provider.ts#L37)
 
 Override OTLP exporter settings (defaults to env-based config)
