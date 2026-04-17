@@ -59,6 +59,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
             { text: 'Session', link: '/en/guide/auth/session' },
             { text: 'Authorization (RBAC)', link: '/en/guide/auth/authorization' },
             { text: 'Proto-Based Authz', link: '/en/guide/auth/proto-authz' },
+            { text: 'Client Interceptors', link: '/en/guide/auth/client-interceptors' },
             { text: 'Context & Testing', link: '/en/guide/auth/context' },
         ],
     },
