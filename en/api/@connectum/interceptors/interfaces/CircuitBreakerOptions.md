@@ -2,7 +2,7 @@
 
 # Interface: CircuitBreakerOptions
 
-Defined in: [types.ts:126](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/types.ts#L126)
+Defined in: [types.ts:126](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/types.ts#L126)
 
 Circuit breaker interceptor options
 
@@ -10,9 +10,9 @@ Circuit breaker interceptor options
 
 ### halfOpenAfter?
 
-> `optional` **halfOpenAfter**: `number`
+> `optional` **halfOpenAfter?**: `number`
 
-Defined in: [types.ts:137](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/types.ts#L137)
+Defined in: [types.ts:137](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/types.ts#L137)
 
 Time in milliseconds to wait before attempting to close circuit
 
@@ -26,9 +26,9 @@ Time in milliseconds to wait before attempting to close circuit
 
 ### skipStreaming?
 
-> `optional` **skipStreaming**: `boolean`
+> `optional` **skipStreaming?**: `boolean`
 
-Defined in: [types.ts:143](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/types.ts#L143)
+Defined in: [types.ts:143](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/types.ts#L143)
 
 Skip circuit breaker for streaming calls
 
@@ -42,9 +42,9 @@ true
 
 ### threshold?
 
-> `optional` **threshold**: `number`
+> `optional` **threshold?**: `number`
 
-Defined in: [types.ts:131](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/interceptors/src/types.ts#L131)
+Defined in: [types.ts:131](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/types.ts#L131)
 
 Number of consecutive failures before opening circuit
 

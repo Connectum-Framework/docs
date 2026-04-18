@@ -4,7 +4,7 @@
 
 > **resolveTopicName**(`method`): `string`
 
-Defined in: [packages/events/src/topic.ts:22](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/topic.ts#L22)
+Defined in: [packages/events/src/topic.ts:22](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/topic.ts#L22)
 
 Resolve the topic name for an event handler method.
 

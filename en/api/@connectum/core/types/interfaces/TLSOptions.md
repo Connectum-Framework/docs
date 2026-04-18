@@ -2,7 +2,7 @@
 
 # Interface: TLSOptions
 
-Defined in: [packages/core/src/types.ts:98](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L98)
+Defined in: [packages/core/src/types.ts:98](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/core/src/types.ts#L98)
 
 TLS configuration options
 
@@ -10,9 +10,9 @@ TLS configuration options
 
 ### certPath?
 
-> `optional` **certPath**: `string`
+> `optional` **certPath?**: `string`
 
-Defined in: [packages/core/src/types.ts:107](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L107)
+Defined in: [packages/core/src/types.ts:107](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/core/src/types.ts#L107)
 
 Path to TLS certificate file
 
@@ -20,9 +20,9 @@ Path to TLS certificate file
 
 ### dirPath?
 
-> `optional` **dirPath**: `string`
+> `optional` **dirPath?**: `string`
 
-Defined in: [packages/core/src/types.ts:113](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L113)
+Defined in: [packages/core/src/types.ts:113](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/core/src/types.ts#L113)
 
 TLS directory path (alternative to keyPath/certPath)
 Will look for server.key and server.crt in this directory
@@ -31,8 +31,8 @@ Will look for server.key and server.crt in this directory
 
 ### keyPath?
 
-> `optional` **keyPath**: `string`
+> `optional` **keyPath?**: `string`
 
-Defined in: [packages/core/src/types.ts:102](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L102)
+Defined in: [packages/core/src/types.ts:102](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/core/src/types.ts#L102)
 
 Path to TLS key file

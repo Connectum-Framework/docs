@@ -2,7 +2,7 @@
 
 # Interface: JwtAuthInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:164](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L164)
+Defined in: [packages/auth/src/types.ts:164](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L164)
 
 JWT auth interceptor options
 
@@ -10,9 +10,9 @@ JWT auth interceptor options
 
 ### algorithms?
 
-> `optional` **algorithms**: `string`[]
+> `optional` **algorithms?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:210](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L210)
+Defined in: [packages/auth/src/types.ts:210](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L210)
 
 Allowed algorithms
 
@@ -20,9 +20,9 @@ Allowed algorithms
 
 ### audience?
 
-> `optional` **audience**: `string` \| `string`[]
+> `optional` **audience?**: `string` \| `string`[]
 
-Defined in: [packages/auth/src/types.ts:208](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L208)
+Defined in: [packages/auth/src/types.ts:208](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L208)
 
 Expected audience(s)
 
@@ -30,36 +30,36 @@ Expected audience(s)
 
 ### claimsMapping?
 
-> `optional` **claimsMapping**: `object`
+> `optional` **claimsMapping?**: `object`
 
-Defined in: [packages/auth/src/types.ts:215](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L215)
+Defined in: [packages/auth/src/types.ts:215](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L215)
 
 Mapping from JWT claims to AuthContext fields.
 Supports dot-notation paths (e.g., "realm_access.roles").
 
 #### name?
 
-> `optional` **name**: `string`
+> `optional` **name?**: `string`
 
 #### roles?
 
-> `optional` **roles**: `string`
+> `optional` **roles?**: `string`
 
 #### scopes?
 
-> `optional` **scopes**: `string`
+> `optional` **scopes?**: `string`
 
 #### subject?
 
-> `optional` **subject**: `string`
+> `optional` **subject?**: `string`
 
 ***
 
 ### issuer?
 
-> `optional` **issuer**: `string` \| `string`[]
+> `optional` **issuer?**: `string` \| `string`[]
 
-Defined in: [packages/auth/src/types.ts:206](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L206)
+Defined in: [packages/auth/src/types.ts:206](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L206)
 
 Expected issuer(s)
 
@@ -67,9 +67,9 @@ Expected issuer(s)
 
 ### jwksUri?
 
-> `optional` **jwksUri**: `string`
+> `optional` **jwksUri?**: `string`
 
-Defined in: [packages/auth/src/types.ts:166](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L166)
+Defined in: [packages/auth/src/types.ts:166](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L166)
 
 JWKS endpoint URL for remote key set
 
@@ -77,9 +77,9 @@ JWKS endpoint URL for remote key set
 
 ### maxTokenAge?
 
-> `optional` **maxTokenAge**: `string` \| `number`
+> `optional` **maxTokenAge?**: `string` \| `number`
 
-Defined in: [packages/auth/src/types.ts:228](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L228)
+Defined in: [packages/auth/src/types.ts:228](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L228)
 
 Maximum token age.
 Passed to jose jwtVerify options.
@@ -89,9 +89,9 @@ Number (seconds) or string (e.g., "2h", "7d").
 
 ### propagateHeaders?
 
-> `optional` **propagateHeaders**: `boolean`
+> `optional` **propagateHeaders?**: `boolean`
 
-Defined in: [packages/auth/src/types.ts:238](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L238)
+Defined in: [packages/auth/src/types.ts:238](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L238)
 
 Propagate auth context as headers for downstream services.
 
@@ -105,9 +105,9 @@ false
 
 ### publicKey?
 
-> `optional` **publicKey**: `CryptoKey`
+> `optional` **publicKey?**: `CryptoKey`
 
-Defined in: [packages/auth/src/types.ts:204](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L204)
+Defined in: [packages/auth/src/types.ts:204](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L204)
 
 Asymmetric public key for JWT signature verification.
 
@@ -149,9 +149,9 @@ const ecKey = await crypto.subtle.importKey(
 
 ### secret?
 
-> `optional` **secret**: `string`
+> `optional` **secret?**: `string`
 
-Defined in: [packages/auth/src/types.ts:168](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L168)
+Defined in: [packages/auth/src/types.ts:168](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L168)
 
 HMAC symmetric secret (for HS256/HS384/HS512)
 
@@ -159,9 +159,9 @@ HMAC symmetric secret (for HS256/HS384/HS512)
 
 ### skipMethods?
 
-> `optional` **skipMethods**: `string`[]
+> `optional` **skipMethods?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:233](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L233)
+Defined in: [packages/auth/src/types.ts:233](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L233)
 
 Methods to skip authentication for.
 

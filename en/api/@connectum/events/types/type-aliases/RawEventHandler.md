@@ -1,10 +1,10 @@
 [Connectum API Reference](../../../../index.md) / [@connectum/events](../../index.md) / [types](../index.md) / RawEventHandler
 
-# Type Alias: RawEventHandler()
+# Type Alias: RawEventHandler
 
 > **RawEventHandler** = (`event`, `ack`, `nack`) => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:38](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L38)
+Defined in: [packages/events/src/types.ts:38](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L38)
 
 Raw event handler function type.
 

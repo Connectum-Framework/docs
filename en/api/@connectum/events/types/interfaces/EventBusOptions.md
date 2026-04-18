@@ -2,7 +2,7 @@
 
 # Interface: EventBusOptions
 
-Defined in: [packages/events/src/types.ts:279](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L279)
+Defined in: [packages/events/src/types.ts:296](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L296)
 
 EventBus configuration options for createEventBus()
 
@@ -12,7 +12,7 @@ EventBus configuration options for createEventBus()
 
 > **adapter**: [`EventAdapter`](EventAdapter.md)
 
-Defined in: [packages/events/src/types.ts:281](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L281)
+Defined in: [packages/events/src/types.ts:298](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L298)
 
 Adapter instance (e.g., NatsAdapter, KafkaAdapter, MemoryAdapter)
 
@@ -20,9 +20,9 @@ Adapter instance (e.g., NatsAdapter, KafkaAdapter, MemoryAdapter)
 
 ### drainTimeout?
 
-> `optional` **drainTimeout**: `number`
+> `optional` **drainTimeout?**: `number`
 
-Defined in: [packages/events/src/types.ts:310](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L310)
+Defined in: [packages/events/src/types.ts:327](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L327)
 
 Maximum time in milliseconds to wait for in-flight event handlers
 to complete during shutdown. After this timeout, remaining handlers
@@ -34,9 +34,9 @@ Default: 30000 (30 seconds). Set to 0 for immediate abort.
 
 ### group?
 
-> `optional` **group**: `string`
+> `optional` **group?**: `string`
 
-Defined in: [packages/events/src/types.ts:285](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L285)
+Defined in: [packages/events/src/types.ts:302](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L302)
 
 Consumer group name
 
@@ -44,9 +44,9 @@ Consumer group name
 
 ### handlerTimeout?
 
-> `optional` **handlerTimeout**: `number`
+> `optional` **handlerTimeout?**: `number`
 
-Defined in: [packages/events/src/types.ts:302](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L302)
+Defined in: [packages/events/src/types.ts:319](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L319)
 
 Per-event handler timeout in milliseconds.
 
@@ -57,9 +57,9 @@ this duration. Default: 30000 (30 seconds).
 
 ### middleware?
 
-> `optional` **middleware**: [`MiddlewareConfig`](MiddlewareConfig.md)
+> `optional` **middleware?**: [`MiddlewareConfig`](MiddlewareConfig.md)
 
-Defined in: [packages/events/src/types.ts:287](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L287)
+Defined in: [packages/events/src/types.ts:304](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L304)
 
 Middleware configuration
 
@@ -67,9 +67,9 @@ Middleware configuration
 
 ### routes?
 
-> `optional` **routes**: [`EventRoute`](../type-aliases/EventRoute.md)[]
+> `optional` **routes?**: [`EventRoute`](../type-aliases/EventRoute.md)[]
 
-Defined in: [packages/events/src/types.ts:283](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L283)
+Defined in: [packages/events/src/types.ts:300](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L300)
 
 Event routes to register
 
@@ -77,9 +77,9 @@ Event routes to register
 
 ### signal?
 
-> `optional` **signal**: `AbortSignal`
+> `optional` **signal?**: `AbortSignal`
 
-Defined in: [packages/events/src/types.ts:295](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/events/src/types.ts#L295)
+Defined in: [packages/events/src/types.ts:312](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/types.ts#L312)
 
 Abort signal for graceful shutdown.
 

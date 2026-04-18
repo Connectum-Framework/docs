@@ -2,7 +2,7 @@
 
 # Interface: FakeMethodOptions
 
-Defined in: [types.ts:102](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L102)
+Defined in: [types.ts:102](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L102)
 
 Options for createFakeMethod.
 
@@ -10,9 +10,9 @@ Options for createFakeMethod.
 
 ### methodKind?
 
-> `optional` **methodKind**: `"unary"` \| `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"`
+> `optional` **methodKind?**: `"unary"` \| `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"`
 
-Defined in: [types.ts:104](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L104)
+Defined in: [types.ts:104](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L104)
 
 Method kind. Default: `'unary'`
 
@@ -20,8 +20,8 @@ Method kind. Default: `'unary'`
 
 ### register?
 
-> `optional` **register**: `boolean`
+> `optional` **register?**: `boolean`
 
-Defined in: [types.ts:106](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L106)
+Defined in: [types.ts:106](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L106)
 
 Whether to register the method in service.methods. Default: `false`

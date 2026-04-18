@@ -7,6 +7,11 @@
 Provides mock factories, assertion helpers, and a test server utility
 to eliminate boilerplate in ConnectRPC interceptor and service tests.
 
+## Interfaces
+
+- [MockCall](interfaces/MockCall.md)
+- [MockFn](interfaces/MockFn.md)
+
 ## Functions
 
 - [assertConnectError](functions/assertConnectError.md)
@@ -15,6 +20,7 @@ to eliminate boilerplate in ConnectRPC interceptor and service tests.
 - [createMockDescField](functions/createMockDescField.md)
 - [createMockDescMessage](functions/createMockDescMessage.md)
 - [createMockDescMethod](functions/createMockDescMethod.md)
+- [createMockFn](functions/createMockFn.md)
 - [createMockNext](functions/createMockNext.md)
 - [createMockNextError](functions/createMockNextError.md)
 - [createMockNextSlow](functions/createMockNextSlow.md)
