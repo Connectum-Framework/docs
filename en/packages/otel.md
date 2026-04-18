@@ -29,7 +29,7 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/otel/)
 pnpm add @connectum/otel
 ```
 
-**Requires**: Node.js 18+
+**Requires**: Node.js 20+
 
 ## Quick Start
 

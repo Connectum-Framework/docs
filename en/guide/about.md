@@ -6,7 +6,7 @@ outline: deep
 
 ## What is Connectum?
 
-**Connectum** is a production-ready framework for building gRPC/ConnectRPC microservices on Node.js 18+. It eliminates boilerplate by bundling health checks, observability, resilience, authentication, and graceful shutdown into a single `createServer()` call.
+**Connectum** is a production-ready framework for building gRPC/ConnectRPC microservices on Node.js 20+. It eliminates boilerplate by bundling health checks, observability, resilience, authentication, and graceful shutdown into a single `createServer()` call.
 
 Engineering teams with enterprise requirements -- observability, mTLS, RBAC, circuit breakers -- need a unified, well-designed framework instead of gluing together dozens of libraries. Connectum provides that foundation with a pluggable architecture where every capability is an explicit, optional package.
 
@@ -42,7 +42,7 @@ Existing solutions (NestJS, tRPC) are either too heavy or lack native gRPC suppo
 
 These principles guide every design decision in Connectum. Each links to its Architecture Decision Record for full rationale.
 
-1. **Native TypeScript** -- write TypeScript natively on Node.js 25+; packages compile to JS + type declarations for consumers on Node.js 18+. [ADR-001](/en/contributing/adr/001-native-typescript-migration)
+1. **Native TypeScript** -- write TypeScript natively on Node.js 25+; packages compile to JS + type declarations for consumers on Node.js 20+. [ADR-001](/en/contributing/adr/001-native-typescript-migration)
 
 2. **Modular Architecture** -- thirteen packages organized in dependency layers where each layer can only depend on lower layers. [ADR-003](/en/contributing/adr/003-package-decomposition)
 
@@ -106,7 +106,7 @@ graph BT
 - **Not an ORM** -- Connectum does not manage databases
 - **Not a full-stack framework** -- gRPC/ConnectRPC server-side only
 - **Not CommonJS** -- ESM only
-- **Not legacy Node.js** -- requires Node.js 18+ (development requires Node.js 25+)
+- **Not legacy Node.js** -- requires Node.js 20+ (development requires Node.js 25+)
 
 ## Next Steps
 

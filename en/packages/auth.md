@@ -28,7 +28,7 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/auth/)
 pnpm add @connectum/auth
 ```
 
-**Requires**: Node.js 18+
+**Requires**: Node.js 20+
 
 **Dependencies**: `@connectrpc/connect`, `@connectum/core`, `jose`
 

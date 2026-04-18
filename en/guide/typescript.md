@@ -4,7 +4,7 @@ outline: deep
 
 # TypeScript
 
-Native TypeScript execution via type stripping on Node.js 25+. Packages compile to JS + DTS via tsup for any runtime (Node.js 18+, Bun, tsx).
+Native TypeScript execution via type stripping on Node.js 25+. Packages compile to JS + DTS via tsup for any runtime (Node.js 20+, Bun, tsx).
 
 ## Quick Start
 
