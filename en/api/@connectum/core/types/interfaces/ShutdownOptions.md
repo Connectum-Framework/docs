@@ -2,7 +2,7 @@
 
 # Interface: ShutdownOptions
 
-Defined in: [packages/core/src/types.ts:183](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L183)
+Defined in: [packages/core/src/types.ts:183](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/core/src/types.ts#L183)
 
 Graceful shutdown options
 
@@ -10,9 +10,9 @@ Graceful shutdown options
 
 ### autoShutdown?
 
-> `optional` **autoShutdown**: `boolean`
+> `optional` **autoShutdown?**: `boolean`
 
-Defined in: [packages/core/src/types.ts:200](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L200)
+Defined in: [packages/core/src/types.ts:200](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/core/src/types.ts#L200)
 
 Enable automatic graceful shutdown on signals
 
@@ -26,9 +26,9 @@ false
 
 ### forceCloseOnTimeout?
 
-> `optional` **forceCloseOnTimeout**: `boolean`
+> `optional` **forceCloseOnTimeout?**: `boolean`
 
-Defined in: [packages/core/src/types.ts:208](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L208)
+Defined in: [packages/core/src/types.ts:208](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/core/src/types.ts#L208)
 
 Force close all HTTP/2 sessions when shutdown timeout is exceeded.
 When true, sessions are destroyed after timeout. When false, server
@@ -44,9 +44,9 @@ true
 
 ### signals?
 
-> `optional` **signals**: `Signals`[]
+> `optional` **signals?**: `Signals`[]
 
-Defined in: [packages/core/src/types.ts:194](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L194)
+Defined in: [packages/core/src/types.ts:194](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/core/src/types.ts#L194)
 
 Signals to listen for graceful shutdown
 
@@ -60,9 +60,9 @@ Signals to listen for graceful shutdown
 
 ### timeout?
 
-> `optional` **timeout**: `number`
+> `optional` **timeout?**: `number`
 
-Defined in: [packages/core/src/types.ts:188](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/core/src/types.ts#L188)
+Defined in: [packages/core/src/types.ts:188](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/core/src/types.ts#L188)
 
 Timeout in milliseconds for graceful shutdown
 

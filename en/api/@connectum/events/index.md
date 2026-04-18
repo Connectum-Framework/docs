@@ -68,6 +68,12 @@ Re-exports [EventContextInit](types/interfaces/EventContextInit.md)
 
 ***
 
+### EventHandlerConfig
+
+Re-exports [EventHandlerConfig](types/interfaces/EventHandlerConfig.md)
+
+***
+
 ### EventMiddleware
 
 Re-exports [EventMiddleware](types/type-aliases/EventMiddleware.md)
