@@ -7,6 +7,79 @@ description: Migration guides and breaking changes for Connectum releases
 
 This page covers breaking changes and migration steps between Connectum releases.
 
+## RC.9 to RC.10
+
+### New: Client-side auth interceptors in `@connectum/auth`
+
+Two new factories were added for outbound ConnectRPC clients, simplifying service-to-service authentication without hand-rolled header wiring.
+
+- `createClientBearerInterceptor()` -- sets the `Authorization` header with a static string or an async token provider (e.g., refreshable access tokens).
+- `createClientGatewayInterceptor()` -- forwards the gateway shared secret and propagates auth context headers for internal service-to-service calls.
+
+```typescript
+import { createClient } from '@connectrpc/connect';
+import { createGrpcTransport } from '@connectrpc/connect-node';
+import {
+  createClientBearerInterceptor,
+  createClientGatewayInterceptor,
+} from '@connectum/auth';
+
+const transport = createGrpcTransport({
+  baseUrl: 'https://upstream.internal',
+  interceptors: [
+    createClientBearerInterceptor({ token: async () => getAccessToken() }),
+    createClientGatewayInterceptor({ secret: process.env.GATEWAY_SECRET! }),
+  ],
+});
+
+const client = createClient(UserService, transport);
+```
+
+**No breaking changes** -- both factories are additive.
+
+### `@connectum/events`: auto-resolve publish topic from proto annotations
+
+`EventBus.publish()` now automatically resolves the topic from the proto `(connectum.events.v1.event).topic` option when no explicit topic is passed. Existing code that already sets `publishOptions.topic` is unaffected; the explicit value still wins.
+
+Priority order: explicit `publishOptions.topic` -> proto annotation -> `schema.typeName` (backward-compatible fallback).
+
+### `@connectum/events`: per-handler middleware configuration
+
+Handlers registered via `router.service()` can now override the global middleware pipeline on a per-handler basis:
+
+```typescript
+// Simple handler (uses global middleware)
+onEvent: async (msg, ctx) => { /* ... */ }
+
+// Config object with per-handler middleware override
+onEvent: {
+  handler: async (msg, ctx) => { /* ... */ },
+  middleware: [retryMiddleware, metricsMiddleware],
+}
+```
+
+Both forms coexist -- existing simple-function handlers continue to work without changes.
+
+### `@connectum/events`: stricter handler input types (fix)
+
+`ServiceEventHandlers` now derives handler input types from the concrete `GenService` record instead of a generic `DescMethod` array. This preserves concrete protobuf message types in handlers and eliminates the need for `as unknown as T` casts. If your handlers relied on such casts, you can now remove them -- no functional change is required.
+
+**No breaking changes in this release.**
+
+---
+
+## RC.8 to RC.9
+
+### `@connectum/auth`: `AuthContext` resilient to multiple module evaluations (bug fix)
+
+The internal `authContextStorage` (an `AsyncLocalStorage` used by `AuthContext`) now uses `globalThis` + `Symbol.for()` to guarantee a single instance per process, even when the module is evaluated through multiple runtime paths (for example, tsx source alongside built workspace output in development).
+
+When dual initialization is detected, a one-time `CONNECTUM_AUTH_DUP_INIT` warning is emitted to help diagnose mixed `src/dist` import issues.
+
+**No breaking changes and no action required.** If you previously observed missing `AuthContext` values when mixing compiled and source imports in dev, this release transparently fixes it. If the warning appears in your logs, review your import paths to ensure `@connectum/auth` is not loaded from both source and built outputs.
+
+---
+
 ## RC.7 to RC.8
 
 ### BREAKING: Serializer interceptor disabled by default
@@ -35,6 +108,10 @@ createDefaultInterceptors({ serializer: true })
 // After — if you use gRPC only (no change needed)
 createDefaultInterceptors()
 ```
+
+### Comprehensive test coverage
+
+RC.8 ships with a substantial test-coverage expansion across 10 packages (+225 tests), including new suites for `core/envSchema`, `core/server-lifecycle`, `auth/errors`, `auth/authz-utils`, `cli/proto-sync`, `events/topic`, and `healthcheck/healthcheck-grpc`. This is an internal quality improvement -- no API changes, no action required.
 
 ---
 
@@ -155,9 +232,9 @@ All `@connectum/*` packages now ship compiled `.js` + `.d.ts` + source maps via 
 | Aspect | Before (rc.3) | After (rc.4) |
 |--------|---------------|--------------|
 | Published format | Raw `.ts` source | Compiled `.js` + `.d.ts` + `.js.map` |
-| Consumer Node.js | >= 25.2.0 (type stripping required) | **>= 18.0.0** (compiled JS) |
+| Consumer Node.js | >= 25.2.0 (type stripping required) | **>= 20.0.0** (compiled JS) |
 | Loader/register hook | Required `@connectum/core/register` | **Not needed** |
-| Runtime compatibility | Node.js 25+ only | Node.js 18+, Bun, tsx |
+| Runtime compatibility | Node.js 25+ only | Node.js 20+, Bun, tsx |
 
 **Migration**: Remove any `--import @connectum/core/register` flags or `register()` calls from your startup scripts. Packages now work out of the box.
 

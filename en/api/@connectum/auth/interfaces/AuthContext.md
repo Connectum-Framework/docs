@@ -2,7 +2,7 @@
 
 # Interface: AuthContext
 
-Defined in: [packages/auth/src/types.ts:22](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L22)
+Defined in: [packages/auth/src/types.ts:22](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L22)
 
 Authenticated user context
 
@@ -15,7 +15,7 @@ accessible via getAuthContext() in handlers and downstream interceptors.
 
 > `readonly` **claims**: `Readonly`\<`Record`\<`string`, `unknown`\>\>
 
-Defined in: [packages/auth/src/types.ts:32](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L32)
+Defined in: [packages/auth/src/types.ts:32](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L32)
 
 Raw claims from the credential (JWT claims, API key metadata, etc.)
 
@@ -23,9 +23,9 @@ Raw claims from the credential (JWT claims, API key metadata, etc.)
 
 ### expiresAt?
 
-> `readonly` `optional` **expiresAt**: `Date`
+> `readonly` `optional` **expiresAt?**: `Date`
 
-Defined in: [packages/auth/src/types.ts:36](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L36)
+Defined in: [packages/auth/src/types.ts:36](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L36)
 
 Credential expiration time
 
@@ -33,9 +33,9 @@ Credential expiration time
 
 ### name?
 
-> `readonly` `optional` **name**: `string`
+> `readonly` `optional` **name?**: `string`
 
-Defined in: [packages/auth/src/types.ts:26](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L26)
+Defined in: [packages/auth/src/types.ts:26](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L26)
 
 Human-readable display name
 
@@ -45,7 +45,7 @@ Human-readable display name
 
 > `readonly` **roles**: readonly `string`[]
 
-Defined in: [packages/auth/src/types.ts:28](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L28)
+Defined in: [packages/auth/src/types.ts:28](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L28)
 
 Assigned roles (e.g., ["admin", "user"])
 
@@ -55,7 +55,7 @@ Assigned roles (e.g., ["admin", "user"])
 
 > `readonly` **scopes**: readonly `string`[]
 
-Defined in: [packages/auth/src/types.ts:30](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L30)
+Defined in: [packages/auth/src/types.ts:30](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L30)
 
 Granted scopes (e.g., ["read", "write"])
 
@@ -65,7 +65,7 @@ Granted scopes (e.g., ["read", "write"])
 
 > `readonly` **subject**: `string`
 
-Defined in: [packages/auth/src/types.ts:24](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L24)
+Defined in: [packages/auth/src/types.ts:24](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L24)
 
 Authenticated subject identifier (user ID, service account, etc.)
 
@@ -75,6 +75,6 @@ Authenticated subject identifier (user ID, service account, etc.)
 
 > `readonly` **type**: `string`
 
-Defined in: [packages/auth/src/types.ts:34](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/auth/src/types.ts#L34)
+Defined in: [packages/auth/src/types.ts:34](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/types.ts#L34)
 
 Credential type identifier (e.g., "jwt", "api-key", "mtls")

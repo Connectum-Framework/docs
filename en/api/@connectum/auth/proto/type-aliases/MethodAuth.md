@@ -33,7 +33,7 @@ from field: optional bool public = 1;
 
 ### requires?
 
-> `optional` **requires**: [`AuthRequirements`](AuthRequirements.md)
+> `optional` **requires?**: [`AuthRequirements`](AuthRequirements.md)
 
 Access requirements (roles/scopes) for this method.
 

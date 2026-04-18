@@ -2,7 +2,7 @@
 
 # Interface: MockRequestOptions
 
-Defined in: [types.ts:14](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L14)
+Defined in: [types.ts:14](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L14)
 
 Options for createMockRequest.
 
@@ -10,9 +10,9 @@ Options for createMockRequest.
 
 ### headers?
 
-> `optional` **headers**: `Headers`
+> `optional` **headers?**: `Headers`
 
-Defined in: [types.ts:26](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L26)
+Defined in: [types.ts:26](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L26)
 
 Request headers. Default: `new Headers()`
 
@@ -20,9 +20,9 @@ Request headers. Default: `new Headers()`
 
 ### message?
 
-> `optional` **message**: `unknown`
+> `optional` **message?**: `unknown`
 
-Defined in: [types.ts:20](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L20)
+Defined in: [types.ts:20](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L20)
 
 Request message payload. Default: `{}`
 
@@ -30,9 +30,9 @@ Request message payload. Default: `{}`
 
 ### method?
 
-> `optional` **method**: `string`
+> `optional` **method?**: `string`
 
-Defined in: [types.ts:18](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L18)
+Defined in: [types.ts:18](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L18)
 
 Method name. Default: `'TestMethod'`
 
@@ -40,9 +40,9 @@ Method name. Default: `'TestMethod'`
 
 ### service?
 
-> `optional` **service**: `string`
+> `optional` **service?**: `string`
 
-Defined in: [types.ts:16](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L16)
+Defined in: [types.ts:16](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L16)
 
 Service type name. Default: `'test.TestService'`
 
@@ -50,9 +50,9 @@ Service type name. Default: `'test.TestService'`
 
 ### stream?
 
-> `optional` **stream**: `boolean`
+> `optional` **stream?**: `boolean`
 
-Defined in: [types.ts:22](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L22)
+Defined in: [types.ts:22](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L22)
 
 Streaming request flag. Default: `false`
 
@@ -60,8 +60,8 @@ Streaming request flag. Default: `false`
 
 ### url?
 
-> `optional` **url**: `string`
+> `optional` **url?**: `string`
 
-Defined in: [types.ts:24](https://github.com/Connectum-Framework/connectum/blob/7390c3e88a8da28d01033cc698d683b872fdd1d2/packages/testing/src/types.ts#L24)
+Defined in: [types.ts:24](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L24)
 
 Request URL. Auto-generated from service/method if omitted.

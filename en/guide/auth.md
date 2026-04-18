@@ -87,6 +87,8 @@ Both approaches can be combined -- proto options take priority, programmatic rul
 
 ### Authentication Strategies
 
+#### Server-side (validate incoming requests)
+
 | Factory | Credential source | Use case |
 |---------|-------------------|----------|
 | `createAuthInterceptor` | Any (pluggable callback) | API keys, mTLS, opaque tokens |
@@ -94,7 +96,16 @@ Both approaches can be combined -- proto options take priority, programmatic rul
 | `createGatewayAuthInterceptor` | Gateway-injected headers | Kong, Envoy, Traefik pre-auth |
 | `createSessionAuthInterceptor` | Session token (cookie or header) | better-auth, lucia, custom sessions |
 
-All factories produce a standard ConnectRPC `Interceptor` and store the authenticated identity in `AuthContext` via `AsyncLocalStorage`.
+All server-side factories produce a standard ConnectRPC `Interceptor` and store the authenticated identity in `AuthContext` via `AsyncLocalStorage`.
+
+#### Client-side (attach credentials to outgoing requests)
+
+| Factory | Header set | Use case |
+|---------|------------|----------|
+| `createClientBearerInterceptor` | `Authorization: Bearer <token>` | Calling JWT/session-protected services |
+| `createClientGatewayInterceptor` | `x-gateway-secret`, `x-auth-subject`, `x-auth-roles` | Service-to-service trust behind gateway |
+
+See [Client Interceptors](/en/guide/auth/client-interceptors) for configuration and examples.
 
 ### When Do You Need App-Level Auth?
 
@@ -120,6 +131,7 @@ errorHandler -> AUTH -> AUTHZ -> timeout -> bulkhead -> circuitBreaker -> ...
 - [Session Authentication](/en/guide/auth/session) -- cookie-based and session-framework auth
 - [Authorization (RBAC)](/en/guide/auth/authorization) -- declarative rules, programmatic callbacks
 - [Proto-Based Authorization](/en/guide/auth/proto-authz) -- authz rules defined in `.proto` files
+- [Client Interceptors](/en/guide/auth/client-interceptors) -- Bearer token and gateway headers for outgoing requests
 - [Auth Context](/en/guide/auth/context) -- accessing identity in handlers, cross-service propagation, testing
 - [@connectum/auth](/en/packages/auth) -- Package Guide
 - [@connectum/auth API](/en/api/@connectum/auth/) -- Full API Reference

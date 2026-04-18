@@ -20,6 +20,8 @@
 - [AuthzInterceptorOptions](interfaces/AuthzInterceptorOptions.md)
 - [AuthzRule](interfaces/AuthzRule.md)
 - [CacheOptions](interfaces/CacheOptions.md)
+- [ClientBearerInterceptorOptions](interfaces/ClientBearerInterceptorOptions.md)
+- [ClientGatewayInterceptorOptions](interfaces/ClientGatewayInterceptorOptions.md)
 - [GatewayAuthInterceptorOptions](interfaces/GatewayAuthInterceptorOptions.md)
 - [GatewayHeaderMapping](interfaces/GatewayHeaderMapping.md)
 - [JwtAuthInterceptorOptions](interfaces/JwtAuthInterceptorOptions.md)
@@ -42,6 +44,8 @@
 
 - [createAuthInterceptor](functions/createAuthInterceptor.md)
 - [createAuthzInterceptor](functions/createAuthzInterceptor.md)
+- [createClientBearerInterceptor](functions/createClientBearerInterceptor.md)
+- [createClientGatewayInterceptor](functions/createClientGatewayInterceptor.md)
 - [createGatewayAuthInterceptor](functions/createGatewayAuthInterceptor.md)
 - [createJwtAuthInterceptor](functions/createJwtAuthInterceptor.md)
 - [createProtoAuthzInterceptor](functions/createProtoAuthzInterceptor.md)
