@@ -52,9 +52,9 @@ In `package.json`:
 }
 ```
 
-## tsx (Node.js 18+)
+## tsx (Node.js 20+)
 
-[tsx](https://tsx.is) is a TypeScript execution engine powered by [esbuild](https://esbuild.github.io/). It works as a drop-in replacement for `node` and runs on **Node.js 18+**, making it a good option when you cannot use Node.js 25+. Since `@connectum/*` packages ship compiled `.js`, no special configuration is needed.
+[tsx](https://tsx.is) is a TypeScript execution engine powered by [esbuild](https://esbuild.github.io/). It works as a drop-in replacement for `node` and runs on **Node.js 20+**, making it a good option when you cannot use Node.js 25+. Since `@connectum/*` packages ship compiled `.js`, no special configuration is needed.
 
 ```bash
 npx tsx src/index.ts
@@ -77,13 +77,13 @@ Install tsx as a devDependency (`pnpm add -D tsx`) for faster invocation without
 
 ## Comparison
 
-| Feature | Node.js 25+ | Bun | tsx (Node.js 18+) |
+| Feature | Node.js 25+ | Bun | tsx (Node.js 20+) |
 |---------|------------|-----|-------------------|
 | Your `.ts` files | Native type stripping | Native | esbuild |
 | `@connectum/*` packages | Compiled `.js` (no loader needed) | Compiled `.js` (no loader needed) | Compiled `.js` (no loader needed) |
 | `--watch` mode | `node --watch` | `bun --watch` | `tsx --watch` |
 | Proto enum support | Requires [two-step generation](/en/guide/typescript/proto-enums) | Native | Native (esbuild) |
-| Min Node.js version | 25.2.0 (for native `.ts` execution) | N/A (Bun runtime) | 18.0.0 |
+| Min Node.js version | 25.2.0 (for native `.ts` execution) | N/A (Bun runtime) | 20.0.0 |
 
 ## Docker
 
@@ -96,7 +96,7 @@ CMD ["node", "src/index.ts"]
 # Bun
 CMD ["bun", "src/index.ts"]
 
-# tsx (Node.js 18+)
+# tsx (Node.js 20+)
 CMD ["npx", "tsx", "src/index.ts"]
 ```
 

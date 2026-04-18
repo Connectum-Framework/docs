@@ -5,7 +5,7 @@ description: Multi-stage Dockerfile, docker-compose, and image optimization for 
 
 # Docker Containerization
 
-Connectum packages ship **compiled JavaScript** (`.js` + `.d.ts` + source maps), so they work on any Node.js version >= 18.0.0. If your own application code is written in TypeScript, you can either use Node.js 25+ (native type stripping for `.ts` files) or compile your code with a build tool before containerizing.
+Connectum packages ship **compiled JavaScript** (`.js` + `.d.ts` + source maps), so they work on any Node.js version >= 20.0.0. If your own application code is written in TypeScript, you can either use Node.js 25+ (native type stripping for `.ts` files) or compile your code with a build tool before containerizing.
 
 ::: tip Full Example
 All Docker files described below are available in the [production-ready example](https://github.com/Connectum-Framework/examples/tree/main/production-ready).
@@ -26,7 +26,7 @@ Key highlights:
 - Environment defaults: `NODE_ENV=production`, `PORT=5000`, `LOG_FORMAT=json`, health and graceful shutdown enabled
 
 ::: tip Base image selection
-If your own application code is compiled to JavaScript (e.g., via tsup or tsx), you can use any Node.js 18+ base image instead of `node:25-slim`. Use `node:25-slim` only when you want to run your own `.ts` files natively via Node.js type stripping.
+If your own application code is compiled to JavaScript (e.g., via tsup or tsx), you can use any Node.js 20+ base image instead of `node:25-slim`. Use `node:25-slim` only when you want to run your own `.ts` files natively via Node.js type stripping.
 :::
 
 ### Alternative Runtimes: Bun and tsx
@@ -40,11 +40,11 @@ CMD ["node", "src/index.ts"]
 # Bun
 CMD ["bun", "src/index.ts"]
 
-# tsx (works on Node.js 18+)
+# tsx (works on Node.js 20+)
 CMD ["npx", "tsx", "src/index.ts"]
 ```
 
-When using **tsx**, you can use any Node.js 18+ base image (e.g., `node:18-slim`, `node:20-slim`, `node:22-slim`) and add `tsx` as a dependency. Since `@connectum/*` packages ship compiled JavaScript, no special loader is needed for any runtime.
+When using **tsx**, you can use any Node.js 20+ base image (e.g., `node:20-slim`, `node:22-slim`, `node:24-slim`) and add `tsx` as a dependency. Since `@connectum/*` packages ship compiled JavaScript, no special loader is needed for any runtime.
 
 ### Alpine Variant (Smaller Image)
 

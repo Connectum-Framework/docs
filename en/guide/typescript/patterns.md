@@ -111,7 +111,7 @@ node --watch src/index.ts
 # Bun: start with auto-reload
 bun --watch src/index.ts
 
-# tsx: start with auto-reload (Node.js 18+)
+# tsx: start with auto-reload (Node.js 20+)
 tsx --watch src/index.ts
 
 # Type check in a separate terminal

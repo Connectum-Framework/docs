@@ -15,7 +15,7 @@ Build a fully functional gRPC/ConnectRPC microservice with health checks, server
 - **buf** -- installed automatically via `@bufbuild/buf` npm package
 
 ::: tip Node.js version for consumers
-This guide uses Node.js 25+ for native `.ts` execution of your own source files. However, `@connectum/*` packages ship **compiled JavaScript**, so if you compile your own code (e.g., with tsx or a build tool), you can run on **Node.js >= 18.0.0**. See [Runtime Support](/en/guide/typescript#runtime-support-node-js-vs-bun).
+This guide uses Node.js 25+ for native `.ts` execution of your own source files. However, `@connectum/*` packages ship **compiled JavaScript**, so if you compile your own code (e.g., with tsx or a build tool), you can run on **Node.js >= 20.0.0**. See [Runtime Support](/en/guide/typescript#runtime-support-node-js-vs-bun).
 :::
 
 ## 1. Project Setup
@@ -220,7 +220,7 @@ pnpm dev
 # Bun
 bun src/index.ts
 
-# tsx (Node.js 18+)
+# tsx (Node.js 20+)
 npx tsx src/index.ts
 ```
 

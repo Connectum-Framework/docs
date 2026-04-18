@@ -27,7 +27,7 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/core/)
 pnpm add @connectum/core
 ```
 
-**Requires**: Node.js >= 18.0.0 (packages ship compiled `.js` + `.d.ts` + source maps)
+**Requires**: Node.js >= 20.0.0 (packages ship compiled `.js` + `.d.ts` + source maps)
 
 ## Quick Start
 
@@ -303,7 +303,7 @@ if (isSanitizableError(err)) {
 
 All `@connectum/*` packages are built with [tsup](https://tsup.egoist.dev/) and ship:
 
-- **Compiled `.js` files** (ESM) -- ready to run on any ES module-capable runtime (Node.js 18+, Bun, tsx)
+- **Compiled `.js` files** (ESM) -- ready to run on any ES module-capable runtime (Node.js 20+, Bun, tsx)
 - **TypeScript declarations** (`.d.ts`) -- full type information for IDE support and type checking
 - **Source maps** (`.js.map`) -- accurate stack traces pointing to the original TypeScript source
 

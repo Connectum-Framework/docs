@@ -24,7 +24,7 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/testin
 pnpm add -D @connectum/testing
 ```
 
-**Requires**: Node.js 18+
+**Requires**: Node.js 20+
 
 **Peer dependencies**: `@connectrpc/connect`, `@bufbuild/protobuf`
 

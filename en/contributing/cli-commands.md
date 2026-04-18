@@ -6,7 +6,7 @@ Complete reference of CLI commands for working with the Connectum monorepo.
 
 ## Prerequisites
 
-- **Node.js**: 25+ (for development), 18+ (for consumers)
+- **Node.js**: 25+ (for development), 20+ (for consumers)
 - **pnpm**: 10+
 - **protoc**: Latest version for proto generation
 
