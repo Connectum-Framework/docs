@@ -2,7 +2,7 @@
 
 # Interface: RedisBrokerOptions
 
-Defined in: [types.ts:38](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-redis/src/types.ts#L38)
+Defined in: [types.ts:38](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-redis/src/types.ts#L38)
 
 Redis Streams broker tuning options.
 
@@ -12,7 +12,7 @@ Redis Streams broker tuning options.
 
 > `readonly` `optional` **blockMs?**: `number`
 
-Defined in: [types.ts:56](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-redis/src/types.ts#L56)
+Defined in: [types.ts:56](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-redis/src/types.ts#L56)
 
 Block timeout in milliseconds for XREADGROUP.
 
@@ -31,7 +31,7 @@ before retrying the loop.
 
 > `readonly` `optional` **count?**: `number`
 
-Defined in: [types.ts:63](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-redis/src/types.ts#L63)
+Defined in: [types.ts:63](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-redis/src/types.ts#L63)
 
 Number of messages to read per XREADGROUP call.
 
@@ -47,7 +47,7 @@ Number of messages to read per XREADGROUP call.
 
 > `readonly` `optional` **maxLen?**: `number`
 
-Defined in: [types.ts:46](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-redis/src/types.ts#L46)
+Defined in: [types.ts:46](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-redis/src/types.ts#L46)
 
 Maximum stream length (MAXLEN approximate for XADD).
 

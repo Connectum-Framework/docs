@@ -2,7 +2,7 @@
 
 # Interface: ProtoSyncOptions
 
-Defined in: [commands/proto-sync.ts:25](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/cli/src/commands/proto-sync.ts#L25)
+Defined in: [commands/proto-sync.ts:25](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/cli/src/commands/proto-sync.ts#L25)
 
 Options for the proto sync pipeline.
 
@@ -12,7 +12,7 @@ Options for the proto sync pipeline.
 
 > `optional` **dryRun?**: `boolean`
 
-Defined in: [commands/proto-sync.ts:33](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/cli/src/commands/proto-sync.ts#L33)
+Defined in: [commands/proto-sync.ts:33](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/cli/src/commands/proto-sync.ts#L33)
 
 Show what would be synced without generating
 
@@ -22,7 +22,7 @@ Show what would be synced without generating
 
 > **from**: `string`
 
-Defined in: [commands/proto-sync.ts:27](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/cli/src/commands/proto-sync.ts#L27)
+Defined in: [commands/proto-sync.ts:27](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/cli/src/commands/proto-sync.ts#L27)
 
 Server URL (e.g., "http://localhost:5000")
 
@@ -32,7 +32,7 @@ Server URL (e.g., "http://localhost:5000")
 
 > **out**: `string`
 
-Defined in: [commands/proto-sync.ts:29](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/cli/src/commands/proto-sync.ts#L29)
+Defined in: [commands/proto-sync.ts:29](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/cli/src/commands/proto-sync.ts#L29)
 
 Output directory for generated types
 
@@ -42,6 +42,6 @@ Output directory for generated types
 
 > `optional` **template?**: `string`
 
-Defined in: [commands/proto-sync.ts:31](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/cli/src/commands/proto-sync.ts#L31)
+Defined in: [commands/proto-sync.ts:31](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/cli/src/commands/proto-sync.ts#L31)
 
 Path to custom buf.gen.yaml template

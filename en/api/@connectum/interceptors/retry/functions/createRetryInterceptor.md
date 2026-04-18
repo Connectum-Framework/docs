@@ -4,7 +4,7 @@
 
 > **createRetryInterceptor**(`options?`): `Interceptor`
 
-Defined in: [retry.ts:44](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/retry.ts#L44)
+Defined in: [retry.ts:44](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/interceptors/src/retry.ts#L44)
 
 Create retry interceptor
 

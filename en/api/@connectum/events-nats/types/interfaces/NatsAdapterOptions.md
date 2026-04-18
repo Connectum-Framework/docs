@@ -2,7 +2,7 @@
 
 # Interface: NatsAdapterOptions
 
-Defined in: [types.ts:12](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-nats/src/types.ts#L12)
+Defined in: [types.ts:12](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-nats/src/types.ts#L12)
 
 Options for creating a NATS JetStream adapter.
 
@@ -12,7 +12,7 @@ Options for creating a NATS JetStream adapter.
 
 > `readonly` `optional` **connectionOptions?**: `Partial`\<`NodeConnectionOptions`\>
 
-Defined in: [types.ts:32](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-nats/src/types.ts#L32)
+Defined in: [types.ts:32](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-nats/src/types.ts#L32)
 
 NATS connection options (escape hatch for advanced config).
 
@@ -25,7 +25,7 @@ top-level `servers` option.
 
 > `readonly` `optional` **consumerOptions?**: [`NatsConsumerOptions`](NatsConsumerOptions.md)
 
-Defined in: [types.ts:35](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-nats/src/types.ts#L35)
+Defined in: [types.ts:35](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-nats/src/types.ts#L35)
 
 JetStream consumer tuning options.
 
@@ -35,7 +35,7 @@ JetStream consumer tuning options.
 
 > `readonly` **servers**: `string` \| `string`[]
 
-Defined in: [types.ts:14](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-nats/src/types.ts#L14)
+Defined in: [types.ts:14](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-nats/src/types.ts#L14)
 
 NATS server URL(s). Accepts a single string or an array.
 
@@ -45,7 +45,7 @@ NATS server URL(s). Accepts a single string or an array.
 
 > `readonly` `optional` **stream?**: `string`
 
-Defined in: [types.ts:24](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-nats/src/types.ts#L24)
+Defined in: [types.ts:24](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-nats/src/types.ts#L24)
 
 JetStream stream name.
 

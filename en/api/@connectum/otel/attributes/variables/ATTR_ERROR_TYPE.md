@@ -4,4 +4,4 @@
 
 > `const` **ATTR\_ERROR\_TYPE**: `"error.type"` = `"error.type"`
 
-Defined in: [packages/otel/src/attributes.ts:20](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/attributes.ts#L20)
+Defined in: [packages/otel/src/attributes.ts:20](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/attributes.ts#L20)

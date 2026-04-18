@@ -4,7 +4,7 @@
 
 > **createMockNextError**(`code`, `message?`): `any`
 
-Defined in: [mock-next.ts:68](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/mock-next.ts#L68)
+Defined in: [mock-next.ts:68](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/mock-next.ts#L68)
 
 Create a mock `next` handler that always throws a ConnectError.
 

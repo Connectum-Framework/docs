@@ -2,7 +2,7 @@
 
 # Interface: BaseAttributeParams
 
-Defined in: [packages/otel/src/shared.ts:145](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/shared.ts#L145)
+Defined in: [packages/otel/src/shared.ts:145](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/shared.ts#L145)
 
 Parameters for building base RPC attributes.
 
@@ -12,7 +12,7 @@ Parameters for building base RPC attributes.
 
 > **method**: `string`
 
-Defined in: [packages/otel/src/shared.ts:147](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/shared.ts#L147)
+Defined in: [packages/otel/src/shared.ts:147](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/shared.ts#L147)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [packages/otel/src/shared.ts:147](https://github.com/Connectum-Frame
 
 > **serverAddress**: `string`
 
-Defined in: [packages/otel/src/shared.ts:148](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/shared.ts#L148)
+Defined in: [packages/otel/src/shared.ts:148](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/shared.ts#L148)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [packages/otel/src/shared.ts:148](https://github.com/Connectum-Frame
 
 > `optional` **serverPort?**: `number`
 
-Defined in: [packages/otel/src/shared.ts:149](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/shared.ts#L149)
+Defined in: [packages/otel/src/shared.ts:149](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/shared.ts#L149)
 
 ***
 
@@ -36,4 +36,4 @@ Defined in: [packages/otel/src/shared.ts:149](https://github.com/Connectum-Frame
 
 > **service**: `string`
 
-Defined in: [packages/otel/src/shared.ts:146](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/shared.ts#L146)
+Defined in: [packages/otel/src/shared.ts:146](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/shared.ts#L146)

@@ -4,7 +4,7 @@
 
 > **resolveMethodAuth**(`method`): [`ResolvedMethodAuth`](../interfaces/ResolvedMethodAuth.md)
 
-Defined in: [packages/auth/src/proto/reader.ts:65](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/auth/src/proto/reader.ts#L65)
+Defined in: [packages/auth/src/proto/reader.ts:65](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/auth/src/proto/reader.ts#L65)
 
 Resolve the effective authorization configuration for an RPC method.
 

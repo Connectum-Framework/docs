@@ -4,7 +4,7 @@
 
 > **getOTLPSettings**(): [`OTLPSettings`](../interfaces/OTLPSettings.md)
 
-Defined in: [packages/otel/src/config.ts:65](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/config.ts#L65)
+Defined in: [packages/otel/src/config.ts:65](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/config.ts#L65)
 
 Gets OTLP exporter settings from environment variables
 

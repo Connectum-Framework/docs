@@ -4,7 +4,7 @@
 
 > **createMethodFilterInterceptor**(`methods`): `Interceptor`
 
-Defined in: [method-filter.ts:130](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/interceptors/src/method-filter.ts#L130)
+Defined in: [method-filter.ts:130](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/interceptors/src/method-filter.ts#L130)
 
 Create a method filter interceptor that routes to per-method interceptors
 based on wildcard pattern matching.

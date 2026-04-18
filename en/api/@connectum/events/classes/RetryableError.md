@@ -2,7 +2,7 @@
 
 # Class: RetryableError
 
-Defined in: [packages/events/src/errors.ts:56](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/errors.ts#L56)
+Defined in: [packages/events/src/errors.ts:56](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/errors.ts#L56)
 
 Error that should always be retried.
 
@@ -26,7 +26,7 @@ throw new RetryableError("Temporary DB connection lost", { cause: dbError });
 
 > **new RetryableError**(`message`, `options?`): `RetryableError`
 
-Defined in: [packages/events/src/errors.ts:59](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/errors.ts#L59)
+Defined in: [packages/events/src/errors.ts:59](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/errors.ts#L59)
 
 #### Parameters
 
@@ -52,7 +52,7 @@ Defined in: [packages/events/src/errors.ts:59](https://github.com/Connectum-Fram
 
 > `readonly` **\[RETRYABLE\]**: `true` = `true`
 
-Defined in: [packages/events/src/errors.ts:57](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/errors.ts#L57)
+Defined in: [packages/events/src/errors.ts:57](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/errors.ts#L57)
 
 ***
 
@@ -224,7 +224,7 @@ Indicates whether the argument provided is a built-in Error instance or not.
 
 > `static` **isRetryable**(`error`): `error is { [RETRYABLE]: true }`
 
-Defined in: [packages/events/src/errors.ts:68](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/errors.ts#L68)
+Defined in: [packages/events/src/errors.ts:68](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/errors.ts#L68)
 
 Check if an error is branded as retryable.
 Works across realms (Symbol.for is global).

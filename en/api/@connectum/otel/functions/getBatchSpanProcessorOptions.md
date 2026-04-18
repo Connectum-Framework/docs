@@ -4,7 +4,7 @@
 
 > **getBatchSpanProcessorOptions**(): [`BatchSpanProcessorOptions`](../interfaces/BatchSpanProcessorOptions.md)
 
-Defined in: [packages/otel/src/config.ts:100](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/otel/src/config.ts#L100)
+Defined in: [packages/otel/src/config.ts:100](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/config.ts#L100)
 
 Gets batch span processor options from environment variables
 
