@@ -166,4 +166,4 @@ Use EventBus when services need to react to events **asynchronously** without di
 - [Middleware](/en/guide/events/middleware) -- retry, DLQ, custom middleware
 - [Adapters](/en/guide/events/adapters) -- detailed adapter comparison and configuration
 - [@connectum/events](/en/packages/events) -- Package Guide
-- @connectum/events API -- Full API Reference (coming soon)
+- [@connectum/events API](/en/api/@connectum/events/) -- Full API Reference

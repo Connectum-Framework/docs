@@ -16,7 +16,7 @@ NATS JetStream adapter for the `@connectum/events` event bus. Provides persisten
 :::
 
 ::: tip Full API Reference
-Complete TypeScript API documentation: API Reference (coming soon)
+Complete TypeScript API documentation: [API Reference](/en/api/@connectum/events-nats/)
 :::
 
 ## Installation
