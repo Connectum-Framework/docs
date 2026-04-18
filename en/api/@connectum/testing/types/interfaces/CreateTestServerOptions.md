@@ -2,7 +2,7 @@
 
 # Interface: CreateTestServerOptions
 
-Defined in: [types.ts:126](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L126)
+Defined in: [types.ts:126](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/types.ts#L126)
 
 Options for createTestServer.
 
@@ -12,7 +12,7 @@ Options for createTestServer.
 
 > `optional` **interceptors?**: `unknown`[]
 
-Defined in: [types.ts:130](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L130)
+Defined in: [types.ts:130](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/types.ts#L130)
 
 Interceptors to apply. Default: `[]`
 
@@ -22,7 +22,7 @@ Interceptors to apply. Default: `[]`
 
 > `optional` **port?**: `number`
 
-Defined in: [types.ts:134](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L134)
+Defined in: [types.ts:134](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/types.ts#L134)
 
 Port number. Default: `0` (random available port)
 
@@ -32,7 +32,7 @@ Port number. Default: `0` (random available port)
 
 > `optional` **protocols?**: `unknown`[]
 
-Defined in: [types.ts:132](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L132)
+Defined in: [types.ts:132](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/types.ts#L132)
 
 Protocol extensions (Healthcheck, Reflection). Default: `[]`
 
@@ -42,6 +42,6 @@ Protocol extensions (Healthcheck, Reflection). Default: `[]`
 
 > **services**: `unknown`[]
 
-Defined in: [types.ts:128](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/testing/src/types.ts#L128)
+Defined in: [types.ts:128](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/types.ts#L128)
 
 ConnectRPC service route handlers.

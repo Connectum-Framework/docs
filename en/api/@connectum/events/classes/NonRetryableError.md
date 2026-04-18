@@ -2,7 +2,7 @@
 
 # Class: NonRetryableError
 
-Defined in: [packages/events/src/errors.ts:27](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/errors.ts#L27)
+Defined in: [packages/events/src/errors.ts:27](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/errors.ts#L27)
 
 Error that should never be retried.
 
@@ -26,7 +26,7 @@ throw new NonRetryableError("Invalid payload", { cause: validationError });
 
 > **new NonRetryableError**(`message`, `options?`): `NonRetryableError`
 
-Defined in: [packages/events/src/errors.ts:30](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/errors.ts#L30)
+Defined in: [packages/events/src/errors.ts:30](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/errors.ts#L30)
 
 #### Parameters
 
@@ -52,7 +52,7 @@ Defined in: [packages/events/src/errors.ts:30](https://github.com/Connectum-Fram
 
 > `readonly` **\[NON\_RETRYABLE\]**: `true` = `true`
 
-Defined in: [packages/events/src/errors.ts:28](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/errors.ts#L28)
+Defined in: [packages/events/src/errors.ts:28](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/errors.ts#L28)
 
 ***
 
@@ -224,7 +224,7 @@ Indicates whether the argument provided is a built-in Error instance or not.
 
 > `static` **isNonRetryable**(`error`): `error is { [NON_RETRYABLE]: true }`
 
-Defined in: [packages/events/src/errors.ts:39](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events/src/errors.ts#L39)
+Defined in: [packages/events/src/errors.ts:39](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/errors.ts#L39)
 
 Check if an error is branded as non-retryable.
 Works across realms (Symbol.for is global).

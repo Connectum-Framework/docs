@@ -1,10 +1,10 @@
-[Connectum API Reference](../index.md) / AmqpAdapter
+[Connectum API Reference](../../../index.md) / [@connectum/events-amqp](../index.md) / AmqpAdapter
 
 # Function: AmqpAdapter()
 
 > **AmqpAdapter**(`options`): `EventAdapter`
 
-Defined in: [AmqpAdapter.ts:77](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-amqp/src/AmqpAdapter.ts#L77)
+Defined in: [AmqpAdapter.ts:77](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-amqp/src/AmqpAdapter.ts#L77)
 
 Create an AMQP/RabbitMQ adapter for @connectum/events.
 
@@ -12,7 +12,7 @@ Create an AMQP/RabbitMQ adapter for @connectum/events.
 
 ### options
 
-[`AmqpAdapterOptions`](../interfaces/AmqpAdapterOptions.md)
+[`AmqpAdapterOptions`](../types/interfaces/AmqpAdapterOptions.md)
 
 AMQP adapter configuration
 

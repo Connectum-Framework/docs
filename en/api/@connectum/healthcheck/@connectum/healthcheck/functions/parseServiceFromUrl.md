@@ -4,7 +4,7 @@
 
 > **parseServiceFromUrl**(`url`, `host`): `string` \| `undefined`
 
-Defined in: [httpHandler.ts:111](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/healthcheck/src/httpHandler.ts#L111)
+Defined in: [httpHandler.ts:111](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/healthcheck/src/httpHandler.ts#L111)
 
 Parse service name from URL query string
 

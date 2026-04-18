@@ -4,7 +4,7 @@
 
 > **safeParseEnvConfig**(`env?`): `ZodSafeParseResult`\<\{ `GRACEFUL_SHUTDOWN_ENABLED`: `boolean`; `GRACEFUL_SHUTDOWN_TIMEOUT_MS`: `number`; `HTTP_HEALTH_ENABLED`: `boolean`; `HTTP_HEALTH_PATH`: `string`; `LISTEN`: `string`; `LOG_BACKEND`: `"console"` \| `"otel"` \| `"pino"`; `LOG_FORMAT`: `"json"` \| `"pretty"`; `LOG_LEVEL`: `"error"` \| `"debug"` \| `"info"` \| `"warn"`; `NODE_ENV`: `"test"` \| `"production"` \| `"development"`; `OTEL_EXPORTER_OTLP_ENDPOINT?`: `string`; `OTEL_SERVICE_NAME?`: `string`; `PORT`: `number`; \}\>
 
-Defined in: [packages/core/src/config/envSchema.ts:162](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/core/src/config/envSchema.ts#L162)
+Defined in: [packages/core/src/config/envSchema.ts:162](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/core/src/config/envSchema.ts#L162)
 
 Safely parse environment configuration (returns result object)
 

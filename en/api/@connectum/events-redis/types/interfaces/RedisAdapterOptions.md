@@ -2,7 +2,7 @@
 
 # Interface: RedisAdapterOptions
 
-Defined in: [types.ts:12](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-redis/src/types.ts#L12)
+Defined in: [types.ts:12](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-redis/src/types.ts#L12)
 
 Options for creating a Redis Streams adapter.
 
@@ -12,7 +12,7 @@ Options for creating a Redis Streams adapter.
 
 > `readonly` `optional` **brokerOptions?**: [`RedisBrokerOptions`](RedisBrokerOptions.md)
 
-Defined in: [types.ts:32](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-redis/src/types.ts#L32)
+Defined in: [types.ts:32](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-redis/src/types.ts#L32)
 
 Broker-specific tuning for Redis Streams consumption.
 
@@ -22,7 +22,7 @@ Broker-specific tuning for Redis Streams consumption.
 
 > `readonly` `optional` **redisOptions?**: `RedisOptions`
 
-Defined in: [types.ts:27](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-redis/src/types.ts#L27)
+Defined in: [types.ts:27](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-redis/src/types.ts#L27)
 
 Redis connection options (alternative to `url`).
 
@@ -35,7 +35,7 @@ When `url` is also set, these options are merged as the second argument.
 
 > `readonly` `optional` **url?**: `string`
 
-Defined in: [types.ts:19](https://github.com/Connectum-Framework/connectum/blob/4ec155025a73a300944905b8ca1a92464000b8d9/packages/events-redis/src/types.ts#L19)
+Defined in: [types.ts:19](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-redis/src/types.ts#L19)
 
 Redis connection URL (e.g., "redis://localhost:6379").
 
