@@ -74,6 +74,47 @@ const userTransport = createGrpcTransport({
 
 In a trace viewer (Jaeger, Grafana Tempo), you'll see a single trace spanning both services with linked spans.
 
+## Auth Client Interceptors
+
+`@connectum/auth` ships two client-side factories for outbound service-to-service authentication. Use them on any `createGrpcTransport` / `createConnectTransport` instead of hand-rolling header wiring.
+
+```typescript
+import { createGrpcTransport } from '@connectrpc/connect-node';
+import {
+  createClientBearerInterceptor,
+  createClientGatewayInterceptor,
+} from '@connectum/auth';
+
+// Forward a user's Bearer token (or a refreshable service token) to the upstream
+const upstream = createGrpcTransport({
+  baseUrl: 'http://upstream-service:5000',
+  httpVersion: '2',
+  interceptors: [
+    createClientBearerInterceptor({
+      token: async () => (await getAccessToken()).accessToken,
+    }),
+  ],
+});
+
+// Trusted service-to-service call behind a shared-secret gateway
+const internal = createGrpcTransport({
+  baseUrl: 'http://internal-service:5000',
+  httpVersion: '2',
+  interceptors: [
+    createClientGatewayInterceptor({
+      secret: process.env.GATEWAY_SECRET!,
+      subject: 'order-service',
+      roles: ['service', 'order-writer'],
+    }),
+  ],
+});
+```
+
+- `createClientBearerInterceptor` sets `Authorization: Bearer <token>`; the token may be a static string or an async factory invoked before each request (useful for refresh flows).
+- `createClientGatewayInterceptor` sets `x-gateway-secret`, `x-auth-subject`, and optionally `x-auth-roles` so the receiving service can reconstruct the `AuthContext` via [`createGatewayAuthInterceptor`](/en/guide/auth/gateway) without re-authenticating.
+
+Full reference: [@connectum/auth -- Client-Side Interceptors](/en/packages/auth#client-side-interceptors).
+
 ## Resilience for Clients
 
 Use `createDefaultInterceptors()` on client transports for circuit breaker, timeout, and retry. Disable server-only interceptors:
@@ -197,5 +238,7 @@ This ensures accurate duration measurement for long-lived streams.
 - [Communication Patterns](./patterns) -- request-response, fan-out, streaming
 - [Distributed Tracing](/en/guide/observability/tracing) -- server/client interceptors, deep tracing
 - [Interceptors](/en/guide/interceptors) -- server-side interceptor chain
+- [Gateway Authentication](/en/guide/auth/gateway) -- server side of `createClientGatewayInterceptor`
+- [@connectum/auth](/en/packages/auth#client-side-interceptors) -- Client-side auth interceptor reference
 - [@connectum/otel](/en/packages/otel) -- Package Guide
 - [@connectum/otel API](/en/api/@connectum/otel/) -- Full API Reference

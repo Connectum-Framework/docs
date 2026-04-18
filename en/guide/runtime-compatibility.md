@@ -152,43 +152,22 @@ function createClientTransport(baseUrl: string) {
 
 ## Testing Utilities {#testing}
 
-`@connectum/testing` provides helpers like `createMockNext()` for testing interceptors. These helpers use the `node:test` mock API (`mock.fn()`), which is not available in Bun.
-
-### Node.js
+`@connectum/testing` is a public, production-ready package. Its mock helpers -- including `createMockNext()`, `createMockNextError()`, `createMockNextSlow()`, and the underlying `createMockFn()` spy -- are implemented on top of a portable spy factory that does **not** depend on `node:test`, so the same test code runs on Node.js, Bun, Deno, and bundler environments.
 
 ```typescript
-import { describe, it, mock } from 'node:test';
+import { describe, it } from 'node:test'; // or 'bun:test'
 import { createMockNext, createMockRequest } from '@connectum/testing';
 
 describe('my interceptor', () => {
   it('calls next', async () => {
-    const next = createMockNext(); // Uses mock.fn() from node:test
+    const next = createMockNext();
     await myInterceptor(createMockRequest(), next);
-    // assert next was called
+    // next.mock.callCount() === 1
   });
 });
 ```
 
-### Bun
-
-Replace `createMockNext()` with Bun's built-in mock:
-
-```typescript
-import { describe, it, mock } from 'bun:test';
-import { createMockRequest } from '@connectum/testing';
-
-describe('my interceptor', () => {
-  it('calls next', async () => {
-    const next = mock(() => Promise.resolve({ message: {} }));
-    await myInterceptor(createMockRequest(), next);
-    // assert next was called
-  });
-});
-```
-
-::: info Future Improvement
-A portable mock implementation that works across both `node:test` and `bun:test` is planned. Track progress in `@connectum/testing` package updates.
-:::
+`createMockFn()` is API-compatible with the subset of `node:test`'s `mock.fn()` that the testing helpers rely on (`.mock.calls`, `.mock.callCount()`), so assertions written against one runtime work on the other. Full API: [@connectum/testing](/en/packages/testing).
 
 ## OpenTelemetry {#otel}
 
