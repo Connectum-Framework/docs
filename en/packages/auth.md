@@ -5,7 +5,7 @@ description: Authentication and authorization interceptors for Connectum
 
 # @connectum/auth
 
-Authentication and authorization interceptors for ConnectRPC services. Provides interceptor factories covering the most common auth patterns: generic pluggable auth, JWT (via jose), gateway-injected headers, session-based auth, and declarative authorization rules. All interceptors propagate `AuthContext` through `AsyncLocalStorage` so handlers can access the authenticated identity without explicit parameter passing.
+Authentication and authorization interceptors for ConnectRPC services. Provides server-side factories for the most common auth patterns -- generic pluggable auth, JWT (via jose), gateway-injected headers, session-based auth, and declarative authorization rules -- plus client-side factories (`createClientBearerInterceptor`, `createClientGatewayInterceptor`) for outbound service-to-service calls. All server interceptors propagate `AuthContext` through `AsyncLocalStorage` so handlers can access the authenticated identity without explicit parameter passing.
 
 **Layer**: 1 (Protocol)
 
@@ -467,6 +467,92 @@ const authn = createJwtAuthInterceptor({
 });
 ```
 
+## Client-Side Interceptors
+
+Outbound ConnectRPC transports can attach authentication headers automatically using the client-side factories from `@connectum/auth`. These complement the server-side interceptors above and are meant for service-to-service calls.
+
+### `createClientBearerInterceptor(options)`
+
+Attaches an `Authorization: Bearer <token>` header to every outgoing request. Accepts either a static token string or an async factory function (for refreshable access tokens).
+
+```typescript
+function createClientBearerInterceptor(options: ClientBearerInterceptorOptions): Interceptor;
+```
+
+```typescript
+import { createGrpcTransport } from '@connectrpc/connect-node';
+import { createClientBearerInterceptor } from '@connectum/auth';
+
+// Static token
+const transport = createGrpcTransport({
+  baseUrl: 'http://upstream:5000',
+  httpVersion: '2',
+  interceptors: [createClientBearerInterceptor({ token: process.env.SERVICE_TOKEN! })],
+});
+
+// Async token factory (refresh flow)
+const refreshing = createGrpcTransport({
+  baseUrl: 'http://upstream:5000',
+  httpVersion: '2',
+  interceptors: [
+    createClientBearerInterceptor({
+      token: async () => (await getAccessToken()).accessToken,
+    }),
+  ],
+});
+```
+
+#### `ClientBearerInterceptorOptions`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `token` | `string \| () => string \| Promise<string>` | **(required)** | Static Bearer token or async factory invoked before each request |
+
+---
+
+### `createClientGatewayInterceptor(options)`
+
+Attaches gateway shared-secret and auth context headers for trusted service-to-service communication. Designed to be consumed by a server-side `createGatewayAuthInterceptor` that reconstructs the `AuthContext` without re-authenticating.
+
+Sets the following headers on each outgoing request:
+
+- `x-gateway-secret` -- shared secret for trust verification
+- `x-auth-subject` -- authenticated subject identifier
+- `x-auth-roles` -- JSON-encoded roles array (optional)
+
+```typescript
+function createClientGatewayInterceptor(options: ClientGatewayInterceptorOptions): Interceptor;
+```
+
+```typescript
+import { createGrpcTransport } from '@connectrpc/connect-node';
+import { createClientGatewayInterceptor } from '@connectum/auth';
+
+const transport = createGrpcTransport({
+  baseUrl: 'http://internal-service:5000',
+  httpVersion: '2',
+  interceptors: [
+    createClientGatewayInterceptor({
+      secret: process.env.GATEWAY_SECRET!,
+      subject: 'order-service',
+      roles: ['service', 'order-writer'],
+    }),
+  ],
+});
+```
+
+#### `ClientGatewayInterceptorOptions`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `secret` | `string` | **(required)** | Shared secret sent as `x-gateway-secret` |
+| `subject` | `string` | **(required)** | Calling service identifier (sent as `x-auth-subject`) |
+| `roles` | `string[]` | `undefined` | Service roles serialized as JSON to `x-auth-roles` |
+
+::: tip Pair with the server-side interceptor
+The receiving service should run [`createGatewayAuthInterceptor`](#creategatewayauthinterceptor-options) with a `trustSource.header` of `x-gateway-secret` and a matching shared secret so the `AuthContext` is reconstructed on arrival.
+:::
+
 ## Context Utilities
 
 ### `authContextStorage`
@@ -633,6 +719,8 @@ import { createMockAuthContext, createTestJwt, withAuthContext, TEST_JWT_SECRET 
 | `createJwtAuthInterceptor` | `.` | JWT authentication interceptor (jose) |
 | `createGatewayAuthInterceptor` | `.` | Gateway-injected headers authentication interceptor |
 | `createSessionAuthInterceptor` | `.` | Session-based authentication interceptor |
+| `createClientBearerInterceptor` | `.` | Client-side Bearer token interceptor |
+| `createClientGatewayInterceptor` | `.` | Client-side gateway service-to-service auth interceptor |
 | `createAuthzInterceptor` | `.` | Declarative rules-based authorization interceptor |
 | `authContextStorage` | `.` | AsyncLocalStorage instance for auth context |
 | `getAuthContext` | `.` | Get current auth context (or undefined) |
@@ -645,7 +733,7 @@ import { createMockAuthContext, createTestJwt, withAuthContext, TEST_JWT_SECRET 
 | `AUTH_HEADERS` | `.` | Standard auth header name constants |
 | `AuthzEffect` | `.` | Authorization effect constants (ALLOW, DENY) |
 | `createProtoAuthzInterceptor` | `.` | Proto-based authorization interceptor |
-| `AuthContext`, `AuthInterceptorOptions`, `JwtAuthInterceptorOptions`, `GatewayAuthInterceptorOptions`, `GatewayHeaderMapping`, `SessionAuthInterceptorOptions`, `AuthzInterceptorOptions`, `AuthzRule`, `ProtoAuthzInterceptorOptions`, `CacheOptions`, `InterceptorFactory`, `AuthzDeniedDetails` | `.` | TypeScript types |
+| `AuthContext`, `AuthInterceptorOptions`, `JwtAuthInterceptorOptions`, `GatewayAuthInterceptorOptions`, `GatewayHeaderMapping`, `SessionAuthInterceptorOptions`, `ClientBearerInterceptorOptions`, `ClientGatewayInterceptorOptions`, `AuthzInterceptorOptions`, `AuthzRule`, `ProtoAuthzInterceptorOptions`, `CacheOptions`, `InterceptorFactory`, `AuthzDeniedDetails` | `.` | TypeScript types |
 | `createProtoAuthzInterceptor` | `./proto` | Proto-based authorization interceptor |
 | `resolveMethodAuth` | `./proto` | Resolve proto auth config for a method |
 | `getPublicMethods` | `./proto` | Extract public method patterns from services |
