@@ -16,7 +16,7 @@ AMQP 0-9-1 adapter for the Connectum EventBus. Provides persistent at-least-once
 :::
 
 ::: tip Full API Reference
-Complete TypeScript API documentation: API Reference (coming soon)
+Complete TypeScript API documentation: [API Reference](/en/api/@connectum/events-amqp/)
 :::
 
 ## Installation

@@ -16,7 +16,7 @@ Apache Kafka / Redpanda adapter for the Connectum EventBus. Implements the `Even
 :::
 
 ::: tip Full API Reference
-Complete TypeScript API documentation: API Reference (coming soon)
+Complete TypeScript API documentation: [API Reference](/en/api/@connectum/events-kafka/)
 :::
 
 ## Installation

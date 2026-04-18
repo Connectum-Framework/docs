@@ -16,7 +16,7 @@ Redis Streams / [Valkey](https://valkey.io/) adapter for the Connectum EventBus.
 :::
 
 ::: tip Full API Reference
-Complete TypeScript API documentation: API Reference (coming soon)
+Complete TypeScript API documentation: [API Reference](/en/api/@connectum/events-redis/)
 :::
 
 ## Installation

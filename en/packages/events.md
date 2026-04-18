@@ -18,7 +18,7 @@ Universal event adapter layer for Connectum. Provides proto-first pub/sub with p
 :::
 
 ::: tip Full API Reference
-Complete TypeScript API documentation: API Reference (coming soon)
+Complete TypeScript API documentation: [API Reference](/en/api/@connectum/events/)
 :::
 
 ## Installation
