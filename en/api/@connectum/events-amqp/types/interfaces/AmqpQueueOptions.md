@@ -2,7 +2,7 @@
 
 # Interface: AmqpQueueOptions
 
-Defined in: [types.ts:80](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-amqp/src/types.ts#L80)
+Defined in: [types.ts:80](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events-amqp/src/types.ts#L80)
 
 Queue assertion options.
 
@@ -12,7 +12,7 @@ Queue assertion options.
 
 > `readonly` `optional` **deadLetterExchange?**: `string`
 
-Defined in: [types.ts:101](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-amqp/src/types.ts#L101)
+Defined in: [types.ts:101](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events-amqp/src/types.ts#L101)
 
 Dead letter exchange name for rejected messages.
 
@@ -22,7 +22,7 @@ Dead letter exchange name for rejected messages.
 
 > `readonly` `optional` **deadLetterRoutingKey?**: `string`
 
-Defined in: [types.ts:106](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-amqp/src/types.ts#L106)
+Defined in: [types.ts:106](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events-amqp/src/types.ts#L106)
 
 Dead letter routing key for rejected messages.
 
@@ -32,7 +32,7 @@ Dead letter routing key for rejected messages.
 
 > `readonly` `optional` **durable?**: `boolean`
 
-Defined in: [types.ts:86](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-amqp/src/types.ts#L86)
+Defined in: [types.ts:86](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events-amqp/src/types.ts#L86)
 
 Whether the queue should survive broker restarts.
 
@@ -48,7 +48,7 @@ true
 
 > `readonly` `optional` **maxLength?**: `number`
 
-Defined in: [types.ts:96](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-amqp/src/types.ts#L96)
+Defined in: [types.ts:96](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events-amqp/src/types.ts#L96)
 
 Maximum number of messages in the queue.
 
@@ -58,6 +58,6 @@ Maximum number of messages in the queue.
 
 > `readonly` `optional` **messageTtl?**: `number`
 
-Defined in: [types.ts:91](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-amqp/src/types.ts#L91)
+Defined in: [types.ts:91](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events-amqp/src/types.ts#L91)
 
 Per-message TTL in milliseconds.

@@ -2,7 +2,7 @@
 
 # Class: EventRouterImpl
 
-Defined in: [packages/events/src/EventRouter.ts:17](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/EventRouter.ts#L17)
+Defined in: [packages/events/src/EventRouter.ts:17](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/EventRouter.ts#L17)
 
 EventRouter implementation that collects route entries.
 
@@ -26,7 +26,7 @@ EventRouter implementation that collects route entries.
 
 > `readonly` **entries**: [`EventRouteEntry`](../types/interfaces/EventRouteEntry.md)[] = `[]`
 
-Defined in: [packages/events/src/EventRouter.ts:18](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/EventRouter.ts#L18)
+Defined in: [packages/events/src/EventRouter.ts:18](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/EventRouter.ts#L18)
 
 ***
 
@@ -34,7 +34,7 @@ Defined in: [packages/events/src/EventRouter.ts:18](https://github.com/Connectum
 
 > `readonly` **serviceNames**: `string`[] = `[]`
 
-Defined in: [packages/events/src/EventRouter.ts:19](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/EventRouter.ts#L19)
+Defined in: [packages/events/src/EventRouter.ts:19](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/EventRouter.ts#L19)
 
 ## Methods
 
@@ -42,7 +42,7 @@ Defined in: [packages/events/src/EventRouter.ts:19](https://github.com/Connectum
 
 > **service**\<`S`\>(`serviceDesc`, `handlers`): `void`
 
-Defined in: [packages/events/src/EventRouter.ts:21](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/EventRouter.ts#L21)
+Defined in: [packages/events/src/EventRouter.ts:21](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/EventRouter.ts#L21)
 
 Register event handlers for a service
 

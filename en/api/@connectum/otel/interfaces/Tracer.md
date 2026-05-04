@@ -2,9 +2,13 @@
 
 # Interface: Tracer
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/trace/tracer.d.ts:7
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/trace/tracer.d.ts:9
 
 Tracer provides an interface for creating [Span](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api.Span.html)s.
+
+## Since
+
+1.0.0
 
 ## Methods
 
@@ -14,7 +18,7 @@ Tracer provides an interface for creating [Span](https://open-telemetry.github.i
 
 > **startActiveSpan**\<`F`\>(`name`, `fn`): `ReturnType`\<`F`\>
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/trace/tracer.d.ts:67
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/trace/tracer.d.ts:69
 
 Starts a new [Span](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api.Span.html) and calls the given function passing it the
 created span as first argument.
@@ -88,7 +92,7 @@ const span = tracer.startActiveSpan('op', span => {
 
 > **startActiveSpan**\<`F`\>(`name`, `options`, `fn`): `ReturnType`\<`F`\>
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/trace/tracer.d.ts:68
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/trace/tracer.d.ts:70
 
 ##### Type Parameters
 
@@ -118,7 +122,7 @@ Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentele
 
 > **startActiveSpan**\<`F`\>(`name`, `options`, `context`, `fn`): `ReturnType`\<`F`\>
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/trace/tracer.d.ts:69
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/trace/tracer.d.ts:71
 
 ##### Type Parameters
 
@@ -154,7 +158,7 @@ Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentele
 
 > **startSpan**(`name`, `options?`, `context?`): [`Span`](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api.Span.html)
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/trace/tracer.d.ts:22
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/trace/tracer.d.ts:24
 
 Starts a new [Span](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api.Span.html). Start the span without setting it on context.
 

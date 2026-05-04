@@ -2,7 +2,7 @@
 
 # Interface: MockDescFieldOptions
 
-Defined in: [types.ts:58](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/types.ts#L58)
+Defined in: [types.ts:58](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/types.ts#L58)
 
 Options for createMockDescField.
 
@@ -12,7 +12,7 @@ Options for createMockDescField.
 
 > `optional` **fieldNumber?**: `number`
 
-Defined in: [types.ts:62](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/types.ts#L62)
+Defined in: [types.ts:62](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/types.ts#L62)
 
 Proto field number. Default: auto-incremented
 
@@ -22,7 +22,7 @@ Proto field number. Default: auto-incremented
 
 > `optional` **isSensitive?**: `boolean`
 
-Defined in: [types.ts:60](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/types.ts#L60)
+Defined in: [types.ts:60](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/types.ts#L60)
 
 Mark field as sensitive (for redact interceptor). Default: `false`
 
@@ -32,6 +32,6 @@ Mark field as sensitive (for redact interceptor). Default: `false`
 
 > `optional` **type?**: `string`
 
-Defined in: [types.ts:64](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/types.ts#L64)
+Defined in: [types.ts:64](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/types.ts#L64)
 
 Field scalar type. Default: `'string'`

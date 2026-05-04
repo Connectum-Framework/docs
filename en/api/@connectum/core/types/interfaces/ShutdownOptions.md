@@ -2,7 +2,7 @@
 
 # Interface: ShutdownOptions
 
-Defined in: [packages/core/src/types.ts:183](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/core/src/types.ts#L183)
+Defined in: [packages/core/src/types.ts:183](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/core/src/types.ts#L183)
 
 Graceful shutdown options
 
@@ -12,7 +12,7 @@ Graceful shutdown options
 
 > `optional` **autoShutdown?**: `boolean`
 
-Defined in: [packages/core/src/types.ts:200](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/core/src/types.ts#L200)
+Defined in: [packages/core/src/types.ts:200](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/core/src/types.ts#L200)
 
 Enable automatic graceful shutdown on signals
 
@@ -28,7 +28,7 @@ false
 
 > `optional` **forceCloseOnTimeout?**: `boolean`
 
-Defined in: [packages/core/src/types.ts:208](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/core/src/types.ts#L208)
+Defined in: [packages/core/src/types.ts:208](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/core/src/types.ts#L208)
 
 Force close all HTTP/2 sessions when shutdown timeout is exceeded.
 When true, sessions are destroyed after timeout. When false, server
@@ -46,7 +46,7 @@ true
 
 > `optional` **signals?**: `Signals`[]
 
-Defined in: [packages/core/src/types.ts:194](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/core/src/types.ts#L194)
+Defined in: [packages/core/src/types.ts:194](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/core/src/types.ts#L194)
 
 Signals to listen for graceful shutdown
 
@@ -62,7 +62,7 @@ Signals to listen for graceful shutdown
 
 > `optional` **timeout?**: `number`
 
-Defined in: [packages/core/src/types.ts:188](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/core/src/types.ts#L188)
+Defined in: [packages/core/src/types.ts:188](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/core/src/types.ts#L188)
 
 Timeout in milliseconds for graceful shutdown
 

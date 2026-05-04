@@ -4,7 +4,7 @@
 
 > `const` **ConnectErrorCode**: `object`
 
-Defined in: [packages/otel/src/attributes.ts:38](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/attributes.ts#L38)
+Defined in: [packages/otel/src/attributes.ts:38](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/otel/src/attributes.ts#L38)
 
 ConnectRPC error code map (numeric code -> string name)
 Based on Connect protocol error codes

@@ -2,7 +2,7 @@
 
 # Interface: AmqpPublisherOptions
 
-Defined in: [types.ts:132](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-amqp/src/types.ts#L132)
+Defined in: [types.ts:132](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events-amqp/src/types.ts#L132)
 
 Publisher options.
 
@@ -12,7 +12,7 @@ Publisher options.
 
 > `readonly` `optional` **mandatory?**: `boolean`
 
-Defined in: [types.ts:145](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-amqp/src/types.ts#L145)
+Defined in: [types.ts:145](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events-amqp/src/types.ts#L145)
 
 Whether the message should be returned if it cannot be routed.
 
@@ -28,7 +28,7 @@ false
 
 > `readonly` `optional` **persistent?**: `boolean`
 
-Defined in: [types.ts:138](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events-amqp/src/types.ts#L138)
+Defined in: [types.ts:138](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events-amqp/src/types.ts#L138)
 
 Whether messages should be persisted to disk (deliveryMode=2).
 

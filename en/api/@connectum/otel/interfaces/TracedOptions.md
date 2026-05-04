@@ -2,7 +2,7 @@
 
 # Interface: TracedOptions
 
-Defined in: [packages/otel/src/types.ts:104](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/types.ts#L104)
+Defined in: [packages/otel/src/types.ts:104](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/otel/src/types.ts#L104)
 
 Options for traced() function wrapper
 
@@ -12,7 +12,7 @@ Options for traced() function wrapper
 
 > `optional` **argsFilter?**: [`ArgsFilter`](../type-aliases/ArgsFilter.md)
 
-Defined in: [packages/otel/src/types.ts:122](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/types.ts#L122)
+Defined in: [packages/otel/src/types.ts:122](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/otel/src/types.ts#L122)
 
 Additional transform/masking for recorded args.
 Called after whitelist filtering.
@@ -23,7 +23,7 @@ Called after whitelist filtering.
 
 > `optional` **attributes?**: `Record`\<`string`, `string` \| `number` \| `boolean`\>
 
-Defined in: [packages/otel/src/types.ts:127](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/types.ts#L127)
+Defined in: [packages/otel/src/types.ts:127](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/otel/src/types.ts#L127)
 
 Custom attributes to add to every span
 
@@ -33,7 +33,7 @@ Custom attributes to add to every span
 
 > `optional` **name?**: `string`
 
-Defined in: [packages/otel/src/types.ts:108](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/types.ts#L108)
+Defined in: [packages/otel/src/types.ts:108](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/otel/src/types.ts#L108)
 
 Span name. Defaults to fn.name or "anonymous"
 
@@ -43,7 +43,7 @@ Span name. Defaults to fn.name or "anonymous"
 
 > `optional` **recordArgs?**: `boolean` \| `string`[]
 
-Defined in: [packages/otel/src/types.ts:116](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/types.ts#L116)
+Defined in: [packages/otel/src/types.ts:116](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/otel/src/types.ts#L116)
 
 Record function arguments as span attributes.
 - `false` (default): no args recorded

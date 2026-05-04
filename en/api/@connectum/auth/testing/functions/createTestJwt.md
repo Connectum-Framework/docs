@@ -4,7 +4,7 @@
 
 > **createTestJwt**(`payload`, `options?`): `Promise`\<`string`\>
 
-Defined in: [packages/auth/src/testing/test-jwt.ts:49](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/auth/src/testing/test-jwt.ts#L49)
+Defined in: [packages/auth/src/testing/test-jwt.ts:49](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/auth/src/testing/test-jwt.ts#L49)
 
 Create a signed test JWT for integration testing.
 

@@ -4,7 +4,7 @@
 
 > **deriveServiceName**(`serviceNames`): `string` \| `undefined`
 
-Defined in: [packages/events/src/EventBus.ts:41](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/EventBus.ts#L41)
+Defined in: [packages/events/src/EventBus.ts:41](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/EventBus.ts#L41)
 
 Derive a service identifier from registered proto service type names.
 
