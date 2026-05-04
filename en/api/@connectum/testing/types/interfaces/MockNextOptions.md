@@ -2,7 +2,7 @@
 
 # Interface: MockNextOptions
 
-Defined in: [types.ts:34](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/types.ts#L34)
+Defined in: [types.ts:34](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/types.ts#L34)
 
 Options for createMockNext and createMockNextSlow.
 
@@ -12,7 +12,7 @@ Options for createMockNext and createMockNextSlow.
 
 > `optional` **message?**: `unknown`
 
-Defined in: [types.ts:36](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/types.ts#L36)
+Defined in: [types.ts:36](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/types.ts#L36)
 
 Response message. Default: `{ result: 'success' }`
 
@@ -22,6 +22,6 @@ Response message. Default: `{ result: 'success' }`
 
 > `optional` **stream?**: `boolean`
 
-Defined in: [types.ts:38](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/types.ts#L38)
+Defined in: [types.ts:38](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/types.ts#L38)
 
 Streaming response flag. Default: `false`

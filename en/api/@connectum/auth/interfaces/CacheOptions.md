@@ -2,7 +2,7 @@
 
 # Interface: CacheOptions
 
-Defined in: [packages/auth/src/types.ts:105](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/auth/src/types.ts#L105)
+Defined in: [packages/auth/src/types.ts:105](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/auth/src/types.ts#L105)
 
 LRU cache configuration for credentials verification
 
@@ -12,7 +12,7 @@ LRU cache configuration for credentials verification
 
 > `readonly` `optional` **maxSize?**: `number`
 
-Defined in: [packages/auth/src/types.ts:109](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/auth/src/types.ts#L109)
+Defined in: [packages/auth/src/types.ts:109](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/auth/src/types.ts#L109)
 
 Maximum number of cached entries
 
@@ -22,6 +22,6 @@ Maximum number of cached entries
 
 > `readonly` **ttl**: `number`
 
-Defined in: [packages/auth/src/types.ts:107](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/auth/src/types.ts#L107)
+Defined in: [packages/auth/src/types.ts:107](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/auth/src/types.ts#L107)
 
 Cache entry time-to-live in milliseconds

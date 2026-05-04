@@ -2,7 +2,7 @@
 
 # Interface: LoggerOptions
 
-Defined in: [packages/otel/src/logger.ts:7](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/logger.ts#L7)
+Defined in: [packages/otel/src/logger.ts:7](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/otel/src/logger.ts#L7)
 
 ## Properties
 
@@ -10,4 +10,4 @@ Defined in: [packages/otel/src/logger.ts:7](https://github.com/Connectum-Framewo
 
 > `optional` **defaultAttributes?**: `AnyValueMap`
 
-Defined in: [packages/otel/src/logger.ts:8](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/otel/src/logger.ts#L8)
+Defined in: [packages/otel/src/logger.ts:8](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/otel/src/logger.ts#L8)

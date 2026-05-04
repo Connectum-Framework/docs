@@ -2,7 +2,7 @@
 
 # Interface: SerializerOptions
 
-Defined in: [types.ts:68](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/interceptors/src/types.ts#L68)
+Defined in: [types.ts:68](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/interceptors/src/types.ts#L68)
 
 Serializer interceptor options
 
@@ -12,7 +12,7 @@ Serializer interceptor options
 
 > `optional` **alwaysEmitImplicit?**: `boolean`
 
-Defined in: [types.ts:79](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/interceptors/src/types.ts#L79)
+Defined in: [types.ts:79](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/interceptors/src/types.ts#L79)
 
 Always emit implicit fields in JSON
 
@@ -28,7 +28,7 @@ true
 
 > `optional` **ignoreUnknownFields?**: `boolean`
 
-Defined in: [types.ts:85](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/interceptors/src/types.ts#L85)
+Defined in: [types.ts:85](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/interceptors/src/types.ts#L85)
 
 Ignore unknown fields when deserializing
 
@@ -44,7 +44,7 @@ true
 
 > `optional` **skipGrpcServices?**: `boolean`
 
-Defined in: [types.ts:73](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/interceptors/src/types.ts#L73)
+Defined in: [types.ts:73](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/interceptors/src/types.ts#L73)
 
 Skip serialization for gRPC services
 

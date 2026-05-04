@@ -4,7 +4,7 @@
 
 > **createErrorHandlerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [errorHandler.ts:48](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/interceptors/src/errorHandler.ts#L48)
+Defined in: [errorHandler.ts:48](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/interceptors/src/errorHandler.ts#L48)
 
 Create error handler interceptor
 

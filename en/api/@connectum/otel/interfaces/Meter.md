@@ -2,7 +2,7 @@
 
 # Interface: Meter
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:18
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:22
 
 An interface to allow the recording metrics.
 
@@ -10,13 +10,17 @@ Metrics are used for recording pre-defined aggregation (`Counter`),
 or raw values (`Histogram`) in which the aggregation and attributes
 for the exported metric are deferred.
 
+## Since
+
+1.3.0
+
 ## Methods
 
 ### addBatchObservableCallback()
 
 > **addBatchObservableCallback**\<`AttributesTypes`\>(`callback`, `observables`): `void`
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:98
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:102
 
 Sets up a function that will be called whenever a metric collection is
 initiated.
@@ -58,7 +62,7 @@ the observables associated with this batch observable callback
 
 > **createCounter**\<`AttributesTypes`\>(`name`, `options?`): `Counter`\<`AttributesTypes`\>
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:38
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:42
 
 Creates a new `Counter` metric. Generally, this kind of metric when the
 value is a quantity, the sum is of primary interest, and the event count
@@ -94,7 +98,7 @@ the metric options.
 
 > **createGauge**\<`AttributesTypes`\>(`name`, `options?`): `Gauge`\<`AttributesTypes`\>
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:24
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:28
 
 Creates and returns a new `Gauge`.
 
@@ -128,7 +132,7 @@ the metric options.
 
 > **createHistogram**\<`AttributesTypes`\>(`name`, `options?`): `Histogram`\<`AttributesTypes`\>
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:30
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:34
 
 Creates and returns a new `Histogram`.
 
@@ -162,7 +166,7 @@ the metric options.
 
 > **createObservableCounter**\<`AttributesTypes`\>(`name`, `options?`): `ObservableCounter`\<`AttributesTypes`\>
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:74
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:78
 
 Creates a new `ObservableCounter` metric.
 
@@ -198,7 +202,7 @@ the metric options.
 
 > **createObservableGauge**\<`AttributesTypes`\>(`name`, `options?`): `ObservableGauge`\<`AttributesTypes`\>
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:65
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:69
 
 Creates a new `ObservableGauge` metric.
 
@@ -234,7 +238,7 @@ the metric options.
 
 > **createObservableUpDownCounter**\<`AttributesTypes`\>(`name`, `options?`): `ObservableUpDownCounter`\<`AttributesTypes`\>
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:83
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:87
 
 Creates a new `ObservableUpDownCounter` metric.
 
@@ -270,7 +274,7 @@ the metric options.
 
 > **createUpDownCounter**\<`AttributesTypes`\>(`name`, `options?`): `UpDownCounter`\<`AttributesTypes`\>
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:56
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:60
 
 Creates a new `UpDownCounter` metric. UpDownCounter is a synchronous
 instrument and very similar to Counter except that Add(increment)
@@ -315,7 +319,7 @@ the metric options.
 
 > **removeBatchObservableCallback**\<`AttributesTypes`\>(`callback`, `observables`): `void`
 
-Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.0/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:108
+Defined in: node\_modules/.pnpm/@opentelemetry+api@1.9.1/node\_modules/@opentelemetry/api/build/src/metrics/Meter.d.ts:112
 
 Removes a callback previously registered with [Meter.addBatchObservableCallback](#addbatchobservablecallback).
 

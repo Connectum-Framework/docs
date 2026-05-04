@@ -2,7 +2,7 @@
 
 # Interface: ServiceStatus
 
-Defined in: [types.ts:20](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/healthcheck/src/types.ts#L20)
+Defined in: [types.ts:20](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/healthcheck/src/types.ts#L20)
 
 Service health status
 
@@ -12,4 +12,4 @@ Service health status
 
 > **status**: `HealthCheckResponse_ServingStatus`
 
-Defined in: [types.ts:21](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/healthcheck/src/types.ts#L21)
+Defined in: [types.ts:21](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/healthcheck/src/types.ts#L21)

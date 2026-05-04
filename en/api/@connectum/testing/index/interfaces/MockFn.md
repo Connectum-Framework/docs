@@ -2,7 +2,7 @@
 
 # Interface: MockFn()\<F\>
 
-Defined in: [mock-compat.ts:27](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/mock-compat.ts#L27)
+Defined in: [mock-compat.ts:27](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/mock-compat.ts#L27)
 
 A callable spy that records every invocation.
 
@@ -17,7 +17,7 @@ that Connectum testing utilities rely on.
 
 > **MockFn**(...`args`): `ReturnType`\<`F`\>
 
-Defined in: [mock-compat.ts:28](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/mock-compat.ts#L28)
+Defined in: [mock-compat.ts:28](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/mock-compat.ts#L28)
 
 A callable spy that records every invocation.
 
@@ -40,7 +40,7 @@ that Connectum testing utilities rely on.
 
 > `readonly` **mock**: `object`
 
-Defined in: [mock-compat.ts:30](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/testing/src/mock-compat.ts#L30)
+Defined in: [mock-compat.ts:30](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/mock-compat.ts#L30)
 
 Spy metadata.
 

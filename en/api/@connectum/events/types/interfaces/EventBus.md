@@ -2,7 +2,7 @@
 
 # Interface: EventBus
 
-Defined in: [packages/events/src/types.ts:333](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/types.ts#L333)
+Defined in: [packages/events/src/types.ts:333](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/types.ts#L333)
 
 EventBus interface -- manages adapter, routes, and middleware
 
@@ -12,7 +12,7 @@ EventBus interface -- manages adapter, routes, and middleware
 
 > **publish**\<`Desc`\>(`schema`, `data`, `options?`): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:347](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/types.ts#L347)
+Defined in: [packages/events/src/types.ts:347](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/types.ts#L347)
 
 Publish a typed event
 
@@ -46,7 +46,7 @@ Publish a typed event
 
 > **start**(`options?`): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:343](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/types.ts#L343)
+Defined in: [packages/events/src/types.ts:343](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/types.ts#L343)
 
 Start the event bus: connect adapter, set up subscriptions.
 
@@ -74,7 +74,7 @@ shutdown or per-event timeout will abort in-flight processing.
 
 > **stop**(): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:345](https://github.com/Connectum-Framework/connectum/blob/638fd0bfcd1daf229a925892579ece032b17742c/packages/events/src/types.ts#L345)
+Defined in: [packages/events/src/types.ts:345](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/types.ts#L345)
 
 Stop the event bus: drain subscriptions, disconnect adapter
 
