@@ -4,7 +4,7 @@
 
 > **matchPattern**(`pattern`, `topic`): `boolean`
 
-Defined in: [packages/events/src/wildcard.ts:27](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/wildcard.ts#L27)
+Defined in: [packages/events/src/wildcard.ts:27](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/events/src/wildcard.ts#L27)
 
 Match a topic against a wildcard pattern.
 

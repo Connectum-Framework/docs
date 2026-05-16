@@ -4,7 +4,7 @@
 
 > **createFakeService**(`options?`): `DescService`
 
-Defined in: [fake-service.ts:34](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/fake-service.ts#L34)
+Defined in: test-fixtures/dist/index.d.ts:76
 
 Create a fake DescService descriptor for testing.
 
@@ -17,7 +17,7 @@ start empty; use [createFakeMethod](createFakeMethod.md) with `register: true` t
 
 ### options?
 
-[`FakeServiceOptions`](../../types/interfaces/FakeServiceOptions.md)
+[`FakeServiceOptions`](../interfaces/FakeServiceOptions.md)
 
 Optional overrides for service name and typeName.
 

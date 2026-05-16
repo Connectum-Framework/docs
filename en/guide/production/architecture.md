@@ -209,6 +209,21 @@ const routes = (router) => {
 };
 ```
 
+### In-Process Transport (Co-Located Services)
+
+When the caller and callee live in the same Node.js process — modular monoliths, BFFs, or test harnesses — Connectum offers an **in-process transport** that dispatches client calls directly to the registered handler. No HTTP/2 socket, no TLS handshake, no wire serialization, while the full server-side interceptor chain (validation, authorization, OpenTelemetry) still runs. The client API is identical to the remote one (`createClient(Service, transport)`), so the same call site works for both topologies via `server.client(Service, { fallback })` auto-routing.
+
+```typescript
+import { createServer } from '@connectum/core';
+
+const server = createServer({ services: [inventoryRoutes, orderRoutes] });
+
+// Local if registered on this server, remote via fallback otherwise.
+const inventory = server.client(InventoryService, { fallback: remoteTransport });
+```
+
+See [In-Process Transport](/en/guide/production/in-process-transport) for the polyglot deployment pattern, observability parity, and limitations.
+
 ## Service Discovery
 
 ### gRPC Server Reflection

@@ -4,7 +4,7 @@
 
 > **createMockDescMessage**(`typeName`, `options?`): `DescMessage`
 
-Defined in: [mock-desc.ts:109](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/mock-desc.ts#L109)
+Defined in: test-fixtures/dist/index.d.ts:210
 
 Create a mock DescMessage descriptor with all required structural
 properties.
@@ -23,7 +23,7 @@ Fully-qualified protobuf type name (e.g. `"acme.v1.User"`).
 
 ### options?
 
-[`MockDescMessageOptions`](../../types/interfaces/MockDescMessageOptions.md)
+[`MockDescMessageOptions`](../interfaces/MockDescMessageOptions.md)
 
 Optional field and oneof definitions.
 

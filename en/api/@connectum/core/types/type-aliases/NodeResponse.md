@@ -4,6 +4,6 @@
 
 > **NodeResponse** = `ServerResponse` \| `Http2ServerResponse`
 
-Defined in: [packages/core/src/types.ts:22](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/core/src/types.ts#L22)
+Defined in: [packages/core/src/types.ts:22](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L22)
 
 Server response — HTTP/1.1 or HTTP/2

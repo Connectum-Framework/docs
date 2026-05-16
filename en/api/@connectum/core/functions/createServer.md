@@ -4,7 +4,7 @@
 
 > **createServer**(`options`): [`Server`](../types/interfaces/Server.md)
 
-Defined in: [packages/core/src/Server.ts:297](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/core/src/Server.ts#L297)
+Defined in: [packages/core/src/Server.ts:430](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/Server.ts#L430)
 
 Create a new server instance
 

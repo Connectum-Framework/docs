@@ -9,6 +9,7 @@
 
 ## Interfaces
 
+- [CreateLocalTransportOptions](interfaces/CreateLocalTransportOptions.md)
 - [SanitizableError](interfaces/SanitizableError.md)
 
 ## Type Aliases
@@ -27,6 +28,7 @@
 
 ## Functions
 
+- [createLocalTransport](functions/createLocalTransport.md)
 - [createServer](functions/createServer.md)
 - [getTLSPath](functions/getTLSPath.md)
 - [isSanitizableError](functions/isSanitizableError.md)
@@ -87,6 +89,12 @@ Re-exports [ProtocolRegistration](types/interfaces/ProtocolRegistration.md)
 ### Server
 
 Re-exports [Server](types/interfaces/Server.md)
+
+***
+
+### ServerClientOptions
+
+Re-exports [ServerClientOptions](types/interfaces/ServerClientOptions.md)
 
 ***
 

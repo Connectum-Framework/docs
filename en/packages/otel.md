@@ -331,6 +331,77 @@ import {
 | `ATTR_*`, `ConnectErrorCode`, etc. | `.` / `./attributes` | Semantic conventions |
 | `ExporterType`, `getOTLPSettings`, etc. | `.` / `./config` | Configuration utilities |
 
+## In-Process Transport
+
+The OTel interceptors are fully transport-aware: spans and RPC metrics are
+recorded identically whether a call traversed the network (`createGrpcTransport`)
+or the in-process router (`createLocalTransport` from `@connectum/core`).
+
+The only deliberate difference between the two paths is a single
+provenance tag — every span carries a `connectum.transport` attribute and
+every RPC metric data point carries a `transport` label:
+
+| Path | `connectum.transport` span attribute | `transport` metric label |
+|------|--------------------------------------|--------------------------|
+| `createGrpcTransport(...)`           | `"http"`        | `"http"`        |
+| `createLocalTransport(server, ...)`  | `"in-process"`  | `"in-process"`  |
+
+Detection is header-driven: `createLocalTransport` prepends an internal
+`connectum-internal-transport: in-process` request header that both the
+server and client interceptors observe. HTTP requests never carry that
+header, so the default tag is `"http"`.
+
+### Parity guarantees
+
+Every observable surface (instrument names, units, label key sets, span
+kinds, span events, status codes) is invariant across transports. A
+dedicated parity suite under `packages/otel/tests/parity` runs each
+scenario twice — once over HTTP/2 and once over the in-process pipe —
+and asserts structural equivalence after stripping `connectum.transport`
+and `transport`. Specifically:
+
+- `SpanKind.CLIENT` + `SpanKind.SERVER` spans are emitted on both paths.
+- Streaming `rpc.message` events (`SENT` / `RECEIVED`) are produced with
+  identical sequence ids on both paths when `recordMessages: true`.
+- Error spans share the same `rpc.connect_rpc.status_code`, `error.type`,
+  and `SpanStatusCode.ERROR` outcome.
+- Metric instrument set is a subset of the HTTP set — no transport-only
+  instruments.
+- W3C `traceparent` / `tracestate` propagation works in both directions:
+  with `trustRemote: true`, the server span is the child of the client
+  span on both paths.
+
+### Notes
+
+- `trustRemote: true` is recommended when using both transports
+  symmetrically. With the default `trustRemote: false`, HTTP server spans
+  attach the remote span as a *link* (no parent), while in-process
+  server spans inherit the active client context as their parent —
+  producing a parent-shape diff that is unrelated to the OTel surface.
+- Payload-size histograms (`rpc.*.request.size`, `rpc.*.response.size`)
+  use the same `estimateMessageSize()` helper on both transports; values
+  may differ slightly between independent runs (timestamp drift) but the
+  instrument shape is identical.
+
+### Example
+
+```typescript
+import { createServer, createLocalTransport } from '@connectum/core';
+import { createClient } from '@connectrpc/connect';
+import { createOtelInterceptor, createOtelClientInterceptor } from '@connectum/otel';
+
+const server = createServer({
+  services: [routes],
+  interceptors: [createOtelInterceptor({ serverAddress: 'svc', trustRemote: true })],
+});
+
+// In-process: identical telemetry to HTTP path, tagged `connectum.transport=in-process`.
+const transport = createLocalTransport(server, {
+  interceptors: [createOtelClientInterceptor({ serverAddress: 'svc' })],
+});
+const client = createClient(MyService, transport);
+```
+
 ## Related Packages
 
 - **[@connectum/core](./core.md)** -- Server where the interceptor runs

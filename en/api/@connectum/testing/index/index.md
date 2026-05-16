@@ -4,19 +4,46 @@
 
 @connectum/testing — Testing utilities for the Connectum framework.
 
-Provides mock factories, assertion helpers, and a test server utility
-to eliminate boilerplate in ConnectRPC interceptor and service tests.
+Provides a test server utility, in-process transport helpers, OTel
+collectors, and a cross-transport parity driver to eliminate boilerplate
+in ConnectRPC service tests.
+
+Mock factories, assertion helpers and protobuf descriptor fixtures now
+live in `@connectum/test-fixtures`. They are re-exported from this entry
+for backwards compatibility — existing imports from `@connectum/testing`
+continue to work unchanged.
+
+## Classes
+
+- [InMemoryMetricCollector](classes/InMemoryMetricCollector.md)
+- [InMemorySpanCollector](classes/InMemorySpanCollector.md)
 
 ## Interfaces
 
+- [FakeMethodOptions](interfaces/FakeMethodOptions.md)
+- [FakeServiceOptions](interfaces/FakeServiceOptions.md)
 - [MockCall](interfaces/MockCall.md)
+- [MockDescFieldOptions](interfaces/MockDescFieldOptions.md)
+- [MockDescMessageOptions](interfaces/MockDescMessageOptions.md)
+- [MockDescMethodOptions](interfaces/MockDescMethodOptions.md)
 - [MockFn](interfaces/MockFn.md)
+- [MockNextOptions](interfaces/MockNextOptions.md)
+- [MockRequestOptions](interfaces/MockRequestOptions.md)
+- [MockStreamOptions](interfaces/MockStreamOptions.md)
+- [NormalizedMetric](interfaces/NormalizedMetric.md)
+- [NormalizedSpan](interfaces/NormalizedSpan.md)
+
+## Variables
+
+- [TRANSPORT\_METRIC\_ATTRIBUTE](variables/TRANSPORT_METRIC_ATTRIBUTE.md)
+- [TRANSPORT\_SPAN\_ATTRIBUTE](variables/TRANSPORT_SPAN_ATTRIBUTE.md)
 
 ## Functions
 
 - [assertConnectError](functions/assertConnectError.md)
 - [createFakeMethod](functions/createFakeMethod.md)
 - [createFakeService](functions/createFakeService.md)
+- [createLocalClient](functions/createLocalClient.md)
 - [createMockDescField](functions/createMockDescField.md)
 - [createMockDescMessage](functions/createMockDescMessage.md)
 - [createMockDescMethod](functions/createMockDescMethod.md)
@@ -34,54 +61,6 @@ to eliminate boilerplate in ConnectRPC interceptor and service tests.
 ### CreateTestServerOptions
 
 Re-exports [CreateTestServerOptions](../types/interfaces/CreateTestServerOptions.md)
-
-***
-
-### FakeMethodOptions
-
-Re-exports [FakeMethodOptions](../types/interfaces/FakeMethodOptions.md)
-
-***
-
-### FakeServiceOptions
-
-Re-exports [FakeServiceOptions](../types/interfaces/FakeServiceOptions.md)
-
-***
-
-### MockDescFieldOptions
-
-Re-exports [MockDescFieldOptions](../types/interfaces/MockDescFieldOptions.md)
-
-***
-
-### MockDescMessageOptions
-
-Re-exports [MockDescMessageOptions](../types/interfaces/MockDescMessageOptions.md)
-
-***
-
-### MockDescMethodOptions
-
-Re-exports [MockDescMethodOptions](../types/interfaces/MockDescMethodOptions.md)
-
-***
-
-### MockNextOptions
-
-Re-exports [MockNextOptions](../types/interfaces/MockNextOptions.md)
-
-***
-
-### MockRequestOptions
-
-Re-exports [MockRequestOptions](../types/interfaces/MockRequestOptions.md)
-
-***
-
-### MockStreamOptions
-
-Re-exports [MockStreamOptions](../types/interfaces/MockStreamOptions.md)
 
 ***
 
