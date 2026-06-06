@@ -7,6 +7,19 @@ description: Migration guides and breaking changes for Connectum releases
 
 This page covers breaking changes and migration steps between Connectum releases.
 
+## Minimum Node.js raised to 22.13.0
+
+> Applies to the next release on top of RC.10.
+
+Node.js 20 reached [end-of-life on 2026-04-30](https://nodejs.org/en/about/previous-releases) and no longer receives security updates. The minimum supported runtime for all `@connectum/*` packages is now **Node.js 22.13.0** (the current LTS line).
+
+| Aspect | Before | After |
+|--------|--------|-------|
+| Minimum consumer Node.js | >= 20.0.0 | **>= 22.13.0** |
+| Development Node.js | >= 25.2.0 | >= 25.2.0 (unchanged) |
+
+**Migration**: upgrade your runtime to Node.js 22.13.0 or later. Packages continue to ship compiled JavaScript, so no build-step or code changes are required.
+
 ## RC.9 to RC.10
 
 ### New: Client-side auth interceptors in `@connectum/auth`

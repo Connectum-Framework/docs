@@ -4,25 +4,25 @@ outline: deep
 
 # Runtime Compatibility
 
-Connectum targets **Node.js 20+** as the primary runtime. Bun compatibility is a secondary goal -- most packages work, but some features require workarounds or have known limitations. This page documents the current state of runtime compatibility across all `@connectum/*` packages.
+Connectum targets **Node.js 22+** as the primary runtime. Bun compatibility is a secondary goal -- most packages work, but some features require workarounds or have known limitations. This page documents the current state of runtime compatibility across all `@connectum/*` packages.
 
 ## Compatibility Matrix
 
-| Package | Node.js 20 | Node.js 22 | Node.js 25 | Bun |
-|---------|:----------:|:----------:|:----------:|:---:|
-| `@connectum/core` | Yes | Yes | Yes | Yes |
-| `@connectum/interceptors` | Yes | Yes | Yes | Yes |
-| `@connectum/healthcheck` | Yes | Yes | Yes | Yes |
-| `@connectum/reflection` | Yes | Yes | Yes | Yes |
-| `@connectum/auth` | Yes | Yes | Yes | Yes |
-| `@connectum/events` | Yes | Yes | Yes | Yes |
-| `@connectum/events-nats` | Yes | Yes | Yes | Yes |
-| `@connectum/events-kafka` | Yes | Yes | Yes | Yes |
-| `@connectum/events-redis` | Yes | Yes | Yes | Yes |
-| `@connectum/events-amqp` | Yes | Yes | Yes | Yes |
-| `@connectum/otel` | Yes | Yes | Yes | Partial |
-| `@connectum/cli` | Yes | Yes | Yes | Yes |
-| `@connectum/testing` | Yes | Yes | Yes | Partial |
+| Package | Node.js 22 | Node.js 25 | Bun |
+|---------|:----------:|:----------:|:---:|
+| `@connectum/core` | Yes | Yes | Yes |
+| `@connectum/interceptors` | Yes | Yes | Yes |
+| `@connectum/healthcheck` | Yes | Yes | Yes |
+| `@connectum/reflection` | Yes | Yes | Yes |
+| `@connectum/auth` | Yes | Yes | Yes |
+| `@connectum/events` | Yes | Yes | Yes |
+| `@connectum/events-nats` | Yes | Yes | Yes |
+| `@connectum/events-kafka` | Yes | Yes | Yes |
+| `@connectum/events-redis` | Yes | Yes | Yes |
+| `@connectum/events-amqp` | Yes | Yes | Yes |
+| `@connectum/otel` | Yes | Yes | Partial |
+| `@connectum/cli` | Yes | Yes | Yes |
+| `@connectum/testing` | Yes | Yes | Partial |
 
 **Legend:** Yes = fully supported, Partial = works with limitations (see details below).
 
