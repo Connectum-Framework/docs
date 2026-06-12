@@ -194,7 +194,7 @@ const adapter = RedisAdapter({
 
 ## AMQP / RabbitMQ Adapter
 
-Uses the AMQP 0-9-1 protocol via [amqplib](https://amqp-node.github.io/amqplib/) for durable messaging with topic exchanges, competing consumers, and native dead letter exchange (DLX) support.
+Uses the AMQP 0-9-1 protocol via [amqplib](https://amqp-node.github.io/amqplib/) for durable messaging with topic exchanges, competing consumers, and native dead letter exchange (DLX) support. Provides per-message publisher confirms, automatic connection recovery (enabled by default), explicit external topology (`topology` / `topologyMode` / `queueOverrides`), and serialization control for external AMQP contracts -- see [@connectum/events-amqp](/en/packages/events-amqp) for the full reference.
 
 ```bash
 pnpm add @connectum/events-amqp
@@ -227,7 +227,16 @@ const adapter = AmqpAdapter({
 | `exchangeOptions` | `AmqpExchangeOptions` | `undefined` | Exchange declaration options |
 | `queueOptions` | `AmqpQueueOptions` | `undefined` | Queue declaration options (durable, TTL, max length, DLX) |
 | `consumerOptions` | `AmqpConsumerOptions` | `undefined` | Consumer tuning (prefetch, exclusive) |
-| `publisherOptions` | `AmqpPublisherOptions` | `undefined` | Publisher options (persistent, mandatory) |
+| `publisherOptions` | `AmqpPublisherOptions` | `undefined` | Publisher options (persistent, mandatory, return correlation) |
+| `serialization` | `AmqpSerializationOptions` | `undefined` | `contentType` label and optional wire transcoding |
+| `topology` | `AmqpTopology` | `undefined` | Explicit topology: exchanges, queues with raw arguments, bindings |
+| `topologyMode` | `"assert" \| "check" \| "skip"` | `"assert"` | How topology is established (declare / verify existence / none) |
+| `queueOverrides` | `Record<string, AmqpQueueOverride>` | `undefined` | Map a consumer group to an externally named queue |
+| `recovery` | `boolean \| AmqpRecoveryOptions` | `true` | Automatic connection recovery; `false` disables |
+| `lifecycle` | `AmqpLifecycleCallbacks` | `undefined` | Connection lifecycle callbacks |
+| `publishTimeoutMs` | `number` | `30000` | Per-publish broker-outcome deadline |
+
+Every `publish()` resolves on its own broker acknowledgement (per-message confirms) and rejects with a typed error (`AmqpUnroutableError`, `AmqpPublishNackError`, `AmqpPublishTimeoutError`, `AmqpConnectionError`). See the [package page](/en/packages/events-amqp) for the error taxonomy, recovery semantics, and an external-contract recipe.
 
 ### LavinMQ Compatibility
 
