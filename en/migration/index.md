@@ -7,6 +7,58 @@ description: Migration guides and breaking changes for Connectum releases
 
 This page covers breaking changes and migration steps between Connectum releases.
 
+## BREAKING: Resilience interceptors are now opt-in in `createDefaultInterceptors()`
+
+> Applies to the next release on top of RC.10.
+
+`createDefaultInterceptors()` now enables only the structural interceptors — **errorHandler** and **validation**. The resilience interceptors (**timeout**, **bulkhead**, **circuitBreaker**, **retry**) are **opt-in**: enable each one explicitly with `true` or an options object.
+
+**Why**: no hidden behavioral logic. Implicitly enabled resilience caused a confirmed production incident — a server-side circuit breaker was tripped by expected business errors (such as `invalid_argument`) and started rejecting healthy traffic.
+
+| Interceptor | Before | After |
+|-------------|--------|-------|
+| errorHandler | enabled | enabled (unchanged) |
+| timeout | enabled (30s) | **opt-in** (30s when enabled) |
+| bulkhead | enabled (10/10) | **opt-in** (10/10 when enabled) |
+| circuitBreaker | enabled (5 failures) | **opt-in** (5 failures when enabled) |
+| retry | enabled (3 attempts) | **opt-in** (3 attempts when enabled) |
+| fallback | disabled | opt-in (unchanged) |
+| validation | enabled | enabled (unchanged) |
+| serializer | disabled | opt-in (unchanged) |
+
+**Migration**:
+
+```typescript
+// Before — timeout, bulkhead, circuitBreaker, retry were implicitly active
+createDefaultInterceptors()
+
+// After — to keep the previous behavior, enable them explicitly
+createDefaultInterceptors({
+  timeout: true,
+  bulkhead: true,
+  circuitBreaker: true,
+  retry: true,
+})
+
+// After — if you only need errorHandler + validation (no change needed)
+createDefaultInterceptors()
+```
+
+Code that already passes explicit options (`timeout: { duration: 10_000 }`, `retry: false`, ...) keeps working: an options object or `true` means enabled, `false` means disabled.
+
+### Circuit breaker: error classification and placement
+
+The circuit breaker now classifies errors. By default only infrastructure errors count as circuit failures: `Unknown`, `DeadlineExceeded`, `Internal`, `Unavailable`, `DataLoss`, `ResourceExhausted` (plus any non-`ConnectError` thrown value). Business codes (`invalid_argument`, `not_found`, ...) never open the breaker, and in half-open state they close it.
+
+Customize via the new `failurePredicate(error, defaultPredicate)` option; the default classifier is exported as `defaultFailurePredicate`:
+
+```typescript
+// Restore legacy behavior (every error trips the breaker)
+createCircuitBreakerInterceptor({ failurePredicate: () => true });
+```
+
+The circuit breaker is repositioned as an **outbound/client-transport pattern**. For server inbound protection prefer explicit `timeout` + `bulkhead`. See [@connectum/interceptors](/en/packages/interceptors#circuit-breaker) for details.
+
 ## Minimum Node.js raised to 22.13.0
 
 > Applies to the next release on top of RC.10.
@@ -381,7 +433,7 @@ await server.start();
 
 ### Interceptors: No Auto-Defaults
 
-Starting from v1.0.0-beta.x, `@connectum/core` has **zero internal dependencies**. Omitting the `interceptors` option (or passing `[]`) means **no interceptors are applied**. To use the default resilience chain, explicitly pass `createDefaultInterceptors()`:
+Starting from v1.0.0-beta.x, `@connectum/core` has **zero internal dependencies**. Omitting the `interceptors` option (or passing `[]`) means **no interceptors are applied**. To use the default interceptor chain, explicitly pass `createDefaultInterceptors()`:
 
 ```typescript
 import { createServer } from '@connectum/core';
