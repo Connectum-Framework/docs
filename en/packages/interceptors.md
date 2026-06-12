@@ -26,7 +26,7 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/interc
 pnpm add @connectum/interceptors
 ```
 
-**Requires**: Node.js 20+
+**Requires**: Node.js 22+
 
 ## Quick Start
 
