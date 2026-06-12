@@ -128,6 +128,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
         collapsed: true,
         items: [
             { text: 'Architecture Patterns', link: '/en/guide/production/architecture' },
+            { text: 'Transport Matrix', link: '/en/guide/production/transport-matrix' },
             { text: 'Docker', link: '/en/guide/production/docker' },
             { text: 'Kubernetes', link: '/en/guide/production/kubernetes' },
             { text: 'Envoy Gateway', link: '/en/guide/production/envoy-gateway' },
