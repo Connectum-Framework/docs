@@ -16,9 +16,10 @@ import routes from '#gen/routes.js';
 const server = createServer({
   services: [routes],
   port: 5000,
+  // errorHandler + validation by default; resilience is opt-in
   interceptors: createDefaultInterceptors({
-    timeout: { duration: 10_000 },
-    retry: { maxRetries: 5 },
+    timeout: { duration: 10_000 },  // explicitly enabled
+    retry: { maxRetries: 5 },       // explicitly enabled
   }),
   shutdown: { autoShutdown: true },
 });
@@ -39,18 +40,20 @@ Response <- interceptor1 <- interceptor2 <- ... <- handler
 
 ### Built-in Chain
 
-`createDefaultInterceptors()` provides 8 production-ready interceptors in a fixed order:
+`createDefaultInterceptors()` is a chain factory for 8 production-ready interceptors in a fixed order:
 
 | # | Interceptor | Purpose | Default |
 |---|-------------|---------|---------|
 | 1 | **errorHandler** | Normalizes errors into ConnectError | Enabled |
-| 2 | **timeout** | Limits request execution time | Enabled (30s) |
-| 3 | **bulkhead** | Limits concurrent requests | Enabled (capacity 10, queue 10) |
-| 4 | **circuitBreaker** | Prevents cascading failures | Enabled (threshold 5) |
-| 5 | **retry** | Retries transient failures with exponential backoff | Enabled (3 retries) |
-| 6 | **fallback** | Graceful degradation | Disabled |
+| 2 | **timeout** | Limits request execution time | **Opt-in** (30s when enabled) |
+| 3 | **bulkhead** | Limits concurrent requests | **Opt-in** (capacity 10, queue 10 when enabled) |
+| 4 | **circuitBreaker** | Prevents cascading failures (outbound pattern) | **Opt-in** (threshold 5 when enabled) |
+| 5 | **retry** | Retries transient failures with exponential backoff | **Opt-in** (3 retries when enabled) |
+| 6 | **fallback** | Graceful degradation | **Opt-in** (requires a handler) |
 | 7 | **validation** | Validates via @connectrpc/validate | Enabled |
-| 8 | **serializer** | JSON serialization for protobuf | **Disabled** |
+| 8 | **serializer** | JSON serialization for protobuf | **Opt-in** |
+
+**No hidden behavioral logic.** Only structural interceptors (errorHandler, validation) are enabled by default. Resilience interceptors (timeout, bulkhead, circuitBreaker, retry) alter request behavior and must be enabled explicitly with `true` or an options object.
 
 ### Per-Method Routing
 

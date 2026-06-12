@@ -18,7 +18,7 @@ Client → errorHandler → ... → validation → serializer → Handler
                           Invalid: INVALID_ARGUMENT
 ```
 
-Validation runs as the 7th interceptor in the default chain (before serializer, after resilience interceptors). Invalid requests are rejected with `INVALID_ARGUMENT` before reaching the handler.
+Validation runs as the 7th interceptor in the default chain (before serializer, after any explicitly enabled resilience interceptors). Invalid requests are rejected with `INVALID_ARGUMENT` before reaching the handler.
 
 ## Setup
 

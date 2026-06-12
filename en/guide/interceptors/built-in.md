@@ -4,7 +4,7 @@ outline: deep
 
 # Built-in Interceptors
 
-Connectum provides 8 production-ready interceptors via `createDefaultInterceptors()`. They form a fixed chain that covers error handling, resilience, validation, and serialization.
+Connectum provides 8 production-ready interceptors via `createDefaultInterceptors()`. They form a fixed-order chain that covers error handling, resilience, validation, and serialization.
 
 ## The Default Chain
 
@@ -15,15 +15,54 @@ errorHandler -> timeout -> bulkhead -> circuitBreaker -> retry -> fallback -> va
 | # | Interceptor | Purpose | Default |
 |---|-------------|---------|---------|
 | 1 | **errorHandler** | Normalizes errors into `ConnectError` | Enabled |
-| 2 | **timeout** | Limits request execution time | Enabled (30s) |
-| 3 | **bulkhead** | Limits concurrent requests | Enabled (capacity 10, queue 10) |
-| 4 | **circuitBreaker** | Prevents cascading failures | Enabled (threshold 5) |
-| 5 | **retry** | Retries transient failures with exponential backoff | Enabled (3 retries) |
-| 6 | **fallback** | Graceful degradation | Disabled |
+| 2 | **timeout** | Limits request execution time | **Opt-in** (30s when enabled) |
+| 3 | **bulkhead** | Limits concurrent requests | **Opt-in** (capacity 10, queue 10 when enabled) |
+| 4 | **circuitBreaker** | Prevents cascading failures (outbound pattern, see below) | **Opt-in** (threshold 5 when enabled) |
+| 5 | **retry** | Retries transient failures with exponential backoff | **Opt-in** (3 retries when enabled) |
+| 6 | **fallback** | Graceful degradation | **Opt-in** (requires a handler) |
 | 7 | **validation** | Validates via `@connectrpc/validate` | Enabled |
-| 8 | **serializer** | JSON serialization for protobuf | **Disabled** |
+| 8 | **serializer** | JSON serialization for protobuf | **Opt-in** |
 
-The order is deliberate: `errorHandler` is outermost (catches everything), `serializer` is innermost (closest to the handler).
+The order is deliberate: `errorHandler` is outermost (catches everything), `serializer` is innermost (closest to the handler). The order applies to whichever interceptors you enable. In particular, `circuitBreaker` wraps `retry`, so one logical request increments the failure counter at most once regardless of retry attempts.
+
+::: warning No hidden behavioral logic
+Only structural interceptors (errorHandler, validation) are enabled by default. Resilience interceptors (timeout, bulkhead, circuitBreaker, retry) alter request behavior and must be enabled explicitly with `true` or an options object — implicitly enabled resilience caused a confirmed production incident (a server-side circuit breaker tripped by expected business errors).
+:::
+
+## Circuit Breaker: Placement and Error Classification
+
+The circuit breaker is an **outbound/client-side pattern**: it protects the caller from a sick upstream (fail fast instead of waiting on timeouts) and gives that upstream room to recover. On a server's inbound stack it degenerates into error-rate load shedding — for inbound protection prefer explicit `timeout` + `bulkhead`.
+
+```typescript
+// Recommended: circuit breaker on an outbound client transport
+import { createConnectTransport } from '@connectrpc/connect-node';
+import { createCircuitBreakerInterceptor } from '@connectum/interceptors';
+
+const transport = createConnectTransport({
+  baseUrl: 'http://upstream:5000',
+  interceptors: [
+    createCircuitBreakerInterceptor({ threshold: 5, halfOpenAfter: 30_000 }),
+  ],
+});
+```
+
+**Error classification.** By default only infrastructure errors count as circuit failures: `Unknown`, `DeadlineExceeded`, `Internal`, `Unavailable`, `DataLoss`, `ResourceExhausted` (plus any non-`ConnectError` thrown value). Business codes (`invalid_argument`, `not_found`, `failed_precondition`, `already_exists`, ...) are expected responses of a healthy service: they never open the breaker, and in half-open state they close it.
+
+Customize with `failurePredicate(error, defaultPredicate)` — the default predicate (exported as `defaultFailurePredicate`) is passed in for composition:
+
+```typescript
+import { Code, ConnectError } from '@connectrpc/connect';
+import { createCircuitBreakerInterceptor } from '@connectum/interceptors';
+
+// Exclude upstream per-client rate limits from tripping the breaker
+createCircuitBreakerInterceptor({
+  failurePredicate: (err, def) =>
+    def(err) && !(err instanceof ConnectError && err.code === Code.ResourceExhausted),
+});
+
+// Restore legacy behavior (every error trips the breaker)
+createCircuitBreakerInterceptor({ failurePredicate: () => true });
+```
 
 ::: tip When to enable the serializer
 Enable the serializer when your service uses the **Connect protocol** (HTTP/1.1 JSON) and you need automatic protobuf ↔ JSON conversion. Not needed for pure **gRPC** services (binary protobuf format).
@@ -74,16 +113,15 @@ await server.start();
 
 ## Customizing the Default Chain
 
-Pass options to `createDefaultInterceptors()` to customize individual interceptors. Set an interceptor to `false` to disable it entirely:
+Pass options to `createDefaultInterceptors()` to customize individual interceptors. Pass `true` or an options object to enable an opt-in interceptor; set one of the default-enabled interceptors to `false` to disable it:
 
 ```typescript
 import { createDefaultInterceptors } from '@connectum/interceptors';
 
 const interceptors = createDefaultInterceptors({
-  timeout: { duration: 10_000 },   // Custom timeout (10s instead of 30s)
-  retry: false,                     // Disable retry
-  bulkhead: { capacity: 20, queueSize: 20 }, // Higher concurrency limits
-  // All others remain at defaults
+  timeout: { duration: 10_000 },   // Enable timeout (10s)
+  bulkhead: { capacity: 20, queueSize: 20 }, // Enable bulkhead with custom limits
+  // errorHandler and validation remain enabled by default
 });
 
 const server = createServer({
