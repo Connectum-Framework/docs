@@ -131,7 +131,7 @@ const transport = createGrpcTransport({
       serverPort: 5000,
     }),
     ...createDefaultInterceptors({
-      circuitBreaker: { failureThreshold: 5 },
+      circuitBreaker: { threshold: 5 },
       timeout: { duration: 5_000 },
       retry: { maxRetries: 2 },
       // Disable server-only interceptors
@@ -154,7 +154,7 @@ The circuit breaker tracks consecutive failures per client transport:
 | **Open** | Requests fail immediately with `Unavailable` (no downstream call) |
 | **Half-Open** | A single probe request is allowed; success closes, failure re-opens |
 
-The default `failureThreshold` is 5 consecutive failures. After the circuit opens, it automatically transitions to half-open after a cooldown period.
+The default `threshold` is 5 consecutive failures. After the circuit opens, it automatically transitions to half-open after a cooldown period.
 
 ### Per-Service Configuration
 
@@ -170,7 +170,7 @@ const paymentTransport = createGrpcTransport({
     ...createDefaultInterceptors({
       timeout: { duration: 3_000 },
       retry: { maxRetries: 3 },
-      circuitBreaker: { failureThreshold: 3 },
+      circuitBreaker: { threshold: 3 },
       bulkhead: false, errorHandler: false, serializer: false, validation: false,
     }),
   ],
@@ -185,7 +185,7 @@ const recommendationTransport = createGrpcTransport({
     ...createDefaultInterceptors({
       timeout: { duration: 10_000 },
       retry: { maxRetries: 1 },
-      circuitBreaker: { failureThreshold: 10 },
+      circuitBreaker: { threshold: 10 },
       bulkhead: false, errorHandler: false, serializer: false, validation: false,
     }),
   ],

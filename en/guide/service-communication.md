@@ -27,7 +27,7 @@ const inventoryTransport = createGrpcTransport({
       serverPort: Number(process.env.INVENTORY_PORT),
     }),
     ...createDefaultInterceptors({
-      circuitBreaker: { failureThreshold: 5 },
+      circuitBreaker: { threshold: 5 },
       timeout: { duration: 5_000 },
       retry: { maxRetries: 2 },
       // Disable server-only interceptors
@@ -69,11 +69,11 @@ Not all server interceptors are appropriate for client transports. When using `c
 | Interceptor | Server | Client | Notes |
 |-------------|:------:|:------:|-------|
 | **errorHandler** | Yes | No | Normalizes errors for responses -- not needed on client |
-| **timeout** | Yes | Yes | Enforce per-request deadline |
-| **bulkhead** | Yes | No | Limits server concurrency -- not applicable to clients |
-| **circuitBreaker** | Yes | Yes | Prevents cascading failures to downstream services |
-| **retry** | Yes | Yes | Retries transient errors |
-| **fallback** | Yes | No | Requires server-side handler |
+| **timeout** | Opt-in | Opt-in | Enforce per-request deadline |
+| **bulkhead** | Opt-in | No | Limits server concurrency -- not applicable to clients |
+| **circuitBreaker** | Opt-in | Opt-in | Outbound pattern -- prevents cascading failures to downstream services |
+| **retry** | Opt-in | Opt-in | Retries transient errors |
+| **fallback** | Opt-in | No | Requires server-side handler |
 | **validation** | Yes | No | Validates incoming requests -- not outgoing |
 | **serializer** | Opt-in | No | Server-side JSON serialization (disabled by default; enable for Connect protocol) |
 

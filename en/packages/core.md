@@ -27,7 +27,7 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/core/)
 pnpm add @connectum/core
 ```
 
-**Requires**: Node.js >= 20.0.0 (packages ship compiled `.js` + `.d.ts` + source maps)
+**Requires**: Node.js >= 22.13.0 (packages ship compiled `.js` + `.d.ts` + source maps)
 
 ## Quick Start
 
@@ -77,11 +77,12 @@ The server is created in `CREATED` state. Call `server.start()` to begin accepti
 | `protocols` | `ProtocolRegistration[]` | `[]` | Protocol plugins (healthcheck, reflection, custom) |
 | `shutdown` | `ShutdownOptions` | `{}` | Graceful shutdown configuration |
 | `interceptors` | `Interceptor[]` | `[]` | ConnectRPC interceptors. When omitted or `[]`, no interceptors are applied. Use `createDefaultInterceptors()` from `@connectum/interceptors` for the production-ready chain. |
-| `allowHTTP1` | `boolean` | `true` | Allow HTTP/1.1 connections |
+| `allowHTTP1` | `boolean` | `true` | Allow HTTP/1.1 connections. Without TLS the default server is plaintext HTTP/1.1; set `false` for h2c. See the [transport matrix](/en/guide/production/transport-matrix) |
 | `handshakeTimeout` | `number` | `30000` | Handshake timeout in milliseconds |
 | `eventBus` | `EventBusLike` | `undefined` | Event bus for lifecycle management |
 | `http2Options` | `SecureServerOptions` | `undefined` | Additional HTTP/2 server options |
 | `jsonOptions` | `Partial<JsonReadOptions & JsonWriteOptions>` | `undefined` | Connect JSON serialization options applied server-wide. See [JSON serialization](#json-serialization). |
+| `transportValidation` | `"error" \| "warn" \| "off"` | `"error"` | Startup validation: bidi-streaming methods on a plaintext HTTP/1.1 transport fail fast with `CONNECTUM_UNSUPPORTED_STREAMING_TRANSPORT` instead of hanging at runtime. See the [transport matrix](/en/guide/production/transport-matrix) |
 
 ### JSON serialization
 
@@ -336,7 +337,7 @@ if (isSanitizableError(err)) {
 
 All `@connectum/*` packages are built with [tsup](https://tsup.egoist.dev/) and ship:
 
-- **Compiled `.js` files** (ESM) -- ready to run on any ES module-capable runtime (Node.js 20+, Bun, tsx)
+- **Compiled `.js` files** (ESM) -- ready to run on any ES module-capable runtime (Node.js 22+, Bun, tsx)
 - **TypeScript declarations** (`.d.ts`) -- full type information for IDE support and type checking
 - **Source maps** (`.js.map`) -- accurate stack traces pointing to the original TypeScript source
 

@@ -15,7 +15,7 @@ Build a fully functional gRPC/ConnectRPC microservice with health checks, server
 - **buf** -- installed automatically via `@bufbuild/buf` npm package
 
 ::: tip Node.js version for consumers
-This guide uses Node.js 25+ for native `.ts` execution of your own source files. However, `@connectum/*` packages ship **compiled JavaScript**, so if you compile your own code (e.g., with tsx or a build tool), you can run on **Node.js >= 20.0.0**. See [Runtime Support](/en/guide/typescript#runtime-support-node-js-vs-bun).
+This guide uses Node.js 25+ for native `.ts` execution of your own source files. However, `@connectum/*` packages ship **compiled JavaScript**, so if you compile your own code (e.g., with tsx or a build tool), you can run on **Node.js >= 22.13.0**. See [Runtime Support](/en/guide/typescript#runtime-support-node-js-vs-bun).
 :::
 
 ## 1. Project Setup
@@ -58,7 +58,7 @@ Configure `package.json`:
     "typecheck": "tsc --noEmit",
     "build:proto": "buf generate proto"
   },
-  "engines": { "node": ">=25.2.0" }
+  "engines": { "node": ">=22.13.0" }
 }
 ```
 
@@ -220,7 +220,7 @@ pnpm dev
 # Bun
 bun src/index.ts
 
-# tsx (Node.js 20+)
+# tsx (Node.js 22+)
 npx tsx src/index.ts
 ```
 
@@ -254,14 +254,12 @@ curl http://localhost:5000/healthz
 | Feature | Details |
 |---------|---------|
 | **Error handling** | Automatic error normalization to gRPC status codes |
-| **Timeout** | 30s default per request |
-| **Bulkhead** | Max 10 concurrent requests + 10-item queue |
-| **Circuit breaker** | Opens after 5 consecutive failures |
-| **Retry** | 3 retries with exponential backoff |
 | **Validation** | Proto constraint validation via [@connectrpc/validate](https://github.com/connectrpc/validate-es) |
 | **Health checks** | gRPC + HTTP endpoints |
 | **Reflection** | Runtime service discovery |
 | **Graceful shutdown** | SIGTERM/SIGINT with connection draining |
+
+Resilience interceptors (timeout, bulkhead, circuit breaker, retry) are **opt-in** — enable them explicitly via `createDefaultInterceptors()` options. See [Step 12](#_12-built-in-interceptors).
 
 ---
 
@@ -377,24 +375,24 @@ See [Graceful Shutdown](/en/guide/server/graceful-shutdown) for dependency graph
 
 ## 12. Built-in Interceptors
 
-`createDefaultInterceptors()` assembles 8 interceptors in a fixed order:
+`createDefaultInterceptors()` assembles up to 8 interceptors in a fixed order. Only errorHandler and validation are enabled by default — resilience interceptors are opt-in (no hidden behavioral logic):
 
 | # | Interceptor | Default | Purpose |
 |---|-------------|---------|---------|
 | 1 | **errorHandler** | on | Normalize errors to gRPC status codes |
-| 2 | **timeout** | 30s | Enforce per-request deadline |
-| 3 | **bulkhead** | 10/10 | Limit concurrent requests + queue |
-| 4 | **circuitBreaker** | 5 failures | Prevent cascading failures |
-| 5 | **retry** | 3 retries | Exponential backoff for transients |
+| 2 | **timeout** | opt-in (30s when enabled) | Enforce per-request deadline |
+| 3 | **bulkhead** | opt-in (10/10 when enabled) | Limit concurrent requests + queue |
+| 4 | **circuitBreaker** | opt-in (5 failures when enabled) | Prevent cascading failures (outbound pattern) |
+| 5 | **retry** | opt-in (3 retries when enabled) | Exponential backoff for transients |
 | 6 | **fallback** | off | Graceful degradation (requires handler) |
 | 7 | **validation** | on | Proto constraint validation |
 | 8 | **serializer** | off | JSON serialization (opt-in for Connect protocol) |
 
 ```typescript
+// Enable resilience interceptors explicitly (true or an options object)
 const interceptors = createDefaultInterceptors({
-  retry: false,
   timeout: { duration: 10_000 },
-  bulkhead: { maxConcurrent: 20, maxQueue: 50 },
+  bulkhead: { capacity: 20, queueSize: 50 },
 });
 ```
 

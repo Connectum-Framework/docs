@@ -7,6 +7,113 @@ description: Migration guides and breaking changes for Connectum releases
 
 This page covers breaking changes and migration steps between Connectum releases.
 
+## BREAKING: Resilience interceptors are now opt-in in `createDefaultInterceptors()`
+
+> Applies to the next release on top of RC.10.
+
+`createDefaultInterceptors()` now enables only the structural interceptors — **errorHandler** and **validation**. The resilience interceptors (**timeout**, **bulkhead**, **circuitBreaker**, **retry**) are **opt-in**: enable each one explicitly with `true` or an options object.
+
+**Why**: no hidden behavioral logic. Implicitly enabled resilience caused a confirmed production incident — a server-side circuit breaker was tripped by expected business errors (such as `invalid_argument`) and started rejecting healthy traffic.
+
+| Interceptor | Before | After |
+|-------------|--------|-------|
+| errorHandler | enabled | enabled (unchanged) |
+| timeout | enabled (30s) | **opt-in** (30s when enabled) |
+| bulkhead | enabled (10/10) | **opt-in** (10/10 when enabled) |
+| circuitBreaker | enabled (5 failures) | **opt-in** (5 failures when enabled) |
+| retry | enabled (3 attempts) | **opt-in** (3 attempts when enabled) |
+| fallback | disabled | opt-in (unchanged) |
+| validation | enabled | enabled (unchanged) |
+| serializer | disabled | opt-in (unchanged) |
+
+**Migration**:
+
+```typescript
+// Before — timeout, bulkhead, circuitBreaker, retry were implicitly active
+createDefaultInterceptors()
+
+// After — to keep the previous behavior, enable them explicitly
+createDefaultInterceptors({
+  timeout: true,
+  bulkhead: true,
+  circuitBreaker: true,
+  retry: true,
+})
+
+// After — if you only need errorHandler + validation (no change needed)
+createDefaultInterceptors()
+```
+
+Code that already passes explicit options (`timeout: { duration: 10_000 }`, `retry: false`, ...) keeps working: an options object or `true` means enabled, `false` means disabled.
+
+### Circuit breaker: error classification and placement
+
+The circuit breaker now classifies errors. By default only infrastructure errors count as circuit failures: `Unknown`, `DeadlineExceeded`, `Internal`, `Unavailable`, `DataLoss`, `ResourceExhausted` (plus any non-`ConnectError` thrown value). Business codes (`invalid_argument`, `not_found`, ...) never open the breaker, and in half-open state they close it.
+
+Customize via the new `failurePredicate(error, defaultPredicate)` option; the default classifier is exported as `defaultFailurePredicate`:
+
+```typescript
+// Restore legacy behavior (every error trips the breaker)
+createCircuitBreakerInterceptor({ failurePredicate: () => true });
+```
+
+The circuit breaker is repositioned as an **outbound/client-transport pattern**. For server inbound protection prefer explicit `timeout` + `bulkhead`. See [@connectum/interceptors](/en/packages/interceptors#circuit-breaker) for details.
+
+## Minimum Node.js raised to 22.13.0
+
+> Applies to the next release on top of RC.10.
+
+Node.js 20 reached [end-of-life on 2026-04-30](https://nodejs.org/en/about/previous-releases) and no longer receives security updates. The minimum supported runtime for all `@connectum/*` packages is now **Node.js 22.13.0** (the current LTS line).
+
+| Aspect | Before | After |
+|--------|--------|-------|
+| Minimum consumer Node.js | >= 20.0.0 | **>= 22.13.0** |
+| Development Node.js | >= 25.2.0 | >= 25.2.0 (unchanged) |
+
+**Migration**: upgrade your runtime to Node.js 22.13.0 or later. Packages continue to ship compiled JavaScript, so no build-step or code changes are required.
+
+## BREAKING: `@connectum/core` validates streaming transport at startup
+
+> Applies to the next release on top of RC.10.
+
+`server.start()` now rejects when a **user-registered** service defines a
+bidi-streaming method and the effective transport is plaintext HTTP/1.1 (the
+default `http.createServer` mode, `allowHTTP1: true` without TLS). Bidi
+streaming requires HTTP/2 — on HTTP/1.1 the first send hangs forever or the
+client gets an HTTP 505, so this fails fast instead of hanging in production.
+The error carries the stable code `CONNECTUM_UNSUPPORTED_STREAMING_TRANSPORT`
+and names the offending `service.method`. Protocol-contributed services (e.g.
+gRPC Reflection, whose `ServerReflectionInfo` is itself bidi) are excluded.
+
+A new `transportValidation` option controls the behavior:
+
+| Value | Behavior |
+|-------|----------|
+| `"error"` (default) | reject `start()` for bidi on plaintext HTTP/1.1 |
+| `"warn"` | log a one-time warning and start anyway |
+| `"off"` | skip the check entirely |
+
+**Migration**: the correct fix is to serve HTTP/2 — set `allowHTTP1: false`
+(h2c) or run behind TLS with ALPN. To preserve the previous (broken-at-runtime)
+behavior temporarily, set `transportValidation: "warn"` or `"off"`. A TLS server
+with `allowHTTP1: true` is not a hard error but emits a one-time warning, since
+a client may still negotiate HTTP/1.1 over TLS. See the
+[transport matrix](/en/guide/production/transport-matrix) for the full support grid.
+
+## BREAKING: `PublishOptions.sync` removed from `@connectum/events`
+
+> Applies to the next release on top of RC.10.
+
+The `sync` flag on `PublishOptions` has been **removed**. It was a no-op: every
+adapter already confirms publishes per message (NATS `PubAck`, Kafka
+`producer.send`, Redis `XADD`, AMQP per-message broker ack with typed errors on
+nack/return/timeout). A resolved `publish()` already means the broker accepted
+the message — there was never a fire-and-forget mode to opt out of.
+
+**Migration**: remove `sync` from any `publish()` calls. There is no behavior
+change — `publish()` already awaited broker confirmation. This is a compiling
+breaking change only (the field no longer exists on the type).
+
 ## RC.9 to RC.10
 
 ### New: Client-side auth interceptors in `@connectum/auth`
@@ -368,7 +475,7 @@ await server.start();
 
 ### Interceptors: No Auto-Defaults
 
-Starting from v1.0.0-beta.x, `@connectum/core` has **zero internal dependencies**. Omitting the `interceptors` option (or passing `[]`) means **no interceptors are applied**. To use the default resilience chain, explicitly pass `createDefaultInterceptors()`:
+Starting from v1.0.0-beta.x, `@connectum/core` has **zero internal dependencies**. Omitting the `interceptors` option (or passing `[]`) means **no interceptors are applied**. To use the default interceptor chain, explicitly pass `createDefaultInterceptors()`:
 
 ```typescript
 import { createServer } from '@connectum/core';

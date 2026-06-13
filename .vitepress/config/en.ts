@@ -128,6 +128,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
         collapsed: true,
         items: [
             { text: 'Architecture Patterns', link: '/en/guide/production/architecture' },
+            { text: 'Transport Matrix', link: '/en/guide/production/transport-matrix' },
             { text: 'Docker', link: '/en/guide/production/docker' },
             { text: 'Kubernetes', link: '/en/guide/production/kubernetes' },
             { text: 'Envoy Gateway', link: '/en/guide/production/envoy-gateway' },
@@ -205,6 +206,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'ADR-024: Auth & Authz Strategy', link: '/en/contributing/adr/024-auth-authz-strategy' },
                         { text: 'ADR-025: Package Versioning Strategy', link: '/en/contributing/adr/025-package-versioning-strategy' },
                         { text: 'ADR-026: EventBus Architecture', link: '/en/contributing/adr/026-eventbus-architecture' },
+                        { text: 'ADR-027: External Contracts vs EventBus', link: '/en/contributing/adr/027-external-contracts-vs-eventbus' },
                     ],
                 },
             ],

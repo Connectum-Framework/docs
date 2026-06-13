@@ -150,7 +150,6 @@ function createEventBus(options: EventBusOptions): EventBus & EventBusLike;
 |--------|------|---------|-------------|
 | `topic` | `string` | `schema.typeName` | Override topic name |
 | `key` | `string` | `undefined` | Partition/routing key for ordered delivery |
-| `sync` | `boolean` | `false` | Wait for broker confirmation |
 | `group` | `string` | `undefined` | Named group tag for workflow grouping |
 | `metadata` | `Record<string, string>` | `undefined` | Additional metadata / headers |
 

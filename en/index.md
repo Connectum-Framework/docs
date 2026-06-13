@@ -25,7 +25,7 @@ features:
     details: Opinionated production architecture with a single createServer() entry point. Predictable behavior across all your services — no glue code, no custom wiring.
   - icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>'
     title: Operational Safety Envelope
-    details: Fixed-order interceptor chain — timeout, retry, circuit breaker, bulkhead, and fallback. Enterprise resilience patterns enforced by default.
+    details: Fixed-order interceptor chain — timeout, retry, circuit breaker, bulkhead, and fallback. Explicit, opt-in resilience patterns with no hidden behavioral logic.
   - icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
     title: Auth & Zero-Trust
     details: JWT, gateway, and session authentication with declarative RBAC. mTLS and proto-based authorization keep security alongside your API contract.
