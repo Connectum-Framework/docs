@@ -4,7 +4,7 @@
 
 > **ServerState** = *typeof* [`ServerState`](../variables/ServerState.md)\[keyof *typeof* [`ServerState`](../variables/ServerState.md)\]
 
-Defined in: [packages/core/src/types.ts:147](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L147)
+Defined in: [packages/core/src/types.ts:147](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L147)
 
 Server state constants
 

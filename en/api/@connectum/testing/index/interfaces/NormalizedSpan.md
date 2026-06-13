@@ -2,7 +2,7 @@
 
 # Interface: NormalizedSpan
 
-Defined in: testing/src/otel-collectors.ts:34
+Defined in: [testing/src/otel-collectors.ts:34](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L34)
 
 Structural, transport-agnostic representation of a span suitable for `deepEqual`.
 
@@ -12,7 +12,7 @@ Structural, transport-agnostic representation of a span suitable for `deepEqual`
 
 > **attributes**: `Record`\<`string`, `unknown`\>
 
-Defined in: testing/src/otel-collectors.ts:37
+Defined in: [testing/src/otel-collectors.ts:37](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L37)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: testing/src/otel-collectors.ts:37
 
 > **events**: `object`[]
 
-Defined in: testing/src/otel-collectors.ts:38
+Defined in: [testing/src/otel-collectors.ts:38](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L38)
 
 #### attributes
 
@@ -36,7 +36,7 @@ Defined in: testing/src/otel-collectors.ts:38
 
 > **kind**: `number`
 
-Defined in: testing/src/otel-collectors.ts:36
+Defined in: [testing/src/otel-collectors.ts:36](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L36)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: testing/src/otel-collectors.ts:36
 
 > **name**: `string`
 
-Defined in: testing/src/otel-collectors.ts:35
+Defined in: [testing/src/otel-collectors.ts:35](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L35)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: testing/src/otel-collectors.ts:35
 
 > **parentSpanId**: `string` \| `undefined`
 
-Defined in: testing/src/otel-collectors.ts:42
+Defined in: [testing/src/otel-collectors.ts:42](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L42)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: testing/src/otel-collectors.ts:42
 
 > **spanId**: `string`
 
-Defined in: testing/src/otel-collectors.ts:41
+Defined in: [testing/src/otel-collectors.ts:41](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L41)
 
 ***
 
@@ -68,7 +68,7 @@ Defined in: testing/src/otel-collectors.ts:41
 
 > **status**: `object`
 
-Defined in: testing/src/otel-collectors.ts:39
+Defined in: [testing/src/otel-collectors.ts:39](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L39)
 
 #### code
 
@@ -84,4 +84,4 @@ Defined in: testing/src/otel-collectors.ts:39
 
 > **traceId**: `string`
 
-Defined in: testing/src/otel-collectors.ts:40
+Defined in: [testing/src/otel-collectors.ts:40](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L40)

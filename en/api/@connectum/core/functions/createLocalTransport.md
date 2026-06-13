@@ -4,7 +4,7 @@
 
 > **createLocalTransport**(`server`, `options?`): `Transport`
 
-Defined in: packages/core/src/localTransport.ts:104
+Defined in: [packages/core/src/localTransport.ts:104](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/localTransport.ts#L104)
 
 Create an in-process ConnectRPC `Transport` over the services already
 registered on the given Connectum `Server`.

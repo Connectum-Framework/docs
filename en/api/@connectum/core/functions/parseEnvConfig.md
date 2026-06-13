@@ -4,7 +4,7 @@
 
 > **parseEnvConfig**(`env?`): `object`
 
-Defined in: [packages/core/src/config/envSchema.ts:145](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/config/envSchema.ts#L145)
+Defined in: [packages/core/src/config/envSchema.ts:145](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/config/envSchema.ts#L145)
 
 Parse and validate environment configuration
 
@@ -103,7 +103,7 @@ Log format (json for production, pretty for development)
 
 ### LOG\_LEVEL
 
-> **LOG\_LEVEL**: `"error"` \| `"debug"` \| `"info"` \| `"warn"` = `LogLevelSchema`
+> **LOG\_LEVEL**: `"error"` \| `"warn"` \| `"debug"` \| `"info"` = `LogLevelSchema`
 
 Log level
 

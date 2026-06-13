@@ -4,7 +4,7 @@
 
 > **createClientGatewayInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/client-gateway-interceptor.ts:52](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/auth/src/client-gateway-interceptor.ts#L52)
+Defined in: [packages/auth/src/client-gateway-interceptor.ts:52](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/client-gateway-interceptor.ts#L52)
 
 Create a client interceptor that attaches gateway auth headers to outgoing requests.
 
@@ -31,6 +31,8 @@ Gateway auth configuration
 A ConnectRPC client Interceptor
 
 ## Example
+
+**Service-to-service call**
 
 ```typescript
 import { createClientGatewayInterceptor } from '@connectum/auth';

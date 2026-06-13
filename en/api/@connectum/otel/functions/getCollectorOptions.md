@@ -4,7 +4,7 @@
 
 > **getCollectorOptions**(): [`CollectorOptions`](../interfaces/CollectorOptions.md)
 
-Defined in: [packages/otel/src/config.ts:81](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/otel/src/config.ts#L81)
+Defined in: [packages/otel/src/config.ts:81](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/otel/src/config.ts#L81)
 
 Gets collector endpoint options from environment variables
 

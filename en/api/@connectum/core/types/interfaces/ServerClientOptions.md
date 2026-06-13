@@ -2,7 +2,7 @@
 
 # Interface: ServerClientOptions
 
-Defined in: [packages/core/src/types.ts:567](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L567)
+Defined in: [packages/core/src/types.ts:614](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L614)
 
 Options for [Server.client](Server.md#client).
 
@@ -12,7 +12,7 @@ Options for [Server.client](Server.md#client).
 
 > `optional` **fallback?**: `Transport`
 
-Defined in: [packages/core/src/types.ts:575](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L575)
+Defined in: [packages/core/src/types.ts:622](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L622)
 
 Transport used when the requested service is NOT registered on this
 `Server`. Typically a remote HTTP/gRPC transport.

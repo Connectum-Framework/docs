@@ -4,19 +4,7 @@
 
 > **createDefaultInterceptors**(`options?`): `Interceptor`[]
 
-Defined in: [defaults.ts:129](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/interceptors/src/defaults.ts#L129)
-
-Creates the default interceptor chain with the specified configuration.
-
-The interceptor order is fixed and intentional:
-1. **errorHandler** - Catch-all error normalization (outermost, must be first)
-2. **timeout** - Enforce deadline before any processing
-3. **bulkhead** - Limit concurrency
-4. **circuitBreaker** - Prevent cascading failures
-5. **retry** - Retry transient failures (exponential backoff)
-6. **fallback** - Graceful degradation (DISABLED by default)
-7. **validation** - @connectrpc/validate (createValidateInterceptor)
-8. **serializer** - JSON serialization (innermost, DISABLED by default)
+Defined in: [defaults.ts:156](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/defaults.ts#L156)
 
 ## Parameters
 
@@ -24,31 +12,6 @@ The interceptor order is fixed and intentional:
 
 [`DefaultInterceptorOptions`](../interfaces/DefaultInterceptorOptions.md) = `{}`
 
-Configuration for each interceptor
-
 ## Returns
 
 `Interceptor`[]
-
-Array of configured interceptors in the correct order
-
-## Example
-
-```typescript
-// All defaults (fallback disabled)
-const interceptors = createDefaultInterceptors();
-
-// Disable retry, custom timeout
-const interceptors = createDefaultInterceptors({
-  retry: false,
-  timeout: { duration: 10000 },
-});
-
-// Enable fallback with handler
-const interceptors = createDefaultInterceptors({
-  fallback: { handler: () => ({ data: [] }) },
-});
-
-// No interceptors: omit `interceptors` option in createServer()
-// or pass `interceptors: []`
-```

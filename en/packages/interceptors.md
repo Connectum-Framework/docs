@@ -26,20 +26,20 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/interc
 pnpm add @connectum/interceptors
 ```
 
-**Requires**: Node.js 20+
+**Requires**: Node.js 22+
 
 ## Quick Start
 
 ```typescript
 import { createDefaultInterceptors } from '@connectum/interceptors';
 
-// All defaults (fallback disabled)
+// Defaults: errorHandler + validation only (resilience is opt-in)
 const interceptors = createDefaultInterceptors();
 
-// Custom configuration
+// Explicitly enable resilience interceptors
 const interceptors = createDefaultInterceptors({
-  retry: false,
   timeout: { duration: 10_000 },
+  retry: true,
   circuitBreaker: { threshold: 3 },
 });
 ```
@@ -54,8 +54,7 @@ const server = createServer({
   services: [routes],
   interceptors: createDefaultInterceptors({
     errorHandler: { logErrors: true },
-    timeout: { duration: 15_000 },
-    retry: false,
+    timeout: { duration: 15_000 }, // explicitly enabled
   }),
 });
 ```
@@ -71,13 +70,15 @@ errorHandler -> timeout -> bulkhead -> circuitBreaker -> retry -> fallback -> va
 | # | Interceptor | Purpose | Default |
 |---|-------------|---------|---------|
 | 1 | **errorHandler** | Catch-all error normalization (outermost) | Enabled |
-| 2 | **timeout** | Enforce request deadline | Enabled (30s) |
-| 3 | **bulkhead** | Limit concurrent requests | Enabled (10/10) |
-| 4 | **circuitBreaker** | Prevent cascading failures | Enabled (5 failures) |
-| 5 | **retry** | Retry transient failures with backoff | Enabled (3 retries) |
-| 6 | **fallback** | Graceful degradation | **Disabled** |
+| 2 | **timeout** | Enforce request deadline | **Opt-in** (30s when enabled) |
+| 3 | **bulkhead** | Limit concurrent requests | **Opt-in** (10/10 when enabled) |
+| 4 | **circuitBreaker** | Prevent cascading failures (outbound pattern) | **Opt-in** (5 failures when enabled) |
+| 5 | **retry** | Retry transient failures with backoff | **Opt-in** (3 retries when enabled) |
+| 6 | **fallback** | Graceful degradation | **Opt-in** (requires a handler) |
 | 7 | **validation** | Validate request messages (@connectrpc/validate) | Enabled |
-| 8 | **serializer** | JSON serialization (innermost) | **Disabled** |
+| 8 | **serializer** | JSON serialization (innermost) | **Opt-in** |
+
+**No hidden behavioral logic.** Only structural interceptors (errorHandler, validation) are enabled by default. Resilience interceptors (timeout, bulkhead, circuitBreaker, retry) alter request behavior and must be enabled explicitly with `true` or an options object — implicitly enabled resilience caused a confirmed production incident (a server-side circuit breaker tripped by expected business errors).
 
 ## API Reference
 
@@ -96,13 +97,13 @@ Each interceptor can be set to `true` (defaults), `false` (disabled), or an opti
 ```typescript
 interface DefaultInterceptorOptions {
   errorHandler?: boolean | ErrorHandlerOptions;      // default: true
-  timeout?: boolean | TimeoutOptions;                // default: true
-  bulkhead?: boolean | BulkheadOptions;              // default: true
-  circuitBreaker?: boolean | CircuitBreakerOptions;  // default: true
-  retry?: boolean | RetryOptions;                    // default: true
-  fallback?: boolean | FallbackOptions;              // default: false
+  timeout?: boolean | TimeoutOptions;                // default: false (opt-in)
+  bulkhead?: boolean | BulkheadOptions;              // default: false (opt-in)
+  circuitBreaker?: boolean | CircuitBreakerOptions;  // default: false (opt-in)
+  retry?: boolean | RetryOptions;                    // default: false (opt-in)
+  fallback?: boolean | FallbackOptions;              // default: false (opt-in)
   validation?: boolean;                              // default: true
-  serializer?: boolean | SerializerOptions;          // default: false
+  serializer?: boolean | SerializerOptions;          // default: false (opt-in)
 }
 ```
 
@@ -169,6 +170,8 @@ const interceptor = createBulkheadInterceptor({
 
 Prevents cascading failures by breaking the circuit on consecutive errors.
 
+The circuit breaker is an **outbound/client-side pattern**: it protects the caller from a sick upstream and gives that upstream room to recover. On a server's inbound stack it degenerates into error-rate load shedding — for inbound protection prefer explicit `timeout` + `bulkhead`. When enabled in the default chain, the breaker wraps `retry`, so one logical request increments the failure counter at most once regardless of retry attempts.
+
 ```typescript
 import { createCircuitBreakerInterceptor } from '@connectum/interceptors';
 
@@ -184,6 +187,25 @@ const interceptor = createCircuitBreakerInterceptor({
 | `threshold` | `number` | `5` | Consecutive failures before opening |
 | `halfOpenAfter` | `number` | `30000` | Milliseconds before half-open attempt |
 | `skipStreaming` | `boolean` | `true` | Skip for streaming calls |
+| `failurePredicate` | `(error: unknown, defaultPredicate: (error: unknown) => boolean) => boolean` | `defaultFailurePredicate` | Decides which errors count as circuit failures; receives the default predicate for composition |
+
+**Error classification.** By default only infrastructure errors count as circuit failures: `Unknown`, `DeadlineExceeded`, `Internal`, `Unavailable`, `DataLoss`, `ResourceExhausted` (plus any non-`ConnectError` thrown value). Business codes (`invalid_argument`, `not_found`, `failed_precondition`, `already_exists`, ...) never open the breaker, and in half-open state they close it (the upstream answered — it is alive). The default classifier is exported as `defaultFailurePredicate`.
+
+```typescript
+import { Code, ConnectError } from '@connectrpc/connect';
+import { createCircuitBreakerInterceptor } from '@connectum/interceptors';
+
+// Exclude upstream per-client rate limits from tripping the breaker
+createCircuitBreakerInterceptor({
+  failurePredicate: (err, def) =>
+    def(err) && !(err instanceof ConnectError && err.code === Code.ResourceExhausted),
+});
+
+// Restore legacy behavior (every error trips the breaker)
+createCircuitBreakerInterceptor({ failurePredicate: () => true });
+```
+
+A predicate that throws is fail-closed: the error counts as a failure and the original upstream error is propagated to the caller.
 
 ### Retry
 
@@ -320,6 +342,7 @@ type MethodFilterMap = Record<string, Interceptor[]>;
 | `createSerializerInterceptor` | JSON serialization |
 | `createRetryInterceptor` | Retry with backoff |
 | `createCircuitBreakerInterceptor` | Circuit breaker |
+| `defaultFailurePredicate` | Default circuit breaker error classifier (infrastructure codes only) |
 | `createTimeoutInterceptor` | Request timeout |
 | `createBulkheadInterceptor` | Concurrency limiter |
 | `createFallbackInterceptor` | Graceful degradation |

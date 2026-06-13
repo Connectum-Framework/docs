@@ -93,6 +93,12 @@ Re-exports [createTimeoutInterceptor](timeout/functions/createTimeoutInterceptor
 
 ***
 
+### defaultFailurePredicate
+
+Re-exports [defaultFailurePredicate](circuit-breaker/functions/defaultFailurePredicate.md)
+
+***
+
 ### DefaultInterceptorOptions
 
 Re-exports [DefaultInterceptorOptions](defaults/interfaces/DefaultInterceptorOptions.md)

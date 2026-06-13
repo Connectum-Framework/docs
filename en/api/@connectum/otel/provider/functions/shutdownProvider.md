@@ -4,7 +4,7 @@
 
 > **shutdownProvider**(): `Promise`\<`void`\>
 
-Defined in: [packages/otel/src/provider.ts:288](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/otel/src/provider.ts#L288)
+Defined in: [packages/otel/src/provider.ts:384](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/otel/src/provider.ts#L384)
 
 Gracefully shutdown the provider and release resources.
 

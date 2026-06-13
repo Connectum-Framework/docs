@@ -364,7 +364,7 @@ async createOrder(req) {
 
 ### Circuit Breaker at Application Level
 
-Connectum's built-in interceptor chain includes a circuit breaker. For inter-service calls, configure it per-client:
+Connectum provides a circuit breaker interceptor (opt-in — it is not enabled by default). It is an outbound/client-side pattern: enable it per-client for inter-service calls; for server inbound protection prefer explicit `timeout` + `bulkhead`:
 
 ```typescript
 import { createDefaultInterceptors } from '@connectum/interceptors';
@@ -373,8 +373,8 @@ const transport = createGrpcTransport({
   baseUrl: 'http://inventory-service:5000',
   httpVersion: '2',
   interceptors: createDefaultInterceptors({
-    circuitBreaker: { failureThreshold: 5 },
-    timeout: { timeoutMs: 5000 },
+    circuitBreaker: { threshold: 5 },
+    timeout: { duration: 5000 },
     retry: { maxRetries: 2 },
     // Disable server-side-only interceptors
     bulkhead: false,

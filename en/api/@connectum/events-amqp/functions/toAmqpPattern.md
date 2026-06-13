@@ -4,7 +4,7 @@
 
 > **toAmqpPattern**(`pattern`): `string`
 
-Defined in: [AmqpAdapter.ts:35](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/events-amqp/src/AmqpAdapter.ts#L35)
+Defined in: [packages/events-amqp/src/AmqpAdapter.ts:53](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events-amqp/src/AmqpAdapter.ts#L53)
 
 Convert an EventBus wildcard pattern to an AMQP routing key pattern.
 

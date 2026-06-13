@@ -56,12 +56,15 @@ healthcheckManager.update(ServingStatus.NOT_SERVING);
 
 | Method | Description |
 |--------|-------------|
-| `update(status, service?)` | Update status. Without `service`, updates all registered services. |
-| `getStatus(service)` | Get status of a specific service |
-| `getAllStatuses()` | Get a Map of all service statuses |
-| `areAllHealthy()` | Check if all services report `SERVING` |
-| `initialize(serviceNames)` | Register services for tracking (merge with existing state) |
-| `clear()` | Clear all registered services |
+| `update(status, service?)` | Update status. Without `service`, updates **all** registered entries (services and components). Throws on an unknown name. |
+| `register(component, initialStatus?)` | Register an application health component (default `UNKNOWN`). Re-registering preserves the current status. |
+| `set(component, status)` | Set a component's status (upsert: registers the component if absent). |
+| `unregister(component)` | Remove a registered component. |
+| `getStatus(service)` | Get status of a specific service or component |
+| `getAllStatuses()` | Get a Map of all service and component statuses |
+| `areAllHealthy()` | Check if all services and components report `SERVING` |
+| `initialize(serviceNames)` | Initialize the RPC service slice (called by the protocol). Replaces only `service` entries; never touches components. |
+| `clear()` | Clear all services and components |
 
 ## gRPC Health Check Protocol
 

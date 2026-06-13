@@ -40,7 +40,37 @@ pnpm add @connectum/healthcheck
 | **gRPC Protocol** | `Health/Check`, `Health/Watch`, `Health/List` on `grpc.health.v1.Health` |
 | **HTTP Endpoints** | `/healthz`, `/health`, `/readyz` -- returns JSON with status and HTTP 200/503/404 |
 | **healthcheckManager** | Global singleton to update service status from anywhere in your app |
+| **Health Components** | Application-defined readiness gates (`register`/`set`/`unregister`) for workers without RPCs |
 | **Dependency Checks** | Track downstream services (database, cache) alongside your service health |
+
+## Workers Without RPC
+
+A worker service with no public RPCs (`services: []`) — a poller, publisher,
+or exporter — has an empty service registry, so `/healthz` answers 503
+permanently and `depends_on: condition: service_healthy` gating never passes.
+Register a process **component** instead. Components are owned by the
+application, survive server start, and participate in `Check`/`Watch`/`healthz`
+exactly like services:
+
+```typescript
+import { createServer } from '@connectum/core';
+import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
+
+const server = createServer({
+  services: [],            // no public RPCs
+  protocols: [Healthcheck({ httpEnabled: true })],
+});
+
+healthcheckManager.register('process');  // before or after start — both work
+
+server.on('ready', () => healthcheckManager.set('process', ServingStatus.SERVING));
+server.on('stopping', () => healthcheckManager.set('process', ServingStatus.NOT_SERVING));
+
+await server.start();
+```
+
+Component names must be dot-free (`process`, `amqp`, `db`) — dotted names are
+reserved for RPC service typeNames, so the namespaces cannot collide.
 
 ## Learn More
 

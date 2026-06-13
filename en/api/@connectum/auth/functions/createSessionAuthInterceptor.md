@@ -4,7 +4,7 @@
 
 > **createSessionAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/session-auth-interceptor.ts:60](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/auth/src/session-auth-interceptor.ts#L60)
+Defined in: [packages/auth/src/session-auth-interceptor.ts:60](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/session-auth-interceptor.ts#L60)
 
 Create a session-based authentication interceptor.
 
@@ -28,6 +28,8 @@ Session auth configuration
 ConnectRPC interceptor
 
 ## Example
+
+**better-auth integration**
 
 ```typescript
 import { createSessionAuthInterceptor } from '@connectum/auth';

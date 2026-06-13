@@ -9,3 +9,4 @@ Prevents cascading failures by breaking circuit when service fails repeatedly.
 ## Functions
 
 - [createCircuitBreakerInterceptor](functions/createCircuitBreakerInterceptor.md)
+- [defaultFailurePredicate](functions/defaultFailurePredicate.md)

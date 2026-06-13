@@ -4,7 +4,7 @@
 
 > **createLocalClient**\<`T`\>(`server`, `service`): `Client`\<`T`\>
 
-Defined in: testing/src/createLocalClient.ts:38
+Defined in: [testing/src/createLocalClient.ts:38](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/createLocalClient.ts#L38)
 
 Create an in-process ConnectRPC client for a service registered on the given Server.
 

@@ -4,7 +4,7 @@
 
 > **createFakeService**(`options?`): `DescService`
 
-Defined in: fake-service.ts:34
+Defined in: [fake-service.ts:34](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/test-fixtures/src/fake-service.ts#L34)
 
 Create a fake DescService descriptor for testing.
 

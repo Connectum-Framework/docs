@@ -4,7 +4,7 @@
 
 > **getAuthContext**(): [`AuthContext`](../interfaces/AuthContext.md) \| `undefined`
 
-Defined in: [packages/auth/src/context.ts:111](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/auth/src/context.ts#L111)
+Defined in: [packages/auth/src/context.ts:111](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/context.ts#L111)
 
 Get the current auth context.
 
@@ -19,6 +19,8 @@ or the current method was skipped.
 Current auth context or undefined
 
 ## Example
+
+**Usage in a service handler**
 
 ```typescript
 import { getAuthContext } from '@connectum/auth';

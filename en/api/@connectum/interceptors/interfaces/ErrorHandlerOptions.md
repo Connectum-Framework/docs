@@ -2,7 +2,7 @@
 
 # Interface: ErrorHandlerOptions
 
-Defined in: [types.ts:21](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/interceptors/src/types.ts#L21)
+Defined in: [types.ts:21](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L21)
 
 Error handler interceptor options
 
@@ -12,7 +12,7 @@ Error handler interceptor options
 
 > `optional` **includeStackTrace?**: `boolean`
 
-Defined in: [types.ts:33](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/interceptors/src/types.ts#L33)
+Defined in: [types.ts:33](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L33)
 
 Include stack trace in logs
 
@@ -28,7 +28,7 @@ process.env.NODE_ENV !== "production"
 
 > `optional` **logErrors?**: `boolean`
 
-Defined in: [types.ts:27](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/interceptors/src/types.ts#L27)
+Defined in: [types.ts:27](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L27)
 
 Log errors to console.
 
@@ -48,7 +48,7 @@ Use onError callback instead
 
 > `optional` **onError?**: (`info`) => `void`
 
-Defined in: [types.ts:39](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/interceptors/src/types.ts#L39)
+Defined in: [types.ts:39](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L39)
 
 Callback for error logging. Replaces console.error when provided.
 Receives rich error info including serverDetails from SanitizableError.

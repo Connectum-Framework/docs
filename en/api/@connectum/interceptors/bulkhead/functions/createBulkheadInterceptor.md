@@ -4,7 +4,7 @@
 
 > **createBulkheadInterceptor**(`options?`): `Interceptor`
 
-Defined in: [bulkhead.ts:56](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/interceptors/src/bulkhead.ts#L56)
+Defined in: [bulkhead.ts:56](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/bulkhead.ts#L56)
 
 Create bulkhead interceptor
 
@@ -27,6 +27,8 @@ ConnectRPC interceptor
 
 ## Examples
 
+**Server-side usage with createServer**
+
 ```typescript
 import { createServer } from '@connectum/core';
 import { createBulkheadInterceptor } from '@connectum/interceptors';
@@ -45,6 +47,8 @@ const server = createServer({
 
 await server.start();
 ```
+
+**Client-side usage with transport**
 
 ```typescript
 import { createConnectTransport } from '@connectrpc/connect-node';

@@ -2,7 +2,7 @@
 
 # Interface: CreateServerOptions
 
-Defined in: [packages/core/src/types.ts:214](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L214)
+Defined in: [packages/core/src/types.ts:214](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L214)
 
 Server configuration options for createServer()
 
@@ -12,7 +12,7 @@ Server configuration options for createServer()
 
 > `optional` **allowHTTP1?**: `boolean`
 
-Defined in: [packages/core/src/types.ts:298](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L298)
+Defined in: [packages/core/src/types.ts:298](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L298)
 
 Allow HTTP/1.1 connections.
 
@@ -32,7 +32,7 @@ true
 
 > `optional` **eventBus?**: [`EventBusLike`](EventBusLike.md)
 
-Defined in: [packages/core/src/types.ts:287](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L287)
+Defined in: [packages/core/src/types.ts:287](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L287)
 
 Event bus instance for pub/sub messaging.
 
@@ -62,7 +62,7 @@ const server = createServer({
 
 > `optional` **handshakeTimeout?**: `number`
 
-Defined in: [packages/core/src/types.ts:304](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L304)
+Defined in: [packages/core/src/types.ts:326](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L326)
 
 Handshake timeout in milliseconds
 
@@ -78,7 +78,7 @@ Handshake timeout in milliseconds
 
 > `optional` **host?**: `string`
 
-Defined in: [packages/core/src/types.ts:230](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L230)
+Defined in: [packages/core/src/types.ts:230](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L230)
 
 Server host to bind
 
@@ -94,7 +94,7 @@ Server host to bind
 
 > `optional` **http2Options?**: `SecureServerOptions`\<*typeof* `IncomingMessage`, *typeof* `ServerResponse`, *typeof* `Http2ServerRequest`, *typeof* `Http2ServerResponse`\>
 
-Defined in: [packages/core/src/types.ts:309](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L309)
+Defined in: [packages/core/src/types.ts:331](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L331)
 
 Additional HTTP/2 server options
 
@@ -104,7 +104,7 @@ Additional HTTP/2 server options
 
 > `optional` **interceptors?**: `Interceptor`[]
 
-Defined in: [packages/core/src/types.ts:263](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L263)
+Defined in: [packages/core/src/types.ts:263](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L263)
 
 ConnectRPC interceptors.
 When omitted or `[]`, no interceptors are applied.
@@ -112,11 +112,42 @@ Use `createDefaultInterceptors()` from `@connectum/interceptors` to get the defa
 
 ***
 
+### jsonOptions?
+
+> `optional` **jsonOptions?**: `Partial`\<`JsonReadOptions` & `JsonWriteOptions`\>
+
+Defined in: [packages/core/src/types.ts:356](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L356)
+
+Connect JSON serialization options applied server-wide.
+
+Passed through to the underlying `connectNodeAdapter`, so it affects every
+registered service and protocol (e.g. healthcheck, reflection). The most
+common use is `alwaysEmitImplicit: true`, which includes fields with
+implicit presence (proto3 scalar `0`, empty string/list, enum default) in
+JSON responses instead of omitting them.
+
+For per-service control, pass the same option as the third argument of
+`router.service()` inside a [ServiceRoute](../type-aliases/ServiceRoute.md) instead.
+
+Note: the relevant `JsonWriteOptions` field in `@bufbuild/protobuf` v2 is
+`alwaysEmitImplicit` (named `emitDefaultValues` in v1).
+
+#### Example
+
+```typescript
+const server = createServer({
+  services: [routes],
+  jsonOptions: { alwaysEmitImplicit: true },
+});
+```
+
+***
+
 ### port?
 
 > `optional` **port?**: `number`
 
-Defined in: [packages/core/src/types.ts:224](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L224)
+Defined in: [packages/core/src/types.ts:224](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L224)
 
 Server port
 
@@ -132,7 +163,7 @@ Server port
 
 > `optional` **protocols?**: [`ProtocolRegistration`](ProtocolRegistration.md)[]
 
-Defined in: [packages/core/src/types.ts:251](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L251)
+Defined in: [packages/core/src/types.ts:251](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L251)
 
 Protocol registrations (healthcheck, reflection, custom)
 
@@ -154,7 +185,7 @@ const server = createServer({
 
 > **services**: [`ServiceRoute`](../type-aliases/ServiceRoute.md)[]
 
-Defined in: [packages/core/src/types.ts:218](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L218)
+Defined in: [packages/core/src/types.ts:218](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L218)
 
 Service routes to register
 
@@ -164,7 +195,7 @@ Service routes to register
 
 > `optional` **shutdown?**: [`ShutdownOptions`](ShutdownOptions.md)
 
-Defined in: [packages/core/src/types.ts:256](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L256)
+Defined in: [packages/core/src/types.ts:256](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L256)
 
 Graceful shutdown configuration
 
@@ -174,6 +205,37 @@ Graceful shutdown configuration
 
 > `optional` **tls?**: [`TLSOptions`](TLSOptions.md)
 
-Defined in: [packages/core/src/types.ts:235](https://github.com/Connectum-Framework/connectum/blob/9c808efa603eaacdf10ddef6780ea699f46a1f35/packages/core/src/types.ts#L235)
+Defined in: [packages/core/src/types.ts:235](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L235)
 
 TLS configuration
+
+***
+
+### transportValidation?
+
+> `optional` **transportValidation?**: `"error"` \| `"warn"` \| `"off"`
+
+Defined in: [packages/core/src/types.ts:320](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L320)
+
+Startup validation of streaming method kinds vs the effective transport.
+
+Bidi-streaming methods require HTTP/2 (Connect protocol: "Bidirectional
+streaming requires HTTP/2, but the other RPC types also support
+HTTP/1.1"). On a plaintext HTTP/1.1 server (no TLS + `allowHTTP1: true`,
+the default) they fail silently at runtime — the first send hangs
+forever. With `"error"` (default) `start()` rejects with a
+`TransportValidationError` (code `CONNECTUM_UNSUPPORTED_STREAMING_TRANSPORT`)
+naming the affected methods and both fixes; `"warn"` logs once and
+starts anyway; `"off"` skips the check.
+
+On a TLS server that also allows HTTP/1.1 (`allowHTTP1: true`), bidi
+works for HTTP/2 clients but a client negotiating HTTP/1.1 over TLS
+hits the same hang — this residual risk is always a one-time warning
+(never a hard error), silenced only by `"off"`. Set `allowHTTP1: false`
+to remove the risk (the server refuses HTTP/1.1 at ALPN).
+
+#### Default
+
+```ts
+"error"
+```
