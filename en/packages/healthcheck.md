@@ -98,25 +98,54 @@ const allStatuses = healthcheckManager.getAllStatuses();
 
 ```typescript
 class HealthcheckManager {
-  /** Update status for all services (no service arg) or a specific one */
+  /** Update status for all registered entries (no service arg) or a specific one. Throws on an unknown name. */
   update(status: ServingStatus, service?: string): void;
 
-  /** Get status of a specific service */
+  /** Register an application health component (default UNKNOWN). Re-registering preserves the current status. */
+  register(component: string, initialStatus?: ServingStatus): void;
+
+  /** Set a component's status (upsert: registers the component if absent). */
+  set(component: string, status: ServingStatus): void;
+
+  /** Remove a registered component. */
+  unregister(component: string): void;
+
+  /** Get status of a specific service or component */
   getStatus(service: string): ServiceStatus | undefined;
 
-  /** Get all service statuses */
+  /** Get all service and component statuses */
   getAllStatuses(): Map<string, ServiceStatus>;
 
-  /** Check if all services are SERVING */
+  /** Check if all services and components are SERVING */
   areAllHealthy(): boolean;
 
-  /** Initialize with service names (called automatically by protocol) */
+  /** Initialize the RPC service slice (called automatically by the protocol). Replaces only `service` entries; never touches components. */
   initialize(serviceNames: string[]): void;
 
-  /** Clear all services */
+  /** Clear all services and components */
   clear(): void;
 }
 ```
+
+#### Services vs components
+
+The registry tracks two kinds of entries. **Services** are Connect RPC services
+owned by the Healthcheck protocol — `initialize()` adds, preserves, and removes
+them on server start. **Components** are application-defined readiness gates
+(`process`, `amqp`, a database connection, …) owned by the application via
+`register()` / `set()` / `unregister()` — `initialize()` never touches them.
+Component names must be non-empty and dot-free (dotted names are reserved for
+RPC service typeNames). A registered component participates in `areAllHealthy()`,
+gRPC `Check`/`Watch`, and `/healthz` exactly like a service.
+
+> **Workers without RPC:** a worker with `services: []` can never become SERVING
+> through the service registry (it stays empty, `/healthz` answers 503). Register
+> a `process` component instead and drive it from `ready`/`stopping` events.
+
+> **Note on blanket `update(status)`:** without a service name it overwrites
+> **every** registered entry, components included. In a mixed app, update an
+> independently managed component addressably via `set(component, status)` so a
+> blanket `update(SERVING)` on `ready` cannot mask a real component failure.
 
 ### `createHealthcheckManager()`
 

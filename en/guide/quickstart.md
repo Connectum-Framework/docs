@@ -58,7 +58,7 @@ Configure `package.json`:
     "typecheck": "tsc --noEmit",
     "build:proto": "buf generate proto"
   },
-  "engines": { "node": ">=25.2.0" }
+  "engines": { "node": ">=22.13.0" }
 }
 ```
 

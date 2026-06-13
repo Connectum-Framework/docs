@@ -72,6 +72,48 @@ Node.js 20 reached [end-of-life on 2026-04-30](https://nodejs.org/en/about/previ
 
 **Migration**: upgrade your runtime to Node.js 22.13.0 or later. Packages continue to ship compiled JavaScript, so no build-step or code changes are required.
 
+## BREAKING: `@connectum/core` validates streaming transport at startup
+
+> Applies to the next release on top of RC.10.
+
+`server.start()` now rejects when a **user-registered** service defines a
+bidi-streaming method and the effective transport is plaintext HTTP/1.1 (the
+default `http.createServer` mode, `allowHTTP1: true` without TLS). Bidi
+streaming requires HTTP/2 — on HTTP/1.1 the first send hangs forever or the
+client gets an HTTP 505, so this fails fast instead of hanging in production.
+The error carries the stable code `CONNECTUM_UNSUPPORTED_STREAMING_TRANSPORT`
+and names the offending `service.method`. Protocol-contributed services (e.g.
+gRPC Reflection, whose `ServerReflectionInfo` is itself bidi) are excluded.
+
+A new `transportValidation` option controls the behavior:
+
+| Value | Behavior |
+|-------|----------|
+| `"error"` (default) | reject `start()` for bidi on plaintext HTTP/1.1 |
+| `"warn"` | log a one-time warning and start anyway |
+| `"off"` | skip the check entirely |
+
+**Migration**: the correct fix is to serve HTTP/2 — set `allowHTTP1: false`
+(h2c) or run behind TLS with ALPN. To preserve the previous (broken-at-runtime)
+behavior temporarily, set `transportValidation: "warn"` or `"off"`. A TLS server
+with `allowHTTP1: true` is not a hard error but emits a one-time warning, since
+a client may still negotiate HTTP/1.1 over TLS. See the
+[transport matrix](/en/guide/production/transport-matrix) for the full support grid.
+
+## BREAKING: `PublishOptions.sync` removed from `@connectum/events`
+
+> Applies to the next release on top of RC.10.
+
+The `sync` flag on `PublishOptions` has been **removed**. It was a no-op: every
+adapter already confirms publishes per message (NATS `PubAck`, Kafka
+`producer.send`, Redis `XADD`, AMQP per-message broker ack with typed errors on
+nack/return/timeout). A resolved `publish()` already means the broker accepted
+the message — there was never a fire-and-forget mode to opt out of.
+
+**Migration**: remove `sync` from any `publish()` calls. There is no behavior
+change — `publish()` already awaited broker confirmation. This is a compiling
+breaking change only (the field no longer exists on the type).
+
 ## RC.9 to RC.10
 
 ### New: Client-side auth interceptors in `@connectum/auth`
