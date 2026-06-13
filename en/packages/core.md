@@ -81,7 +81,40 @@ The server is created in `CREATED` state. Call `server.start()` to begin accepti
 | `handshakeTimeout` | `number` | `30000` | Handshake timeout in milliseconds |
 | `eventBus` | `EventBusLike` | `undefined` | Event bus for lifecycle management |
 | `http2Options` | `SecureServerOptions` | `undefined` | Additional HTTP/2 server options |
+| `jsonOptions` | `Partial<JsonReadOptions & JsonWriteOptions>` | `undefined` | Connect JSON serialization options applied server-wide. See [JSON serialization](#json-serialization). |
 | `transportValidation` | `"error" \| "warn" \| "off"` | `"error"` | Startup validation: bidi-streaming methods on a plaintext HTTP/1.1 transport fail fast with `CONNECTUM_UNSUPPORTED_STREAMING_TRANSPORT` instead of hanging at runtime. See the [transport matrix](/en/guide/production/transport-matrix) |
+
+### JSON serialization
+
+By default, Connect omits fields with implicit presence from JSON responses
+(proto3 scalar `0`, empty string, empty list, enum default). Set `jsonOptions`
+to change this server-wide -- it is passed to the underlying `connectNodeAdapter`,
+so it also applies to framework-registered protocol services (healthcheck,
+reflection).
+
+```typescript
+const server = createServer({
+  services: [routes],
+  // Include zero/default fields in JSON responses instead of omitting them.
+  jsonOptions: { alwaysEmitImplicit: true },
+});
+```
+
+::: tip protobuf-es v2 field name
+The relevant `JsonWriteOptions` field is `alwaysEmitImplicit` (it was named
+`emitDefaultValues` in protobuf-es v1, which does not apply to Connectum).
+:::
+
+For per-service control, pass the same option as the third argument of
+`router.service()` inside a service route, instead of setting it server-wide:
+
+```typescript
+const routes: ServiceRoute = (router) => {
+  router.service(MyService, myImpl, {
+    jsonOptions: { alwaysEmitImplicit: true },
+  });
+};
+```
 
 ### `Server` Interface
 
