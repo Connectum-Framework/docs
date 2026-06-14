@@ -8,7 +8,7 @@ description: Multi-stage Dockerfile, docker-compose, and image optimization for 
 Connectum packages ship **compiled JavaScript** (`.js` + `.d.ts` + source maps), so they work on any Node.js version >= 22.13.0. If your own application code is written in TypeScript, you can either use Node.js 25+ (native type stripping for `.ts` files) or compile your code with a build tool before containerizing.
 
 ::: tip Full Example
-All Docker files described below are available in the [production-ready example](https://github.com/Connectum-Framework/examples/tree/main/production-ready).
+A production `Dockerfile` is available in the [car-sharing example](https://github.com/Connectum-Framework/examples/tree/main/car-sharing).
 :::
 
 ## Multi-Stage Dockerfile
@@ -17,12 +17,12 @@ All Docker files described below are available in the [production-ready example]
 
 Two-stage build: install dependencies in an isolated stage, then copy only production `node_modules` into a slim runtime image with a non-root user and health check.
 
-See [Dockerfile](https://github.com/Connectum-Framework/examples/blob/main/production-ready/Dockerfile) for the full listing.
+See [Dockerfile](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/Dockerfile) for the full listing.
 
 Key highlights:
 
 - **Stage 1 (deps)** -- `pnpm install --frozen-lockfile --prod` for reproducible, minimal dependencies
-- **Stage 2 (runtime)** -- non-root `connectum` user, `curl` for HEALTHCHECK, native TypeScript via `node src/index.ts`
+- **Stage 2 (runtime)** -- non-root `node` user, `wget`-based HEALTHCHECK against `/healthz`, native TypeScript via `node src/index.ts`
 - Environment defaults: `NODE_ENV=production`, `PORT=5000`, `LOG_FORMAT=json`, health and graceful shutdown enabled
 
 ::: tip Base image selection
@@ -48,9 +48,7 @@ When using **tsx**, you can use any Node.js 22+ base image (e.g., `node:22-slim`
 
 ### Alpine Variant (Smaller Image)
 
-If you need a smaller image and do not depend on native modules requiring glibc, use the Alpine variant.
-
-See [Dockerfile.alpine](https://github.com/Connectum-Framework/examples/blob/main/production-ready/Dockerfile.alpine) for the full listing.
+If you need a smaller image and do not depend on native modules requiring glibc, use the Alpine variant: swap both `FROM node:25-slim` lines in the [Dockerfile](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/Dockerfile) for `node:25-alpine`. Verify the HEALTHCHECK command still resolves on Alpine (its BusyBox `wget` differs from the GNU build); adjust the probe command if needed.
 
 ### Image Size Comparison
 
@@ -62,17 +60,11 @@ See [Dockerfile.alpine](https://github.com/Connectum-Framework/examples/blob/mai
 
 ## .dockerignore
 
-Keep images clean by excluding dependencies, tests, IDE files, dev configs, and proto sources.
-
-See [.dockerignore](https://github.com/Connectum-Framework/examples/blob/main/production-ready/.dockerignore) for the full listing.
+Keep images clean by excluding dependencies, tests, IDE files, dev configs, and proto sources. A minimal `.dockerignore` excludes `node_modules`, `**/*.test.ts`, `.git`, and editor/CI files so they never enter the build context.
 
 ## Docker Compose for Local Development
 
-A multi-service development environment with Connectum services, OpenTelemetry Collector, Jaeger, Prometheus, and Grafana.
-
-See [docker-compose.yml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/docker-compose.yml) for the full listing.
-
-**Services included:**
+For local development you typically compose your Connectum services with an observability stack. A representative `docker-compose.yml` wires up:
 
 | Service | Port | Description |
 |---|---|---|
@@ -83,11 +75,13 @@ See [docker-compose.yml](https://github.com/Connectum-Framework/examples/blob/ma
 | `prometheus` | 9090 | Metrics collection |
 | `grafana` | 3000 | Dashboards and visualization |
 
+Point each service's `OTEL_EXPORTER_OTLP_ENDPOINT` at the collector (`http://otel-collector:4318`) and let the collector fan traces out to Jaeger and metrics to Prometheus.
+
+For a runnable observability stack wired to Connectum services, see the [o11y-coroot example](https://github.com/Connectum-Framework/examples/tree/main/o11y-coroot) (it uses Coroot + ClickHouse + Prometheus rather than the Jaeger/Grafana stack tabulated above).
+
 ### OTel Collector Configuration
 
-See [otel-collector-config.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/otel-collector-config.yaml) for the full listing.
-
-The collector receives OTLP traces and metrics, batches them, and exports traces to Jaeger and metrics to Prometheus.
+A minimal collector config declares an OTLP receiver, a `batch` processor, and exporters for traces and metrics. The collector receives OTLP traces and metrics, batches them, and exports them to your tracing and metrics backends.
 
 ## Image Optimization Tips
 

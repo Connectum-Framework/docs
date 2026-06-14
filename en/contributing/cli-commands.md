@@ -232,13 +232,13 @@ pnpm --filter @connectum/cli dev
 
 ```bash
 # Run basic example
-node examples/basic-service/src/index.ts
+node examples/getting-started/src/index.ts
 
 # Run example with custom interceptor
 node examples/with-custom-interceptor/src/index.ts
 
 # Development mode with watch
-node --watch examples/basic-service/src/index.ts
+node --watch examples/getting-started/src/index.ts
 ```
 
 ## Turbo Commands

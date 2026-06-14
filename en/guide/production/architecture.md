@@ -182,7 +182,7 @@ for await (const update of client.watchOrderStatus({ orderId: '123' })) {
 When Service A needs data from Service B, create a gRPC client within Service A's handler:
 
 ```typescript
-import { createServer } from '@connectum/core';
+import { defineService } from '@connectum/core';
 import { createClient } from '@connectrpc/connect';
 import { createGrpcTransport } from '@connectrpc/connect-node';
 import { InventoryService } from '#gen/inventory/v1/inventory_pb.js';
@@ -194,32 +194,34 @@ const inventoryTransport = createGrpcTransport({
 });
 const inventoryClient = createClient(InventoryService, inventoryTransport);
 
-// Use in your service handler
-const routes = (router) => {
-  router.service(OrderService, {
-    async createOrder(req) {
-      // Call downstream service
-      const stock = await inventoryClient.checkStock({ sku: req.sku });
-      if (!stock.available) {
-        throw new ConnectError('Out of stock', Code.FailedPrecondition);
-      }
-      // ... create order
-    },
-  });
-};
+// Define the service; pass it to createServer({ services: [orderService] }).
+const orderService = defineService(OrderService, {
+  async createOrder(req, ctx) {
+    // Call downstream service
+    const stock = await inventoryClient.checkStock({ sku: req.sku });
+    if (!stock.available) {
+      throw new ConnectError('Out of stock', Code.FailedPrecondition);
+    }
+    // ... create order
+  },
+});
 ```
 
 ### In-Process Transport (Co-Located Services)
 
-When the caller and callee live in the same Node.js process — modular monoliths, BFFs, or test harnesses — Connectum offers an **in-process transport** that dispatches client calls directly to the registered handler. No HTTP/2 socket, no TLS handshake, no wire serialization, while the full server-side interceptor chain (validation, authorization, OpenTelemetry) still runs. The client API is identical to the remote one (`createClient(Service, transport)`), so the same call site works for both topologies via `server.client(Service, { fallback })` auto-routing.
+When the caller and callee live in the same Node.js process — modular monoliths, BFFs, or test harnesses — Connectum offers an **in-process transport** that dispatches client calls directly to the registered handler. No HTTP/2 socket, no TLS handshake, no wire serialization, while the full server-side interceptor chain (validation, authorization, OpenTelemetry) still runs. The client API is identical to the remote one (`createClient(Service, transport)`), so the same call site works for both topologies via `server.client(Service)` auto-routing. Remote routing is configured once on the server with a `remoteResolver`.
 
 ```typescript
-import { createServer } from '@connectum/core';
+import { createServer, singleTransportResolver } from '@connectum/core';
 
-const server = createServer({ services: [inventoryRoutes, orderRoutes] });
+const server = createServer({
+  services: [inventoryService, orderService],
+  // Services not mounted locally are reached through this resolver.
+  remoteResolver: singleTransportResolver(remoteTransport),
+});
 
-// Local if registered on this server, remote via fallback otherwise.
-const inventory = server.client(InventoryService, { fallback: remoteTransport });
+// Local if registered on this server, remote via the resolver otherwise.
+const inventory = server.client(InventoryService);
 ```
 
 See [In-Process Transport](/en/guide/production/in-process-transport) for the polyglot deployment pattern, observability parity, and limitations.

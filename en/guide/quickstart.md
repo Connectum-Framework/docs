@@ -162,20 +162,18 @@ Create `src/services/greeterService.ts`:
 
 ```typescript
 import { create } from '@bufbuild/protobuf';
-import type { ConnectRouter } from '@connectrpc/connect';
+import { defineService } from '@connectum/core';
 import { GreeterService, SayHelloResponseSchema } from '#gen/greeter_pb.js';
 import type { SayHelloRequest } from '#gen/greeter_pb.js';
 
-export function greeterServiceRoutes(router: ConnectRouter): void {
-  router.service(GreeterService, {
-    async sayHello(request: SayHelloRequest) {
-      const name = request.name || 'World';
-      return create(SayHelloResponseSchema, {
-        message: `Hello, ${name}!`,
-      });
-    },
-  });
-}
+export const greeterService = defineService(GreeterService, {
+  async sayHello(request: SayHelloRequest) {
+    const name = request.name || 'World';
+    return create(SayHelloResponseSchema, {
+      message: `Hello, ${name}!`,
+    });
+  },
+});
 ```
 
 ## 5. Server Entry Point
@@ -187,10 +185,10 @@ import { createServer } from '@connectum/core';
 import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
 import { Reflection } from '@connectum/reflection';
 import { createDefaultInterceptors } from '@connectum/interceptors';
-import { greeterServiceRoutes } from './services/greeterService.ts';
+import { greeterService } from './services/greeterService.ts';
 
 const server = createServer({
-  services: [greeterServiceRoutes],
+  services: [greeterService],
   port: 5000,
   protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
   interceptors: createDefaultInterceptors(),
@@ -434,6 +432,8 @@ const inventoryClient = createClient(InventoryService, inventoryTransport);
 // Use in any service handler
 const stock = await inventoryClient.checkStock({ sku: 'ABC-123' });
 ```
+
+When the target service is part of your [service catalog](/en/guide/service-communication/service-catalog), prefer `ctx.call(...)` inside a handler over building a transport by hand: it auto-routes local vs remote and you skip the explicit `createClient`/transport wiring.
 
 Trace context propagates automatically -- the client span links to the server span in the downstream service. See [Service Communication](/en/guide/service-communication) for patterns, resilience, and service discovery.
 

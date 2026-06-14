@@ -90,7 +90,7 @@ message Deployment {
 
 ```typescript [deploymentService.ts]
 import { create } from '@bufbuild/protobuf';
-import type { ConnectRouter } from '@connectrpc/connect';
+import { defineService } from '@connectum/core';
 import { requireAuthContext } from '@connectum/auth';
 import { getLogger, getMeter } from '@connectum/otel';
 import { DeploymentService, DeploymentSchema } from '#gen/platform_pb.js';
@@ -98,29 +98,27 @@ import { DeploymentService, DeploymentSchema } from '#gen/platform_pb.js';
 const logger = getLogger('DeploymentService');
 const deployments = getMeter().createCounter('platform.deployments.total');
 
-export default (router: ConnectRouter) => {
-  router.service(DeploymentService, {
-    async createDeployment(req) {
-      const auth = requireAuthContext();
+export default defineService(DeploymentService, {
+  async createDeployment(req) {
+    const auth = requireAuthContext();
 
-      deployments.add(1, { namespace: req.namespace });
-      logger.info('Deployment created', {
-        namespace: req.namespace,
-        image: req.image,
-        createdBy: auth.subject,
-      });
+    deployments.add(1, { namespace: req.namespace });
+    logger.info('Deployment created', {
+      namespace: req.namespace,
+      image: req.image,
+      createdBy: auth.subject,
+    });
 
-      return create(DeploymentSchema, {
-        deploymentId: crypto.randomUUID(),
-        namespace: req.namespace,
-        image: req.image,
-        replicas: req.replicas,
-        status: 'PENDING',
-        createdBy: auth.subject,
-      });
-    },
-  });
-};
+    return create(DeploymentSchema, {
+      deploymentId: crypto.randomUUID(),
+      namespace: req.namespace,
+      image: req.image,
+      replicas: req.replicas,
+      status: 'PENDING',
+      createdBy: auth.subject,
+    });
+  },
+});
 ```
 
 ```typescript [server.ts]
@@ -130,10 +128,10 @@ import { Reflection } from '@connectum/reflection';
 import { createDefaultInterceptors } from '@connectum/interceptors';
 import { createOtelInterceptor } from '@connectum/otel';
 import { createJwtAuthInterceptor, createProtoAuthzInterceptor } from '@connectum/auth';
-import routes from '#services/deploymentService.js';
+import deploymentService from '#services/deploymentService.js';
 
 const server = createServer({
-  services: [routes],
+  services: [deploymentService],
   port: 5000,
   protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
   interceptors: [

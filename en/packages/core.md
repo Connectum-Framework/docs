@@ -70,7 +70,7 @@ The server is created in `CREATED` state. Call `server.start()` to begin accepti
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `services` | `ServiceRoute[]` | **(required)** | Service routes to register on the ConnectRouter |
+| `services` | `ServiceDefinition[]` | **(required)** | Service definitions to register on the server (created with `defineService` / `defineLazyService`) |
 | `port` | `number` | `5000` | Server port |
 | `host` | `string` | `"0.0.0.0"` | Server host to bind |
 | `tls` | `TLSOptions` | `undefined` | TLS configuration for secure connections |
@@ -105,17 +105,6 @@ The relevant `JsonWriteOptions` field is `alwaysEmitImplicit` (it was named
 `emitDefaultValues` in protobuf-es v1, which does not apply to Connectum).
 :::
 
-For per-service control, pass the same option as the third argument of
-`router.service()` inside a service route, instead of setting it server-wide:
-
-```typescript
-const routes: ServiceRoute = (router) => {
-  router.service(MyService, myImpl, {
-    jsonOptions: { alwaysEmitImplicit: true },
-  });
-};
-```
-
 ### `Server` Interface
 
 Extends `EventEmitter`. Provides explicit lifecycle control.
@@ -148,8 +137,8 @@ interface Server {
   /** Underlying HTTP server (HTTP/1.1 or HTTP/2 depending on TLS / allowHTTP1 config; null until started) */
   readonly transport: Http2SecureServer | Http2Server | HttpServer | null;
 
-  /** Registered service routes */
-  readonly routes: ReadonlyArray<ServiceRoute>;
+  /** Registered service definitions */
+  readonly routes: ReadonlyArray<ServiceDefinition>;
 
   /** Registered interceptors */
   readonly interceptors: ReadonlyArray<Interceptor>;
@@ -166,8 +155,8 @@ interface Server {
 
 ```typescript
 interface Server {
-  /** Add a service route. Throws if the server is already started, or if routes have already been materialized via local-transport access (e.g. a prior `server.localClient()`, `server.client()`, or `server.hasService()` call). Add services/interceptors/protocols before any local-transport access. */
-  addService(service: ServiceRoute): void;
+  /** Add a service definition. Throws if the server is already started, or if routes have already been materialized via local-transport access (e.g. a prior `server.localClient()`, `server.client()`, or `server.hasService()` call). Add services/interceptors/protocols before any local-transport access. */
+  addService(service: ServiceDefinition): void;
 
   /** Add an interceptor. Throws if the server is already started, or if routes have already been materialized via local-transport access (e.g. a prior `server.localClient()`, `server.client()`, or `server.hasService()` call). Add services/interceptors/protocols before any local-transport access. */
   addInterceptor(interceptor: Interceptor): void;
@@ -200,13 +189,20 @@ interface Server {
 `@connectum/core` ships a built-in **in-process transport** that lets you call locally registered services as direct function invocations — no HTTP/2, TLS, sockets, or wire serialization — while preserving 1-to-1 behavioural parity with the HTTP path (interceptors, validation, authorization, error mapping, streaming semantics, OpenTelemetry spans and metrics).
 
 ```typescript
-import { createServer, createLocalTransport } from '@connectum/core';
+import { createServer, createLocalTransport, defineService } from '@connectum/core';
 import { GreeterService } from './gen/greeter_pb.js';
 
-const server = createServer({ services: [greeterRoutes] });
+const greeterService = defineService(GreeterService, {
+  async sayHello(req, ctx) {
+    return { message: `Hello, ${req.name}!` };
+  },
+});
+
+const server = createServer({ services: [greeterService] });
 
 // Auto-routing client: in-process if `GreeterService` is registered on
-// this server, else uses `options.fallback`, else throws unimplemented.
+// this server, else via the configured `remoteResolver`, else throws
+// `CatalogConfigError` at construction.
 const greeter = server.client(GreeterService);
 await greeter.sayHello({ name: 'world' }); // no server.start() needed
 
@@ -218,7 +214,7 @@ const isRegistered = server.hasService(GreeterService);
 
 | API | Description |
 |-----|-------------|
-| `server.client(service, options?)` | Auto-routing factory: local if registered, else `options.fallback`, else fail-fast `ConnectError(unimplemented)`. |
+| `server.client(service, options?)` | Auto-routing factory: local if registered, else via the configured `remoteResolver`; if neither, fail-fast `CatalogConfigError` at construction. A resolver returning `null` yields `ConnectError(Code.Unavailable)` at call time. |
 | `server.localClient(service)` | Low-level helper that always returns an in-process client. |
 | `server.hasService(desc)` | Synchronous registry lookup by `desc.typeName`. |
 | `createLocalTransport(server, options?)` | Returns a ConnectRPC `Transport` bound to the server's router; supports client-side interceptors. |

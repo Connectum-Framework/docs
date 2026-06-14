@@ -5,8 +5,8 @@ description: gRPC-JSON transcoding with Envoy Gateway, OpenAPI generation from p
 
 # Envoy Gateway + OpenAPI
 
-::: tip Full Example
-All Envoy Gateway configs described below are available in the [production-ready/envoy-gateway](https://github.com/Connectum-Framework/examples/tree/main/production-ready/envoy-gateway) directory.
+::: tip Standalone Envoy Gateway pattern
+This guide describes a **standalone Envoy Gateway** for gRPC-JSON transcoding. The Connectum examples repository does not ship a dedicated Envoy Gateway example; the manifests below are illustrative templates you adapt to your cluster. For a service mesh that embeds Envoy as sidecars (mTLS, traffic management), see the [Service Mesh guide](./service-mesh.md) and the [car-sharing/istio](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/istio) example instead.
 :::
 
 Connectum services communicate via gRPC, but many external clients (browsers, mobile apps, third-party integrations) need REST/JSON APIs. Envoy Gateway provides **gRPC-JSON transcoding** -- automatically converting REST requests into gRPC calls and vice versa -- without writing any REST handlers.
@@ -48,12 +48,10 @@ graph LR
 
 ## Step 1: Annotate Proto Files
 
-Add HTTP bindings to your proto service methods using `google.api.http`. The proto file defines CRUD operations for OrderService with REST path mappings (e.g. `POST /v1/orders`, `GET /v1/orders/{order_id}`) and buf validation rules.
-
-See [orders.proto](https://github.com/Connectum-Framework/examples/blob/main/production-ready/envoy-gateway/proto/orders.proto) for the full proto definition.
+Add HTTP bindings to your proto service methods using `google.api.http`. Define CRUD operations for `OrderService` with REST path mappings (e.g. `POST /v1/orders`, `GET /v1/orders/{order_id}`) and buf validation rules, attaching a `google.api.http` option to each RPC.
 
 ::: tip
-The `google/api/http.proto` and `google/api/annotations.proto` files are available through buf BSR deps. Add them to your [buf.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/envoy-gateway/buf.yaml) dependencies and import them directly in your proto files without vendoring.
+The `google/api/http.proto` and `google/api/annotations.proto` files are available through buf BSR deps. Add `buf.build/googleapis/googleapis` to your `buf.yaml` dependencies and import them directly in your proto files without vendoring.
 :::
 
 ## Step 2: Generate OpenAPI Spec
@@ -72,9 +70,7 @@ go install github.com/google/gnostic/cmd/protoc-gen-openapi@latest
 
 ### buf.gen.yaml Configuration
 
-This configures buf to generate both ConnectRPC TypeScript stubs (`protoc-gen-es`) and an OpenAPI v3 spec (`protoc-gen-openapi`) with proto-style naming and string enums.
-
-See [buf.gen.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/envoy-gateway/buf.gen.yaml) for the full configuration.
+Configure buf to generate both ConnectRPC TypeScript stubs (`protoc-gen-es`) and an OpenAPI v3 spec (`protoc-gen-openapi`) with proto-style naming and string enums — add a `protoc-gen-openapi` plugin entry to your `buf.gen.yaml` alongside the existing `protoc-gen-es` plugin.
 
 ### Generate
 
@@ -161,49 +157,33 @@ protoc \
 
 ### GatewayClass and Gateway
 
-This manifest defines a GatewayClass and Gateway with three listeners: HTTP on port 80, HTTPS on port 443 (with TLS termination), and a dedicated gRPC listener on port 9090 for native gRPC clients.
-
-See [gateway.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/envoy-gateway/gateway.yaml) for the full manifest.
+Define a GatewayClass and Gateway with three listeners: HTTP on port 80, HTTPS on port 443 (with TLS termination), and a dedicated gRPC listener on port 9090 for native gRPC clients.
 
 ### GRPCRoute (Native gRPC Traffic)
 
-Routes native gRPC traffic directly to the OrderService backend on port 5000, matching on the fully qualified gRPC service name.
-
-See [grpc-route.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/envoy-gateway/grpc-route.yaml) for the full manifest.
+Route native gRPC traffic directly to the `OrderService` backend on port 5000 with a `GRPCRoute` matching on the fully qualified gRPC service name.
 
 ### HTTPRoute (REST-to-gRPC Transcoding)
 
-Maps REST paths (`/v1/orders` prefix) to the gRPC backend for transcoding, and routes `/docs` to the Swagger UI service. Attached to both HTTP and HTTPS listeners.
-
-See [http-route.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/envoy-gateway/http-route.yaml) for the full manifest.
+Map REST paths (`/v1/orders` prefix) to the gRPC backend for transcoding with an `HTTPRoute`, and route `/docs` to the Swagger UI service. Attach the route to both HTTP and HTTPS listeners.
 
 ## Step 5: Envoy Filter for gRPC-JSON Transcoding
 
-If your Envoy Gateway version supports EnvoyPatchPolicy, configure the transcoder filter directly. This patch injects the `grpc_json_transcoder` HTTP filter into the listener chain, configuring it with the proto descriptor, target services, and JSON print options (whitespace, primitive fields, proto field names).
+If your Envoy Gateway version supports `EnvoyPatchPolicy`, configure the transcoder filter directly. The patch injects the `grpc_json_transcoder` HTTP filter into the listener chain, configuring it with the proto descriptor, target services, and JSON print options (whitespace, primitive fields, proto field names).
 
-See [envoy-patch-policy.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/envoy-gateway/envoy-patch-policy.yaml) for the full manifest.
-
-Alternatively, store the proto descriptor in a ConfigMap. This creates a ConfigMap with the base64-encoded proto descriptor binary that can be mounted into Envoy pods.
-
-See [proto-descriptor-configmap.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/envoy-gateway/proto-descriptor-configmap.yaml) for the full manifest.
+Alternatively, store the proto descriptor in a ConfigMap: create a ConfigMap holding the base64-encoded proto descriptor binary and mount it into the Envoy pods.
 
 ## Step 6: Swagger UI Deployment
 
-Deploy Swagger UI to serve the generated OpenAPI spec. This manifest includes a ConfigMap for the OpenAPI spec, a Deployment running the official `swaggerapi/swagger-ui` image with the spec mounted at `/specs`, and a ClusterIP Service exposing port 8080.
-
-See [swagger-ui.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/envoy-gateway/swagger-ui.yaml) for the full manifest.
+Deploy Swagger UI to serve the generated OpenAPI spec: a ConfigMap for the OpenAPI spec, a Deployment running the official `swaggerapi/swagger-ui` image with the spec mounted at `/specs`, and a ClusterIP Service exposing port 8080.
 
 ## Rate Limiting
 
-Add rate limiting at the gateway level to protect your Connectum services. This BackendTrafficPolicy applies local rate limiting of 100 requests per second to the REST HTTPRoute.
-
-See [rate-limit.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/envoy-gateway/rate-limit.yaml) for the full manifest.
+Add rate limiting at the gateway level to protect your Connectum services. A `BackendTrafficPolicy` can apply local rate limiting (e.g. 100 requests per second) to the REST `HTTPRoute`.
 
 ## Load Balancing
 
-Configure request-level (L7) load balancing for gRPC backends. This is essential because gRPC uses persistent HTTP/2 connections. The policy applies RoundRobin load balancing to the REST HTTPRoute.
-
-See [backend-traffic-policy.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/envoy-gateway/backend-traffic-policy.yaml) for the full manifest.
+Configure request-level (L7) load balancing for gRPC backends. This is essential because gRPC uses persistent HTTP/2 connections. A `BackendTrafficPolicy` can apply RoundRobin load balancing to the REST `HTTPRoute`.
 
 ## Full Example: End-to-End Request
 

@@ -26,6 +26,7 @@ sequenceDiagram
 ```
 
 ```typescript
+import { defineService } from '@connectum/core';
 import { createClient } from '@connectrpc/connect';
 import { createGrpcTransport } from '@connectrpc/connect-node';
 import { InventoryService } from '#gen/inventory/v1/inventory_pb.js';
@@ -34,24 +35,23 @@ import { PaymentService } from '#gen/payment/v1/payment_pb.js';
 const inventoryClient = createClient(InventoryService, inventoryTransport);
 const paymentClient = createClient(PaymentService, paymentTransport);
 
-// Sequential: check stock, then process payment
-const routes = (router) => {
-  router.service(OrderService, {
-    async createOrder(req) {
-      const stock = await inventoryClient.checkStock({ sku: req.sku });
-      if (!stock.available) {
-        throw new ConnectError('Out of stock', Code.FailedPrecondition);
-      }
+// Sequential: check stock, then process payment.
+// Pass the result to createServer({ services: [orderService] }).
+const orderService = defineService(OrderService, {
+  async createOrder(req, ctx) {
+    const stock = await inventoryClient.checkStock({ sku: req.sku });
+    if (!stock.available) {
+      throw new ConnectError('Out of stock', Code.FailedPrecondition);
+    }
 
-      const payment = await paymentClient.processPayment({
-        amount: stock.price,
-        customerId: req.customerId,
-      });
+    const payment = await paymentClient.processPayment({
+      amount: stock.price,
+      customerId: req.customerId,
+    });
 
-      // ... create order with stock and payment data
-    },
-  });
-};
+    // ... create order with stock and payment data
+  },
+});
 ```
 
 ::: tip When to use
