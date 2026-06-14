@@ -129,6 +129,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
         items: [
             { text: 'Architecture Patterns', link: '/en/guide/production/architecture' },
             { text: 'Transport Matrix', link: '/en/guide/production/transport-matrix' },
+            { text: 'In-Process Transport', link: '/en/guide/production/in-process-transport' },
             { text: 'Docker', link: '/en/guide/production/docker' },
             { text: 'Kubernetes', link: '/en/guide/production/kubernetes' },
             { text: 'Envoy Gateway', link: '/en/guide/production/envoy-gateway' },
@@ -184,6 +185,8 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Getting Started', link: '/en/contributing/' },
                         { text: 'Development Setup', link: '/en/contributing/development-setup' },
                         { text: 'CLI Commands', link: '/en/contributing/cli-commands' },
+                        { text: 'Parity Invariant', link: '/en/contributing/parity-invariant' },
+                        { text: 'Parity Coverage', link: '/en/contributing/parity-coverage' },
                     ],
                 },
                 {
