@@ -4,7 +4,7 @@
 
 > **createTimeoutInterceptor**(`options?`): `Interceptor`
 
-Defined in: [timeout.ts:55](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/interceptors/src/timeout.ts#L55)
+Defined in: [timeout.ts:55](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/timeout.ts#L55)
 
 Create timeout interceptor
 
@@ -27,6 +27,8 @@ ConnectRPC interceptor
 
 ## Examples
 
+**Server-side usage with createServer**
+
 ```typescript
 import { createServer } from '@connectum/core';
 import { createTimeoutInterceptor } from '@connectum/interceptors';
@@ -44,6 +46,8 @@ const server = createServer({
 
 await server.start();
 ```
+
+**Client-side usage with transport**
 
 ```typescript
 import { createConnectTransport } from '@connectrpc/connect-node';

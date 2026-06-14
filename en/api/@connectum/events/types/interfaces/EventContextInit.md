@@ -2,7 +2,7 @@
 
 # Interface: EventContextInit
 
-Defined in: [packages/events/src/types.ts:155](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/types.ts#L155)
+Defined in: [packages/events/src/types.ts:153](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events/src/types.ts#L153)
 
 Initialization data for creating an EventContext
 
@@ -12,7 +12,7 @@ Initialization data for creating an EventContext
 
 > `readonly` **onAck**: () => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:158](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/types.ts#L158)
+Defined in: [packages/events/src/types.ts:156](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events/src/types.ts#L156)
 
 #### Returns
 
@@ -24,7 +24,7 @@ Defined in: [packages/events/src/types.ts:158](https://github.com/Connectum-Fram
 
 > `readonly` **onNack**: (`requeue`) => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:159](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/types.ts#L159)
+Defined in: [packages/events/src/types.ts:157](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events/src/types.ts#L157)
 
 #### Parameters
 
@@ -42,7 +42,7 @@ Defined in: [packages/events/src/types.ts:159](https://github.com/Connectum-Fram
 
 > `readonly` **raw**: [`RawEvent`](RawEvent.md)
 
-Defined in: [packages/events/src/types.ts:156](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/types.ts#L156)
+Defined in: [packages/events/src/types.ts:154](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events/src/types.ts#L154)
 
 ***
 
@@ -50,4 +50,4 @@ Defined in: [packages/events/src/types.ts:156](https://github.com/Connectum-Fram
 
 > `readonly` **signal**: `AbortSignal`
 
-Defined in: [packages/events/src/types.ts:157](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events/src/types.ts#L157)
+Defined in: [packages/events/src/types.ts:155](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events/src/types.ts#L155)

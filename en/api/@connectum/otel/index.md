@@ -50,6 +50,18 @@
 
 ## References
 
+### ATTR\_CONNECTUM\_TRANSPORT
+
+Re-exports [ATTR_CONNECTUM_TRANSPORT](attributes/variables/ATTR_CONNECTUM_TRANSPORT.md)
+
+***
+
+### ATTR\_CONNECTUM\_TRANSPORT\_METRIC
+
+Re-exports [ATTR_CONNECTUM_TRANSPORT_METRIC](attributes/variables/ATTR_CONNECTUM_TRANSPORT_METRIC.md)
+
+***
+
 ### ATTR\_ERROR\_TYPE
 
 Re-exports [ATTR_ERROR_TYPE](attributes/variables/ATTR_ERROR_TYPE.md)
@@ -134,6 +146,18 @@ Re-exports [ConnectErrorCodeName](attributes/variables/ConnectErrorCodeName.md)
 
 ***
 
+### CONNECTUM\_INTERNAL\_TRANSPORT\_HEADER
+
+Re-exports [CONNECTUM_INTERNAL_TRANSPORT_HEADER](attributes/variables/CONNECTUM_INTERNAL_TRANSPORT_HEADER.md)
+
+***
+
+### CONNECTUM\_INTERNAL\_TRANSPORT\_IN\_PROCESS
+
+Re-exports [CONNECTUM_INTERNAL_TRANSPORT_IN_PROCESS](attributes/variables/CONNECTUM_INTERNAL_TRANSPORT_IN_PROCESS.md)
+
+***
+
 ### createOtelClientInterceptor
 
 Re-exports [createOtelClientInterceptor](client-interceptor/functions/createOtelClientInterceptor.md)
@@ -155,6 +179,12 @@ Re-exports [createRpcClientMetrics](metrics/functions/createRpcClientMetrics.md)
 ### createRpcServerMetrics
 
 Re-exports [createRpcServerMetrics](metrics/functions/createRpcServerMetrics.md)
+
+***
+
+### detectConnectumTransport
+
+Re-exports [detectConnectumTransport](shared/functions/detectConnectumTransport.md)
 
 ***
 

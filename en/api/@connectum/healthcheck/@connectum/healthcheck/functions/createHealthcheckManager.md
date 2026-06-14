@@ -4,7 +4,7 @@
 
 > **createHealthcheckManager**(): [`HealthcheckManager`](../classes/HealthcheckManager.md)
 
-Defined in: [HealthcheckManager.ts:118](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/healthcheck/src/HealthcheckManager.ts#L118)
+Defined in: [HealthcheckManager.ts:264](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/HealthcheckManager.ts#L264)
 
 Create a new isolated HealthcheckManager instance
 

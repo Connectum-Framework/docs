@@ -4,7 +4,7 @@
 
 > **createAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/auth-interceptor.ts:81](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/auth/src/auth-interceptor.ts#L81)
+Defined in: [packages/auth/src/auth-interceptor.ts:81](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/auth-interceptor.ts#L81)
 
 Create a generic authentication interceptor.
 
@@ -28,6 +28,8 @@ ConnectRPC interceptor
 
 ## Examples
 
+**API key authentication**
+
 ```typescript
 import { createAuthInterceptor } from '@connectum/auth';
 
@@ -46,6 +48,8 @@ const auth = createAuthInterceptor({
   },
 });
 ```
+
+**Bearer token with default extractor**
 
 ```typescript
 const auth = createAuthInterceptor({

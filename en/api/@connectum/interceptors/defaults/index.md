@@ -4,9 +4,11 @@
 
 Default interceptor chain factory
 
-Creates the production-ready interceptor chain with resilience patterns.
-The interceptor order is fixed:
+Creates the interceptor chain in a fixed order:
 errorHandler → timeout → bulkhead → circuitBreaker → retry → fallback → validation → serializer.
+Only errorHandler and validation are enabled by default; resilience
+interceptors (timeout, bulkhead, circuitBreaker, retry) are opt-in —
+no hidden behavioral logic.
 
 ## Interfaces
 

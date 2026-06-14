@@ -4,7 +4,7 @@
 
 > **withAuthContext**\<`T`\>(`context`, `fn`): `Promise`\<`T`\>
 
-Defined in: [packages/auth/src/testing/with-context.ts:31](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/auth/src/testing/with-context.ts#L31)
+Defined in: [packages/auth/src/testing/with-context.ts:31](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/testing/with-context.ts#L31)
 
 Run a function with a pre-set AuthContext.
 
@@ -38,6 +38,8 @@ Function to execute within the context
 Return value of fn
 
 ## Example
+
+**Test a handler that reads auth context**
 
 ```typescript
 import { withAuthContext, createMockAuthContext } from '@connectum/auth/testing';

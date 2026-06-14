@@ -4,7 +4,7 @@
 
 > **createJwtAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/jwt-auth-interceptor.ts:168](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/auth/src/jwt-auth-interceptor.ts#L168)
+Defined in: [packages/auth/src/jwt-auth-interceptor.ts:168](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/jwt-auth-interceptor.ts#L168)
 
 Create a JWT authentication interceptor.
 
@@ -28,6 +28,8 @@ ConnectRPC interceptor
 
 ## Examples
 
+**JWKS-based JWT auth (Auth0, Keycloak, etc.)**
+
 ```typescript
 import { createJwtAuthInterceptor } from '@connectum/auth';
 
@@ -41,6 +43,8 @@ const jwtAuth = createJwtAuthInterceptor({
   },
 });
 ```
+
+**HMAC secret (testing / simple setups)**
 
 ```typescript
 const jwtAuth = createJwtAuthInterceptor({

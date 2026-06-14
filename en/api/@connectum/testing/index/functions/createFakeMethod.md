@@ -4,7 +4,7 @@
 
 > **createFakeMethod**(`service`, `name`, `options?`): `DescMethod`
 
-Defined in: [fake-service.ts:72](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/fake-service.ts#L72)
+Defined in: test-fixtures/dist/index.d.ts:100
 
 Create a fake DescMethod descriptor attached to a service.
 
@@ -29,7 +29,7 @@ The RPC method name (PascalCase, e.g. `"GetUser"`).
 
 ### options?
 
-[`FakeMethodOptions`](../../types/interfaces/FakeMethodOptions.md)
+[`FakeMethodOptions`](../interfaces/FakeMethodOptions.md)
 
 Optional configuration for method kind and registration.
 

@@ -4,7 +4,7 @@
 
 > **createOtelClientInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/otel/src/client-interceptor.ts:58](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/otel/src/client-interceptor.ts#L58)
+Defined in: [packages/otel/src/client-interceptor.ts:59](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/otel/src/client-interceptor.ts#L59)
 
 Creates a ConnectRPC interceptor that instruments outgoing RPC calls with
 OpenTelemetry tracing and/or metrics.

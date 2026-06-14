@@ -4,7 +4,7 @@
 
 > **createRetryInterceptor**(`options?`): `Interceptor`
 
-Defined in: [retry.ts:44](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/interceptors/src/retry.ts#L44)
+Defined in: [retry.ts:44](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/retry.ts#L44)
 
 Create retry interceptor
 
@@ -26,6 +26,8 @@ Retry options
 ConnectRPC interceptor
 
 ## Example
+
+**Server-side usage with createServer**
 
 ```typescript
 import { createServer } from '@connectum/core';

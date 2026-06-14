@@ -4,7 +4,7 @@
 
 > **parseAuthHeaders**(`headers`): [`AuthContext`](../interfaces/AuthContext.md) \| `undefined`
 
-Defined in: [packages/auth/src/headers.ts:92](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/auth/src/headers.ts#L92)
+Defined in: [packages/auth/src/headers.ts:92](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/headers.ts#L92)
 
 Parse AuthContext from request headers.
 
@@ -29,6 +29,8 @@ Request headers to parse
 Parsed AuthContext or undefined if headers are missing
 
 ## Example
+
+**Trust upstream auth headers**
 
 ```typescript
 import { parseAuthHeaders } from '@connectum/auth';

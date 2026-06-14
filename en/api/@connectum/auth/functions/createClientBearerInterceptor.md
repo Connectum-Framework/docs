@@ -4,7 +4,7 @@
 
 > **createClientBearerInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/client-bearer-interceptor.ts:51](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/auth/src/client-bearer-interceptor.ts#L51)
+Defined in: [packages/auth/src/client-bearer-interceptor.ts:51](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/client-bearer-interceptor.ts#L51)
 
 Create a client interceptor that attaches a Bearer token to outgoing requests.
 
@@ -28,6 +28,8 @@ A ConnectRPC client Interceptor
 
 ## Examples
 
+**Static token**
+
 ```typescript
 import { createClientBearerInterceptor } from '@connectum/auth';
 import { createConnectTransport } from '@connectrpc/connect-node';
@@ -39,6 +41,8 @@ const transport = createConnectTransport({
     })],
 });
 ```
+
+**Async token factory (refresh)**
 
 ```typescript
 import { createClientBearerInterceptor } from '@connectum/auth';

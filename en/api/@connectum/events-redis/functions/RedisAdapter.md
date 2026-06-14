@@ -4,7 +4,7 @@
 
 > **RedisAdapter**(`options?`): `EventAdapter`
 
-Defined in: [RedisAdapter.ts:68](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events-redis/src/RedisAdapter.ts#L68)
+Defined in: [RedisAdapter.ts:68](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events-redis/src/RedisAdapter.ts#L68)
 
 Create a Redis Streams adapter for the Connectum event bus.
 

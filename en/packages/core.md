@@ -145,8 +145,8 @@ interface Server {
   /** Current server state */
   readonly state: ServerState;
 
-  /** Underlying HTTP/2 transport (null until started) */
-  readonly transport: Http2SecureServer | Http2Server | null;
+  /** Underlying HTTP server (HTTP/1.1 or HTTP/2 depending on TLS / allowHTTP1 config; null until started) */
+  readonly transport: Http2SecureServer | Http2Server | HttpServer | null;
 
   /** Registered service routes */
   readonly routes: ReadonlyArray<ServiceRoute>;
@@ -166,13 +166,13 @@ interface Server {
 
 ```typescript
 interface Server {
-  /** Add a service route. Throws if server is already started. */
+  /** Add a service route. Throws if the server is already started, or if routes have already been materialized via local-transport access (e.g. a prior `server.localClient()`, `server.client()`, or `server.hasService()` call). Add services/interceptors/protocols before any local-transport access. */
   addService(service: ServiceRoute): void;
 
-  /** Add an interceptor. Throws if server is already started. */
+  /** Add an interceptor. Throws if the server is already started, or if routes have already been materialized via local-transport access (e.g. a prior `server.localClient()`, `server.client()`, or `server.hasService()` call). Add services/interceptors/protocols before any local-transport access. */
   addInterceptor(interceptor: Interceptor): void;
 
-  /** Add a protocol. Throws if server is already started. */
+  /** Add a protocol. Throws if the server is already started, or if routes have already been materialized via local-transport access (e.g. a prior `server.localClient()`, `server.client()`, or `server.hasService()` call). Add services/interceptors/protocols before any local-transport access. */
   addProtocol(protocol: ProtocolRegistration): void;
 }
 ```
@@ -194,6 +194,40 @@ interface Server {
   readonly shutdownSignal: AbortSignal;
 }
 ```
+
+### In-Process Transport
+
+`@connectum/core` ships a built-in **in-process transport** that lets you call locally registered services as direct function invocations — no HTTP/2, TLS, sockets, or wire serialization — while preserving 1-to-1 behavioural parity with the HTTP path (interceptors, validation, authorization, error mapping, streaming semantics, OpenTelemetry spans and metrics).
+
+```typescript
+import { createServer, createLocalTransport } from '@connectum/core';
+import { GreeterService } from './gen/greeter_pb.js';
+
+const server = createServer({ services: [greeterRoutes] });
+
+// Auto-routing client: in-process if `GreeterService` is registered on
+// this server, else uses `options.fallback`, else throws unimplemented.
+const greeter = server.client(GreeterService);
+await greeter.sayHello({ name: 'world' }); // no server.start() needed
+
+// Low-level helpers:
+const localOnly = server.localClient(GreeterService);
+const transport = createLocalTransport(server, { interceptors: [/* client-side */] });
+const isRegistered = server.hasService(GreeterService);
+```
+
+| API | Description |
+|-----|-------------|
+| `server.client(service, options?)` | Auto-routing factory: local if registered, else `options.fallback`, else fail-fast `ConnectError(unimplemented)`. |
+| `server.localClient(service)` | Low-level helper that always returns an in-process client. |
+| `server.hasService(desc)` | Synchronous registry lookup by `desc.typeName`. |
+| `createLocalTransport(server, options?)` | Returns a ConnectRPC `Transport` bound to the server's router; supports client-side interceptors. |
+
+The in-process transport is available immediately after `createServer({...})` — `server.start()` is **not** required. A single `Server` instance can serve HTTP and in-process clients concurrently.
+
+::: tip See the dedicated guide
+[In-Process Transport](/en/guide/production/in-process-transport) — motivation, polyglot deployment pattern, observability parity, limitations.
+:::
 
 ### `ServerState`
 
@@ -350,6 +384,7 @@ See [Runtime Support: Node.js vs Bun vs tsx](/en/guide/typescript#runtime-suppor
 | Export | Subpath | Description |
 |--------|---------|-------------|
 | `createServer` | `.` | Server factory function |
+| `createLocalTransport` | `.` | In-process transport factory ([guide](/en/guide/production/in-process-transport)) |
 | `ServerState` | `.` | Server state constants |
 | `LifecycleEvent` | `.` | Lifecycle event name constants |
 | `isSanitizableError` | `.` | Type guard for `SanitizableError` protocol |

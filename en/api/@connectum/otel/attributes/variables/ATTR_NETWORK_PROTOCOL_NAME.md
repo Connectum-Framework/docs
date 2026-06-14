@@ -4,4 +4,4 @@
 
 > `const` **ATTR\_NETWORK\_PROTOCOL\_NAME**: `"network.protocol.name"` = `"network.protocol.name"`
 
-Defined in: [packages/otel/src/attributes.ts:23](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/otel/src/attributes.ts#L23)
+Defined in: [packages/otel/src/attributes.ts:23](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/otel/src/attributes.ts#L23)

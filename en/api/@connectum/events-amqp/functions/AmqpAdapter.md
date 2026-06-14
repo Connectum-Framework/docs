@@ -4,7 +4,7 @@
 
 > **AmqpAdapter**(`options`): `EventAdapter`
 
-Defined in: [AmqpAdapter.ts:77](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/events-amqp/src/AmqpAdapter.ts#L77)
+Defined in: [packages/events-amqp/src/AmqpAdapter.ts:152](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events-amqp/src/AmqpAdapter.ts#L152)
 
 Create an AMQP/RabbitMQ adapter for @connectum/events.
 
@@ -22,7 +22,7 @@ AMQP adapter configuration
 
 EventAdapter instance
 
-## Example
+## Examples
 
 ```typescript
 import { AmqpAdapter } from "@connectum/events-amqp";
@@ -33,4 +33,28 @@ const bus = createEventBus({
     routes: [myRoutes],
 });
 await bus.start();
+```
+
+**External AMQP contract (AsyncAPI-style)**
+
+```typescript
+const adapter = AmqpAdapter({
+    url: "amqp://broker:5672",
+    exchange: "partner.direct",
+    exchangeType: "direct",
+    serialization: { contentType: "application/json" },
+    topology: {
+        queues: [{
+            name: "partner.inbound.v1",
+            durable: true,
+            arguments: {
+                "x-dead-letter-exchange": "partner.dlx",
+                "x-dead-letter-routing-key": "inbound.dead",
+            },
+        }],
+        bindings: [{ queue: "partner.inbound.v1", source: "partner.direct", routingKey: "inbound" }],
+    },
+    queueOverrides: { partner: { queue: "partner.inbound.v1" } },
+    publisherOptions: { persistent: true, mandatory: true },
+});
 ```

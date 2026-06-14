@@ -4,7 +4,7 @@
 
 > **createMockDescField**(`localName`, `options?`): `DescField`
 
-Defined in: [mock-desc.ts:62](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/mock-desc.ts#L62)
+Defined in: test-fixtures/dist/index.d.ts:182
 
 Create a mock DescField descriptor.
 
@@ -21,7 +21,7 @@ The field's local (camelCase) name.
 
 ### options?
 
-[`MockDescFieldOptions`](../../types/interfaces/MockDescFieldOptions.md)
+[`MockDescFieldOptions`](../interfaces/MockDescFieldOptions.md)
 
 Optional overrides for field number, scalar type, and sensitivity.
 

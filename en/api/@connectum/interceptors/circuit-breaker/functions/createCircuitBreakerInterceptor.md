@@ -4,7 +4,7 @@
 
 > **createCircuitBreakerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [circuit-breaker.ts:61](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/interceptors/src/circuit-breaker.ts#L61)
+Defined in: [circuit-breaker.ts:94](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/circuit-breaker.ts#L94)
 
 Create circuit breaker interceptor
 
@@ -15,6 +15,15 @@ Circuit States:
 - Closed (normal): Requests pass through
 - Open (failing): Requests rejected immediately
 - Half-Open (testing): Single request allowed to test recovery
+
+By default only infrastructure errors trip the breaker (see
+[defaultFailurePredicate](defaultFailurePredicate.md)); business codes like invalid_argument or
+not_found never do. Customize via [CircuitBreakerOptions.failurePredicate](../../interfaces/CircuitBreakerOptions.md#failurepredicate).
+
+The circuit breaker is an outbound/client-side pattern: it protects the
+caller from a sick upstream and gives that upstream room to recover. On a
+server's inbound stack it degenerates into error-rate load shedding —
+prefer timeout + bulkhead for inbound protection.
 
 ## Parameters
 
@@ -32,24 +41,7 @@ ConnectRPC interceptor
 
 ## Examples
 
-```typescript
-import { createServer } from '@connectum/core';
-import { createCircuitBreakerInterceptor } from '@connectum/interceptors';
-import { myRoutes } from './routes.js';
-
-const server = createServer({
-  services: [myRoutes],
-  interceptors: [
-    createCircuitBreakerInterceptor({
-      threshold: 5,           // Open after 5 consecutive failures
-      halfOpenAfter: 30000,   // Try again after 30 seconds
-      skipStreaming: true,    // Skip streaming calls
-    }),
-  ],
-});
-
-await server.start();
-```
+**Client-side usage with transport (recommended placement)**
 
 ```typescript
 import { createConnectTransport } from '@connectrpc/connect-node';
@@ -58,7 +50,22 @@ import { createCircuitBreakerInterceptor } from '@connectum/interceptors';
 const transport = createConnectTransport({
   baseUrl: 'http://localhost:5000',
   interceptors: [
-    createCircuitBreakerInterceptor({ threshold: 3 }),
+    createCircuitBreakerInterceptor({
+      threshold: 5,           // Open after 5 consecutive failures
+      halfOpenAfter: 30000,   // Try again after 30 seconds
+    }),
   ],
+});
+```
+
+**Custom failure classification (compose with the default)**
+
+```typescript
+import { Code, ConnectError } from '@connectrpc/connect';
+
+createCircuitBreakerInterceptor({
+  // Never trip on upstream per-client rate limits
+  failurePredicate: (err, def) =>
+    def(err) && !(err instanceof ConnectError && err.code === Code.ResourceExhausted),
 });
 ```

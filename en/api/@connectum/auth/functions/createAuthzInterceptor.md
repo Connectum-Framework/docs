@@ -4,7 +4,7 @@
 
 > **createAuthzInterceptor**(`options?`): `Interceptor`
 
-Defined in: [packages/auth/src/authz-interceptor.ts:85](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/auth/src/authz-interceptor.ts#L85)
+Defined in: [packages/auth/src/authz-interceptor.ts:85](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/authz-interceptor.ts#L85)
 
 Create an authorization interceptor.
 
@@ -29,6 +29,8 @@ Authorization options
 ConnectRPC interceptor
 
 ## Example
+
+**RBAC with declarative rules**
 
 ```typescript
 import { createAuthzInterceptor } from '@connectum/auth';

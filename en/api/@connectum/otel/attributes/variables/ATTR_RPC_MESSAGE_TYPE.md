@@ -4,4 +4,4 @@
 
 > `const` **ATTR\_RPC\_MESSAGE\_TYPE**: `"rpc.message.type"` = `"rpc.message.type"`
 
-Defined in: [packages/otel/src/attributes.ts:30](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/otel/src/attributes.ts#L30)
+Defined in: [packages/otel/src/attributes.ts:58](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/otel/src/attributes.ts#L58)

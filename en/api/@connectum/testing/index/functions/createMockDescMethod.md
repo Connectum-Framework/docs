@@ -4,7 +4,7 @@
 
 > **createMockDescMethod**(`name`, `options?`): `DescMethod`
 
-Defined in: [mock-desc.ts:172](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/testing/src/mock-desc.ts#L172)
+Defined in: test-fixtures/dist/index.d.ts:236
 
 Create a mock DescMethod descriptor.
 
@@ -22,7 +22,7 @@ The RPC method name (PascalCase by convention).
 
 ### options?
 
-[`MockDescMethodOptions`](../../types/interfaces/MockDescMethodOptions.md)
+[`MockDescMethodOptions`](../interfaces/MockDescMethodOptions.md)
 
 Optional overrides for kind, input/output, and redaction.
 

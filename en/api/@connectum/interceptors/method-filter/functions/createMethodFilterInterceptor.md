@@ -4,7 +4,7 @@
 
 > **createMethodFilterInterceptor**(`methods`): `Interceptor`
 
-Defined in: [method-filter.ts:130](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/interceptors/src/method-filter.ts#L130)
+Defined in: [method-filter.ts:130](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/method-filter.ts#L130)
 
 Create a method filter interceptor that routes to per-method interceptors
 based on wildcard pattern matching.
@@ -32,6 +32,8 @@ ConnectRPC interceptor
 
 ## Examples
 
+**Auth per service**
+
 ```typescript
 import { createMethodFilterInterceptor } from '@connectum/interceptors';
 
@@ -46,6 +48,8 @@ const server = createServer({
   interceptors: [perMethodInterceptor],
 });
 ```
+
+**Resilience per method**
 
 ```typescript
 createMethodFilterInterceptor({

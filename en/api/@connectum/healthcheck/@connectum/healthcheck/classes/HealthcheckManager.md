@@ -2,20 +2,31 @@
 
 # Class: HealthcheckManager
 
-Defined in: [HealthcheckManager.ts:26](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/healthcheck/src/HealthcheckManager.ts#L26)
+Defined in: [HealthcheckManager.ts:79](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/HealthcheckManager.ts#L79)
 
 Healthcheck manager
 
-Manages health status for all registered services.
+Manages health status for all registered services and components.
 Module-level singleton. Import `healthcheckManager` from the package.
 
-## Example
+## Examples
+
+**RPC service status (after server.start())**
 
 ```typescript
 import { healthcheckManager, ServingStatus } from '@connectum/healthcheck';
 
-// After server.start():
 healthcheckManager.update(ServingStatus.SERVING);
+```
+
+**RPC-less worker (poller, publisher, exporter)**
+
+```typescript
+import { healthcheckManager, ServingStatus } from '@connectum/healthcheck';
+
+healthcheckManager.register('process');           // before or after start
+server.on('ready', () => healthcheckManager.set('process', ServingStatus.SERVING));
+server.on('stopping', () => healthcheckManager.set('process', ServingStatus.NOT_SERVING));
 ```
 
 ## Constructors
@@ -34,15 +45,15 @@ healthcheckManager.update(ServingStatus.SERVING);
 
 > **areAllHealthy**(): `boolean`
 
-Defined in: [HealthcheckManager.ts:80](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/healthcheck/src/HealthcheckManager.ts#L80)
+Defined in: [HealthcheckManager.ts:206](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/HealthcheckManager.ts#L206)
 
-Check if all services are healthy (SERVING)
+Check if all services and components are healthy (SERVING)
 
 #### Returns
 
 `boolean`
 
-True if all services are SERVING
+True if all entries are SERVING; false for an empty registry
 
 ***
 
@@ -50,9 +61,9 @@ True if all services are SERVING
 
 > **clear**(): `void`
 
-Defined in: [HealthcheckManager.ts:108](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/healthcheck/src/HealthcheckManager.ts#L108)
+Defined in: [HealthcheckManager.ts:254](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/HealthcheckManager.ts#L254)
 
-Clear all services
+Clear all services and components
 
 #### Returns
 
@@ -64,7 +75,7 @@ Clear all services
 
 > **getAllStatuses**(): `Map`\<`string`, [`ServiceStatus`](../types/interfaces/ServiceStatus.md)\>
 
-Defined in: [HealthcheckManager.ts:71](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/healthcheck/src/HealthcheckManager.ts#L71)
+Defined in: [HealthcheckManager.ts:193](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/HealthcheckManager.ts#L193)
 
 Get all services health status
 
@@ -72,7 +83,7 @@ Get all services health status
 
 `Map`\<`string`, [`ServiceStatus`](../types/interfaces/ServiceStatus.md)\>
 
-Map of service name to health status
+Map of service/component name to health status
 
 ***
 
@@ -80,7 +91,7 @@ Map of service name to health status
 
 > **getStatus**(`service`): [`ServiceStatus`](../types/interfaces/ServiceStatus.md) \| `undefined`
 
-Defined in: [HealthcheckManager.ts:62](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/healthcheck/src/HealthcheckManager.ts#L62)
+Defined in: [HealthcheckManager.ts:183](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/HealthcheckManager.ts#L183)
 
 Get service health status
 
@@ -90,7 +101,7 @@ Get service health status
 
 `string`
 
-Service name
+Service or component name
 
 #### Returns
 
@@ -104,13 +115,20 @@ Service status or undefined if not found
 
 > **initialize**(`serviceNames`): `void`
 
-Defined in: [HealthcheckManager.ts:96](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/healthcheck/src/HealthcheckManager.ts#L96)
+Defined in: [HealthcheckManager.ts:229](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/HealthcheckManager.ts#L229)
 
-Initialize services map
+Initialize the RPC service slice of the registry.
 
-Merges new service names with existing state. Services that were
-already registered retain their current status. New services start
-with UNKNOWN status.
+Affects only `service`-kind entries:
+- names in `serviceNames` are added (UNKNOWN) or preserved with their
+  current status;
+- `service` entries absent from `serviceNames` are removed — pollers on
+  `watch` observe SERVICE_UNKNOWN for them afterwards;
+- `component` entries are never touched, so components registered
+  before `server.start()` survive protocol initialization.
+
+Called by the Healthcheck protocol on server start; not intended for
+application code.
 
 #### Parameters
 
@@ -118,7 +136,7 @@ with UNKNOWN status.
 
 `string`[]
 
-Array of service names to track
+Array of RPC service typeNames to track
 
 #### Returns
 
@@ -126,15 +144,115 @@ Array of service names to track
 
 ***
 
+### register()
+
+> **register**(`component`, `initialStatus?`): `void`
+
+Defined in: [HealthcheckManager.ts:123](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/HealthcheckManager.ts#L123)
+
+Register an application health component.
+
+A registered component is a readiness gate: it participates in
+`areAllHealthy()`, gRPC `Check`/`Watch`, and `/healthz` exactly like an
+RPC service. Registering an already-registered component does NOT reset
+its status. Component names must be non-empty and dot-free.
+
+#### Parameters
+
+##### component
+
+`string`
+
+Component name (e.g. "process", "amqp")
+
+##### initialStatus?
+
+`HealthCheckResponse_ServingStatus` = `ServingStatus.UNKNOWN`
+
+Initial status (default UNKNOWN)
+
+#### Returns
+
+`void`
+
+#### Throws
+
+Error on invalid name or when the name belongs to an RPC service
+
+***
+
+### set()
+
+> **set**(`component`, `status`): `void`
+
+Defined in: [HealthcheckManager.ts:149](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/HealthcheckManager.ts#L149)
+
+Set a component's status (upsert).
+
+Unlike `update()`, does not throw for unknown names: the component is
+registered first if absent. Component names must be non-empty and
+dot-free.
+
+#### Parameters
+
+##### component
+
+`string`
+
+Component name
+
+##### status
+
+`HealthCheckResponse_ServingStatus`
+
+New serving status
+
+#### Returns
+
+`void`
+
+#### Throws
+
+Error on invalid name or when the name belongs to an RPC service
+
+***
+
+### unregister()
+
+> **unregister**(`component`): `void`
+
+Defined in: [HealthcheckManager.ts:166](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/HealthcheckManager.ts#L166)
+
+Remove a registered component.
+
+#### Parameters
+
+##### component
+
+`string`
+
+Component name
+
+#### Returns
+
+`void`
+
+#### Throws
+
+Error when the name belongs to an RPC service
+
+***
+
 ### update()
 
 > **update**(`status`, `service?`): `void`
 
-Defined in: [HealthcheckManager.ts:39](https://github.com/Connectum-Framework/connectum/blob/acbe73ae0e923dc7b46c1b4a6241f3e342535af7/packages/healthcheck/src/HealthcheckManager.ts#L39)
+Defined in: [HealthcheckManager.ts:93](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/HealthcheckManager.ts#L93)
 
 Update service health status
 
-When called without a service name, updates ALL registered services.
+When called without a service name, updates ALL registered entries
+(services and components alike).
 When called with an unknown service name, throws an error.
 
 #### Parameters
@@ -149,7 +267,7 @@ New serving status
 
 `string`
 
-Service name (if not provided, updates all services)
+Service name (if not provided, updates all entries)
 
 #### Returns
 

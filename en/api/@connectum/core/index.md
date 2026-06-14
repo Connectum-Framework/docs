@@ -7,13 +7,23 @@
 - [config](config/index.md)
 - [types](types/index.md)
 
+## Classes
+
+- [TransportValidationError](classes/TransportValidationError.md)
+
 ## Interfaces
 
+- [CreateLocalTransportOptions](interfaces/CreateLocalTransportOptions.md)
 - [SanitizableError](interfaces/SanitizableError.md)
+- [StreamingMethodInfo](interfaces/StreamingMethodInfo.md)
 
 ## Type Aliases
 
 - [ConnectumEnv](type-aliases/ConnectumEnv.md)
+- [EffectiveTransport](type-aliases/EffectiveTransport.md)
+- [EffectiveTransport](type-aliases/EffectiveTransport-1.md)
+- [TransportValidationMode](type-aliases/TransportValidationMode.md)
+- [TransportValidationMode](type-aliases/TransportValidationMode-1.md)
 
 ## Variables
 
@@ -24,14 +34,18 @@
 - [LogLevelSchema](variables/LogLevelSchema.md)
 - [NodeEnvSchema](variables/NodeEnvSchema.md)
 - [tlsPath](variables/tlsPath.md)
+- [TRANSPORT\_VALIDATION\_ERROR\_CODE](variables/TRANSPORT_VALIDATION_ERROR_CODE.md)
 
 ## Functions
 
+- [collectStreamingMethods](functions/collectStreamingMethods.md)
+- [createLocalTransport](functions/createLocalTransport.md)
 - [createServer](functions/createServer.md)
 - [getTLSPath](functions/getTLSPath.md)
 - [isSanitizableError](functions/isSanitizableError.md)
 - [parseEnvConfig](functions/parseEnvConfig.md)
 - [readTLSCertificates](functions/readTLSCertificates.md)
+- [resolveEffectiveTransport](functions/resolveEffectiveTransport.md)
 - [safeParseEnvConfig](functions/safeParseEnvConfig.md)
 
 ## References
@@ -87,6 +101,12 @@ Re-exports [ProtocolRegistration](types/interfaces/ProtocolRegistration.md)
 ### Server
 
 Re-exports [Server](types/interfaces/Server.md)
+
+***
+
+### ServerClientOptions
+
+Re-exports [ServerClientOptions](types/interfaces/ServerClientOptions.md)
 
 ***
 
