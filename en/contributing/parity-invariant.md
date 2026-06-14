@@ -63,7 +63,7 @@ A small set of behaviours are explicitly transport-specific and are
   pseudo-header, real `req.url` host/port.
 - Wire-format concerns: gzip/identity content-encoding negotiation, message
   framing on the wire.
-- The synthetic origin `https://in-memory/<service>` that the in-process
+- The synthetic origin `https://in-memory/<service>/<method>` that the in-process
   transport injects for interceptors that read `req.url`.
 - The `connectum.transport` span attribute and the `transport` metric label,
   which differ by design and are stripped before structural diff.

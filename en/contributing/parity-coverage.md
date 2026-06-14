@@ -13,14 +13,14 @@ can be regenerated from the parity test files at any time.
 
 | Group | Surface | File | Scenarios |
 |------:|---------|------|----------:|
-| 3 | Interceptors smoke (timeout, retry, bulkhead, circuit-breaker, logger, serializer, errorHandler, method-filter) | `packages/testing/tests/parity/interceptors.parity.test.ts` | **8** |
-| 3a | `protovalidate` / `buf.validate` (success, single-rule violation, aggregated violations, streaming validation) | `packages/testing/tests/parity/validation.parity.test.ts` | **4** |
-| 3b | Proto-declared authz (success with scope, unauthenticated, permission denied, public method) | `packages/testing/tests/parity/authorization.parity.test.ts` | **4** |
+| 3 | Server-side interceptor ordering (3.1), client-side interceptor injection (3.2), timeout (3.3a), retry (3.3b), bulkhead (3.3c), circuit-breaker (3.3d), logger (3.3e), serializer (3.3f) | `packages/testing/tests/parity/interceptors.parity.test.ts` | **8** |
+| 3a | `protovalidate` / `buf.validate` (success, single-rule violation, aggregated violations, streaming validation, no-bypass API (3a.6)) | `packages/testing/tests/parity/validation.parity.test.ts` | **5** |
+| 3b | Proto-declared authz (success with scope, unauthenticated, permission denied, public method, no-bypass API (3b.6)) | `packages/testing/tests/parity/authorization.parity.test.ts` | **5** |
 | 4 | Streaming & cancellation (unary, server-stream, client-stream, bidi, unary cancel, stream mid-cancel) | `packages/testing/tests/parity/streaming.parity.test.ts` | **6** |
 | 5 | Error mapping (`ConnectError(NotFound)`, plain `Error` → `internal`, interceptor-thrown error) | `packages/testing/tests/parity/errors.parity.test.ts` | **3** |
 | 6 | HTTP / local coexistence (concurrent observation by one interceptor; `server.start()` not required for local invoke) | `packages/testing/tests/parity/coexistence.parity.test.ts` + `packages/core/tests/integration/localTransport.test.ts` | **2** |
 | 7a | OTEL tracing & metrics (unary spans, streaming events, error spans, metrics labels, trace-context propagation, instrument subset, `connectum.transport` attribute) | `packages/otel/tests/parity/otel.parity.test.ts` | **7** |
-| **Total** | | | **34** |
+| **Total** | | | **36** |
 
 Of these, **25 scenarios** (groups 3, 3a, 3b, 4, 5) go through the unified
 `transportParityTest()` driver in `@connectum/testing/parity` and produce a
@@ -74,7 +74,16 @@ coverage clears the 90 % target.
 
 1. Pick the right file in `packages/testing/tests/parity/` (or
    `packages/otel/tests/parity/` for observability).
-2. For most cases, wrap the scenario with
-   `transportParityTest("group N.M: short title", async ({ transport }) => …)`.
+2. For most cases, wrap the scenario with `transportParityTest`:
+
+   ```typescript
+   transportParityTest("group N.M: short title", {
+     services: [myRoutes],
+     scenario: async ({ transport }) => {
+       const client = createClient(MyService, transport);
+       return { response: await client.myMethod({ /* ... */ }) };
+     },
+   });
+   ```
 3. Run `./scripts/parity-suite.sh` locally.
 4. Update the table above.

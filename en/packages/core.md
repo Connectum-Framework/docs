@@ -145,8 +145,8 @@ interface Server {
   /** Current server state */
   readonly state: ServerState;
 
-  /** Underlying HTTP/2 transport (null until started) */
-  readonly transport: Http2SecureServer | Http2Server | null;
+  /** Underlying HTTP server (HTTP/1.1 or HTTP/2 depending on TLS / allowHTTP1 config; null until started) */
+  readonly transport: Http2SecureServer | Http2Server | HttpServer | null;
 
   /** Registered service routes */
   readonly routes: ReadonlyArray<ServiceRoute>;
@@ -166,13 +166,13 @@ interface Server {
 
 ```typescript
 interface Server {
-  /** Add a service route. Throws if server is already started. */
+  /** Add a service route. Throws if the server is already started, or if routes have already been materialized via local-transport access (e.g. a prior `server.localClient()`, `server.client()`, or `server.hasService()` call). Add services/interceptors/protocols before any local-transport access. */
   addService(service: ServiceRoute): void;
 
-  /** Add an interceptor. Throws if server is already started. */
+  /** Add an interceptor. Throws if the server is already started, or if routes have already been materialized via local-transport access (e.g. a prior `server.localClient()`, `server.client()`, or `server.hasService()` call). Add services/interceptors/protocols before any local-transport access. */
   addInterceptor(interceptor: Interceptor): void;
 
-  /** Add a protocol. Throws if server is already started. */
+  /** Add a protocol. Throws if the server is already started, or if routes have already been materialized via local-transport access (e.g. a prior `server.localClient()`, `server.client()`, or `server.hasService()` call). Add services/interceptors/protocols before any local-transport access. */
   addProtocol(protocol: ProtocolRegistration): void;
 }
 ```

@@ -224,6 +224,8 @@ function initProvider(options?: ProviderOptions): void;
 |--------|------|---------|-------------|
 | `serviceName` | `string` | `OTEL_SERVICE_NAME` or `npm_package_name` | Override service name |
 | `serviceVersion` | `string` | `npm_package_version` | Override service version |
+| `instanceId` | `string` | `OTEL_SERVICE_INSTANCE_ID` env | Sets `service.instance.id` on the resource; explicit option takes precedence over the env var |
+| `resourceAttributes` | `Record<string, string \| number \| boolean>` | `OTEL_RESOURCE_ATTRIBUTES` env | Extra resource attributes merged into all signals; explicit option takes precedence over the env var |
 | `settings` | `Partial<OTLPSettings>` | env-based | Override OTLP settings |
 
 #### `getProvider()`
@@ -274,6 +276,8 @@ const clientMetrics = createRpcClientMetrics(meter);
 | Variable | Values | Default | Description |
 |----------|--------|---------|-------------|
 | `OTEL_SERVICE_NAME` | string | `npm_package_name` | Service name for all telemetry |
+| `OTEL_SERVICE_INSTANCE_ID` | string | -- | Sets `service.instance.id` on the resource. The explicit `initProvider({ instanceId })` option takes precedence over this env var |
+| `OTEL_RESOURCE_ATTRIBUTES` | string (`k=v,k=v`) | -- | Extra resource attributes merged into all signals. The explicit `initProvider({ resourceAttributes })` option takes precedence over this env var |
 | `OTEL_TRACES_EXPORTER` | `console \| otlp/http \| otlp/grpc \| none` | -- | Trace exporter type |
 | `OTEL_METRICS_EXPORTER` | `console \| otlp/http \| otlp/grpc \| none` | -- | Metric exporter type |
 | `OTEL_LOGS_EXPORTER` | `console \| otlp/http \| otlp/grpc \| none` | -- | Log exporter type |
@@ -329,7 +333,7 @@ import {
 | `initProvider`, `getProvider`, `shutdownProvider` | `.` / `./provider` | Provider lifecycle |
 | `createRpcServerMetrics`, `createRpcClientMetrics` | `.` / `./metrics` | RPC metric factories |
 | `ATTR_*`, `ConnectErrorCode`, etc. | `.` / `./attributes` | Semantic conventions |
-| `ExporterType`, `getOTLPSettings`, etc. | `.` / `./config` | Configuration utilities |
+| `ExporterType`, `getOTLPSettings`, etc. | `.` | Configuration utilities |
 
 ## In-Process Transport
 

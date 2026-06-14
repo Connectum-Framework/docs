@@ -130,10 +130,10 @@ Guaranteed identical between in-process and HTTP:
 
 `@connectum/otel` instruments the in-process path through the same hooks as HTTP:
 
-- **Client span**: `SpanKind.CLIENT`, name `${rpc.service}/${rpc.method}`, attributes `rpc.system`, `rpc.service`, `rpc.method`, `rpc.grpc.status_code`, plus `connectum.transport="in-process"`.
-- **Server span**: `SpanKind.SERVER` with the same attribute set; established as a **child** of the client span via W3C Trace Context (`traceparent` / `tracestate`) carried through the in-memory `Headers`.
+- **Client span**: `SpanKind.CLIENT`, name `${rpc.service}/${rpc.method}`, attributes `rpc.system`, `rpc.service`, `rpc.method`, `rpc.connect_rpc.status_code`, plus `connectum.transport="in-process"`.
+- **Server span**: `SpanKind.SERVER` with the same attribute set. On the in-process path the server handler runs in the **same async context** as the client call, so the server span is established as a **child of the client span**: the parent comes from the active context (propagated directly in memory, no header round-trip), while a **Link** to the client span is also recorded from the extracted remote context. This is the in-process behaviour under the default `trustRemote: false`. On the HTTP path no async context is shared, so the same default yields a **root span with only the Link** (no parent) — pass `trustRemote: true` to `createOtelInterceptor` to make the server span adopt the extracted context as its parent on both paths, aligning them.
 - **Stream events**: `message.sent` and `message.received` are recorded on streaming spans identically to HTTP.
-- **Metrics**: `rpc.client.duration`, `rpc.server.duration`, `rpc.client.request.size`, `rpc.client.response.size`, `rpc.server.request.size`, `rpc.server.response.size`, and error counters are emitted with the same instrument names and label keys. Payload sizes are computed on the serialized protobuf form so they are directly comparable with HTTP. The only difference is an extra label `transport=in-process` (vs `transport=http`).
+- **Metrics**: `rpc.client.call.duration`, `rpc.server.call.duration`, `rpc.client.request.size`, `rpc.client.response.size`, `rpc.server.request.size`, `rpc.server.response.size`, and error counters are emitted with the same instrument names and label keys. Payload sizes are computed on the serialized protobuf form so they are directly comparable with HTTP. The only difference is an extra label `transport=in-process` (vs `transport=http`).
 
 Dashboards, alerts, and SLOs built over HTTP metrics continue to work after a service migrates to in-process invocation.
 
@@ -194,22 +194,29 @@ If a service is not registered locally and no fallback is provided, `server.clie
 `@connectum/testing` ships dedicated helpers for in-process testing:
 
 - **`createLocalClient(server, service)`** — concise client for unit and integration tests without binding ports.
-- **`transportParityTest(name, scenario)`** — driver that runs a single declarative scenario against both `createGrpcTransport({ baseUrl })` and `createLocalTransport(server)` and structurally diffs the observable outcome (response payload, headers, `ConnectError` fields, OTEL spans modulo `connectum.transport`, metrics modulo `transport` label). Any divergence fails the test.
+- **`transportParityTest(name, options)`** — driver that runs a single declarative scenario against both `createGrpcTransport({ baseUrl })` and `createLocalTransport(server)` and structurally diffs the observable outcome (response payload, headers, `ConnectError` fields, OTEL spans modulo `connectum.transport`, metrics modulo `transport` label). Any divergence fails the test.
 - **In-memory OTEL collectors** — `SpanExporter` and `MetricReader` helpers used by the parity driver for assertion on tracing and metrics output.
 
 Use the parity driver to guarantee that custom interceptors and proto-declared rules behave identically across transports:
 
 ```typescript
+import { ConnectError, createClient } from '@connectrpc/connect';
 import { transportParityTest } from '@connectum/testing';
 
-await transportParityTest('greeter.sayHello rejects empty name', {
-  // build the client over the provided transport
-  client: (transport) => createClient(GreeterService, transport),
-  // run the scenario and return observable outcome
-  scenario: async (client) => client.sayHello({ name: '' }),
-  expect: {
-    error: { code: 'invalid_argument' },
+transportParityTest('greeter.sayHello rejects empty name', {
+  services: [greeterRoutes],
+  scenario: async ({ transport }) => {
+    const client = createClient(GreeterService, transport);
+    try {
+      return { response: await client.sayHello({ name: '' }) };
+    } catch (err) {
+      const e = ConnectError.from(err);
+      return { error: { code: e.code, message: e.message } };
+    }
   },
+  // `compare` is optional; omitted here, the default structural diff asserts
+  // both transports produce an identical response/error/headers/spans/metrics
+  // (modulo the `connectum.transport` attribute and `transport` metric label).
 });
 ```
 
