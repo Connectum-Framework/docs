@@ -35,6 +35,8 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
         collapsed: true,
         items: [
             { text: 'Communication Patterns', link: '/en/guide/service-communication/patterns' },
+            { text: 'Service Catalog', link: '/en/guide/service-communication/service-catalog' },
+            { text: 'Remote Resolvers', link: '/en/guide/service-communication/resolvers' },
             { text: 'Client Interceptors', link: '/en/guide/service-communication/client-interceptors' },
         ],
     },
@@ -174,6 +176,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                     text: 'Migration',
                     items: [
                         { text: 'Changelog & Breaking Changes', link: '/en/migration/index' },
+                        { text: 'Service Catalog', link: '/en/migration/service-catalog' },
                     ],
                 },
             ],
@@ -210,6 +213,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'ADR-025: Package Versioning Strategy', link: '/en/contributing/adr/025-package-versioning-strategy' },
                         { text: 'ADR-026: EventBus Architecture', link: '/en/contributing/adr/026-eventbus-architecture' },
                         { text: 'ADR-027: External Contracts vs EventBus', link: '/en/contributing/adr/027-external-contracts-vs-eventbus' },
+                        { text: 'ADR-028: Service Catalog', link: '/en/contributing/adr/028-service-catalog' },
                     ],
                 },
             ],
