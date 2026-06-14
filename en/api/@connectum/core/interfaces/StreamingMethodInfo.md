@@ -2,7 +2,7 @@
 
 # Interface: StreamingMethodInfo
 
-Defined in: [packages/core/src/TransportValidation.ts:76](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L76)
+Defined in: [packages/core/src/TransportValidation.ts:76](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L76)
 
 A streaming method that requires HTTP/2.
 
@@ -12,7 +12,7 @@ A streaming method that requires HTTP/2.
 
 > `readonly` **kind**: `string`
 
-Defined in: [packages/core/src/TransportValidation.ts:82](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L82)
+Defined in: [packages/core/src/TransportValidation.ts:82](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L82)
 
 Streaming kind: `bidi_streaming`.
 
@@ -22,7 +22,7 @@ Streaming kind: `bidi_streaming`.
 
 > `readonly` **method**: `string`
 
-Defined in: [packages/core/src/TransportValidation.ts:80](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L80)
+Defined in: [packages/core/src/TransportValidation.ts:80](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L80)
 
 Method name (e.g. `StreamCodes`).
 
@@ -32,6 +32,6 @@ Method name (e.g. `StreamCodes`).
 
 > `readonly` **service**: `string`
 
-Defined in: [packages/core/src/TransportValidation.ts:78](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L78)
+Defined in: [packages/core/src/TransportValidation.ts:78](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L78)
 
 Fully qualified service typeName (e.g. `acme.v1.ScannerService`).

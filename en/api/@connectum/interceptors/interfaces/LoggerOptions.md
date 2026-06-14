@@ -2,7 +2,7 @@
 
 # Interface: LoggerOptions
 
-Defined in: [types.ts:45](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L45)
+Defined in: [types.ts:45](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/interceptors/src/types.ts#L45)
 
 Logger interceptor options
 
@@ -12,7 +12,7 @@ Logger interceptor options
 
 > `optional` **level?**: `"error"` \| `"warn"` \| `"debug"` \| `"info"`
 
-Defined in: [types.ts:50](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L50)
+Defined in: [types.ts:50](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/interceptors/src/types.ts#L50)
 
 Log level
 
@@ -28,7 +28,7 @@ Log level
 
 > `optional` **logger?**: (`message`, ...`args`) => `void`
 
-Defined in: [types.ts:62](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L62)
+Defined in: [types.ts:62](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/interceptors/src/types.ts#L62)
 
 Custom logger function
 
@@ -58,7 +58,7 @@ console[level]
 
 > `optional` **skipHealthCheck?**: `boolean`
 
-Defined in: [types.ts:56](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L56)
+Defined in: [types.ts:56](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/interceptors/src/types.ts#L56)
 
 Skip logging for health check services
 

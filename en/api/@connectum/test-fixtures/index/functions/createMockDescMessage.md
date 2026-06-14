@@ -4,7 +4,7 @@
 
 > **createMockDescMessage**(`typeName`, `options?`): `DescMessage`
 
-Defined in: [mock-desc.ts:109](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/test-fixtures/src/mock-desc.ts#L109)
+Defined in: [mock-desc.ts:109](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/test-fixtures/src/mock-desc.ts#L109)
 
 Create a mock DescMessage descriptor with all required structural
 properties.

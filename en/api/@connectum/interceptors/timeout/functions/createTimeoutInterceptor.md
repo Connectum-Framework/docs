@@ -4,7 +4,7 @@
 
 > **createTimeoutInterceptor**(`options?`): `Interceptor`
 
-Defined in: [timeout.ts:55](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/timeout.ts#L55)
+Defined in: [timeout.ts:55](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/interceptors/src/timeout.ts#L55)
 
 Create timeout interceptor
 

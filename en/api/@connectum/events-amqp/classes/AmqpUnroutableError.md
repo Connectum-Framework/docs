@@ -2,7 +2,7 @@
 
 # Class: AmqpUnroutableError
 
-Defined in: [packages/events-amqp/src/errors.ts:31](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events-amqp/src/errors.ts#L31)
+Defined in: [packages/events-amqp/src/errors.ts:31](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/events-amqp/src/errors.ts#L31)
 
 The broker returned a `mandatory` message as unroutable
 (`basic.return`): no queue is bound for the routing key.
@@ -17,7 +17,7 @@ The broker returned a `mandatory` message as unroutable
 
 > **new AmqpUnroutableError**(`message`, `routingKey`): `AmqpUnroutableError`
 
-Defined in: [packages/events-amqp/src/errors.ts:34](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events-amqp/src/errors.ts#L34)
+Defined in: [packages/events-amqp/src/errors.ts:34](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/events-amqp/src/errors.ts#L34)
 
 #### Parameters
 
@@ -79,7 +79,7 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 
 > `readonly` **routingKey**: `string`
 
-Defined in: [packages/events-amqp/src/errors.ts:32](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events-amqp/src/errors.ts#L32)
+Defined in: [packages/events-amqp/src/errors.ts:32](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/events-amqp/src/errors.ts#L32)
 
 ***
 

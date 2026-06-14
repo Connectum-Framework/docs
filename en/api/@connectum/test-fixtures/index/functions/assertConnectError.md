@@ -4,7 +4,7 @@
 
 > **assertConnectError**(`error`, `expectedCode`, `messagePattern?`): `asserts error is ConnectError`
 
-Defined in: [assertions.ts:44](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/test-fixtures/src/assertions.ts#L44)
+Defined in: [assertions.ts:44](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/test-fixtures/src/assertions.ts#L44)
 
 Assert that a thrown value is a ConnectError with the expected
 gRPC status code and, optionally, a message matching a pattern.

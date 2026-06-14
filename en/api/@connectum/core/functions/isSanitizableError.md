@@ -4,7 +4,7 @@
 
 > **isSanitizableError**(`err`): `err is Error & SanitizableError & { code: number }`
 
-Defined in: [packages/core/src/errors.ts:28](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/errors.ts#L28)
+Defined in: [packages/core/src/errors.ts:28](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/errors.ts#L28)
 
 Type guard for SanitizableError.
 

@@ -2,7 +2,7 @@
 
 # Class: AmqpConnectionError
 
-Defined in: [packages/events-amqp/src/errors.ts:25](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events-amqp/src/errors.ts#L25)
+Defined in: [packages/events-amqp/src/errors.ts:25](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/events-amqp/src/errors.ts#L25)
 
 Connection is absent, lost, or recovery is in progress / exhausted.
 Publishes during a disconnected window fail fast with this error;
@@ -18,7 +18,7 @@ in-flight confirms are rejected with it on connection loss.
 
 > **new AmqpConnectionError**(`message`, `options?`): `AmqpConnectionError`
 
-Defined in: [packages/events-amqp/src/errors.ts:14](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/events-amqp/src/errors.ts#L14)
+Defined in: [packages/events-amqp/src/errors.ts:14](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/events-amqp/src/errors.ts#L14)
 
 #### Parameters
 

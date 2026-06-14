@@ -22,7 +22,6 @@ Public API types for Server
 - [NodeRequest](type-aliases/NodeRequest.md)
 - [NodeResponse](type-aliases/NodeResponse.md)
 - [ServerState](type-aliases/ServerState.md)
-- [ServiceRoute](type-aliases/ServiceRoute.md)
 - [ShutdownHook](type-aliases/ShutdownHook.md)
 - [TransportServer](type-aliases/TransportServer.md)
 

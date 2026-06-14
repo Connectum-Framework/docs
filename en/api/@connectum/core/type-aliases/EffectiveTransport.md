@@ -4,7 +4,7 @@
 
 > **EffectiveTransport** = `object`
 
-Defined in: [packages/core/src/TransportValidation.ts:54](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L54)
+Defined in: [packages/core/src/TransportValidation.ts:54](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L54)
 
 Effective transport resolved from `tls` + `allowHTTP1`.
 
@@ -20,7 +20,7 @@ Effective transport resolved from `tls` + `allowHTTP1`.
 
 > `readonly` **H2C**: `"h2c"` = `"h2c"`
 
-Defined in: [packages/core/src/TransportValidation.ts:56](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L56)
+Defined in: [packages/core/src/TransportValidation.ts:56](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L56)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [packages/core/src/TransportValidation.ts:56](https://github.com/Con
 
 > `readonly` **PLAINTEXT\_H1**: `"plaintext-h1"` = `"plaintext-h1"`
 
-Defined in: [packages/core/src/TransportValidation.ts:55](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L55)
+Defined in: [packages/core/src/TransportValidation.ts:55](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L55)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: [packages/core/src/TransportValidation.ts:55](https://github.com/Con
 
 > `readonly` **TLS\_H1\_NEGOTIABLE**: `"tls-h1-negotiable"` = `"tls-h1-negotiable"`
 
-Defined in: [packages/core/src/TransportValidation.ts:57](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L57)
+Defined in: [packages/core/src/TransportValidation.ts:57](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L57)
 
 ***
 
@@ -44,4 +44,4 @@ Defined in: [packages/core/src/TransportValidation.ts:57](https://github.com/Con
 
 > `readonly` **TLS\_H2\_ONLY**: `"tls-h2-only"` = `"tls-h2-only"`
 
-Defined in: [packages/core/src/TransportValidation.ts:58](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L58)
+Defined in: [packages/core/src/TransportValidation.ts:58](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L58)

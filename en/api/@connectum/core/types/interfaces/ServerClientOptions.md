@@ -2,20 +2,18 @@
 
 # Interface: ServerClientOptions
 
-Defined in: [packages/core/src/types.ts:614](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L614)
+Defined in: [packages/core/src/types.ts:665](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/types.ts#L665)
 
 Options for [Server.client](Server.md#client).
 
 ## Properties
 
-### fallback?
+### endpoint?
 
-> `optional` **fallback?**: `Transport`
+> `optional` **endpoint?**: `string`
 
-Defined in: [packages/core/src/types.ts:622](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L622)
+Defined in: [packages/core/src/types.ts:671](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/types.ts#L671)
 
-Transport used when the requested service is NOT registered on this
-`Server`. Typically a remote HTTP/gRPC transport.
-
-If omitted and the service is not local, `Server.client()` throws
-`ConnectError` with `Code.Unimplemented`.
+Opaque endpoint hint forwarded to the configured `remoteResolver` when the
+requested service is not mounted locally (polymorphic deployments — one
+proto served at several endpoints). Ignored for locally-mounted services.

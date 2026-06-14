@@ -2,7 +2,7 @@
 
 # Class: InMemoryMetricCollector
 
-Defined in: [testing/src/otel-collectors.ts:191](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L191)
+Defined in: [testing/src/otel-collectors.ts:191](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L191)
 
 In-memory metric collector. Owns its own `MeterProvider` and periodic
 reader. `flush()` performs a forced collect+export cycle synchronously
@@ -14,7 +14,7 @@ reader. `flush()` performs a forced collect+export cycle synchronously
 
 > **new InMemoryMetricCollector**(): `InMemoryMetricCollector`
 
-Defined in: [testing/src/otel-collectors.ts:196](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L196)
+Defined in: [testing/src/otel-collectors.ts:196](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L196)
 
 #### Returns
 
@@ -26,7 +26,7 @@ Defined in: [testing/src/otel-collectors.ts:196](https://github.com/Connectum-Fr
 
 > `readonly` **exporter**: `InMemoryMetricExporter`
 
-Defined in: [testing/src/otel-collectors.ts:192](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L192)
+Defined in: [testing/src/otel-collectors.ts:192](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L192)
 
 ***
 
@@ -34,7 +34,7 @@ Defined in: [testing/src/otel-collectors.ts:192](https://github.com/Connectum-Fr
 
 > `readonly` **provider**: `MeterProvider`
 
-Defined in: [testing/src/otel-collectors.ts:193](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L193)
+Defined in: [testing/src/otel-collectors.ts:193](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L193)
 
 ***
 
@@ -42,7 +42,7 @@ Defined in: [testing/src/otel-collectors.ts:193](https://github.com/Connectum-Fr
 
 > `readonly` **reader**: `PeriodicExportingMetricReader`
 
-Defined in: [testing/src/otel-collectors.ts:194](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L194)
+Defined in: [testing/src/otel-collectors.ts:194](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L194)
 
 ## Methods
 
@@ -50,7 +50,7 @@ Defined in: [testing/src/otel-collectors.ts:194](https://github.com/Connectum-Fr
 
 > **dispose**(): `Promise`\<`void`\>
 
-Defined in: [testing/src/otel-collectors.ts:229](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L229)
+Defined in: [testing/src/otel-collectors.ts:229](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L229)
 
 #### Returns
 
@@ -62,7 +62,7 @@ Defined in: [testing/src/otel-collectors.ts:229](https://github.com/Connectum-Fr
 
 > **flush**(): `Promise`\<[`NormalizedMetric`](../interfaces/NormalizedMetric.md)[]\>
 
-Defined in: [testing/src/otel-collectors.ts:208](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L208)
+Defined in: [testing/src/otel-collectors.ts:208](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L208)
 
 #### Returns
 
@@ -74,7 +74,7 @@ Defined in: [testing/src/otel-collectors.ts:208](https://github.com/Connectum-Fr
 
 > **reset**(): `void`
 
-Defined in: [testing/src/otel-collectors.ts:225](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L225)
+Defined in: [testing/src/otel-collectors.ts:225](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L225)
 
 #### Returns
 

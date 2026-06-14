@@ -2,7 +2,7 @@
 
 # Interface: ProtocolRegistration
 
-Defined in: [packages/core/src/types.ts:84](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L84)
+Defined in: [packages/core/src/types.ts:85](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/types.ts#L85)
 
 Protocol registration interface
 
@@ -31,7 +31,7 @@ const server = createServer({
 
 > `optional` **httpHandler?**: [`HttpHandler`](../type-aliases/HttpHandler.md)
 
-Defined in: [packages/core/src/types.ts:92](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L92)
+Defined in: [packages/core/src/types.ts:93](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/types.ts#L93)
 
 Optional HTTP handler for fallback routing (e.g., /healthz endpoint)
 
@@ -41,7 +41,7 @@ Optional HTTP handler for fallback routing (e.g., /healthz endpoint)
 
 > `readonly` **name**: `string`
 
-Defined in: [packages/core/src/types.ts:86](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L86)
+Defined in: [packages/core/src/types.ts:87](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/types.ts#L87)
 
 Protocol name for identification (e.g., "healthcheck", "reflection")
 
@@ -51,7 +51,7 @@ Protocol name for identification (e.g., "healthcheck", "reflection")
 
 > **register**(`router`, `context`): `void`
 
-Defined in: [packages/core/src/types.ts:89](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/types.ts#L89)
+Defined in: [packages/core/src/types.ts:90](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/types.ts#L90)
 
 Register protocol services on the router
 

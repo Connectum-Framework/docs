@@ -2,7 +2,7 @@
 
 # Interface: AuthzInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:244](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/types.ts#L244)
+Defined in: [packages/auth/src/types.ts:244](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/types.ts#L244)
 
 Authorization interceptor options
 
@@ -12,7 +12,7 @@ Authorization interceptor options
 
 > `optional` **authorize?**: (`context`, `req`) => `boolean` \| `Promise`\<`boolean`\>
 
-Defined in: [packages/auth/src/types.ts:266](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/types.ts#L266)
+Defined in: [packages/auth/src/types.ts:266](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/types.ts#L266)
 
 Programmatic authorization callback.
 Called after rule evaluation if no rule matched,
@@ -50,7 +50,7 @@ true if authorized, false otherwise
 
 > `optional` **defaultPolicy?**: [`AuthzEffect`](../type-aliases/AuthzEffect.md)
 
-Defined in: [packages/auth/src/types.ts:249](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/types.ts#L249)
+Defined in: [packages/auth/src/types.ts:249](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/types.ts#L249)
 
 Default policy when no rule matches.
 
@@ -66,7 +66,7 @@ Default policy when no rule matches.
 
 > `optional` **rules?**: [`AuthzRule`](AuthzRule.md)[]
 
-Defined in: [packages/auth/src/types.ts:255](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/types.ts#L255)
+Defined in: [packages/auth/src/types.ts:255](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/types.ts#L255)
 
 Declarative authorization rules.
 Evaluated in order; first matching rule wins.
@@ -77,7 +77,7 @@ Evaluated in order; first matching rule wins.
 
 > `optional` **skipMethods?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:272](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/types.ts#L272)
+Defined in: [packages/auth/src/types.ts:272](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/types.ts#L272)
 
 Methods to skip authorization for.
 
