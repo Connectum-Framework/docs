@@ -2,7 +2,7 @@
 
 # Interface: SanitizableError
 
-Defined in: [packages/core/src/errors.ts:17](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/errors.ts#L17)
+Defined in: [packages/core/src/errors.ts:17](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/errors.ts#L17)
 
 Sanitizable error interface.
 
@@ -15,7 +15,7 @@ but expose only a safe message to clients.
 
 > `readonly` **clientMessage**: `string`
 
-Defined in: [packages/core/src/errors.ts:18](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/errors.ts#L18)
+Defined in: [packages/core/src/errors.ts:18](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/errors.ts#L18)
 
 ***
 
@@ -23,4 +23,4 @@ Defined in: [packages/core/src/errors.ts:18](https://github.com/Connectum-Framew
 
 > `readonly` **serverDetails**: `Readonly`\<`Record`\<`string`, `unknown`\>\>
 
-Defined in: [packages/core/src/errors.ts:19](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/errors.ts#L19)
+Defined in: [packages/core/src/errors.ts:19](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/errors.ts#L19)

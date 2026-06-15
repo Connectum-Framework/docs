@@ -2,7 +2,7 @@
 
 # Interface: ResourceAttributeInputs
 
-Defined in: [packages/otel/src/provider.ts:82](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/otel/src/provider.ts#L82)
+Defined in: [packages/otel/src/provider.ts:82](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/otel/src/provider.ts#L82)
 
 Inputs for [buildResourceAttributes](../functions/buildResourceAttributes.md).
 
@@ -12,7 +12,7 @@ Inputs for [buildResourceAttributes](../functions/buildResourceAttributes.md).
 
 > `optional` **env?**: `object`
 
-Defined in: [packages/otel/src/provider.ts:88](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/otel/src/provider.ts#L88)
+Defined in: [packages/otel/src/provider.ts:88](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/otel/src/provider.ts#L88)
 
 Environment source (defaults to `process.env`).
 
@@ -30,7 +30,7 @@ Environment source (defaults to `process.env`).
 
 > `optional` **instanceId?**: `string`
 
-Defined in: [packages/otel/src/provider.ts:85](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/otel/src/provider.ts#L85)
+Defined in: [packages/otel/src/provider.ts:85](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/otel/src/provider.ts#L85)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [packages/otel/src/provider.ts:85](https://github.com/Connectum-Fram
 
 > `optional` **resourceAttributes?**: `Record`\<`string`, `string` \| `number` \| `boolean`\>
 
-Defined in: [packages/otel/src/provider.ts:86](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/otel/src/provider.ts#L86)
+Defined in: [packages/otel/src/provider.ts:86](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/otel/src/provider.ts#L86)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [packages/otel/src/provider.ts:86](https://github.com/Connectum-Fram
 
 > **serviceName**: `string`
 
-Defined in: [packages/otel/src/provider.ts:83](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/otel/src/provider.ts#L83)
+Defined in: [packages/otel/src/provider.ts:83](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/otel/src/provider.ts#L83)
 
 ***
 
@@ -54,4 +54,4 @@ Defined in: [packages/otel/src/provider.ts:83](https://github.com/Connectum-Fram
 
 > **serviceVersion**: `string`
 
-Defined in: [packages/otel/src/provider.ts:84](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/otel/src/provider.ts#L84)
+Defined in: [packages/otel/src/provider.ts:84](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/otel/src/provider.ts#L84)

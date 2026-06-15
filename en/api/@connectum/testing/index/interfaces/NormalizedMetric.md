@@ -2,7 +2,7 @@
 
 # Interface: NormalizedMetric
 
-Defined in: [testing/src/otel-collectors.ts:48](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L48)
+Defined in: [testing/src/otel-collectors.ts:48](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/otel-collectors.ts#L48)
 
 Structural representation of a single metric data point.
 
@@ -12,7 +12,7 @@ Structural representation of a single metric data point.
 
 > **description**: `string`
 
-Defined in: [testing/src/otel-collectors.ts:50](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L50)
+Defined in: [testing/src/otel-collectors.ts:50](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/otel-collectors.ts#L50)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [testing/src/otel-collectors.ts:50](https://github.com/Connectum-Fra
 
 > **name**: `string`
 
-Defined in: [testing/src/otel-collectors.ts:49](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L49)
+Defined in: [testing/src/otel-collectors.ts:49](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/otel-collectors.ts#L49)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [testing/src/otel-collectors.ts:49](https://github.com/Connectum-Fra
 
 > **points**: `object`[]
 
-Defined in: [testing/src/otel-collectors.ts:53](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L53)
+Defined in: [testing/src/otel-collectors.ts:53](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/otel-collectors.ts#L53)
 
 #### attributes
 
@@ -44,7 +44,7 @@ Defined in: [testing/src/otel-collectors.ts:53](https://github.com/Connectum-Fra
 
 > **type**: `string`
 
-Defined in: [testing/src/otel-collectors.ts:52](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L52)
+Defined in: [testing/src/otel-collectors.ts:52](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/otel-collectors.ts#L52)
 
 ***
 
@@ -52,4 +52,4 @@ Defined in: [testing/src/otel-collectors.ts:52](https://github.com/Connectum-Fra
 
 > **unit**: `string`
 
-Defined in: [testing/src/otel-collectors.ts:51](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/otel-collectors.ts#L51)
+Defined in: [testing/src/otel-collectors.ts:51](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/otel-collectors.ts#L51)

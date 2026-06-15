@@ -37,6 +37,7 @@
 - [EffectiveTransport](type-aliases/EffectiveTransport-1.md)
 - [RemoteResolver](type-aliases/RemoteResolver.md)
 - [ServiceCatalog](type-aliases/ServiceCatalog.md)
+- [ServiceOptions](type-aliases/ServiceOptions.md)
 - [StreamReturn](type-aliases/StreamReturn.md)
 - [TransportValidationMode](type-aliases/TransportValidationMode.md)
 - [TransportValidationMode](type-aliases/TransportValidationMode-1.md)

@@ -2,7 +2,7 @@
 
 # Interface: OTLPSettings
 
-Defined in: [packages/otel/src/config.ts:31](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/otel/src/config.ts#L31)
+Defined in: [packages/otel/src/config.ts:31](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/otel/src/config.ts#L31)
 
 OTLP settings for traces, metrics, and logs
 
@@ -12,7 +12,7 @@ OTLP settings for traces, metrics, and logs
 
 > **logs**: [`ExporterType`](../type-aliases/ExporterType.md)
 
-Defined in: [packages/otel/src/config.ts:34](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/otel/src/config.ts#L34)
+Defined in: [packages/otel/src/config.ts:34](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/otel/src/config.ts#L34)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [packages/otel/src/config.ts:34](https://github.com/Connectum-Framew
 
 > **metrics**: [`ExporterType`](../type-aliases/ExporterType.md)
 
-Defined in: [packages/otel/src/config.ts:33](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/otel/src/config.ts#L33)
+Defined in: [packages/otel/src/config.ts:33](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/otel/src/config.ts#L33)
 
 ***
 
@@ -28,4 +28,4 @@ Defined in: [packages/otel/src/config.ts:33](https://github.com/Connectum-Framew
 
 > **traces**: [`ExporterType`](../type-aliases/ExporterType.md)
 
-Defined in: [packages/otel/src/config.ts:32](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/otel/src/config.ts#L32)
+Defined in: [packages/otel/src/config.ts:32](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/otel/src/config.ts#L32)

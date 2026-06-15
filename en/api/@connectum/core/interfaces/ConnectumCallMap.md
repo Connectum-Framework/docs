@@ -2,7 +2,7 @@
 
 # Interface: ConnectumCallMap
 
-Defined in: [packages/core/src/serviceCatalog.ts:31](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/serviceCatalog.ts#L31)
+Defined in: [packages/core/src/serviceCatalog.ts:31](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/serviceCatalog.ts#L31)
 
 Module-augmentation target for type-safe **unary** `ctx.call(method, request)`.
 
@@ -17,7 +17,7 @@ untyped rather than a hard error).
 
 > **echo.v1.EchoService/Echo**: `object`
 
-Defined in: [packages/core/tests/integration/ctxCall.test.ts:31](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/tests/integration/ctxCall.test.ts#L31)
+Defined in: [packages/core/tests/integration/ctxCall.test.ts:31](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/tests/integration/ctxCall.test.ts#L31)
 
 #### request
 
@@ -33,7 +33,23 @@ Defined in: [packages/core/tests/integration/ctxCall.test.ts:31](https://github.
 
 > **echo.v1.EchoService/Nope**: `object`
 
-Defined in: [packages/core/tests/integration/ctxCall.test.ts:34](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/tests/integration/ctxCall.test.ts#L34)
+Defined in: [packages/core/tests/integration/ctxCall.test.ts:34](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/tests/integration/ctxCall.test.ts#L34)
+
+#### request
+
+> **request**: `EchoRequest`
+
+#### response
+
+> **response**: `EchoResponse`
+
+***
+
+### echo.v1.EchoService/RateLimitedEcho
+
+> **echo.v1.EchoService/RateLimitedEcho**: `object`
+
+Defined in: [packages/core/tests/integration/ctxCallErrorTrailers.test.ts:23](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/tests/integration/ctxCallErrorTrailers.test.ts#L23)
 
 #### request
 
@@ -49,7 +65,7 @@ Defined in: [packages/core/tests/integration/ctxCall.test.ts:34](https://github.
 
 > **ghost.v1.GhostService/Vanish**: `object`
 
-Defined in: [packages/core/tests/integration/ctxCall.test.ts:33](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/tests/integration/ctxCall.test.ts#L33)
+Defined in: [packages/core/tests/integration/ctxCall.test.ts:33](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/tests/integration/ctxCall.test.ts#L33)
 
 #### request
 
@@ -65,7 +81,7 @@ Defined in: [packages/core/tests/integration/ctxCall.test.ts:33](https://github.
 
 > **streaming.v1.StreamingService/Echo**: `object`
 
-Defined in: [packages/core/tests/integration/ctxCall.test.ts:32](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/tests/integration/ctxCall.test.ts#L32)
+Defined in: [packages/core/tests/integration/ctxCall.test.ts:32](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/tests/integration/ctxCall.test.ts#L32)
 
 #### request
 

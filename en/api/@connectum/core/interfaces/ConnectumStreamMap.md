@@ -2,7 +2,7 @@
 
 # Interface: ConnectumStreamMap
 
-Defined in: [packages/core/src/serviceCatalog.ts:42](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/serviceCatalog.ts#L42)
+Defined in: [packages/core/src/serviceCatalog.ts:42](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/serviceCatalog.ts#L42)
 
 Module-augmentation target for type-safe **streaming** `ctx.stream(method, ...)`.
 
@@ -17,7 +17,7 @@ Augmented per streaming RPC, keyed `"<typeName>/<method>"` →
 
 > **streaming.v1.StreamingService/Bidi**: `object`
 
-Defined in: [packages/core/tests/integration/ctxStream.test.ts:28](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/tests/integration/ctxStream.test.ts#L28)
+Defined in: [packages/core/tests/integration/ctxStream.test.ts:28](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/tests/integration/ctxStream.test.ts#L28)
 
 #### kind
 
@@ -37,7 +37,7 @@ Defined in: [packages/core/tests/integration/ctxStream.test.ts:28](https://githu
 
 > **streaming.v1.StreamingService/Client**: `object`
 
-Defined in: [packages/core/tests/integration/ctxStream.test.ts:27](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/tests/integration/ctxStream.test.ts#L27)
+Defined in: [packages/core/tests/integration/ctxStream.test.ts:27](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/tests/integration/ctxStream.test.ts#L27)
 
 #### kind
 
@@ -57,7 +57,7 @@ Defined in: [packages/core/tests/integration/ctxStream.test.ts:27](https://githu
 
 > **streaming.v1.StreamingService/Server**: `object`
 
-Defined in: [packages/core/tests/integration/ctxStream.test.ts:26](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/tests/integration/ctxStream.test.ts#L26)
+Defined in: [packages/core/tests/integration/ctxStream.test.ts:26](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/tests/integration/ctxStream.test.ts#L26)
 
 #### kind
 

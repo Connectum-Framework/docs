@@ -2,7 +2,7 @@
 
 # Interface: NatsConsumerOptions
 
-Defined in: [types.ts:41](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/events-nats/src/types.ts#L41)
+Defined in: [types.ts:41](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-nats/src/types.ts#L41)
 
 Options for JetStream consumer behaviour.
 
@@ -12,7 +12,7 @@ Options for JetStream consumer behaviour.
 
 > `readonly` `optional` **ackWait?**: `number`
 
-Defined in: [types.ts:58](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/events-nats/src/types.ts#L58)
+Defined in: [types.ts:58](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-nats/src/types.ts#L58)
 
 Ack wait timeout in milliseconds.
 After this period an unacknowledged message is redelivered.
@@ -29,7 +29,7 @@ After this period an unacknowledged message is redelivered.
 
 > `readonly` `optional` **deliverPolicy?**: `"new"` \| `"all"` \| `"last"`
 
-Defined in: [types.ts:50](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/events-nats/src/types.ts#L50)
+Defined in: [types.ts:50](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-nats/src/types.ts#L50)
 
 Deliver policy for new consumers.
 - `"new"` — only messages published after consumer creation
@@ -48,7 +48,7 @@ Deliver policy for new consumers.
 
 > `readonly` `optional` **maxDeliver?**: `number`
 
-Defined in: [types.ts:66](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/events-nats/src/types.ts#L66)
+Defined in: [types.ts:66](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-nats/src/types.ts#L66)
 
 Maximum number of delivery attempts before the message
 is discarded by the server.

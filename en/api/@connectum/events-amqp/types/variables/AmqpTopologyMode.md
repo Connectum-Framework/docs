@@ -4,7 +4,7 @@
 
 > `const` **AmqpTopologyMode**: `object`
 
-Defined in: [packages/events-amqp/src/types.ts:131](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/events-amqp/src/types.ts#L131)
+Defined in: [packages/events-amqp/src/types.ts:131](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-amqp/src/types.ts#L131)
 
 Topology establishment mode.
 

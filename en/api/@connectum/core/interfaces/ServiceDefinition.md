@@ -2,7 +2,7 @@
 
 # Interface: ServiceDefinition
 
-Defined in: [packages/core/src/defineService.ts:42](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/defineService.ts#L42)
+Defined in: [packages/core/src/defineService.ts:50](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/defineService.ts#L50)
 
 A service ready to be mounted: its proto descriptor plus a `register` closure
 that wires the handlers onto a `ConnectRouter`. Produced by [defineService](../functions/defineService.md)
@@ -14,7 +14,7 @@ and [defineLazyService](../functions/defineLazyService.md); consumed by `createS
 
 > `readonly` **descriptor**: `DescService`
 
-Defined in: [packages/core/src/defineService.ts:44](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/defineService.ts#L44)
+Defined in: [packages/core/src/defineService.ts:52](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/defineService.ts#L52)
 
 The proto service descriptor (carries `typeName` and `file`).
 
@@ -24,7 +24,7 @@ The proto service descriptor (carries `typeName` and `file`).
 
 > `readonly` **register**: (`router`, `ctx`) => `void`
 
-Defined in: [packages/core/src/defineService.ts:46](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/defineService.ts#L46)
+Defined in: [packages/core/src/defineService.ts:54](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/defineService.ts#L54)
 
 **`Internal`**
 

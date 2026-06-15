@@ -4,7 +4,7 @@
 
 > **createAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/auth-interceptor.ts:81](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/auth-interceptor.ts#L81)
+Defined in: [packages/auth/src/auth-interceptor.ts:81](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/auth/src/auth-interceptor.ts#L81)
 
 Create a generic authentication interceptor.
 

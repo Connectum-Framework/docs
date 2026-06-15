@@ -2,7 +2,7 @@
 
 # Interface: CreateMockContextOptions
 
-Defined in: [testing/src/mockContext.ts:22](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/mockContext.ts#L22)
+Defined in: [testing/src/mockContext.ts:22](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/mockContext.ts#L22)
 
 Options for [createMockContext](../functions/createMockContext.md).
 
@@ -12,7 +12,7 @@ Options for [createMockContext](../functions/createMockContext.md).
 
 > `readonly` **catalog**: `ServiceCatalog`
 
-Defined in: [testing/src/mockContext.ts:24](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/mockContext.ts#L24)
+Defined in: [testing/src/mockContext.ts:24](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/mockContext.ts#L24)
 
 The catalog the handler-under-test calls into.
 
@@ -22,7 +22,7 @@ The catalog the handler-under-test calls into.
 
 > `readonly` **mocks**: readonly [`MockService`](MockService.md)[]
 
-Defined in: [testing/src/mockContext.ts:26](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/mockContext.ts#L26)
+Defined in: [testing/src/mockContext.ts:26](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/mockContext.ts#L26)
 
 Mock implementations served via the catalog's resolver path.
 
@@ -32,7 +32,7 @@ Mock implementations served via the catalog's resolver path.
 
 > `readonly` `optional` **outgoingInterceptors?**: readonly `Interceptor`[]
 
-Defined in: [testing/src/mockContext.ts:28](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/mockContext.ts#L28)
+Defined in: [testing/src/mockContext.ts:28](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/mockContext.ts#L28)
 
 Optional outgoing interceptors (applied exactly as in production).
 
@@ -42,7 +42,7 @@ Optional outgoing interceptors (applied exactly as in production).
 
 > `readonly` `optional` **propagateHeaders?**: readonly `string`[]
 
-Defined in: [testing/src/mockContext.ts:34](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/mockContext.ts#L34)
+Defined in: [testing/src/mockContext.ts:34](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/mockContext.ts#L34)
 
 Optional header names propagated onto outgoing calls (default none).
 
@@ -52,7 +52,7 @@ Optional header names propagated onto outgoing calls (default none).
 
 > `readonly` `optional` **requestHeader?**: `HeadersInit`
 
-Defined in: [testing/src/mockContext.ts:30](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/mockContext.ts#L30)
+Defined in: [testing/src/mockContext.ts:30](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/mockContext.ts#L30)
 
 Optional inbound headers (seen by `ctx.requestHeader` + header propagation).
 
@@ -62,6 +62,6 @@ Optional inbound headers (seen by `ctx.requestHeader` + header propagation).
 
 > `readonly` `optional` **timeoutMs?**: `number`
 
-Defined in: [testing/src/mockContext.ts:32](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/testing/src/mockContext.ts#L32)
+Defined in: [testing/src/mockContext.ts:32](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/testing/src/mockContext.ts#L32)
 
 Optional inbound deadline in ms (drives the `ctx.timeoutMs()` cascade).

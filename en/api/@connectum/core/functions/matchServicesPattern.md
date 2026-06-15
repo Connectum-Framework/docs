@@ -4,7 +4,7 @@
 
 > **matchServicesPattern**(`pattern`, `names`): `string`[]
 
-Defined in: [packages/core/src/enabledServices.ts:31](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/enabledServices.ts#L31)
+Defined in: [packages/core/src/enabledServices.ts:31](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/enabledServices.ts#L31)
 
 Return the subset of `names` matching a glob `pattern`, where `*` matches any
 run of characters (including dots). E.g. `"acme.*"` matches

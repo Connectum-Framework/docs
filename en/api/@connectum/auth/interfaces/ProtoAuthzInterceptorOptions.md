@@ -2,7 +2,7 @@
 
 # Interface: ProtoAuthzInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:398](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/types.ts#L398)
+Defined in: [packages/auth/src/types.ts:398](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/auth/src/types.ts#L398)
 
 Proto-based authorization interceptor options.
 
@@ -15,7 +15,7 @@ rules defined in .proto files. Falls back to programmatic rules and callbacks.
 
 > `optional` **authorize?**: (`context`, `req`) => `boolean` \| `Promise`\<`boolean`\>
 
-Defined in: [packages/auth/src/types.ts:417](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/types.ts#L417)
+Defined in: [packages/auth/src/types.ts:417](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/auth/src/types.ts#L417)
 
 Programmatic authorization callback.
 Called when neither proto options nor programmatic rules match.
@@ -52,7 +52,7 @@ true if authorized, false otherwise
 
 > `optional` **defaultPolicy?**: [`AuthzEffect`](../type-aliases/AuthzEffect.md)
 
-Defined in: [packages/auth/src/types.ts:403](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/types.ts#L403)
+Defined in: [packages/auth/src/types.ts:403](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/auth/src/types.ts#L403)
 
 Default policy when no proto option and no rule match.
 
@@ -68,7 +68,7 @@ Default policy when no proto option and no rule match.
 
 > `optional` **rules?**: [`AuthzRule`](AuthzRule.md)[]
 
-Defined in: [packages/auth/src/types.ts:408](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/types.ts#L408)
+Defined in: [packages/auth/src/types.ts:408](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/auth/src/types.ts#L408)
 
 Additional programmatic rules, evaluated after proto options.
 Rules are evaluated in order; first matching rule wins.

@@ -4,7 +4,7 @@
 
 > **TransportValidationMode** = `object`
 
-Defined in: [packages/core/src/TransportValidation.ts:37](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L37)
+Defined in: [packages/core/src/TransportValidation.ts:37](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/TransportValidation.ts#L37)
 
 Validation severity.
 
@@ -14,7 +14,7 @@ Validation severity.
 
 > `readonly` **ERROR**: `"error"` = `"error"`
 
-Defined in: [packages/core/src/TransportValidation.ts:38](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L38)
+Defined in: [packages/core/src/TransportValidation.ts:38](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/TransportValidation.ts#L38)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/core/src/TransportValidation.ts:38](https://github.com/Con
 
 > `readonly` **OFF**: `"off"` = `"off"`
 
-Defined in: [packages/core/src/TransportValidation.ts:40](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L40)
+Defined in: [packages/core/src/TransportValidation.ts:40](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/TransportValidation.ts#L40)
 
 ***
 
@@ -30,4 +30,4 @@ Defined in: [packages/core/src/TransportValidation.ts:40](https://github.com/Con
 
 > `readonly` **WARN**: `"warn"` = `"warn"`
 
-Defined in: [packages/core/src/TransportValidation.ts:39](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/TransportValidation.ts#L39)
+Defined in: [packages/core/src/TransportValidation.ts:39](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/TransportValidation.ts#L39)

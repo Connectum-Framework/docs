@@ -2,7 +2,7 @@
 
 # Interface: AuthzDeniedDetails
 
-Defined in: [packages/auth/src/errors.ts:14](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/errors.ts#L14)
+Defined in: [packages/auth/src/errors.ts:14](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/auth/src/errors.ts#L14)
 
 Details for authorization denied errors.
 
@@ -12,7 +12,7 @@ Details for authorization denied errors.
 
 > `readonly` `optional` **requiredRoles?**: readonly `string`[]
 
-Defined in: [packages/auth/src/errors.ts:16](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/errors.ts#L16)
+Defined in: [packages/auth/src/errors.ts:16](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/auth/src/errors.ts#L16)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [packages/auth/src/errors.ts:16](https://github.com/Connectum-Framew
 
 > `readonly` `optional` **requiredScopes?**: readonly `string`[]
 
-Defined in: [packages/auth/src/errors.ts:17](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/errors.ts#L17)
+Defined in: [packages/auth/src/errors.ts:17](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/auth/src/errors.ts#L17)
 
 ***
 
@@ -28,4 +28,4 @@ Defined in: [packages/auth/src/errors.ts:17](https://github.com/Connectum-Framew
 
 > `readonly` **ruleName**: `string`
 
-Defined in: [packages/auth/src/errors.ts:15](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/auth/src/errors.ts#L15)
+Defined in: [packages/auth/src/errors.ts:15](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/auth/src/errors.ts#L15)

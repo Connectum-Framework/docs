@@ -2,7 +2,7 @@
 
 # Interface: BidiStreamHandle\<Req, Res\>
 
-Defined in: [packages/core/src/context.ts:84](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/context.ts#L84)
+Defined in: [packages/core/src/context.ts:84](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/context.ts#L84)
 
 Push handle for a bidi-streaming catalog call: `send()` requests while
 iterating `responses`; `close()` ends only the request (send) half — the
@@ -24,7 +24,7 @@ response half keeps yielding until the server completes.
 
 > `readonly` **responses**: `AsyncIterable`\<`Res`\>
 
-Defined in: [packages/core/src/context.ts:90](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/context.ts#L90)
+Defined in: [packages/core/src/context.ts:90](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/context.ts#L90)
 
 The server's response messages, in order.
 
@@ -34,7 +34,7 @@ The server's response messages, in order.
 
 > **close**(): `void`
 
-Defined in: [packages/core/src/context.ts:88](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/context.ts#L88)
+Defined in: [packages/core/src/context.ts:88](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/context.ts#L88)
 
 End the request (send) half; the response half is unaffected.
 
@@ -48,7 +48,7 @@ End the request (send) half; the response half is unaffected.
 
 > **send**(`request`): `void`
 
-Defined in: [packages/core/src/context.ts:86](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/context.ts#L86)
+Defined in: [packages/core/src/context.ts:86](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/context.ts#L86)
 
 Enqueue one request message.
 

@@ -4,7 +4,7 @@
 
 > **ExporterType** = *typeof* [`ExporterType`](../variables/ExporterType.md)\[keyof *typeof* [`ExporterType`](../variables/ExporterType.md)\]
 
-Defined in: [packages/otel/src/config.ts:19](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/otel/src/config.ts#L19)
+Defined in: [packages/otel/src/config.ts:19](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/otel/src/config.ts#L19)
 
 Available exporter types
 

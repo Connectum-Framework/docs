@@ -2,9 +2,9 @@
 
 # Function: defineLazyService()
 
-> **defineLazyService**\<`S`\>(`descriptor`, `factory`): [`ServiceDefinition`](../interfaces/ServiceDefinition.md)
+> **defineLazyService**\<`S`\>(`descriptor`, `factory`, `options?`): [`ServiceDefinition`](../interfaces/ServiceDefinition.md)
 
-Defined in: [packages/core/src/defineService.ts:80](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/defineService.ts#L80)
+Defined in: [packages/core/src/defineService.ts:91](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/defineService.ts#L91)
 
 Define a service whose handlers (and their dependencies) are created lazily.
 
@@ -28,6 +28,10 @@ for DI-heavy monoliths where wiring a service is expensive.
 ### factory
 
 () => [`ConnectumServiceImpl`](../type-aliases/ConnectumServiceImpl.md)\<`S`\>
+
+### options?
+
+`Partial`\<`UniversalHandlerOptions`\>
 
 ## Returns
 

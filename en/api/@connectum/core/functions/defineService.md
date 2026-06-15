@@ -2,11 +2,14 @@
 
 # Function: defineService()
 
-> **defineService**\<`S`\>(`descriptor`, `handlers`): [`ServiceDefinition`](../interfaces/ServiceDefinition.md)
+> **defineService**\<`S`\>(`descriptor`, `handlers`, `options?`): [`ServiceDefinition`](../interfaces/ServiceDefinition.md)
 
-Defined in: [packages/core/src/defineService.ts:63](https://github.com/Connectum-Framework/connectum/blob/463fc8d9fdd1405669507455906d7d32df3a12d9/packages/core/src/defineService.ts#L63)
+Defined in: [packages/core/src/defineService.ts:74](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/defineService.ts#L74)
 
 Define a service from its descriptor and handler map.
+
+Pass [ServiceOptions](../type-aliases/ServiceOptions.md) to set per-service handler options, e.g.
+interceptors applied to every method of this service:
 
 ## Type Parameters
 
@@ -24,6 +27,10 @@ Define a service from its descriptor and handler map.
 
 [`ConnectumServiceImpl`](../type-aliases/ConnectumServiceImpl.md)\<`S`\>
 
+### options?
+
+`Partial`\<`UniversalHandlerOptions`\>
+
 ## Returns
 
 [`ServiceDefinition`](../interfaces/ServiceDefinition.md)
@@ -36,6 +43,6 @@ const greeter = defineService(GreeterService, {
     // ctx.call(...) is available for cross-service calls
     return { message: `Hello, ${req.name}!` };
   },
-});
+}, { interceptors: [requireAuth, auditLog] });
 createServer({ services: [greeter] });
 ```
