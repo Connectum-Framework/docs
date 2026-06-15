@@ -150,12 +150,6 @@ pnpm changeset publish --tag beta
 ```bash
 # Generate API Reference from JSDoc comments (TypeDoc → docs/en/api/)
 pnpm docs:api
-
-# Or use the convenience script from workspace root (Connectum/)
-./gen-api-docs.sh
-
-# Skip proto rebuild if already done
-./gen-api-docs.sh --skip-proto
 ```
 
 The generated API Reference is output to `docs/en/api/` and integrates with VitePress sidebar automatically via `typedoc-sidebar.json`.
@@ -233,9 +227,6 @@ pnpm --filter @connectum/cli dev
 ```bash
 # Run basic example
 node examples/getting-started/src/index.ts
-
-# Run example with custom interceptor
-node examples/with-custom-interceptor/src/index.ts
 
 # Development mode with watch
 node --watch examples/getting-started/src/index.ts

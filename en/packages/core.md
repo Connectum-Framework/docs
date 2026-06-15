@@ -83,6 +83,11 @@ The server is created in `CREATED` state. Call `server.start()` to begin accepti
 | `http2Options` | `SecureServerOptions` | `undefined` | Additional HTTP/2 server options |
 | `jsonOptions` | `Partial<JsonReadOptions & JsonWriteOptions>` | `undefined` | Connect JSON serialization options applied server-wide. See [JSON serialization](#json-serialization). |
 | `transportValidation` | `"error" \| "warn" \| "off"` | `"error"` | Startup validation: bidi-streaming methods on a plaintext HTTP/1.1 transport fail fast with `CONNECTUM_UNSUPPORTED_STREAMING_TRANSPORT` instead of hanging at runtime. See the [transport matrix](/en/guide/production/transport-matrix) |
+| `catalog` | `ServiceCatalog` | `undefined` | Full service registry (`typeName → DescService`, typically the generated `serviceCatalog`). Drives startup validation and remote routing. A pure local monolith needs none of the catalog options. See [Service Catalog](/en/guide/service-communication/service-catalog). |
+| `enabledServices` | `readonly string[]` | `undefined` | Proto `typeName`s to mount **locally** from `services`; any service not listed is treated as remote (resolved via `remoteResolver`). `undefined` mounts every provided service locally. |
+| `remoteResolver` | `RemoteResolver` | `undefined` | Resolves a non-local service to a `Transport` for `server.client()` / `ctx.call`. Synchronous, no network I/O. See [Resolvers](/en/guide/service-communication/resolvers). |
+| `outgoingInterceptors` | `Interceptor[]` | `undefined` | Client-side interceptors applied to every outgoing `server.client()` / `ctx.call`. |
+| `propagateHeaders` | `readonly string[]` | `[]` | Inbound header names copied onto every outgoing `ctx.call` / `ctx.stream`. Empty by default; use `defaultPropagateHeaders` (W3C trace-context) as a base, e.g. `[...defaultPropagateHeaders, "x-tenant-id"]`. |
 
 ### JSON serialization
 
@@ -214,7 +219,7 @@ const isRegistered = server.hasService(GreeterService);
 
 | API | Description |
 |-----|-------------|
-| `server.client(service, options?)` | Auto-routing factory: local if registered, else via the configured `remoteResolver`; if neither, fail-fast `CatalogConfigError` at construction. A resolver returning `null` yields `ConnectError(Code.Unavailable)` at call time. |
+| `server.client(service, options?)` | Auto-routing factory: local if registered, else via the configured `remoteResolver`; if neither, fail-fast `CatalogConfigError` at construction. A resolver returning `null` also fails at construction with `ConnectError(Code.Unavailable)` — the resolver runs inside `server.client()`, before any RPC is invoked. |
 | `server.localClient(service)` | Low-level helper that always returns an in-process client. |
 | `server.hasService(desc)` | Synchronous registry lookup by `desc.typeName`. |
 | `createLocalTransport(server, options?)` | Returns a ConnectRPC `Transport` bound to the server's router; supports client-side interceptors. |
@@ -373,7 +378,7 @@ All `@connectum/*` packages are built with [tsup](https://tsup.egoist.dev/) and 
 
 No special loader or register hook is needed. All runtimes can import `@connectum/*` packages directly.
 
-See [Runtime Support: Node.js vs Bun vs tsx](/en/guide/typescript#runtime-support-node-js-vs-bun) for details.
+See [Runtime Support: Node.js vs Bun vs tsx](/en/guide/typescript/runtime-support) for details.
 
 ## Exports Summary
 
@@ -381,12 +386,18 @@ See [Runtime Support: Node.js vs Bun vs tsx](/en/guide/typescript#runtime-suppor
 |--------|---------|-------------|
 | `createServer` | `.` | Server factory function |
 | `createLocalTransport` | `.` | In-process transport factory ([guide](/en/guide/production/in-process-transport)) |
+| `defineService`, `defineLazyService` | `.` | Service registration (descriptor + handlers); the `services` entries |
+| `defineCatalog`, `mergeCatalogs` | `.` | Service catalog construction ([guide](/en/guide/service-communication/service-catalog)) |
+| `singleTransportResolver`, `mapResolver`, `dnsResolver`, `perServiceEnvResolver` | `.` | Remote resolver helpers ([guide](/en/guide/service-communication/resolvers)) |
+| `parseServicesEnv`, `matchServicesPattern`, `mergeEnabledServices` | `.` | `enabledServices` activation helpers |
+| `defaultPropagateHeaders` | `.` | W3C trace-context header allow-list for `propagateHeaders` |
+| `CatalogConfigError` | `.` | Catalog/resolver misconfiguration error (fail-loud) |
 | `ServerState` | `.` | Server state constants |
 | `LifecycleEvent` | `.` | Lifecycle event name constants |
 | `isSanitizableError` | `.` | Type guard for `SanitizableError` protocol |
 | `getTLSPath`, `readTLSCertificates`, `tlsPath` | `.` | TLS utilities |
 | `EventBusLike` | `.` | Event bus lifecycle interface |
-| `SanitizableError`, `Server`, `CreateServerOptions`, `ShutdownOptions`, etc. | `.` | TypeScript types |
+| `SanitizableError`, `Server`, `CreateServerOptions`, `ShutdownOptions`, `ServiceDefinition`, `ServiceOptions`, `Context`, `CallOptions`, `ServiceCatalog`, `RemoteResolver`, etc. | `.` | TypeScript types |
 | `parseEnvConfig`, `safeParseEnvConfig`, schemas | `./config` | Env configuration |
 
 ## Related Packages

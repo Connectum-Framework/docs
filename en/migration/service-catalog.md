@@ -74,6 +74,35 @@ import { defineLazyService } from '@connectum/core';
 const orders = defineLazyService(OrdersService, () => createOrdersHandlers(deps));
 ```
 
+### Per-service options (interceptors, `jsonOptions`)
+
+The third argument of `router.service(Descriptor, impl, options)` — a per-service
+option bag applied to every method of that service — is preserved as the optional
+third argument of `defineService` (and `defineLazyService`), typed as
+`ServiceOptions`. So a service-scoped interceptor chain or `jsonOptions` migrates
+one-to-one.
+
+**Before**
+
+```typescript
+const routes = (router) => {
+  router.service(GreeterService, handlers, { interceptors: [requireAuth] });
+};
+```
+
+**After**
+
+```typescript
+import { defineService } from '@connectum/core';
+
+const greeter = defineService(GreeterService, handlers, {
+  interceptors: [requireAuth],
+});
+```
+
+`ServiceOptions` is exactly `@connectrpc/connect`'s `router.service` option bag, so
+`jsonOptions` and the other per-service handler options carry over unchanged.
+
 A pure local monolith needs nothing else — no catalog, no resolver.
 
 ## 2. `server.client(Desc, { fallback })` → `remoteResolver`

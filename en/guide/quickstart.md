@@ -15,7 +15,7 @@ Build a fully functional gRPC/ConnectRPC microservice with health checks, server
 - **buf** -- installed automatically via `@bufbuild/buf` npm package
 
 ::: tip Node.js version for consumers
-This guide uses Node.js 25+ for native `.ts` execution of your own source files. However, `@connectum/*` packages ship **compiled JavaScript**, so if you compile your own code (e.g., with tsx or a build tool), you can run on **Node.js >= 22.13.0**. See [Runtime Support](/en/guide/typescript#runtime-support-node-js-vs-bun).
+This guide uses Node.js 25+ for native `.ts` execution of your own source files. However, `@connectum/*` packages ship **compiled JavaScript**, so if you compile your own code (e.g., with tsx or a build tool), you can run on **Node.js >= 22.13.0**. See [Runtime Support](/en/guide/typescript/runtime-support).
 :::
 
 ## 1. Project Setup
@@ -153,7 +153,7 @@ pnpm run build:proto
 This produces `gen/greeter_pb.ts` containing message schemas, types, and the service definition.
 
 ::: warning Proto enums and native TypeScript
-If your proto files use `enum`, the generated code contains non-erasable TypeScript. Use a [two-step generation process](/en/guide/typescript#proto-generation-and-enums).
+If your proto files use `enum`, the generated code contains non-erasable TypeScript. Use a [two-step generation process](/en/guide/typescript/proto-enums).
 :::
 
 ## 4. Service Handler

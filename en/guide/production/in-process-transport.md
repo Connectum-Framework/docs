@@ -57,7 +57,7 @@ The call above executes the full server-side interceptor chain (including valida
 Auto-routing client factory. Resolves the transport via the server's internal **service registry**:
 
 - If the service is registered on this `Server` (`server.hasService(service)` returns `true`) — returns an in-process client that dispatches directly to the registered handler.
-- Otherwise, if a `remoteResolver` is configured on the server — returns a standard ConnectRPC client over the `Transport` the resolver maps the service to. A resolver that returns `null` for the service yields `ConnectError(Code.Unavailable)` at call time.
+- Otherwise, if a `remoteResolver` is configured on the server — returns a standard ConnectRPC client over the `Transport` the resolver maps the service to. A resolver that returns `null` for the service yields `ConnectError(Code.Unavailable)` at client construction — the resolver runs inside `server.client()`, before any RPC is invoked.
 - Otherwise (not local and no `remoteResolver` configured) — throws `CatalogConfigError` immediately at client construction (fail-fast), naming the service `typeName`.
 
 ```typescript
@@ -207,7 +207,7 @@ export function buildClients(server: Server) {
 - **Distributed deployment**: register only the services owned by this process and configure a `remoteResolver`. Others route remotely through the resolver. No change at the call site.
 - **Hybrid migration**: extract one service at a time. The client side never changes.
 
-If a service is not registered locally and no `remoteResolver` is configured, `server.client()` throws `CatalogConfigError` at construction — a fail-fast signal that deployment topology is misconfigured. A configured resolver that returns `null` for the service surfaces as `ConnectError(Code.Unavailable)` at call time instead.
+If a service is not registered locally and no `remoteResolver` is configured, `server.client()` throws `CatalogConfigError` at construction — a fail-fast signal that deployment topology is misconfigured. A configured resolver that returns `null` for the service surfaces as `ConnectError(Code.Unavailable)` instead — also at construction, since the resolver runs inside `server.client()` before any RPC is invoked.
 
 For the full set of resolver factories (`singleTransportResolver`, `mapResolver`, `dnsResolver`, `perServiceEnvResolver`) see [Remote Resolvers](/en/guide/service-communication/resolvers).
 

@@ -157,7 +157,7 @@ On a **mid-stream transport failure** the iterator follows a **deliver-then-erro
 
 ## Cascade behaviour (`CallOptions`)
 
-Both `ctx.call` and `ctx.stream` accept an optional `CallOptions`. Omitted dimensions cascade from the incoming request.
+`ctx.call(method, request, options?)` accepts an optional `CallOptions` as its third argument. `ctx.stream(method)` takes only the method key and returns a factory — pass `CallOptions` to that returned factory, not to `ctx.stream` itself (e.g. `ctx.stream(method)(request, options)` for server-streaming, or `ctx.stream(method)(options)` for client/bidi). Omitted dimensions cascade from the incoming request.
 
 ```typescript
 type CallOptions = {
