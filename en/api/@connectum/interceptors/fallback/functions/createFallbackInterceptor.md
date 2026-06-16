@@ -4,7 +4,7 @@
 
 > **createFallbackInterceptor**\<`T`\>(`options`): `Interceptor`
 
-Defined in: [fallback.ts:57](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/fallback.ts#L57)
+Defined in: [fallback.ts:57](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/interceptors/src/fallback.ts#L57)
 
 Create fallback interceptor
 

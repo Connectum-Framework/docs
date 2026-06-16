@@ -8,7 +8,7 @@ description: Complete Kubernetes manifests for deploying Connectum gRPC/ConnectR
 This guide provides production-ready Kubernetes manifests for deploying Connectum services. It covers Deployment, Service, ConfigMap, Secrets, HPA, probes, and graceful shutdown integration.
 
 ::: tip Full Example
-All Kubernetes manifests described below are available in the [production-ready/k8s](https://github.com/Connectum-Framework/examples/tree/main/production-ready/k8s) directory.
+Kubernetes manifests for a multi-service deployment are available in the [car-sharing/k8s](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/k8s) directory.
 :::
 
 ## Architecture Overview
@@ -43,19 +43,19 @@ graph TB
 
 Create a dedicated namespace for your Connectum services. The manifest creates a `connectum` namespace with standard labels and an optional Istio sidecar injection annotation.
 
-See [namespace.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/k8s/namespace.yaml) for the full manifest.
+See [namespace.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/namespace.yaml) for the full manifest.
 
 ## ConfigMap
 
 Store non-sensitive configuration in a ConfigMap. This manifest defines environment variables for the service port, logging, graceful shutdown, OpenTelemetry export, and downstream service addresses.
 
-See [configmap.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/k8s/configmap.yaml) for the full manifest.
+See [configmap.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/configmap.yaml) for the full manifest.
 
 ## Secret
 
-Store TLS certificates and sensitive configuration in Secrets. The manifest creates a `kubernetes.io/tls` secret for the service's TLS certificate and private key.
+Store TLS certificates and sensitive configuration in Secrets. For application-level TLS, create a `kubernetes.io/tls` secret holding the service's TLS certificate and private key, and mount it into the pod.
 
-See [secret-tls.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/k8s/secret-tls.yaml) for the full manifest.
+For an example Secret manifest, see the [car-sharing/k8s](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/k8s) directory (`secret-jwt.yaml` shows the Secret pattern; that example relies on Istio for mTLS rather than application-level TLS).
 
 ::: tip
 For production TLS, consider using [cert-manager](https://cert-manager.io/) to automatically provision and renew certificates. If you are using Istio, the service mesh handles mTLS automatically and you may not need application-level TLS at all.
@@ -63,35 +63,33 @@ For production TLS, consider using [cert-manager](https://cert-manager.io/) to a
 
 ## Deployment
 
-The core manifest. Pay close attention to probes, resource limits, and graceful shutdown configuration. This manifest configures a 3-replica Deployment with rolling update strategy, pod security context, topology spread constraints, startup/liveness/readiness probes against Connectum's HTTP health endpoints, resource limits, and a `preStop` hook for graceful endpoint de-registration.
+The core manifest. Pay close attention to probes, resource limits, and graceful shutdown configuration. A Deployment configures a rolling update strategy, pod security context, topology spread constraints, startup/liveness/readiness probes against Connectum's HTTP health endpoints, resource limits, and a `preStop` hook for graceful endpoint de-registration.
 
-See [deployment.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/k8s/deployment.yaml) for the full manifest.
+For full Deployment manifests, see the [car-sharing/k8s](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/k8s) directory — the example ships one Deployment per role (`deployment-fleet.yaml`, `deployment-billing.yaml`, `deployment-trips.yaml`).
 
 ## Service
 
 ### ClusterIP (Internal gRPC Traffic)
 
-For service-to-service communication within the cluster. This manifest creates a ClusterIP Service on port 5000 with `appProtocol: grpc` to hint service meshes and ingress controllers about the protocol.
+For service-to-service communication within the cluster. Create a ClusterIP Service on port 5000 with `appProtocol: grpc` to hint service meshes and ingress controllers about the protocol.
 
-See [service.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/k8s/service.yaml) for the full manifest.
+See [services.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/services.yaml) for the full manifest (the car-sharing example exposes one ClusterIP Service per role — fleet, billing, trips).
 
 ### LoadBalancer (External gRPC Access)
 
-For direct external gRPC access (without a gateway). This manifest creates a LoadBalancer Service on port 443 with cloud provider annotations (e.g., AWS NLB with HTTP/2 backend protocol).
-
-See [service-external.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/k8s/service-external.yaml) for the full manifest.
+For direct external gRPC access (without a gateway), create a LoadBalancer Service on port 443 with cloud provider annotations (e.g., AWS NLB with HTTP/2 backend protocol). The car-sharing example fronts external traffic with an Istio Gateway instead of a LoadBalancer Service — see the [Service Mesh guide](./service-mesh.md) and [car-sharing/istio](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/istio).
 
 ## Horizontal Pod Autoscaler (HPA)
 
 Scale based on CPU and memory utilization. This manifest configures an HPA that scales from 2 to 10 replicas based on 70% CPU and 80% memory thresholds, with stabilization windows and rate-limited scale-up/scale-down policies.
 
-See [hpa.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/k8s/hpa.yaml) for the full manifest.
+See [hpa.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/hpa.yaml) for the full manifest.
 
 ## RBAC
 
 Minimal ServiceAccount for the service. The manifest creates a dedicated ServiceAccount; add RoleBindings if the service needs Kubernetes API access.
 
-See [rbac.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/k8s/rbac.yaml) for the full manifest.
+See [rbac.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/rbac.yaml) for the full manifest.
 
 ## Graceful Shutdown Deep Dive
 

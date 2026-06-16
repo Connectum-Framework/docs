@@ -20,6 +20,7 @@ continue to work unchanged.
 
 ## Interfaces
 
+- [CreateMockContextOptions](interfaces/CreateMockContextOptions.md)
 - [FakeMethodOptions](interfaces/FakeMethodOptions.md)
 - [FakeServiceOptions](interfaces/FakeServiceOptions.md)
 - [MockCall](interfaces/MockCall.md)
@@ -29,12 +30,14 @@ continue to work unchanged.
 - [MockFn](interfaces/MockFn.md)
 - [MockNextOptions](interfaces/MockNextOptions.md)
 - [MockRequestOptions](interfaces/MockRequestOptions.md)
+- [MockService](interfaces/MockService.md)
 - [MockStreamOptions](interfaces/MockStreamOptions.md)
 - [NormalizedMetric](interfaces/NormalizedMetric.md)
 - [NormalizedSpan](interfaces/NormalizedSpan.md)
 
 ## Variables
 
+- [MOCK\_RESPONSE\_HEADER](variables/MOCK_RESPONSE_HEADER.md)
 - [TRANSPORT\_METRIC\_ATTRIBUTE](variables/TRANSPORT_METRIC_ATTRIBUTE.md)
 - [TRANSPORT\_SPAN\_ATTRIBUTE](variables/TRANSPORT_SPAN_ATTRIBUTE.md)
 
@@ -44,6 +47,7 @@ continue to work unchanged.
 - [createFakeMethod](functions/createFakeMethod.md)
 - [createFakeService](functions/createFakeService.md)
 - [createLocalClient](functions/createLocalClient.md)
+- [createMockContext](functions/createMockContext.md)
 - [createMockDescField](functions/createMockDescField.md)
 - [createMockDescMessage](functions/createMockDescMessage.md)
 - [createMockDescMethod](functions/createMockDescMethod.md)
@@ -54,6 +58,8 @@ continue to work unchanged.
 - [createMockRequest](functions/createMockRequest.md)
 - [createMockStream](functions/createMockStream.md)
 - [createTestServer](functions/createTestServer.md)
+- [mockResolver](functions/mockResolver.md)
+- [mockService](functions/mockService.md)
 - [withTestServer](functions/withTestServer.md)
 
 ## References

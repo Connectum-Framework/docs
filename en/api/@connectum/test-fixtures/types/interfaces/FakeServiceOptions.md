@@ -2,7 +2,7 @@
 
 # Interface: FakeServiceOptions
 
-Defined in: [types.ts:94](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/test-fixtures/src/types.ts#L94)
+Defined in: [types.ts:94](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/types.ts#L94)
 
 Options for createFakeService.
 
@@ -12,7 +12,7 @@ Options for createFakeService.
 
 > `optional` **name?**: `string`
 
-Defined in: [types.ts:98](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/test-fixtures/src/types.ts#L98)
+Defined in: [types.ts:98](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/types.ts#L98)
 
 Service name (short). Default: derived from typeName
 
@@ -22,6 +22,6 @@ Service name (short). Default: derived from typeName
 
 > `optional` **typeName?**: `string`
 
-Defined in: [types.ts:96](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/test-fixtures/src/types.ts#L96)
+Defined in: [types.ts:96](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/types.ts#L96)
 
 Service type name. Default: `'test.v1.TestService'`

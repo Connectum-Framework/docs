@@ -4,7 +4,7 @@
 
 > **Healthcheck**(`options?`): `ProtocolRegistration`
 
-Defined in: [Healthcheck.ts:84](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/Healthcheck.ts#L84)
+Defined in: [Healthcheck.ts:84](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/Healthcheck.ts#L84)
 
 Create healthcheck protocol registration
 

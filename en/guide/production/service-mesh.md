@@ -8,7 +8,7 @@ description: Deploying Connectum gRPC services with Istio for automatic mTLS, tr
 A service mesh adds infrastructure-level capabilities -- mTLS, traffic management, observability, and policy enforcement -- without modifying application code. This guide covers deploying Connectum services with [Istio](https://istio.io/) and how its features complement Connectum's built-in functionality.
 
 ::: tip Full Example
-All Istio manifests described below are available in the [production-ready/istio](https://github.com/Connectum-Framework/examples/tree/main/production-ready/istio) directory.
+Istio manifests for a multi-service deployment are available in the [car-sharing/istio](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/istio) directory.
 :::
 
 ## When to Use a Service Mesh
@@ -29,11 +29,11 @@ A service mesh adds value when your deployment has:
 
 ## Enabling Istio Sidecar Injection
 
-Label your namespace to enable automatic Envoy sidecar injection. The manifest creates the `connectum` namespace with the `istio-injection: enabled` label so that every new pod receives an Istio sidecar proxy automatically.
+Label your namespace to enable automatic Envoy sidecar injection. The manifest creates the namespace with the `istio-injection: enabled` label so that every new pod receives an Istio sidecar proxy automatically.
 
-See [namespace.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/istio/namespace.yaml) for the full manifest.
+See [namespace.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/namespace.yaml) for the full manifest.
 
-After applying, every new pod in the `connectum` namespace will automatically receive an Istio sidecar proxy.
+After applying, every new pod in the namespace will automatically receive an Istio sidecar proxy.
 
 ### Verify Injection
 
@@ -53,7 +53,7 @@ kubectl -n connectum get pods
 
 Enforce strict mTLS for all traffic within the namespace. This policy sets `STRICT` mode, meaning all inter-service communication must use mutual TLS.
 
-See [peer-authentication.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/istio/peer-authentication.yaml) for the full manifest.
+See [peer-authentication.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/istio/peer-authentication.yaml) for the full manifest.
 
 This means:
 - All inter-service traffic is encrypted with mutual TLS
@@ -75,9 +75,7 @@ const server = createServer({
 
 ### Per-Service Override
 
-If a specific service needs to accept non-mTLS traffic (e.g., from external clients), you can override the namespace-wide policy with a `PERMISSIVE` mode selector targeting that specific service.
-
-See [peer-authentication-permissive.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/istio/peer-authentication-permissive.yaml) for the full manifest.
+If a specific service needs to accept non-mTLS traffic (e.g., from external clients), override the namespace-wide policy with a second `PeerAuthentication` that sets `PERMISSIVE` mode and a `selector` targeting that specific service. The car-sharing example enforces namespace-wide `STRICT` mTLS in [peer-authentication.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/istio/peer-authentication.yaml); add a `PERMISSIVE` override only for services that must accept plaintext.
 
 ## Traffic Management
 
@@ -85,29 +83,25 @@ See [peer-authentication-permissive.yaml](https://github.com/Connectum-Framework
 
 Control how traffic flows to your Connectum services. This manifest configures timeouts, retry policies, and routing for the order-service.
 
-See [virtual-service.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/istio/virtual-service.yaml) for the full manifest.
+See [virtual-service.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/istio/virtual-service.yaml) for the full manifest.
 
 ### DestinationRule
 
 Configure connection pooling, outlier detection, load balancing, and subset definitions (stable/canary) for your service.
 
-See [destination-rule.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/istio/destination-rule.yaml) for the full manifest.
+See [destination-rule.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/istio/destination-rule.yaml) for the full manifest.
 
 ### Canary Deployments
 
 Route a percentage of traffic to a new version. The canary VirtualService splits traffic between stable (90%) and canary (10%) subsets.
 
-See [canary-virtual-service.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/istio/canary-virtual-service.yaml) for the full manifest.
+See [canary-virtual-service.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/istio/canary-virtual-service.yaml) for the full manifest.
 
-Deploy the canary with a different version label. This Deployment creates a single-replica canary pod labeled `version: canary` running the release candidate image.
-
-See [deployment-canary.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/istio/deployment-canary.yaml) for the full manifest.
+Deploy the canary with a different version label: create a single-replica canary pod labeled `version: canary` running the release candidate image, alongside the stable Deployment. The [car-sharing/istio](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/istio) example wires the canary subsets in `canary-virtual-service.yaml` and `destination-rule.yaml`.
 
 ### Header-Based Routing
 
-Route specific users or test traffic to the canary. This VirtualService matches requests with the `x-canary: true` header and sends them to the canary subset, while all other traffic goes to stable.
-
-See [header-routing.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/istio/header-routing.yaml) for the full manifest.
+Route specific users or test traffic to the canary by adding an HTTP `match` block to the VirtualService: match requests carrying an `x-canary: true` header and route them to the canary subset, while all other traffic goes to stable. See [virtual-service.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/istio/virtual-service.yaml) in the car-sharing example for the VirtualService structure to extend.
 
 ## Observability Integration
 
@@ -143,9 +137,7 @@ graph TB
 
 ### Telemetry Resource
 
-Configure Istio to export telemetry to the same OTel Collector used by Connectum. This manifest enables tracing (100% sampling), Prometheus metrics, and OTel access logging for the namespace.
-
-See [telemetry.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/istio/telemetry.yaml) for the full manifest.
+Configure Istio to export telemetry to the same OTel Collector used by Connectum. An Istio `Telemetry` resource enables tracing (e.g. 100% sampling), Prometheus metrics, and OTel access logging for the namespace. See the [Istio Telemetry API](https://istio.io/latest/docs/reference/config/telemetry/) for the resource schema, and the [car-sharing/istio](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/istio) directory for the example's mesh manifests.
 
 ### Trace Propagation
 
@@ -188,7 +180,7 @@ Use **both layers** with complementary roles:
 
 2. **Connectum interceptors (inner layer):** Application-level circuit breaking with per-method configuration, custom fallbacks, and retry with backoff. This handles application-level failures (timeouts, business logic errors).
 
-For the Istio infrastructure-level resilience DestinationRule with outlier detection, see [destination-rule.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/istio/destination-rule.yaml) (the same manifest also covers connection pooling and subsets).
+For the Istio infrastructure-level resilience DestinationRule with outlier detection, see [destination-rule.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/istio/destination-rule.yaml) (the same manifest also covers connection pooling and subsets).
 
 ```typescript
 import { createDefaultInterceptors } from '@connectum/interceptors';
@@ -214,13 +206,11 @@ When using both Istio retries and Connectum retries, be careful about **retry am
 
 Control which services can communicate with each other. This policy allows traffic only from the API gateway service account and from pods within the `connectum` namespace, denying everything else.
 
-See [authorization-policy.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/istio/authorization-policy.yaml) for the full manifest.
+See [authorization-policy.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/istio/authorization-policy.yaml) for the full manifest.
 
 ## Sidecar Resource Limits
 
-Configure resource limits for the Istio sidecar to prevent it from starving the Connectum application container. This Deployment annotates the pod template with CPU and memory requests/limits for the Envoy proxy.
-
-See [sidecar-resources.yaml](https://github.com/Connectum-Framework/examples/blob/main/production-ready/istio/sidecar-resources.yaml) for the full manifest.
+Configure resource limits for the Istio sidecar to prevent it from starving the Connectum application container. Annotate the pod template with `sidecar.istio.io/proxyCPU`, `sidecar.istio.io/proxyMemory` (and their `*Limit` variants) to set CPU and memory requests/limits for the Envoy proxy. See the [Istio resource annotations](https://istio.io/latest/docs/reference/config/annotations/) reference.
 
 ## Health Check Configuration with Istio
 

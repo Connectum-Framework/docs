@@ -4,7 +4,7 @@
 
 > **createAuthzInterceptor**(`options?`): `Interceptor`
 
-Defined in: [packages/auth/src/authz-interceptor.ts:85](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/authz-interceptor.ts#L85)
+Defined in: [packages/auth/src/authz-interceptor.ts:85](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/authz-interceptor.ts#L85)
 
 Create an authorization interceptor.
 

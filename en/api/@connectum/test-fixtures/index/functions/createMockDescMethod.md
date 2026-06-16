@@ -4,7 +4,7 @@
 
 > **createMockDescMethod**(`name`, `options?`): `DescMethod`
 
-Defined in: [mock-desc.ts:172](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/test-fixtures/src/mock-desc.ts#L172)
+Defined in: [mock-desc.ts:172](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/mock-desc.ts#L172)
 
 Create a mock DescMethod descriptor.
 

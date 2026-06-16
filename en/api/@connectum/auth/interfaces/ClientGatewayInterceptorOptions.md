@@ -2,7 +2,7 @@
 
 # Interface: ClientGatewayInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:383](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/types.ts#L383)
+Defined in: [packages/auth/src/types.ts:383](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L383)
 
 Client-side gateway service-to-service auth interceptor options.
 
@@ -16,7 +16,7 @@ Client-side gateway service-to-service auth interceptor options.
 
 > `readonly` `optional` **roles?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:389](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/types.ts#L389)
+Defined in: [packages/auth/src/types.ts:389](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L389)
 
 Optional roles to propagate (JSON-encoded in header)
 
@@ -26,7 +26,7 @@ Optional roles to propagate (JSON-encoded in header)
 
 > `readonly` **secret**: `string`
 
-Defined in: [packages/auth/src/types.ts:385](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/types.ts#L385)
+Defined in: [packages/auth/src/types.ts:385](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L385)
 
 Shared secret for gateway trust verification
 
@@ -36,6 +36,6 @@ Shared secret for gateway trust verification
 
 > `readonly` **subject**: `string`
 
-Defined in: [packages/auth/src/types.ts:387](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/types.ts#L387)
+Defined in: [packages/auth/src/types.ts:387](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L387)
 
 Authenticated subject identifier (e.g., service name)

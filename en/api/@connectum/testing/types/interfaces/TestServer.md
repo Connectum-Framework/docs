@@ -2,7 +2,7 @@
 
 # Interface: TestServer
 
-Defined in: [testing/src/types.ts:26](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/types.ts#L26)
+Defined in: [testing/src/types.ts:26](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/types.ts#L26)
 
 A running test server with transport and cleanup.
 
@@ -12,7 +12,7 @@ A running test server with transport and cleanup.
 
 > **baseUrl**: `string`
 
-Defined in: [testing/src/types.ts:30](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/types.ts#L30)
+Defined in: [testing/src/types.ts:30](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/types.ts#L30)
 
 Server base URL (e.g. `http://localhost:54321`).
 
@@ -22,7 +22,7 @@ Server base URL (e.g. `http://localhost:54321`).
 
 > **port**: `number`
 
-Defined in: [testing/src/types.ts:32](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/types.ts#L32)
+Defined in: [testing/src/types.ts:32](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/types.ts#L32)
 
 Assigned port number.
 
@@ -32,7 +32,7 @@ Assigned port number.
 
 > **transport**: `Transport`
 
-Defined in: [testing/src/types.ts:28](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/types.ts#L28)
+Defined in: [testing/src/types.ts:28](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/types.ts#L28)
 
 Pre-configured client transport connected to the test server.
 
@@ -42,7 +42,7 @@ Pre-configured client transport connected to the test server.
 
 > **close**(): `Promise`\<`void`\>
 
-Defined in: [testing/src/types.ts:34](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/types.ts#L34)
+Defined in: [testing/src/types.ts:34](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/types.ts#L34)
 
 Stop the server and close all connections.
 

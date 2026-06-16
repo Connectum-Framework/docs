@@ -98,6 +98,24 @@ Re-exports [ATTR_RPC_CONNECT_RPC_STATUS_CODE](attributes/variables/ATTR_RPC_CONN
 
 ***
 
+### ATTR\_RPC\_MESSAGE\_ID
+
+Re-exports [ATTR_RPC_MESSAGE_ID](attributes/variables/ATTR_RPC_MESSAGE_ID.md)
+
+***
+
+### ATTR\_RPC\_MESSAGE\_TYPE
+
+Re-exports [ATTR_RPC_MESSAGE_TYPE](attributes/variables/ATTR_RPC_MESSAGE_TYPE.md)
+
+***
+
+### ATTR\_RPC\_MESSAGE\_UNCOMPRESSED\_SIZE
+
+Re-exports [ATTR_RPC_MESSAGE_UNCOMPRESSED_SIZE](attributes/variables/ATTR_RPC_MESSAGE_UNCOMPRESSED_SIZE.md)
+
+***
+
 ### ATTR\_RPC\_METHOD
 
 Re-exports [ATTR_RPC_METHOD](attributes/variables/ATTR_RPC_METHOD.md)
@@ -239,6 +257,12 @@ Re-exports [LoggerOptions](logger/interfaces/LoggerOptions.md)
 ### ProviderOptions
 
 Re-exports [ProviderOptions](provider/interfaces/ProviderOptions.md)
+
+***
+
+### RPC\_MESSAGE\_EVENT
+
+Re-exports [RPC_MESSAGE_EVENT](attributes/variables/RPC_MESSAGE_EVENT.md)
 
 ***
 

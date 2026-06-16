@@ -4,6 +4,6 @@
 
 > `const` **TRANSPORT\_METRIC\_ATTRIBUTE**: `"transport"` = `"transport"`
 
-Defined in: [testing/src/otel-collectors.ts:29](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/testing/src/otel-collectors.ts#L29)
+Defined in: [testing/src/otel-collectors.ts:29](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/otel-collectors.ts#L29)
 
 Metric attribute key produced by `@connectum/otel` to distinguish transports.

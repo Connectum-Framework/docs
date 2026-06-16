@@ -2,7 +2,7 @@
 
 # Interface: CircuitBreakerOptions
 
-Defined in: [types.ts:126](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L126)
+Defined in: [types.ts:126](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/interceptors/src/types.ts#L126)
 
 Circuit breaker interceptor options
 
@@ -12,7 +12,7 @@ Circuit breaker interceptor options
 
 > `optional` **failurePredicate?**: (`error`, `defaultPredicate`) => `boolean`
 
-Defined in: [types.ts:173](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L173)
+Defined in: [types.ts:173](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/interceptors/src/types.ts#L173)
 
 Decides whether an error counts as a circuit failure.
 
@@ -65,7 +65,7 @@ non-ConnectError values count as failures)
 
 > `optional` **halfOpenAfter?**: `number`
 
-Defined in: [types.ts:137](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L137)
+Defined in: [types.ts:137](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/interceptors/src/types.ts#L137)
 
 Time in milliseconds to wait before attempting to close circuit
 
@@ -81,7 +81,7 @@ Time in milliseconds to wait before attempting to close circuit
 
 > `optional` **skipStreaming?**: `boolean`
 
-Defined in: [types.ts:143](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L143)
+Defined in: [types.ts:143](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/interceptors/src/types.ts#L143)
 
 Skip circuit breaker for streaming calls
 
@@ -97,7 +97,7 @@ true
 
 > `optional` **threshold?**: `number`
 
-Defined in: [types.ts:131](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/types.ts#L131)
+Defined in: [types.ts:131](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/interceptors/src/types.ts#L131)
 
 Number of consecutive failures before opening circuit
 

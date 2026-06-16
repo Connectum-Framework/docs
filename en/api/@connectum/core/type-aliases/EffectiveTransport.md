@@ -2,9 +2,9 @@
 
 # Type Alias: EffectiveTransport
 
-> **EffectiveTransport** = `object`
+> **EffectiveTransport** = *typeof* [`EffectiveTransport`](../variables/EffectiveTransport.md)\[keyof *typeof* [`EffectiveTransport`](../variables/EffectiveTransport.md)\]
 
-Defined in: [packages/core/src/TransportValidation.ts:54](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L54)
+Defined in: [packages/core/src/TransportValidation.ts:54](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/TransportValidation.ts#L54)
 
 Effective transport resolved from `tls` + `allowHTTP1`.
 
@@ -13,35 +13,3 @@ Effective transport resolved from `tls` + `allowHTTP1`.
 - `tls-h1-negotiable` — TLS, `allowHTTP1: true`: ALPN offers both; a client
   may negotiate HTTP/1.1 (residual bidi risk).
 - `tls-h2-only` — TLS, `allowHTTP1: false`: ALPN refuses HTTP/1.1.
-
-## Properties
-
-### H2C
-
-> `readonly` **H2C**: `"h2c"` = `"h2c"`
-
-Defined in: [packages/core/src/TransportValidation.ts:56](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L56)
-
-***
-
-### PLAINTEXT\_H1
-
-> `readonly` **PLAINTEXT\_H1**: `"plaintext-h1"` = `"plaintext-h1"`
-
-Defined in: [packages/core/src/TransportValidation.ts:55](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L55)
-
-***
-
-### TLS\_H1\_NEGOTIABLE
-
-> `readonly` **TLS\_H1\_NEGOTIABLE**: `"tls-h1-negotiable"` = `"tls-h1-negotiable"`
-
-Defined in: [packages/core/src/TransportValidation.ts:57](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L57)
-
-***
-
-### TLS\_H2\_ONLY
-
-> `readonly` **TLS\_H2\_ONLY**: `"tls-h2-only"` = `"tls-h2-only"`
-
-Defined in: [packages/core/src/TransportValidation.ts:58](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/TransportValidation.ts#L58)

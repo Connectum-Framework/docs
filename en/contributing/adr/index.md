@@ -26,6 +26,7 @@ Architecture Decision Records (ADRs) capture important design decisions with the
 | 025 | [Package Versioning Strategy](/en/contributing/adr/025-package-versioning-strategy) | 2026-02-20 | Two-phase versioning: Fixed for rc, Hybrid after 1.0.0 stable |
 | 026 | [EventBus Architecture](/en/contributing/adr/026-eventbus-architecture) | 2026-03-07 | Proto-first EventBus with pluggable broker adapters |
 | 027 | [External Contracts vs EventBus](/en/contributing/adr/027-external-contracts-vs-eventbus) | 2026-06-12 | External contracts at adapter layer; EventBus stays protobuf-only; remove `sync` |
+| 028 | [Service Catalog](/en/contributing/adr/028-service-catalog) | 2026-06-15 | Declarative `ctx.call`/`ctx.stream`, `defineService`, sync `RemoteResolver`, split error model, buf codegen |
 
 ## Creating a New ADR
 

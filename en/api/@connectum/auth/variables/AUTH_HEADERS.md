@@ -4,7 +4,7 @@
 
 > `const` **AUTH\_HEADERS**: `object`
 
-Defined in: [packages/auth/src/types.ts:49](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/types.ts#L49)
+Defined in: [packages/auth/src/types.ts:49](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L49)
 
 Standard header names for auth context propagation.
 

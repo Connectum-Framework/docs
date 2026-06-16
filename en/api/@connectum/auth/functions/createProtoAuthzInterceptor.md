@@ -4,7 +4,7 @@
 
 > **createProtoAuthzInterceptor**(`options?`): `Interceptor`
 
-Defined in: [packages/auth/src/proto/proto-authz-interceptor.ts:125](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/proto/proto-authz-interceptor.ts#L125)
+Defined in: [packages/auth/src/proto/proto-authz-interceptor.ts:125](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/proto/proto-authz-interceptor.ts#L125)
 
 Create a proto-based authorization interceptor.
 

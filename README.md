@@ -10,7 +10,7 @@
 
 # Connectum Documentation
 
-> Minimalist framework for building production-ready gRPC/ConnectRPC microservices on Node.js 18+
+> Minimalist framework for building production-ready gRPC/ConnectRPC microservices on Node.js 22.13+
 
 **Modular packages** across dependency layers
 
@@ -41,16 +41,16 @@ pnpm docs:preview
 docs/
 ├── .vitepress/          # VitePress configuration
 │   ├── config.ts        # Main config with i18n
-│   └── config/          # Locale configs (en, ru)
+│   └── config/          # Config modules (en, shared)
 ├── en/                  # English documentation (primary)
 │   ├── index.md         # Landing page
 │   ├── guide/           # User guide (progressive)
-│   ├── packages/        # Per-package API docs
-│   ├── production/      # Production deployment
+│   │   └── production/  # Production deployment
+│   ├── packages/        # Per-package guides
+│   ├── api/             # Auto-generated API Reference (TypeDoc)
 │   ├── migration/       # Migration & changelog
 │   └── contributing/    # Contributing (ADR, architecture)
-├── ru/                  # Russian locale (stub)
-├── assets/              # Images, diagrams
+├── public/              # Static assets (assets/, CNAME, robots.txt)
 └── package.json         # VitePress dependency
 ```
 

@@ -4,7 +4,7 @@
 
 > **createBulkheadInterceptor**(`options?`): `Interceptor`
 
-Defined in: [bulkhead.ts:56](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/interceptors/src/bulkhead.ts#L56)
+Defined in: [bulkhead.ts:56](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/interceptors/src/bulkhead.ts#L56)
 
 Create bulkhead interceptor
 

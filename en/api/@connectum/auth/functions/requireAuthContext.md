@@ -4,7 +4,7 @@
 
 > **requireAuthContext**(): [`AuthContext`](../interfaces/AuthContext.md)
 
-Defined in: [packages/auth/src/context.ts:124](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/context.ts#L124)
+Defined in: [packages/auth/src/context.ts:124](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/context.ts#L124)
 
 Get the current auth context or throw.
 

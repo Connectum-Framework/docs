@@ -4,7 +4,7 @@
 
 > `const` **TEST\_JWT\_SECRET**: `"connectum-test-secret-do-not-use-in-production"` = `"connectum-test-secret-do-not-use-in-production"`
 
-Defined in: [packages/auth/src/testing/test-jwt.ts:18](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/testing/test-jwt.ts#L18)
+Defined in: [packages/auth/src/testing/test-jwt.ts:18](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/testing/test-jwt.ts#L18)
 
 Deterministic test secret for HS256 JWTs.
 

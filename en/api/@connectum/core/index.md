@@ -9,44 +9,73 @@
 
 ## Classes
 
+- [CatalogConfigError](classes/CatalogConfigError.md)
 - [TransportValidationError](classes/TransportValidationError.md)
 
 ## Interfaces
 
+- [BidiStreamHandle](interfaces/BidiStreamHandle.md)
+- [ClientStreamHandle](interfaces/ClientStreamHandle.md)
+- [ConnectumCallMap](interfaces/ConnectumCallMap.md)
+- [ConnectumStreamMap](interfaces/ConnectumStreamMap.md)
+- [Context](interfaces/Context.md)
 - [CreateLocalTransportOptions](interfaces/CreateLocalTransportOptions.md)
+- [DnsResolverOptions](interfaces/DnsResolverOptions.md)
+- [PerServiceEnvResolverOptions](interfaces/PerServiceEnvResolverOptions.md)
+- [ResolverContext](interfaces/ResolverContext.md)
 - [SanitizableError](interfaces/SanitizableError.md)
+- [ServiceDefinition](interfaces/ServiceDefinition.md)
 - [StreamingMethodInfo](interfaces/StreamingMethodInfo.md)
 
 ## Type Aliases
 
+- [CallOptions](type-aliases/CallOptions.md)
 - [ConnectumEnv](type-aliases/ConnectumEnv.md)
+- [ConnectumMethodImpl](type-aliases/ConnectumMethodImpl.md)
+- [ConnectumServiceImpl](type-aliases/ConnectumServiceImpl.md)
 - [EffectiveTransport](type-aliases/EffectiveTransport.md)
-- [EffectiveTransport](type-aliases/EffectiveTransport-1.md)
+- [RemoteResolver](type-aliases/RemoteResolver.md)
+- [ServiceCatalog](type-aliases/ServiceCatalog.md)
+- [ServiceOptions](type-aliases/ServiceOptions.md)
+- [StreamReturn](type-aliases/StreamReturn.md)
 - [TransportValidationMode](type-aliases/TransportValidationMode.md)
-- [TransportValidationMode](type-aliases/TransportValidationMode-1.md)
 
 ## Variables
 
 - [BooleanFromStringSchema](variables/BooleanFromStringSchema.md)
 - [ConnectumEnvSchema](variables/ConnectumEnvSchema.md)
+- [defaultPropagateHeaders](variables/defaultPropagateHeaders.md)
+- [EffectiveTransport](variables/EffectiveTransport.md)
 - [LogFormatSchema](variables/LogFormatSchema.md)
 - [LoggerBackendSchema](variables/LoggerBackendSchema.md)
 - [LogLevelSchema](variables/LogLevelSchema.md)
 - [NodeEnvSchema](variables/NodeEnvSchema.md)
 - [tlsPath](variables/tlsPath.md)
 - [TRANSPORT\_VALIDATION\_ERROR\_CODE](variables/TRANSPORT_VALIDATION_ERROR_CODE.md)
+- [TransportValidationMode](variables/TransportValidationMode.md)
 
 ## Functions
 
 - [collectStreamingMethods](functions/collectStreamingMethods.md)
 - [createLocalTransport](functions/createLocalTransport.md)
 - [createServer](functions/createServer.md)
+- [defineCatalog](functions/defineCatalog.md)
+- [defineLazyService](functions/defineLazyService.md)
+- [defineService](functions/defineService.md)
+- [dnsResolver](functions/dnsResolver.md)
 - [getTLSPath](functions/getTLSPath.md)
 - [isSanitizableError](functions/isSanitizableError.md)
+- [mapResolver](functions/mapResolver.md)
+- [matchServicesPattern](functions/matchServicesPattern.md)
+- [mergeCatalogs](functions/mergeCatalogs.md)
+- [mergeEnabledServices](functions/mergeEnabledServices.md)
 - [parseEnvConfig](functions/parseEnvConfig.md)
+- [parseServicesEnv](functions/parseServicesEnv.md)
+- [perServiceEnvResolver](functions/perServiceEnvResolver.md)
 - [readTLSCertificates](functions/readTLSCertificates.md)
 - [resolveEffectiveTransport](functions/resolveEffectiveTransport.md)
 - [safeParseEnvConfig](functions/safeParseEnvConfig.md)
+- [singleTransportResolver](functions/singleTransportResolver.md)
 
 ## References
 
@@ -113,12 +142,6 @@ Re-exports [ServerClientOptions](types/interfaces/ServerClientOptions.md)
 ### ServerState
 
 Re-exports [ServerState](types/variables/ServerState.md)
-
-***
-
-### ServiceRoute
-
-Re-exports [ServiceRoute](types/type-aliases/ServiceRoute.md)
 
 ***
 

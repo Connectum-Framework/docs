@@ -57,28 +57,32 @@ The call above executes the full server-side interceptor chain (including valida
 Auto-routing client factory. Resolves the transport via the server's internal **service registry**:
 
 - If the service is registered on this `Server` (`server.hasService(service)` returns `true`) — returns an in-process client that dispatches directly to the registered handler.
-- Otherwise, if `options.fallback` is provided — returns a standard ConnectRPC client over the fallback transport.
-- Otherwise — throws `ConnectError(unimplemented)` immediately at client construction (fail-fast), naming the service `typeName`.
+- Otherwise, if a `remoteResolver` is configured on the server — returns a standard ConnectRPC client over the `Transport` the resolver maps the service to. A resolver that returns `null` for the service yields `ConnectError(Code.Unavailable)` at client construction — the resolver runs inside `server.client()`, before any RPC is invoked.
+- Otherwise (not local and no `remoteResolver` configured) — throws `CatalogConfigError` immediately at client construction (fail-fast), naming the service `typeName`.
 
 ```typescript
 function client<T extends DescService>(
   service: T,
-  options?: { fallback?: Transport },
+  options?: ServerClientOptions, // { endpoint?: string }
 ): Client<T>;
 ```
 
-This is the recommended entry point: the same call site works for both in-process and remote deployments without modification.
+This is the recommended entry point: the same call site works for both in-process and remote deployments without modification. Remote routing is configured once on the server via `remoteResolver`, not per call site — see [Remote Resolvers](/en/guide/service-communication/resolvers).
 
 ```typescript
+import { createServer, singleTransportResolver } from '@connectum/core';
 import { createGrpcTransport } from '@connectrpc/connect-node';
 
-const remoteFallback = createGrpcTransport({
-  baseUrl: process.env.UPSTREAM_URL!,
-  httpVersion: '2',
+const server = createServer({
+  services: [inventoryService],
+  // Services not mounted locally are reached through this resolver.
+  remoteResolver: singleTransportResolver(
+    createGrpcTransport({ baseUrl: process.env.UPSTREAM_URL!, httpVersion: '2' }),
+  ),
 });
 
-// Local if registered on `server`, remote otherwise.
-const inventory = server.client(InventoryService, { fallback: remoteFallback });
+// Local if registered on `server`, remote via the resolver otherwise.
+const inventory = server.client(InventoryService);
 ```
 
 ### `server.localClient(service)`
@@ -169,25 +173,43 @@ If you do not call `server.start()`, no port is bound and `server.address` remai
 
 The auto-routing `server.client()` enables a single caller codebase that works in both monolithic and distributed deployments.
 
-```typescript
-// shared/clients.ts — same code in every deployment topology
-export function buildClients(server: Server, env: { upstreamUrl?: string }) {
-  const fallback = env.upstreamUrl
-    ? createGrpcTransport({ baseUrl: env.upstreamUrl, httpVersion: '2' })
-    : undefined;
+Remote routing is decided once, when the server is created, by the `remoteResolver`. The call sites never change between topologies.
 
+```typescript
+// shared/server.ts — same call sites in every deployment topology
+import { createServer, singleTransportResolver } from '@connectum/core';
+import { createGrpcTransport } from '@connectrpc/connect-node';
+
+export function buildServer(env: { upstreamUrl?: string }) {
+  return createServer({
+    // Register only the services this process owns; the rest are remote.
+    services: ownedServices,
+    // Services not mounted locally are routed through the resolver.
+    // Omit `remoteResolver` for a pure monolith that hosts everything.
+    remoteResolver: env.upstreamUrl
+      ? singleTransportResolver(
+          createGrpcTransport({ baseUrl: env.upstreamUrl, httpVersion: '2' }),
+        )
+      : undefined,
+  });
+}
+
+// shared/clients.ts — identical in every topology
+export function buildClients(server: Server) {
   return {
-    inventory: server.client(InventoryService, { fallback }),
-    pricing: server.client(PricingService, { fallback }),
+    inventory: server.client(InventoryService),
+    pricing: server.client(PricingService),
   };
 }
 ```
 
-- **Monolith deployment**: register `InventoryService` and `PricingService` on the same `server`. Both clients route locally.
-- **Distributed deployment**: register only the services owned by this process. Others fall back to the remote transport. No change at the call site.
+- **Monolith deployment**: register `InventoryService` and `PricingService` on the same `server` (no `remoteResolver` needed). Both clients route locally.
+- **Distributed deployment**: register only the services owned by this process and configure a `remoteResolver`. Others route remotely through the resolver. No change at the call site.
 - **Hybrid migration**: extract one service at a time. The client side never changes.
 
-If a service is not registered locally and no fallback is provided, `server.client()` throws `ConnectError(unimplemented)` at construction — a fail-fast signal that deployment topology is misconfigured.
+If a service is not registered locally and no `remoteResolver` is configured, `server.client()` throws `CatalogConfigError` at construction — a fail-fast signal that deployment topology is misconfigured. A configured resolver that returns `null` for the service surfaces as `ConnectError(Code.Unavailable)` instead — also at construction, since the resolver runs inside `server.client()` before any RPC is invoked.
+
+For the full set of resolver factories (`singleTransportResolver`, `mapResolver`, `dnsResolver`, `perServiceEnvResolver`) see [Remote Resolvers](/en/guide/service-communication/resolvers).
 
 ## Testing
 

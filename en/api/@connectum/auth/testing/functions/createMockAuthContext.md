@@ -4,7 +4,7 @@
 
 > **createMockAuthContext**(`overrides?`): [`AuthContext`](../../interfaces/AuthContext.md)
 
-Defined in: [packages/auth/src/testing/mock-context.ts:39](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/auth/src/testing/mock-context.ts#L39)
+Defined in: [packages/auth/src/testing/mock-context.ts:39](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/testing/mock-context.ts#L39)
 
 Create a mock AuthContext for testing.
 

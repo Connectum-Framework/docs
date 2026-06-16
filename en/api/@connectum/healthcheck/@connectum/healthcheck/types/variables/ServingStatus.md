@@ -4,7 +4,7 @@
 
 > `const` **ServingStatus**: *typeof* `HealthCheckResponse_ServingStatus` = `HealthCheckResponse_ServingStatus`
 
-Defined in: [types.ts:14](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/healthcheck/src/types.ts#L14)
+Defined in: [types.ts:14](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/types.ts#L14)
 
 Service serving status
 

@@ -2,7 +2,7 @@
 
 # Interface: CreateLocalTransportOptions
 
-Defined in: [packages/core/src/localTransport.ts:44](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/localTransport.ts#L44)
+Defined in: [packages/core/src/localTransport.ts:44](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/localTransport.ts#L44)
 
 Options for [createLocalTransport](../functions/createLocalTransport.md).
 
@@ -12,7 +12,7 @@ Options for [createLocalTransport](../functions/createLocalTransport.md).
 
 > `optional` **interceptors?**: `Interceptor`[]
 
-Defined in: [packages/core/src/localTransport.ts:51](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/core/src/localTransport.ts#L51)
+Defined in: [packages/core/src/localTransport.ts:51](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/localTransport.ts#L51)
 
 Client-side interceptors applied to outbound calls before they reach
 the registered handlers. Server-side interceptors configured on the

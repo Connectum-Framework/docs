@@ -15,7 +15,7 @@ Build a fully functional gRPC/ConnectRPC microservice with health checks, server
 - **buf** -- installed automatically via `@bufbuild/buf` npm package
 
 ::: tip Node.js version for consumers
-This guide uses Node.js 25+ for native `.ts` execution of your own source files. However, `@connectum/*` packages ship **compiled JavaScript**, so if you compile your own code (e.g., with tsx or a build tool), you can run on **Node.js >= 22.13.0**. See [Runtime Support](/en/guide/typescript#runtime-support-node-js-vs-bun).
+This guide uses Node.js 25+ for native `.ts` execution of your own source files. However, `@connectum/*` packages ship **compiled JavaScript**, so if you compile your own code (e.g., with tsx or a build tool), you can run on **Node.js >= 22.13.0**. See [Runtime Support](/en/guide/typescript/runtime-support).
 :::
 
 ## 1. Project Setup
@@ -153,7 +153,7 @@ pnpm run build:proto
 This produces `gen/greeter_pb.ts` containing message schemas, types, and the service definition.
 
 ::: warning Proto enums and native TypeScript
-If your proto files use `enum`, the generated code contains non-erasable TypeScript. Use a [two-step generation process](/en/guide/typescript#proto-generation-and-enums).
+If your proto files use `enum`, the generated code contains non-erasable TypeScript. Use a [two-step generation process](/en/guide/typescript/proto-enums).
 :::
 
 ## 4. Service Handler
@@ -162,20 +162,18 @@ Create `src/services/greeterService.ts`:
 
 ```typescript
 import { create } from '@bufbuild/protobuf';
-import type { ConnectRouter } from '@connectrpc/connect';
+import { defineService } from '@connectum/core';
 import { GreeterService, SayHelloResponseSchema } from '#gen/greeter_pb.js';
 import type { SayHelloRequest } from '#gen/greeter_pb.js';
 
-export function greeterServiceRoutes(router: ConnectRouter): void {
-  router.service(GreeterService, {
-    async sayHello(request: SayHelloRequest) {
-      const name = request.name || 'World';
-      return create(SayHelloResponseSchema, {
-        message: `Hello, ${name}!`,
-      });
-    },
-  });
-}
+export const greeterService = defineService(GreeterService, {
+  async sayHello(request: SayHelloRequest) {
+    const name = request.name || 'World';
+    return create(SayHelloResponseSchema, {
+      message: `Hello, ${name}!`,
+    });
+  },
+});
 ```
 
 ## 5. Server Entry Point
@@ -187,10 +185,10 @@ import { createServer } from '@connectum/core';
 import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
 import { Reflection } from '@connectum/reflection';
 import { createDefaultInterceptors } from '@connectum/interceptors';
-import { greeterServiceRoutes } from './services/greeterService.ts';
+import { greeterService } from './services/greeterService.ts';
 
 const server = createServer({
-  services: [greeterServiceRoutes],
+  services: [greeterService],
   port: 5000,
   protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
   interceptors: createDefaultInterceptors(),
@@ -434,6 +432,8 @@ const inventoryClient = createClient(InventoryService, inventoryTransport);
 // Use in any service handler
 const stock = await inventoryClient.checkStock({ sku: 'ABC-123' });
 ```
+
+When the target service is part of your [service catalog](/en/guide/service-communication/service-catalog), prefer `ctx.call(...)` inside a handler over building a transport by hand: it auto-routes local vs remote and you skip the explicit `createClient`/transport wiring.
 
 Trace context propagates automatically -- the client span links to the server span in the downstream service. See [Service Communication](/en/guide/service-communication) for patterns, resilience, and service discovery.
 

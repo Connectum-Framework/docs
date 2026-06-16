@@ -4,7 +4,7 @@
 
 > **estimateMessageSize**(`message`): `number`
 
-Defined in: [packages/otel/src/shared.ts:51](https://github.com/Connectum-Framework/connectum/blob/caf5b110b00f27241af3e0656091ebf408eea7a0/packages/otel/src/shared.ts#L51)
+Defined in: [packages/otel/src/shared.ts:51](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/otel/src/shared.ts#L51)
 
 Estimates the serialized size of a protobuf message in bytes.
 
