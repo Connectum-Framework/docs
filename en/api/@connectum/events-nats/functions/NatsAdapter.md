@@ -4,7 +4,7 @@
 
 > **NatsAdapter**(`options`): `EventAdapter`
 
-Defined in: [NatsAdapter.ts:83](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-nats/src/NatsAdapter.ts#L83)
+Defined in: [NatsAdapter.ts:83](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-nats/src/NatsAdapter.ts#L83)
 
 Create a NATS JetStream adapter.
 

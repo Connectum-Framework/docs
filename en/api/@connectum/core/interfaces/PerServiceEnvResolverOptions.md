@@ -2,7 +2,7 @@
 
 # Interface: PerServiceEnvResolverOptions
 
-Defined in: [packages/core/src/remoteResolver.ts:87](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/remoteResolver.ts#L87)
+Defined in: [packages/core/src/remoteResolver.ts:87](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/remoteResolver.ts#L87)
 
 Options for [perServiceEnvResolver](../functions/perServiceEnvResolver.md).
 
@@ -12,7 +12,7 @@ Options for [perServiceEnvResolver](../functions/perServiceEnvResolver.md).
 
 > `readonly` `optional` **createTransport?**: (`baseUrl`) => `Transport`
 
-Defined in: [packages/core/src/remoteResolver.ts:89](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/remoteResolver.ts#L89)
+Defined in: [packages/core/src/remoteResolver.ts:89](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/remoteResolver.ts#L89)
 
 Build a `Transport` from the resolved base URL. Defaults to a gRPC (HTTP/2) transport.
 

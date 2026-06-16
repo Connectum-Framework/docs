@@ -2,7 +2,7 @@
 
 # Interface: AmqpLifecycleCallbacks
 
-Defined in: [packages/events-amqp/src/types.ts:223](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-amqp/src/types.ts#L223)
+Defined in: [packages/events-amqp/src/types.ts:223](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L223)
 
 Connection lifecycle callbacks.
 
@@ -12,7 +12,7 @@ Connection lifecycle callbacks.
 
 > `readonly` `optional` **onConnected?**: () => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:224](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-amqp/src/types.ts#L224)
+Defined in: [packages/events-amqp/src/types.ts:224](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L224)
 
 #### Returns
 
@@ -24,7 +24,7 @@ Defined in: [packages/events-amqp/src/types.ts:224](https://github.com/Connectum
 
 > `readonly` `optional` **onDisconnected?**: (`cause`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:225](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-amqp/src/types.ts#L225)
+Defined in: [packages/events-amqp/src/types.ts:225](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L225)
 
 #### Parameters
 
@@ -42,7 +42,7 @@ Defined in: [packages/events-amqp/src/types.ts:225](https://github.com/Connectum
 
 > `readonly` `optional` **onReconnectFailed?**: (`cause`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:227](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-amqp/src/types.ts#L227)
+Defined in: [packages/events-amqp/src/types.ts:227](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L227)
 
 #### Parameters
 
@@ -60,7 +60,7 @@ Defined in: [packages/events-amqp/src/types.ts:227](https://github.com/Connectum
 
 > `readonly` `optional` **onReconnecting?**: (`info`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:226](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-amqp/src/types.ts#L226)
+Defined in: [packages/events-amqp/src/types.ts:226](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L226)
 
 #### Parameters
 

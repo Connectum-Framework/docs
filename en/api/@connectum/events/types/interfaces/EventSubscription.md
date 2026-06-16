@@ -2,7 +2,7 @@
 
 # Interface: EventSubscription
 
-Defined in: [packages/events/src/types.ts:43](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events/src/types.ts#L43)
+Defined in: [packages/events/src/types.ts:43](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L43)
 
 Subscription handle returned by adapter.subscribe()
 
@@ -12,7 +12,7 @@ Subscription handle returned by adapter.subscribe()
 
 > **unsubscribe**(): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:45](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events/src/types.ts#L45)
+Defined in: [packages/events/src/types.ts:45](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L45)
 
 Unsubscribe and clean up
 

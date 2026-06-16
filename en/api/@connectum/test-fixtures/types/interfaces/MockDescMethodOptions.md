@@ -2,7 +2,7 @@
 
 # Interface: MockDescMethodOptions
 
-Defined in: [types.ts:68](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/test-fixtures/src/types.ts#L68)
+Defined in: [types.ts:68](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/types.ts#L68)
 
 Options for createMockDescMethod.
 
@@ -12,7 +12,7 @@ Options for createMockDescMethod.
 
 > `optional` **input?**: `DescMessage`
 
-Defined in: [types.ts:70](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/test-fixtures/src/types.ts#L70)
+Defined in: [types.ts:70](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/types.ts#L70)
 
 Input message descriptor.
 
@@ -22,7 +22,7 @@ Input message descriptor.
 
 > `optional` **kind?**: `"unary"` \| `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"`
 
-Defined in: [types.ts:74](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/test-fixtures/src/types.ts#L74)
+Defined in: [types.ts:74](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/types.ts#L74)
 
 Method kind. Default: `'unary'`
 
@@ -32,7 +32,7 @@ Method kind. Default: `'unary'`
 
 > `optional` **output?**: `DescMessage`
 
-Defined in: [types.ts:72](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/test-fixtures/src/types.ts#L72)
+Defined in: [types.ts:72](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/types.ts#L72)
 
 Output message descriptor.
 
@@ -42,6 +42,6 @@ Output message descriptor.
 
 > `optional` **useSensitiveRedaction?**: `boolean`
 
-Defined in: [types.ts:76](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/test-fixtures/src/types.ts#L76)
+Defined in: [types.ts:76](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/types.ts#L76)
 
 Enable sensitive field redaction for this method. Default: `false`

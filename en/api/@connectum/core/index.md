@@ -34,25 +34,25 @@
 - [ConnectumMethodImpl](type-aliases/ConnectumMethodImpl.md)
 - [ConnectumServiceImpl](type-aliases/ConnectumServiceImpl.md)
 - [EffectiveTransport](type-aliases/EffectiveTransport.md)
-- [EffectiveTransport](type-aliases/EffectiveTransport-1.md)
 - [RemoteResolver](type-aliases/RemoteResolver.md)
 - [ServiceCatalog](type-aliases/ServiceCatalog.md)
 - [ServiceOptions](type-aliases/ServiceOptions.md)
 - [StreamReturn](type-aliases/StreamReturn.md)
 - [TransportValidationMode](type-aliases/TransportValidationMode.md)
-- [TransportValidationMode](type-aliases/TransportValidationMode-1.md)
 
 ## Variables
 
 - [BooleanFromStringSchema](variables/BooleanFromStringSchema.md)
 - [ConnectumEnvSchema](variables/ConnectumEnvSchema.md)
 - [defaultPropagateHeaders](variables/defaultPropagateHeaders.md)
+- [EffectiveTransport](variables/EffectiveTransport.md)
 - [LogFormatSchema](variables/LogFormatSchema.md)
 - [LoggerBackendSchema](variables/LoggerBackendSchema.md)
 - [LogLevelSchema](variables/LogLevelSchema.md)
 - [NodeEnvSchema](variables/NodeEnvSchema.md)
 - [tlsPath](variables/tlsPath.md)
 - [TRANSPORT\_VALIDATION\_ERROR\_CODE](variables/TRANSPORT_VALIDATION_ERROR_CODE.md)
+- [TransportValidationMode](variables/TransportValidationMode.md)
 
 ## Functions
 

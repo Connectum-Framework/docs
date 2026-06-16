@@ -4,7 +4,7 @@
 
 > **createClientGatewayInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/client-gateway-interceptor.ts:52](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/auth/src/client-gateway-interceptor.ts#L52)
+Defined in: [packages/auth/src/client-gateway-interceptor.ts:52](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/client-gateway-interceptor.ts#L52)
 
 Create a client interceptor that attaches gateway auth headers to outgoing requests.
 

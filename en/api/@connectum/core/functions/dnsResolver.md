@@ -4,7 +4,7 @@
 
 > **dnsResolver**(`options`): [`RemoteResolver`](../type-aliases/RemoteResolver.md)
 
-Defined in: [packages/core/src/remoteResolver.ts:77](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/remoteResolver.ts#L77)
+Defined in: [packages/core/src/remoteResolver.ts:77](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/remoteResolver.ts#L77)
 
 A resolver that derives a base URL per service from a DNS-style template and
 builds a transport for it. Mirrors typical container/k8s service-name routing.

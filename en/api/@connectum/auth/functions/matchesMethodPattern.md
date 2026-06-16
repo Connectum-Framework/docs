@@ -4,7 +4,7 @@
 
 > **matchesMethodPattern**(`serviceName`, `methodName`, `patterns`): `boolean`
 
-Defined in: [packages/auth/src/method-match.ts:23](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/auth/src/method-match.ts#L23)
+Defined in: [packages/auth/src/method-match.ts:23](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/method-match.ts#L23)
 
 Check if a method matches any of the given patterns.
 

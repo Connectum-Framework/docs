@@ -2,7 +2,7 @@
 
 # Interface: Context
 
-Defined in: [packages/core/src/context.ts:112](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/context.ts#L112)
+Defined in: [packages/core/src/context.ts:112](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/context.ts#L112)
 
 The context object passed to every Connectum service handler.
 
@@ -187,7 +187,7 @@ Per RPC context values that can be used to pass data to handlers.
 
 > **call**\<`K`\>(`method`, `request`, `options?`): `Promise`\<[`ConnectumCallMap`](ConnectumCallMap.md)\[`K`\]\[`"response"`\]\>
 
-Defined in: [packages/core/src/context.ts:123](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/context.ts#L123)
+Defined in: [packages/core/src/context.ts:123](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/context.ts#L123)
 
 Invoke a unary service in the catalog. The transport is chosen
 automatically: an in-process call when the target is mounted locally,
@@ -228,7 +228,7 @@ A `"${typeName}/${Method}"` key of [ConnectumCallMap](ConnectumCallMap.md).
 
 > **stream**\<`K`\>(`method`): [`StreamReturn`](../type-aliases/StreamReturn.md)\<[`ConnectumStreamMap`](ConnectumStreamMap.md)\[`K`\]\>
 
-Defined in: [packages/core/src/context.ts:136](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/context.ts#L136)
+Defined in: [packages/core/src/context.ts:136](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/context.ts#L136)
 
 Open a streaming call to a service in the catalog. Returns a kind-specific
 factory: server-streaming yields an `AsyncIterable`; client- and

@@ -4,7 +4,7 @@
 
 > **perServiceEnvResolver**(`map`, `options?`): [`RemoteResolver`](../type-aliases/RemoteResolver.md)
 
-Defined in: [packages/core/src/remoteResolver.ts:100](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/remoteResolver.ts#L100)
+Defined in: [packages/core/src/remoteResolver.ts:100](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/remoteResolver.ts#L100)
 
 A resolver backed by per-service environment variables: `map` pairs each
 `typeName` with the name of the env var holding its base URL. A service with

@@ -4,7 +4,7 @@
 
 > **createMockNext**(`options?`): `any`
 
-Defined in: [mock-next.ts:36](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/test-fixtures/src/mock-next.ts#L36)
+Defined in: [mock-next.ts:36](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/mock-next.ts#L36)
 
 Create a mock `next` handler that resolves with a successful response.
 

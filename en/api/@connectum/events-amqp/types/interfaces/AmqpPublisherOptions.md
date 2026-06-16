@@ -2,7 +2,7 @@
 
 # Interface: AmqpPublisherOptions
 
-Defined in: [packages/events-amqp/src/types.ts:304](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-amqp/src/types.ts#L304)
+Defined in: [packages/events-amqp/src/types.ts:304](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L304)
 
 Publisher options.
 
@@ -12,7 +12,7 @@ Publisher options.
 
 > `readonly` `optional` **correlationHeader?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:333](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-amqp/src/types.ts#L333)
+Defined in: [packages/events-amqp/src/types.ts:333](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L333)
 
 How `basic.return` frames are correlated to publishes when
 `mandatory: true`. The return frame carries no deliveryTag, so:
@@ -36,7 +36,7 @@ true
 
 > `readonly` `optional` **mandatory?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:318](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-amqp/src/types.ts#L318)
+Defined in: [packages/events-amqp/src/types.ts:318](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L318)
 
 Whether the message should be returned if it cannot be routed.
 Unroutable messages reject the publish with `AmqpUnroutableError`.
@@ -53,7 +53,7 @@ false
 
 > `readonly` `optional` **persistent?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:310](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events-amqp/src/types.ts#L310)
+Defined in: [packages/events-amqp/src/types.ts:310](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L310)
 
 Whether messages should be persisted to disk (deliveryMode=2).
 

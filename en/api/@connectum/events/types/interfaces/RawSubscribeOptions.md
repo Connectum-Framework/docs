@@ -2,7 +2,7 @@
 
 # Interface: RawSubscribeOptions
 
-Defined in: [packages/events/src/types.ts:51](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events/src/types.ts#L51)
+Defined in: [packages/events/src/types.ts:51](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L51)
 
 Options for raw subscribe
 
@@ -12,6 +12,6 @@ Options for raw subscribe
 
 > `optional` **group?**: `string`
 
-Defined in: [packages/events/src/types.ts:53](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events/src/types.ts#L53)
+Defined in: [packages/events/src/types.ts:53](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L53)
 
 Consumer group name for load-balanced consumption

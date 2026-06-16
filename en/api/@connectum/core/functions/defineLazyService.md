@@ -4,7 +4,7 @@
 
 > **defineLazyService**\<`S`\>(`descriptor`, `factory`, `options?`): [`ServiceDefinition`](../interfaces/ServiceDefinition.md)
 
-Defined in: [packages/core/src/defineService.ts:91](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/defineService.ts#L91)
+Defined in: [packages/core/src/defineService.ts:91](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/defineService.ts#L91)
 
 Define a service whose handlers (and their dependencies) are created lazily.
 

@@ -4,7 +4,7 @@
 
 > **MemoryAdapter**(): [`EventAdapter`](../types/interfaces/EventAdapter.md)
 
-Defined in: [packages/events/src/MemoryAdapter.ts:23](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/events/src/MemoryAdapter.ts#L23)
+Defined in: [packages/events/src/MemoryAdapter.ts:23](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/MemoryAdapter.ts#L23)
 
 Create an in-memory adapter for testing event flows
 without an external message broker.

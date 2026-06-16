@@ -4,7 +4,7 @@
 
 > **singleTransportResolver**(`transport`): [`RemoteResolver`](../type-aliases/RemoteResolver.md)
 
-Defined in: [packages/core/src/remoteResolver.ts:46](https://github.com/Connectum-Framework/connectum/blob/19a3629e21bbbb6bb1914ecc539b8c29d9ab24c5/packages/core/src/remoteResolver.ts#L46)
+Defined in: [packages/core/src/remoteResolver.ts:46](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/remoteResolver.ts#L46)
 
 A resolver that routes every remote service to the same `Transport`. Useful
 for a single upstream (sidecar, gateway) that fronts all remote services.
