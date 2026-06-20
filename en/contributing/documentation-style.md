@@ -77,8 +77,10 @@ a reduced template, but should still carry the License line and footer.
 - **No image badges.** None of the packages use shields; keep it that way for
   uniformity. Metadata (Layer / Node.js / License) may be a plain bold line under
   the title.
-- **Footer dash is an em-dash** (`—`), not a single hyphen: `**Part of
-  [@connectum](../../README.md)** — Universal framework ...`.
+- **Footer uses an em-dash, not a single hyphen.** The repository writes
+  em-dashes two ways and both are accepted in footers: the ASCII ` -- ` form used
+  throughout the prose, or a real ` — ` (`—`). Pick one and avoid ` - `:
+  `**Part of [@connectum](../../README.md)** -- Universal framework ...`.
 - **License is `Apache-2.0`** everywhere (see [Content accuracy rules](#content-accuracy-rules)).
 - Prefer **pointing to the [API Reference](/en/api/)** for the full export list
   over hand-enumerating every export — exhaustive tables drift the moment the
