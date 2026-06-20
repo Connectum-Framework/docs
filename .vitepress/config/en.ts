@@ -3,155 +3,187 @@
 
 const guideSidebar: DefaultTheme.SidebarItem[] = [
     {
-        text: 'Getting Started',
+        text: 'Introduction',
         items: [
             { text: 'About Connectum', link: '/en/guide/about' },
             { text: 'Quickstart', link: '/en/guide/quickstart' },
+            { text: 'Architecture Overview', link: '/en/guide/production/architecture' },
+            { text: 'Runtime Compatibility', link: '/en/guide/runtime-compatibility' },
         ],
     },
     {
-        text: 'Server',
-        link: '/en/guide/server',
-        collapsed: false,
+        text: 'Build a Service',
         items: [
-            { text: 'Lifecycle & Events', link: '/en/guide/server/lifecycle' },
-            { text: 'Configuration', link: '/en/guide/server/configuration' },
-            { text: 'Graceful Shutdown', link: '/en/guide/server/graceful-shutdown' },
+            {
+                text: 'Server',
+                link: '/en/guide/server',
+                collapsed: true,
+                items: [
+                    { text: 'Lifecycle & Events', link: '/en/guide/server/lifecycle' },
+                    { text: 'Configuration', link: '/en/guide/server/configuration' },
+                    { text: 'Graceful Shutdown', link: '/en/guide/server/graceful-shutdown' },
+                ],
+            },
+            {
+                text: 'Interceptors',
+                link: '/en/guide/interceptors',
+                collapsed: true,
+                items: [
+                    { text: 'Built-in Chain', link: '/en/guide/interceptors/built-in' },
+                    { text: 'Custom Interceptors', link: '/en/guide/interceptors/custom' },
+                    { text: 'Method Filtering', link: '/en/guide/interceptors/method-filtering' },
+                ],
+            },
+            { text: 'Validation', link: '/en/guide/validation' },
+            {
+                text: 'TypeScript',
+                link: '/en/guide/typescript',
+                collapsed: true,
+                items: [
+                    { text: 'Runtime Support', link: '/en/guide/typescript/runtime-support' },
+                    { text: 'Erasable Syntax', link: '/en/guide/typescript/erasable-syntax' },
+                    { text: 'Proto Generation', link: '/en/guide/typescript/proto-enums' },
+                    { text: 'Patterns', link: '/en/guide/typescript/patterns' },
+                ],
+            },
         ],
     },
     {
-        text: 'Interceptors',
-        link: '/en/guide/interceptors',
-        collapsed: false,
+        text: 'Connect Services',
         items: [
-            { text: 'Built-in Chain', link: '/en/guide/interceptors/built-in' },
-            { text: 'Custom Interceptors', link: '/en/guide/interceptors/custom' },
-            { text: 'Method Filtering', link: '/en/guide/interceptors/method-filtering' },
+            {
+                text: 'Service Communication',
+                link: '/en/guide/service-communication',
+                collapsed: true,
+                items: [
+                    { text: 'Communication Patterns', link: '/en/guide/service-communication/patterns' },
+                    { text: 'Service Catalog', link: '/en/guide/service-communication/service-catalog' },
+                    { text: 'Remote Resolvers', link: '/en/guide/service-communication/resolvers' },
+                    { text: 'Client Interceptors', link: '/en/guide/service-communication/client-interceptors' },
+                    { text: 'In-Process Transport', link: '/en/guide/production/in-process-transport' },
+                    { text: 'Transport Matrix', link: '/en/guide/production/transport-matrix' },
+                ],
+            },
+            {
+                text: 'Events',
+                link: '/en/guide/events',
+                collapsed: true,
+                items: [
+                    { text: 'Getting Started', link: '/en/guide/events/getting-started' },
+                    { text: 'Custom Topics', link: '/en/guide/events/custom-topics' },
+                    { text: 'Middleware', link: '/en/guide/events/middleware' },
+                    { text: 'Adapters', link: '/en/guide/events/adapters' },
+                ],
+            },
         ],
     },
     {
-        text: 'Service Communication',
-        link: '/en/guide/service-communication',
-        collapsed: true,
+        text: 'Secure',
         items: [
-            { text: 'Communication Patterns', link: '/en/guide/service-communication/patterns' },
-            { text: 'Service Catalog', link: '/en/guide/service-communication/service-catalog' },
-            { text: 'Remote Resolvers', link: '/en/guide/service-communication/resolvers' },
-            { text: 'Client Interceptors', link: '/en/guide/service-communication/client-interceptors' },
+            {
+                text: 'Auth & Authz',
+                link: '/en/guide/auth',
+                collapsed: true,
+                items: [
+                    { text: 'JWT', link: '/en/guide/auth/jwt' },
+                    { text: 'Gateway', link: '/en/guide/auth/gateway' },
+                    { text: 'Session', link: '/en/guide/auth/session' },
+                    { text: 'Authorization (RBAC)', link: '/en/guide/auth/authorization' },
+                    { text: 'Proto-Based Authz', link: '/en/guide/auth/proto-authz' },
+                    { text: 'Client Interceptors', link: '/en/guide/auth/client-interceptors' },
+                    { text: 'Context & Testing', link: '/en/guide/auth/context' },
+                ],
+            },
+            {
+                text: 'TLS & mTLS',
+                link: '/en/guide/security',
+                collapsed: true,
+                items: [
+                    { text: 'TLS Configuration', link: '/en/guide/security/tls' },
+                    { text: 'Mutual TLS (mTLS)', link: '/en/guide/security/mtls' },
+                ],
+            },
         ],
     },
     {
-        text: 'Events',
-        link: '/en/guide/events',
-        collapsed: true,
+        text: 'Operate',
         items: [
-            { text: 'Getting Started', link: '/en/guide/events/getting-started' },
-            { text: 'Custom Topics', link: '/en/guide/events/custom-topics' },
-            { text: 'Middleware', link: '/en/guide/events/middleware' },
-            { text: 'Adapters', link: '/en/guide/events/adapters' },
+            {
+                text: 'Observability',
+                link: '/en/guide/observability',
+                collapsed: true,
+                items: [
+                    { text: 'Distributed Tracing', link: '/en/guide/observability/tracing' },
+                    { text: 'Metrics', link: '/en/guide/observability/metrics' },
+                    { text: 'Logging', link: '/en/guide/observability/logging' },
+                    { text: 'Backends & Config', link: '/en/guide/observability/backends' },
+                ],
+            },
+            {
+                text: 'Health Checks',
+                link: '/en/guide/health-checks',
+                collapsed: true,
+                items: [
+                    { text: 'gRPC & HTTP Protocol', link: '/en/guide/health-checks/protocol' },
+                    { text: 'Kubernetes Integration', link: '/en/guide/health-checks/kubernetes' },
+                ],
+            },
+            {
+                text: 'Protocols',
+                link: '/en/guide/protocols',
+                collapsed: true,
+                items: [
+                    { text: 'Server Reflection', link: '/en/guide/protocols/reflection' },
+                    { text: 'Custom Protocols', link: '/en/guide/protocols/custom' },
+                ],
+            },
+            {
+                text: 'Testing',
+                link: '/en/guide/testing',
+                collapsed: true,
+                items: [
+                    { text: 'runn', link: '/en/guide/testing/runn' },
+                    { text: 'scenarigo', link: '/en/guide/testing/scenarigo' },
+                ],
+            },
         ],
     },
     {
-        text: 'Auth & Authz',
-        link: '/en/guide/auth',
-        collapsed: true,
+        text: 'Deploy',
         items: [
-            { text: 'JWT', link: '/en/guide/auth/jwt' },
-            { text: 'Gateway', link: '/en/guide/auth/gateway' },
-            { text: 'Session', link: '/en/guide/auth/session' },
-            { text: 'Authorization (RBAC)', link: '/en/guide/auth/authorization' },
-            { text: 'Proto-Based Authz', link: '/en/guide/auth/proto-authz' },
-            { text: 'Client Interceptors', link: '/en/guide/auth/client-interceptors' },
-            { text: 'Context & Testing', link: '/en/guide/auth/context' },
-        ],
-    },
-    {
-        text: 'Observability',
-        link: '/en/guide/observability',
-        collapsed: true,
-        items: [
-            { text: 'Distributed Tracing', link: '/en/guide/observability/tracing' },
-            { text: 'Metrics', link: '/en/guide/observability/metrics' },
-            { text: 'Logging', link: '/en/guide/observability/logging' },
-            { text: 'Backends & Config', link: '/en/guide/observability/backends' },
-        ],
-    },
-    {
-        text: 'Health Checks',
-        link: '/en/guide/health-checks',
-        collapsed: true,
-        items: [
-            { text: 'gRPC & HTTP Protocol', link: '/en/guide/health-checks/protocol' },
-            { text: 'Kubernetes Integration', link: '/en/guide/health-checks/kubernetes' },
-        ],
-    },
-    {
-        text: 'Security (TLS)',
-        link: '/en/guide/security',
-        collapsed: true,
-        items: [
-            { text: 'TLS Configuration', link: '/en/guide/security/tls' },
-            { text: 'Mutual TLS (mTLS)', link: '/en/guide/security/mtls' },
-        ],
-    },
-    {
-        text: 'Protocols',
-        link: '/en/guide/protocols',
-        collapsed: true,
-        items: [
-            { text: 'Server Reflection', link: '/en/guide/protocols/reflection' },
-            { text: 'Custom Protocols', link: '/en/guide/protocols/custom' },
-        ],
-    },
-    { text: 'Validation', link: '/en/guide/validation' },
-    { text: 'Runtime Compatibility', link: '/en/guide/runtime-compatibility' },
-    {
-        text: 'TypeScript',
-        link: '/en/guide/typescript',
-        collapsed: true,
-        items: [
-            { text: 'Runtime Support', link: '/en/guide/typescript/runtime-support' },
-            { text: 'Erasable Syntax', link: '/en/guide/typescript/erasable-syntax' },
-            { text: 'Proto Generation', link: '/en/guide/typescript/proto-enums' },
-            { text: 'Patterns', link: '/en/guide/typescript/patterns' },
-        ],
-    },
-    {
-        text: 'Testing',
-        link: '/en/guide/testing',
-        collapsed: true,
-        items: [
-            { text: 'runn', link: '/en/guide/testing/runn' },
-            { text: 'scenarigo', link: '/en/guide/testing/scenarigo' },
-        ],
-    },
-    {
-        text: 'Production',
-        collapsed: true,
-        items: [
-            { text: 'Architecture Patterns', link: '/en/guide/production/architecture' },
-            { text: 'Transport Matrix', link: '/en/guide/production/transport-matrix' },
-            { text: 'In-Process Transport', link: '/en/guide/production/in-process-transport' },
             { text: 'Docker', link: '/en/guide/production/docker' },
             { text: 'Kubernetes', link: '/en/guide/production/kubernetes' },
             { text: 'Envoy Gateway', link: '/en/guide/production/envoy-gateway' },
             { text: 'Service Mesh (Istio)', link: '/en/guide/production/service-mesh' },
         ],
     },
+];
+
+const packagesSidebar: DefaultTheme.SidebarItem[] = [
     {
-        text: 'Packages',
+        text: 'Layer 0 — Foundation',
         items: [
             { text: '@connectum/core', link: '/en/packages/core' },
+        ],
+    },
+    {
+        text: 'Layer 1 — Capabilities',
+        items: [
             { text: '@connectum/auth', link: '/en/packages/auth' },
             { text: '@connectum/interceptors', link: '/en/packages/interceptors' },
             { text: '@connectum/healthcheck', link: '/en/packages/healthcheck' },
             { text: '@connectum/reflection', link: '/en/packages/reflection' },
+            { text: '@connectum/events', link: '/en/packages/events' },
+        ],
+    },
+    {
+        text: 'Layer 2 — Tooling & Adapters',
+        items: [
             { text: '@connectum/otel', link: '/en/packages/otel' },
             { text: '@connectum/cli', link: '/en/packages/cli' },
             { text: '@connectum/protoc-gen-catalog', link: '/en/packages/protoc-gen-catalog' },
             { text: '@connectum/testing', link: '/en/packages/testing' },
             { text: '@connectum/test-fixtures', link: '/en/packages/test-fixtures' },
-            { text: '@connectum/events', link: '/en/packages/events' },
             { text: '@connectum/events-nats', link: '/en/packages/events-nats' },
             { text: '@connectum/events-kafka', link: '/en/packages/events-kafka' },
             { text: '@connectum/events-redis', link: '/en/packages/events-redis' },
@@ -166,6 +198,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
     themeConfig: {
         nav: [
             { text: 'Guide', link: '/en/guide/about' },
+            { text: 'Packages', link: '/en/packages/core', activeMatch: '/en/packages/' },
             { text: 'API', link: '/en/api/', activeMatch: '/en/api/' },
             {
                 text: 'Resources',
@@ -178,7 +211,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         ],
         sidebar: {
             '/en/guide/': guideSidebar,
-            '/en/packages/': guideSidebar,
+            '/en/packages/': packagesSidebar,
             '/en/migration/': [
                 {
                     text: 'Migration',
@@ -207,7 +240,6 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                     items: [
                         { text: 'Index', link: '/en/contributing/adr/index' },
                         { text: 'ADR-001: Native TypeScript', link: '/en/contributing/adr/001-native-typescript-migration' },
-
                         { text: 'ADR-003: Package Decomposition', link: '/en/contributing/adr/003-package-decomposition' },
                         { text: 'ADR-005: Input Validation', link: '/en/contributing/adr/005-input-validation-strategy' },
                         { text: 'ADR-006: Resilience Patterns', link: '/en/contributing/adr/006-resilience-pattern-implementation' },
