@@ -32,8 +32,11 @@ const jwtAuth = createJwtAuthInterceptor({
 | `jwksUri` | `string` | Yes (if no `publicKey`/`secret`) | URL to the JWKS endpoint |
 | `issuer` | `string` | No | Expected `iss` claim |
 | `audience` | `string` | No | Expected `aud` claim |
-| `maxTokenAge` | `string` | No | Maximum acceptable token age (e.g. `'1h'`, `'30m'`) |
+| `maxTokenAge` | `string \| number` | No | Maximum acceptable token age (e.g. `'1h'`, `'30m'`, or seconds) |
+| `algorithms` | `string[]` | No | Allowed signature algorithms (e.g. `['RS256']`) |
 | `claimsMapping` | `object` | No | Map JWT claims to `AuthContext` fields |
+| `skipMethods` | `string[]` | No | Methods to skip authentication for (e.g. `'Service/Method'`, `'Service/*'`) |
+| `propagateHeaders` | `boolean` | No | Forward auth context as `x-auth-*` headers to downstream services (default `false`) |
 
 ## HMAC Secret
 

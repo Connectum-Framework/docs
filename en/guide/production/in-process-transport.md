@@ -118,7 +118,7 @@ Useful for conditional routing in user code (e.g. when you build a custom transp
 
 ## Behavioural Parity Guarantees
 
-The in-process transport is validated by a cross-transport contract test suite (`transportParityTest` driver in `@connectum/testing`). For every covered scenario, the observed result over `createLocalTransport(server)` is structurally identical to the result over `createGrpcTransport({ baseUrl })` — modulo a single allow-listed attribute / label (`connectum.transport` / `transport`).
+The in-process transport is validated by a cross-transport contract test suite (`transportParityTest` driver in `@connectum/testing/parity`). For every covered scenario, the observed result over `createLocalTransport(server)` is structurally identical to the result over `createGrpcTransport({ baseUrl })` — modulo a single allow-listed attribute / label (`connectum.transport` / `transport`).
 
 Guaranteed identical between in-process and HTTP:
 
@@ -223,7 +223,7 @@ Use the parity driver to guarantee that custom interceptors and proto-declared r
 
 ```typescript
 import { ConnectError, createClient } from '@connectrpc/connect';
-import { transportParityTest } from '@connectum/testing';
+import { transportParityTest } from '@connectum/testing/parity';
 
 transportParityTest('greeter.sayHello rejects empty name', {
   services: [greeterRoutes],

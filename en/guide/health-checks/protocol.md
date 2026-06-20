@@ -60,7 +60,7 @@ healthcheckManager.update(ServingStatus.NOT_SERVING);
 | `register(component, initialStatus?)` | Register an application health component (default `UNKNOWN`). Re-registering preserves the current status. |
 | `set(component, status)` | Set a component's status (upsert: registers the component if absent). |
 | `unregister(component)` | Remove a registered component. |
-| `getStatus(service)` | Get status of a specific service or component |
+| `getStatus(service)` | Get status of a specific service or component. Returns `ServiceStatus \| undefined` (`undefined` for an unknown name — does not throw). |
 | `getAllStatuses()` | Get a Map of all service and component statuses |
 | `areAllHealthy()` | Check if all services and components report `SERVING` |
 | `initialize(serviceNames)` | Initialize the RPC service slice (called by the protocol). Replaces only `service` entries; never touches components. |

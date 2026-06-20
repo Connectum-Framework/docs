@@ -31,7 +31,8 @@ const sessionAuth = createSessionAuthInterceptor({
 |--------|------|----------|-------------|
 | `verifySession` | `(token, headers) => Promise<Session>` | Yes | Validates the session token and returns session data |
 | `mapSession` | `(session) => AuthContext` | Yes | Maps the session object to a standard `AuthContext` |
-| `cache` | `{ ttl: number }` | No | Cache verified sessions to reduce backend calls |
+| `extractToken` | `(req) => string \| null \| Promise<...>` | No | Custom token extraction (default: Bearer token from the `Authorization` header) |
+| `cache` | `{ ttl: number; maxSize?: number }` | No | Cache verified sessions to reduce backend calls (`maxSize` caps the LRU entry count) |
 
 ## How It Works
 

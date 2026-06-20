@@ -34,6 +34,8 @@ const interceptor = createOtelInterceptor({
 | `withoutMetrics` | `boolean` | `false` | Disable metrics (tracing only) |
 | `attributeFilter` | `OtelAttributeFilter` | -- | Exclude specific span attributes |
 
+All server interceptor options are optional; `createOtelInterceptor()` can be called with no arguments.
+
 ## Client Interceptor
 
 For outgoing RPC calls, use `createOtelClientInterceptor()` to propagate trace context:

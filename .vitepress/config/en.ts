@@ -167,8 +167,14 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         nav: [
             { text: 'Guide', link: '/en/guide/about' },
             { text: 'API', link: '/en/api/', activeMatch: '/en/api/' },
-            { text: 'Contributing', link: '/en/contributing/', activeMatch: '/en/contributing/' },
-            { text: 'Examples', link: 'https://github.com/Connectum-Framework/examples' },
+            {
+                text: 'Resources',
+                items: [
+                    { text: 'Migration & Changelog', link: '/en/migration/index' },
+                    { text: 'Contributing', link: '/en/contributing/', activeMatch: '/en/contributing/' },
+                    { text: 'Examples', link: 'https://github.com/Connectum-Framework/examples' },
+                ],
+            },
         ],
         sidebar: {
             '/en/guide/': guideSidebar,
@@ -190,6 +196,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Getting Started', link: '/en/contributing/' },
                         { text: 'Development Setup', link: '/en/contributing/development-setup' },
                         { text: 'CLI Commands', link: '/en/contributing/cli-commands' },
+                        { text: 'Documentation Style Guide', link: '/en/contributing/documentation-style' },
                         { text: 'Parity Invariant', link: '/en/contributing/parity-invariant' },
                         { text: 'Parity Coverage', link: '/en/contributing/parity-coverage' },
                     ],

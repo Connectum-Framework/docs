@@ -296,6 +296,8 @@ Use `createGatewayAuthInterceptor()` instead — it provides the same trusted-he
 
 The `getAuthContext()` API makes auth context available for custom OTel interceptors to enrich spans with `enduser.*` attributes if needed.
 
+> **Update (1.0.0):** `@connectum/otel` is now shipped, and `createOtelInterceptor()` is a standard interceptor. Place observability interceptors **after** auth/authz (and before validation) — i.e. `errorHandler → auth → authz → otel → validation` — so `getAuthContext()` is already populated when the span is recorded. Putting OTel before auth means spans cannot carry `enduser.*` attributes. This keeps the §4 rule intact (auth/authz immediately after `errorHandler`, before validation).
+
 ### 7. ext_authz: NOT Included
 
 **Decision: Do NOT include Envoy ext_authz implementation.**

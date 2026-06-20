@@ -82,9 +82,10 @@ This ensures:
 const server = createServer({
   services: [routes],
   interceptors: [
-    ...createDefaultInterceptors(),
-    jwtAuth,   // after errorHandler chain
-    authz,     // after authentication
+    createErrorHandlerInterceptor(),
+    jwtAuth,   // immediately after errorHandler
+    authz,     // immediately after authentication
+    ...createDefaultInterceptors({ errorHandler: false }),
   ],
 });
 ```
@@ -93,7 +94,7 @@ const server = createServer({
 
 ```typescript
 import { createServer } from '@connectum/core';
-import { createDefaultInterceptors } from '@connectum/interceptors';
+import { createDefaultInterceptors, createErrorHandlerInterceptor } from '@connectum/interceptors';
 import { createJwtAuthInterceptor, createAuthzInterceptor } from '@connectum/auth';
 
 const jwtAuth = createJwtAuthInterceptor({
@@ -116,7 +117,13 @@ const authz = createAuthzInterceptor({
 
 const server = createServer({
   services: [routes],
-  interceptors: [...createDefaultInterceptors(), jwtAuth, authz],
+  // ADR-024 order: errorHandler -> AUTH -> AUTHZ -> rest.
+  interceptors: [
+    createErrorHandlerInterceptor(),
+    jwtAuth,
+    authz,
+    ...createDefaultInterceptors({ errorHandler: false }),
+  ],
 });
 
 await server.start();

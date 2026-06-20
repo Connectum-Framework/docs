@@ -6,21 +6,21 @@ Complete reference of CLI commands for working with the Connectum monorepo.
 
 ## Prerequisites
 
-- **Node.js**: 25+ (for development), 20+ (for consumers)
+- **Node.js**: >=25.2.0 (for development), >=22.13.0 (for consumers)
 - **pnpm**: 10+
-- **protoc**: Latest version for proto generation
+- **Buf**: provided by the `@bufbuild/buf` workspace devDependency (no standalone install); proto generation runs via `pnpm build:proto`
 
 ### Installation Check
 
 ```bash
 # Check Node.js version
-node --version  # Should be 25+ for development
+node --version  # Should be >= 25.2.0 for development (>= 22.13.0 for consumers)
 
 # Check pnpm version
 pnpm --version  # Should be >= 10.0.0
 
-# Check protoc version
-protoc --version  # Should be installed
+# Buf is bundled as a workspace devDependency; verify proto generation
+pnpm build:proto
 ```
 
 ## Root-Level Commands
@@ -340,7 +340,12 @@ cat > packages/my-package/package.json <<EOF
     "name": "@connectum/my-package",
     "version": "1.0.0",
     "type": "module",
-    "main": "./src/index.ts"
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "build": "tsup",
+    "engines": {
+        "node": ">=22.13.0"
+    }
 }
 EOF
 
@@ -485,8 +490,8 @@ node --eval "import './test.ts'" 2>&1 | grep -q "Error" || echo "Type stripping 
 # Verify pnpm workspace
 pnpm list --depth 0
 
-# Verify proto compiler
-protoc --version
+# Verify proto generation (Buf via the @bufbuild/buf workspace devDependency)
+pnpm build:proto
 
 # Verify Biome
 biome --version

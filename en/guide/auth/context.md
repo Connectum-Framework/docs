@@ -54,6 +54,7 @@ The `AuthContext` object contains the following fields:
 | `scopes` | `string[]` | OAuth scopes or permissions |
 | `claims` | `Record<string, unknown>` | Raw claims from the token or session |
 | `type` | `string` | Auth type (`'jwt'`, `'gateway'`, `'session'`, `'custom'`) |
+| `expiresAt` | `Date \| undefined` | Credential expiration time, when available |
 
 ## Cross-Service Propagation
 
@@ -62,6 +63,16 @@ Enable `propagateHeaders` to forward auth context to downstream services via HTT
 ```typescript
 const jwtAuth = createJwtAuthInterceptor({
   jwksUri: '...',
+  propagateHeaders: true,
+});
+```
+
+To filter which claims are propagated in the `x-auth-claims` header, use the `propagatedClaims` option. It is available on `createAuthInterceptor` (generic) and `createSessionAuthInterceptor` -- not on `createJwtAuthInterceptor`:
+
+```typescript
+const sessionAuth = createSessionAuthInterceptor({
+  verifySession: (token, headers) => auth.api.getSession({ headers }),
+  mapSession: (session) => ({ /* ... */ }),
   propagateHeaders: true,
   propagatedClaims: ['email', 'org_id'], // optional: filter sensitive claims
 });
@@ -74,8 +85,8 @@ const jwtAuth = createJwtAuthInterceptor({
 | `x-auth-subject` | User ID |
 | `x-auth-type` | Auth type |
 | `x-auth-name` | Display name |
-| `x-auth-roles` | Comma-separated roles |
-| `x-auth-scopes` | Comma-separated scopes |
+| `x-auth-roles` | JSON-encoded roles array |
+| `x-auth-scopes` | Space-separated scopes |
 | `x-auth-claims` | JSON-encoded filtered claims |
 
 The downstream service can read these headers with `createGatewayAuthInterceptor`, completing the trust chain.

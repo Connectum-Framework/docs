@@ -4,7 +4,7 @@
 
 **Accepted** - 2025-12-24
 
-> **Update (2026-02-06)**: Per ADR-010 (Framework vs Infrastructure), resilience interceptors (circuit breaker, timeout, bulkhead, fallback, retry) are now **optional (opt-in)**. They are not included in the default interceptor chain of createServer(). Users explicitly attach the interceptors they need. For standalone deployments without Envoy/proxy, they are still recommended.
+> **Update (2026-02-06)**: Per [ADR-023](/en/contributing/adr/023-uniform-registration-api), resilience interceptors (circuit breaker, timeout, bulkhead, fallback, retry) are now **optional (opt-in)**. They are not included in the default interceptor chain of createServer(). Users explicitly attach the interceptors they need. For standalone deployments without Envoy/proxy, they are still recommended.
 
 ---
 

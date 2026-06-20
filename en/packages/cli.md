@@ -186,9 +186,9 @@ plugins:
 
 ```json
 {
-  ".": "./src/index.ts",
-  "./commands/proto-sync": "./src/commands/proto-sync.ts",
-  "./utils/reflection": "./src/utils/reflection.ts"
+  ".": "./dist/index.js",
+  "./commands/proto-sync": "./dist/commands/proto-sync.js",
+  "./utils/reflection": "./dist/utils/reflection.js"
 }
 ```
 

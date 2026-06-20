@@ -71,7 +71,7 @@ Create `tsconfig.json` (type checking only -- no compilation):
     "target": "esnext",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "rewriteRelativeImportExtensions": true,
+    "allowImportingTsExtensions": true,
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
     "strict": true,
@@ -163,8 +163,8 @@ Create `src/services/greeterService.ts`:
 ```typescript
 import { create } from '@bufbuild/protobuf';
 import { defineService } from '@connectum/core';
-import { GreeterService, SayHelloResponseSchema } from '#gen/greeter_pb.js';
-import type { SayHelloRequest } from '#gen/greeter_pb.js';
+import { GreeterService, SayHelloResponseSchema } from '#gen/greeter_pb.ts';
+import type { SayHelloRequest } from '#gen/greeter_pb.ts';
 
 export const greeterService = defineService(GreeterService, {
   async sayHello(request: SayHelloRequest) {
@@ -414,7 +414,7 @@ Microservices communicate via gRPC clients. Create a transport with `createClien
 import { createClient } from '@connectrpc/connect';
 import { createGrpcTransport } from '@connectrpc/connect-node';
 import { createOtelClientInterceptor } from '@connectum/otel';
-import { InventoryService } from '#gen/inventory_pb.js';
+import { InventoryService } from '#gen/inventory_pb.ts';
 
 const inventoryTransport = createGrpcTransport({
   baseUrl: `http://${process.env.INVENTORY_HOST}:${process.env.INVENTORY_PORT}`,

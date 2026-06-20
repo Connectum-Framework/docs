@@ -4,6 +4,8 @@
 
 **Accepted** -- 2026-02-16 (supersedes original ADR-001 from 2025-12-22)
 
+> **Update**: The consumer Node.js floor referenced below as `>=18.0.0` was later raised to **`>=22.13.0`** (Node.js 20 reached end-of-life on 2026-04-30). See the [migration guide](/en/migration/) ("Minimum Node.js raised to 22.13.0"). The historical decision body is preserved unchanged.
+
 ## Context
 
 ### Original Decision

@@ -159,16 +159,18 @@ import { greeterServiceRoutes } from './services/greeterService';
 
 ### Generated Code (`#gen/`) Imports
 
-Generated protobuf files (`#gen/*`) always use `.js` extensions. This is the convention set by `protobuf-es` (`import_extension=.js` in `buf.gen.yaml`):
+The extension used in generated protobuf imports (`#gen/*`) follows the `import_extension` option in your `buf.gen.yaml`. Run-directly projects like this one (and the example projects) generate `.ts` and import with `.ts`, which requires `allowImportingTsExtensions: true` in `tsconfig.json`. Compiled packages that ship JS instead set `import_extension=.js` and import with `.js`.
+
+For a run-directly project (`import_extension=.ts`):
 
 ```typescript
-// CORRECT: .js for generated protobuf files
-import { GreeterService } from '#gen/greeter_pb.js';
-import type { SayHelloRequest } from '#gen/greeter_pb.js';
-import routes from '#gen/routes.js';
-
-// WRONG: .ts for generated files
+// CORRECT: .ts for generated protobuf files (import_extension=.ts)
 import { GreeterService } from '#gen/greeter_pb.ts';
+import type { SayHelloRequest } from '#gen/greeter_pb.ts';
+import routes from '#gen/routes.ts';
+
+// WRONG: extension that does not match buf.gen.yaml import_extension
+import { GreeterService } from '#gen/greeter_pb.js';
 ```
 
 The `#gen/` path alias is defined in `package.json` via the `imports` field (`"#gen/*": "./gen/*"`).
