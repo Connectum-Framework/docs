@@ -329,40 +329,11 @@ github.com/mycompany/
 
 ## Inter-Service Communication Patterns
 
-### Request-Response Chain
-
-```mermaid
-sequenceDiagram
-    participant GW as API Gateway
-    participant OS as Order Service
-    participant IS as Inventory Service
-    participant PS as Payment Service
-
-    GW->>OS: CreateOrder (gRPC)
-    OS->>IS: CheckStock (gRPC)
-    IS-->>OS: StockResponse
-    OS->>PS: ProcessPayment (gRPC)
-    PS-->>OS: PaymentResponse
-    OS-->>GW: OrderResponse
-```
-
-### Fan-Out / Fan-In
-
-When a service needs to call multiple downstream services in parallel:
-
-```typescript
-async createOrder(req) {
-  // Fan-out: parallel calls to independent services
-  const [stock, pricing, customerProfile] = await Promise.all([
-    inventoryClient.checkStock({ sku: req.sku }),
-    pricingClient.getPrice({ sku: req.sku }),
-    customerClient.getProfile({ customerId: req.customerId }),
-  ]);
-
-  // Fan-in: combine results
-  return createOrderFromData(stock, pricing, customerProfile);
-}
-```
+Connectum services call each other with typed `ctx.call` / `ctx.stream` over the
+generated service catalog. The request-response chain, fan-out / fan-in, and
+streaming patterns are documented in full — with runnable code — under
+[Service Communication → Patterns](/en/guide/service-communication/patterns). This
+section covers only the deployment-level resilience concern.
 
 ### Circuit Breaker at Application Level
 

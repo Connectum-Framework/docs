@@ -166,7 +166,7 @@ const eventBus = createEventBus({
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `topic` | `string` | *required* | Topic name for dead letter events |
-| `errorSerializer` | `(error: unknown) => Record<string, unknown>` | `undefined` | Custom error serializer for DLQ metadata |
+| `errorSerializer` | `(error: unknown) => string` | `undefined` | Custom error serializer for DLQ metadata. The default serializes `error.name` only; a custom serializer should return a redacted string. |
 
 ### DLQ Metadata
 

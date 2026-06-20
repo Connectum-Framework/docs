@@ -4,6 +4,8 @@
 
 **Accepted** - 2026-02-11
 
+> **Note**: The `ServiceRoute` type referenced in this ADR was later removed; service registration is now described by the catalog model. See [ADR-028](/en/contributing/adr/028-service-catalog). The historical decision body is preserved unchanged.
+
 ## Context
 
 In `@connectum/core` (Layer 2), the `Server.ts` class had tight coupling with `@connectum/interceptors` (Layer 1) through direct import of factory functions and hardcoded interceptor chain assembly logic.

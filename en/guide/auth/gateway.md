@@ -19,7 +19,7 @@ const gatewayAuth = createGatewayAuthInterceptor({
   },
   trustSource: {
     header: 'x-gateway-secret',
-    expectedValues: [process.env.GATEWAY_SECRET],
+    expectedValues: [process.env.GATEWAY_SECRET!],
   },
 });
 ```
@@ -40,7 +40,7 @@ The `headerMapping` object maps `AuthContext` fields to the header names your ga
 | `subject` | User ID (string) | `x-user-id: user-123` |
 | `name` | Display name (string) | `x-user-name: John Doe` |
 | `roles` | Comma-separated roles | `x-user-roles: admin,editor` |
-| `scopes` | Comma-separated scopes | `x-user-scopes: read,write` |
+| `scopes` | Space-separated scopes | `x-user-scopes: read write` |
 
 ### trustSource Check
 
@@ -49,7 +49,7 @@ The `trustSource` check verifies that the request actually came from a trusted g
 ```typescript
 trustSource: {
   header: 'x-gateway-secret',
-  expectedValues: [process.env.GATEWAY_SECRET],
+  expectedValues: [process.env.GATEWAY_SECRET!],
 }
 ```
 
@@ -74,7 +74,7 @@ const gatewayAuth = createGatewayAuthInterceptor({
   },
   trustSource: {
     header: 'x-gateway-secret',
-    expectedValues: [process.env.GATEWAY_SECRET],
+    expectedValues: [process.env.GATEWAY_SECRET!],
   },
 });
 

@@ -34,6 +34,7 @@ The **[@connectum/auth](/en/packages/auth)** package provides production-ready a
 :::
 
 ```typescript
+import { Code, ConnectError } from '@connectrpc/connect';
 import type { Interceptor } from '@connectrpc/connect';
 
 interface AuthInterceptorOptions {

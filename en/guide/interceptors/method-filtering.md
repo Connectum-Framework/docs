@@ -23,7 +23,7 @@ export default (router: ConnectRouter) => {
   });
 
   // Per-method -- applies only to SayHello
-  router.rpc(GreeterService, GreeterService.methods.sayHello, sayHelloImpl, {
+  router.rpc(GreeterService.method.sayHello, sayHelloImpl, {
     interceptors: [rateLimiter],
   });
 };

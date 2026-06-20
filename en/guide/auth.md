@@ -30,7 +30,7 @@ service UserService {
 
 ```typescript
 import { createServer } from '@connectum/core';
-import { createDefaultInterceptors } from '@connectum/interceptors';
+import { createDefaultInterceptors, createErrorHandlerInterceptor } from '@connectum/interceptors';
 import {
   createJwtAuthInterceptor,
   createProtoAuthzInterceptor,
@@ -49,7 +49,15 @@ const authz = createProtoAuthzInterceptor({ defaultPolicy: 'deny' });
 
 const server = createServer({
   services: [routes],
-  interceptors: [...createDefaultInterceptors(), jwtAuth, authz],
+  // ADR-024 order: errorHandler -> AUTH -> AUTHZ -> rest.
+  // createDefaultInterceptors has no auth slot, so compose manually:
+  // put errorHandler first, auth next, then disable the default errorHandler.
+  interceptors: [
+    createErrorHandlerInterceptor(),
+    jwtAuth,
+    authz,
+    ...createDefaultInterceptors({ errorHandler: false }),
+  ],
 });
 
 await server.start();

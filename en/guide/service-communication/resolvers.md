@@ -27,7 +27,7 @@ The contract is strict:
 
 - **Synchronous.** The signature returns `Transport | null` directly — never a `Promise`. The framework caches per `(typeName, endpoint)` and cannot await a resolver.
 - **No network I/O.** A resolver must not dial TCP or perform a DNS lookup. It only *maps an identity to a lazily-connecting transport*. ConnectRPC transports (e.g. `createGrpcTransport({ baseUrl })`) do not open a socket until the first RPC, which is exactly what makes a synchronous, I/O-free resolver safe — startup validation never blocks on DNS or a dial.
-- **`null` means "no route."** Returning `null` is an operational miss: the call fails with `Code.Unavailable` at call time. (A *missing* `remoteResolver` for a non-local `server.client()` is a different, configuration-time failure — `CatalogConfigError`.)
+- **`null` means "no route."** Returning `null` is an operational miss: the call fails with `Code.Unavailable` — at dispatch time for `ctx.call`, and eagerly at client construction for `server.client()`. (A *missing* `remoteResolver` for a non-local `server.client()` is a different, configuration-time failure — `CatalogConfigError`.)
 - **Cached per `(typeName, endpoint)`.** The resolver runs at most once per unique route; the resolved transport is reused for every subsequent call.
 
 ## Built-in resolvers

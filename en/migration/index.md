@@ -9,7 +9,7 @@ This page covers breaking changes and migration steps between Connectum releases
 
 ## BREAKING: Resilience interceptors are now opt-in in `createDefaultInterceptors()`
 
-> Applies to the next release on top of RC.10.
+> Applies to 1.0.0.
 
 `createDefaultInterceptors()` now enables only the structural interceptors — **errorHandler** and **validation**. The resilience interceptors (**timeout**, **bulkhead**, **circuitBreaker**, **retry**) are **opt-in**: enable each one explicitly with `true` or an options object.
 
@@ -61,7 +61,7 @@ The circuit breaker is repositioned as an **outbound/client-transport pattern**.
 
 ## Minimum Node.js raised to 22.13.0
 
-> Applies to the next release on top of RC.10.
+> Applies to 1.0.0.
 
 Node.js 20 reached [end-of-life on 2026-04-30](https://nodejs.org/en/about/previous-releases) and no longer receives security updates. The minimum supported runtime for all `@connectum/*` packages is now **Node.js 22.13.0** (the current LTS line).
 
@@ -74,7 +74,7 @@ Node.js 20 reached [end-of-life on 2026-04-30](https://nodejs.org/en/about/previ
 
 ## BREAKING: `@connectum/core` validates streaming transport at startup
 
-> Applies to the next release on top of RC.10.
+> Applies to 1.0.0.
 
 `server.start()` now rejects when a **user-registered** service defines a
 bidi-streaming method and the effective transport is plaintext HTTP/1.1 (the
@@ -102,7 +102,7 @@ a client may still negotiate HTTP/1.1 over TLS. See the
 
 ## BREAKING: `PublishOptions.sync` removed from `@connectum/events`
 
-> Applies to the next release on top of RC.10.
+> Applies to 1.0.0.
 
 The `sync` flag on `PublishOptions` has been **removed**. It was a no-op: every
 adapter already confirms publishes per message (NATS `PubAck`, Kafka

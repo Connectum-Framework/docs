@@ -7,7 +7,7 @@ description: OpenTelemetry instrumentation for Connectum -- tracing, metrics, an
 
 Full OpenTelemetry instrumentation for Connectum services. Provides ConnectRPC interceptors for server and client tracing/metrics, a correlated logger, deep tracing helpers (`traced`, `traceAll`), and OTLP exporter management. Follows [OpenTelemetry semantic conventions for RPC](https://opentelemetry.io/docs/specs/semconv/rpc/connect-rpc/).
 
-**Layer**: 0 (Independent Core)
+**Layer**: 2 (Tooling)
 
 ::: tip Related Guides
 - [Observability Overview](/en/guide/observability) -- tracing, metrics, and logging

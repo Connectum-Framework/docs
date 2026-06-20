@@ -101,7 +101,7 @@ import { getTLSPath } from '@connectum/core';
 
 const path = getTLSPath();
 // In production (NODE_ENV=production): current working directory
-// In development: ../../keys relative to cwd
+// In development: ../../../keys relative to cwd
 // Overridden by: TLS_DIR_PATH environment variable
 ```
 

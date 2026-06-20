@@ -48,7 +48,7 @@ These principles guide every design decision in Connectum. Each links to its Arc
 
 3. **Pluggable Protocols** -- health checks and server reflection are separate packages registered via the `protocols` array; custom protocols implement the same interface. [ADR-022](/en/contributing/adr/022-protocol-extraction)
 
-4. **Resilience by Default** -- a fixed-order interceptor chain (errorHandler, timeout, bulkhead, circuitBreaker, retry, fallback, validation) with per-interceptor configuration. [ADR-006](/en/contributing/adr/006-resilience-pattern-implementation)
+4. **Opt-in Resilience** -- a fixed-order interceptor chain (errorHandler, timeout, bulkhead, circuitBreaker, retry, fallback, validation, serializer) where only `errorHandler` and `validation` are enabled by default; the resilience patterns (timeout, bulkhead, circuitBreaker, retry, fallback) are opt-in per-interceptor with no hidden behavioral logic. [ADR-006](/en/contributing/adr/006-resilience-pattern-implementation)
 
 5. **Proto-First Validation** -- request validation uses protovalidate constraints defined directly in `.proto` files and enforced automatically by the validation interceptor. [ADR-005](/en/contributing/adr/005-input-validation-strategy)
 

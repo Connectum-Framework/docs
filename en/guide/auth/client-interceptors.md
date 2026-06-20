@@ -92,6 +92,23 @@ The client interceptor sets these headers:
 
 When `roles` is omitted or empty, the `x-auth-roles` header is not set.
 
+::: warning headerMapping must match the client headers
+`createClientGatewayInterceptor` always sends the fixed header names `x-auth-subject` and `x-auth-roles`. The server's `createGatewayAuthInterceptor` reads whatever names its `headerMapping` declares. The `headerMapping` examples in the [Gateway Authentication](/en/guide/auth/gateway) guide use `x-user-id` / `x-user-roles`, which do **not** match these client headers. To pair the two interceptors out of the box, configure the server with a matching mapping:
+
+```typescript
+const gatewayAuth = createGatewayAuthInterceptor({
+  headerMapping: {
+    subject: 'x-auth-subject',
+    roles: 'x-auth-roles',
+  },
+  trustSource: {
+    header: 'x-gateway-secret',
+    expectedValues: [process.env.GATEWAY_SECRET!],
+  },
+});
+```
+:::
+
 ## Combining with other interceptors
 
 Client auth interceptors compose naturally with other interceptors:
