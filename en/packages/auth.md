@@ -5,7 +5,7 @@ description: Authentication and authorization interceptors for Connectum
 
 # @connectum/auth
 
-Authentication and authorization interceptors for ConnectRPC services. Provides server-side factories for the most common auth patterns -- generic pluggable auth, JWT (via jose), gateway-injected headers, session-based auth, and declarative authorization rules -- plus client-side factories (`createClientBearerInterceptor`, `createClientGatewayInterceptor`) for outbound service-to-service calls. All server interceptors propagate `AuthContext` through `AsyncLocalStorage` so handlers can access the authenticated identity without explicit parameter passing.
+Authentication and authorization interceptors for ConnectRPC services. Provides server-side factories for the most common auth patterns -- generic pluggable auth, JWT (via jose), gateway-injected headers, session-based auth, internal service-to-service auth, and declarative authorization rules -- plus client-side factories (`createClientBearerInterceptor`, `createClientGatewayInterceptor`) for outbound service-to-service calls. All server interceptors propagate `AuthContext` through `AsyncLocalStorage` so handlers can access the authenticated identity without explicit parameter passing.
 
 **Layer**: 1 (Protocol)
 
@@ -277,6 +277,215 @@ const sessionAuth = createSessionAuthInterceptor({
 
 ---
 
+### `createInternalAuthInterceptor(options)`
+
+::: tip Available since 1.1.0.
+:::
+
+Internal (service-to-service) authentication interceptor ([ADR-029](/en/contributing/adr/029-internal-service-to-service-auth)). For methods marked `internal` in proto options, it authorizes the call from a configurable per-service **trust source** instead of an end-user token, rejecting a missing or invalid marker as `Code.Unauthenticated`. Non-internal methods are a **no-op pass-through**.
+
+```typescript
+function createInternalAuthInterceptor(options: InternalAuthInterceptorOptions): Interceptor;
+```
+
+Internal methods skip end-user (JWT) authentication, so feed `getInternalMethods(services)` into the JWT interceptor's `skipMethods` (alongside `getPublicMethods(services)`); this interceptor then enforces the internal trust marker on those same methods.
+
+```typescript
+import {
+  createInternalAuthInterceptor,
+  meshIdentityTrust,
+  createJwtAuthInterceptor,
+} from '@connectum/auth';
+import { getInternalMethods, getPublicMethods } from '@connectum/auth/proto';
+import services from '#gen/services.js';
+
+// JWT skips both public and internal methods; the internal interceptor
+// then enforces the trust marker on the internal ones.
+const jwtAuth = createJwtAuthInterceptor({
+  jwksUri: 'https://auth.example.com/.well-known/jwks.json',
+  skipMethods: [...getPublicMethods(services), ...getInternalMethods(services)],
+});
+
+const internalAuth = createInternalAuthInterceptor({
+  internalMethods: getInternalMethods(services),
+  trustSource: meshIdentityTrust({
+    allowlist: [
+      { principal: 'cluster.local/ns/default/sa/trips', roles: ['worker'] },
+    ],
+  }),
+});
+```
+
+**Chain order (load-bearing)**. This interceptor MUST run **before** [`createProtoAuthzInterceptor`](#createprotoauthzinterceptor-options): it populates the `AuthContext` that proto-authz's `internal` rule consumes.
+
+```text
+errorHandler -> (jwtAuth | internalAuth) -> protoAuthz
+```
+
+For an `internal` method, `createProtoAuthzInterceptor` composes the marker inclusively with the existing roles/scopes model:
+
+- `internal` + no identity (no `AuthContext`) -> `Unauthenticated`
+- `internal` + no `requires` -> allow (any trusted internal caller)
+- `internal` + `requires { roles | scopes }` -> the existing roles/scopes check against the same `AuthContext`
+
+Each shipped trust source strips its own trust header after extraction on the internal path (accept and reject) to prevent a spoofed marker from being propagated downstream.
+
+#### `InternalAuthInterceptorOptions`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `trustSource` | `InternalTrustSource` | **(required)** | Pluggable trust source that authorizes an internal call -- use `meshIdentityTrust`, `signedTokenTrust`, `sharedSecretTrust`, or a custom function. Returning `null` (or throwing) rejects the call as `Unauthenticated`. |
+| `internalMethods` | `readonly string[]` | **(required)** | Method patterns enforced as internal (`"Service/Method"`, `"Service/*"`, or `"*"`). Typically `getInternalMethods(services)`. All other methods pass through unchanged. |
+
+::: tip Proto contract (additive)
+`optional bool internal` was added to both `ServiceAuth` and `MethodAuth` in `connectum.auth.v1`. Marking a method `internal` instead of `public` removes world-open exposure while keeping it reachable by trusted callers (ADR-029).
+:::
+
+---
+
+### `meshIdentityTrust(options)`
+
+::: tip Available since 1.1.0.
+:::
+
+Production-default trust source. Verifies a mesh-forwarded peer principal (an Istio short-form ServiceAccount principal `cluster.local/ns/<ns>/sa/<name>`, or a SPIFFE id) against an allow-list. Because the mesh issues each workload its own mTLS identity, matching the forwarded principal against the allow-list is **per-service by construction** -- compromising one workload cannot forge another's identity. The identity header is stripped after extraction (anti-spoofing).
+
+```typescript
+function meshIdentityTrust(options: MeshIdentityTrustOptions): InternalTrustSource;
+```
+
+```typescript
+import { createInternalAuthInterceptor, meshIdentityTrust } from '@connectum/auth';
+import { getInternalMethods } from '@connectum/auth/proto';
+import services from '#gen/services.js';
+
+const internalAuth = createInternalAuthInterceptor({
+  internalMethods: getInternalMethods(services),
+  trustSource: meshIdentityTrust({
+    allowlist: [
+      { principal: 'cluster.local/ns/default/sa/trips', roles: ['worker'], name: 'trips-service' },
+      { principal: 'cluster.local/ns/default/sa/billing', scopes: ['charge'] },
+    ],
+  }),
+});
+```
+
+#### `MeshIdentityTrustOptions`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `allowlist` | `readonly MeshIdentityEntry[]` | **(required)** | Permitted mesh identities. A non-empty list is enforced at construction (throws otherwise). A request whose principal is not on the list is rejected. |
+| `header` | `string` | `"x-forwarded-client-principal"` | Header carrying the mesh-forwarded peer identity |
+| `type` | `string` | `"mesh"` | Credential type set on the resulting `AuthContext` |
+
+#### `MeshIdentityEntry`
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `principal` | `string` | Yes | Forwarded peer identity to match (Istio ServiceAccount principal or SPIFFE id) |
+| `roles` | `readonly string[]` | No | Roles granted to this caller (compose via `requires { roles }`) |
+| `scopes` | `readonly string[]` | No | Scopes granted to this caller (compose via `requires { scopes }`) |
+| `name` | `string` | No | Human-readable name for the calling service |
+
+---
+
+### `signedTokenTrust(options)`
+
+::: tip Available since 1.1.0.
+:::
+
+Non-mesh, per-service trust source. Each caller signs a short-lived JWT with its **own** private key; this trust source verifies it against that service's published JWKS, so compromising service A's key forges only A.
+
+The keyset is selected by the token's claimed `iss` (`issuers[iss].jwksUri`), and verification is **pinned** to that same issuer -- each issuer gets its own `createRemoteJWKSet`, so no verification call ever receives a keyset spanning more than one issuer. A token claiming `iss: "B"` but signed with A's key is **rejected**. (A single shared JWKS holding multiple services' keys does NOT contain compromise, because `jose` resolves the signing key by `kid` independently of `iss`.)
+
+The framework ships only the verification primitive; key issuance, rotation, and JWKS publication belong to the deployment (SPIRE / the IdP / the mesh).
+
+```typescript
+function signedTokenTrust(options: SignedTokenTrustOptions): InternalTrustSource;
+```
+
+```typescript
+import { createInternalAuthInterceptor, signedTokenTrust } from '@connectum/auth';
+import { getInternalMethods } from '@connectum/auth/proto';
+import services from '#gen/services.js';
+
+const internalAuth = createInternalAuthInterceptor({
+  internalMethods: getInternalMethods(services),
+  trustSource: signedTokenTrust({
+    issuers: {
+      'trips-service': {
+        jwksUri: 'https://trips/.well-known/jwks.json',
+        claimsMapping: { roles: 'roles' },
+      },
+      'billing-service': { jwksUri: 'https://billing/.well-known/jwks.json' },
+    },
+  }),
+});
+```
+
+#### `SignedTokenTrustOptions`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `issuers` | `Readonly<Record<string, SignedTokenIssuer>>` | **(required)** | Per-issuer JWKS config keyed by the token's `iss` value. At least one issuer is enforced at construction (throws otherwise). |
+| `header` | `string` | `"x-internal-token"` | Header carrying the service token (bare token or `Bearer <token>`) |
+| `type` | `string` | `"service"` | Credential type set on the resulting `AuthContext` |
+
+#### `SignedTokenIssuer`
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `jwksUri` | `string` | **(required)** | The issuer's JWKS endpoint URL (its own keyset only) |
+| `audience` | `string \| string[]` | -- | Expected audience(s) for tokens from this issuer |
+| `algorithms` | `string[]` | `["RS256"]` | Allowed signing algorithms |
+| `maxTokenAge` | `number \| string` | -- | Maximum token age (seconds or string like `"2h"`) |
+| `claimsMapping` | `{ subject?, name?, roles?, scopes? }` | `{}` | Maps token claims to `AuthContext` (dot-notation). Subject defaults to the `sub` claim, else the issuer. |
+
+---
+
+### `sharedSecretTrust(options)`
+
+::: tip Available since 1.1.0.
+:::
+
+::: warning DEV-ONLY
+A single shared secret is **not** per-service: every legitimate caller holds the same secret, so one compromise forges **all** internal identities. Use `meshIdentityTrust` (mesh) or `signedTokenTrust` (non-mesh per-service JWT) in production. This factory exists only for local development and single-tenant low-trust-boundary setups.
+:::
+
+Constant-time compares a single shared secret against the trust header. The header is stripped after extraction (anti-spoofing).
+
+```typescript
+function sharedSecretTrust(options: SharedSecretTrustOptions): InternalTrustSource;
+```
+
+```typescript
+import { createInternalAuthInterceptor, sharedSecretTrust } from '@connectum/auth';
+import { getInternalMethods } from '@connectum/auth/proto';
+import services from '#gen/services.js';
+
+const internalAuth = createInternalAuthInterceptor({
+  internalMethods: getInternalMethods(services),
+  trustSource: sharedSecretTrust({
+    secret: process.env.INTERNAL_SECRET ?? '',
+    subject: 'internal-batch',
+    roles: ['worker'],
+  }),
+});
+```
+
+#### `SharedSecretTrustOptions`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `secret` | `string` | **(required)** | Shared secret, constant-time compared against the header value. A non-empty secret is enforced at construction (throws otherwise). |
+| `header` | `string` | `"x-internal-secret"` | Header carrying the shared secret |
+| `subject` | `string` | `"internal"` | Subject identity assigned to a trusted call |
+| `roles` | `readonly string[]` | `[]` | Roles granted to a trusted caller |
+| `scopes` | `readonly string[]` | `[]` | Scopes granted to a trusted caller |
+| `type` | `string` | `"internal"` | Credential type set on the resulting `AuthContext` |
+
+---
+
 ### `createAuthzInterceptor(options?)`
 
 Declarative rules-based authorization interceptor. Evaluates rules against `AuthContext` from the authentication interceptor. Must be placed **after** an auth interceptor in the chain.
@@ -343,13 +552,15 @@ message AuthRequirements {
 message MethodAuth {
   optional bool public = 1;
   optional AuthRequirements requires = 2;
-  optional string policy = 3;  // "allow" or "deny"
+  optional string policy = 3;    // "allow" or "deny"
+  optional bool internal = 4;    // service-to-service (since 1.1.0)
 }
 
 message ServiceAuth {
   optional string default_policy = 1;
   optional AuthRequirements default_requires = 2;
   optional bool public = 3;
+  optional bool internal = 4;    // service-to-service (since 1.1.0)
 }
 
 extend google.protobuf.MethodOptions {
@@ -397,8 +608,8 @@ function createProtoAuthzInterceptor(options?: ProtoAuthzInterceptorOptions): In
 
 1. Read proto options via `resolveMethodAuth(req.method)`
 2. `public = true` → skip (allow without authentication)
-3. No auth context → throw `Unauthenticated`
-4. `requires` defined → check roles/scopes → allow or deny
+3. `internal = true` → if no auth context, throw `Unauthenticated`; if no `requires`, allow (any trusted internal caller); else fall through to step 4
+4. `requires` defined → if no auth context, throw `Unauthenticated`; check roles/scopes → allow or deny
 5. `policy = "allow"` → allow
 6. `policy = "deny"` → deny
 7. Fallback: evaluate programmatic `rules`
@@ -442,6 +653,7 @@ Results are cached in a `WeakMap` keyed by `DescMethod`. Priority: method → se
 ```typescript
 interface ResolvedMethodAuth {
   readonly public: boolean;
+  readonly internal: boolean;
   readonly policy: "allow" | "deny" | undefined;
   readonly requires: { readonly roles: readonly string[]; readonly scopes: readonly string[] } | undefined;
 }
@@ -464,6 +676,28 @@ const publicMethods = getPublicMethods([UserService, HealthService]);
 const authn = createJwtAuthInterceptor({
   jwksUri: '...',
   skipMethods: publicMethods,
+});
+```
+
+### `getInternalMethods(services)`
+
+::: tip Available since 1.1.0.
+:::
+
+Extracts `internal` method patterns from service descriptors. Mirrors `getPublicMethods`: internal methods also skip end-user (JWT) authentication, so feed these into the JWT interceptor's `skipMethods` -- but, unlike public methods, they still require an internal trust marker enforced by [`createInternalAuthInterceptor`](#createinternalauthinterceptor-options).
+
+```typescript
+function getInternalMethods(services: readonly DescService[]): string[];
+```
+
+```typescript
+import { getInternalMethods, getPublicMethods } from '@connectum/auth/proto';
+
+// JWT auth skips both public and internal methods;
+// the internal interceptor then enforces the trust marker on internal ones.
+const jwtAuth = createJwtAuthInterceptor({
+  jwksUri: '...',
+  skipMethods: [...getPublicMethods(services), ...getInternalMethods(services)],
 });
 ```
 
@@ -698,9 +932,49 @@ import { createMockAuthContext, createTestJwt, withAuthContext, TEST_JWT_SECRET 
 | Export | Description |
 |--------|-------------|
 | `createMockAuthContext` | Create a mock `AuthContext` with sensible defaults |
-| `createTestJwt` | Generate a signed JWT for testing |
+| `createTestJwt` | Generate a signed HS256 JWT for testing |
 | `TEST_JWT_SECRET` | Pre-shared HMAC secret for test JWTs |
 | `withAuthContext` | Run a function within a given `AuthContext` (wraps `AsyncLocalStorage.run`) |
+| `generateRsaTestKeypair` | _(1.1.0)_ Generate an RSA (RS256) test keypair + public JWK |
+| `startTestJwksServer` | _(1.1.0)_ Start an in-process JWKS server publishing the public JWK(s) |
+| `createTestJwtRS256` | _(1.1.0)_ Mint an RS256 test JWT verified through the production JWKS branch |
+| `TEST_JWT_KID` | _(1.1.0)_ Default `kid` shared by the RS256 helpers (`"connectum-test-key"`) |
+
+### RS256 + JWKS test helpers
+
+::: tip Available since 1.1.0.
+:::
+
+The production-realistic auth path with an external IdP is RS256 tokens validated through a JWKS endpoint -- `createJwtAuthInterceptor({ jwksUri })`, the `jose.createRemoteJWKSet` branch. Unlike `createTestJwt` (HS256-only), these helpers exercise that asymmetric path: `generateRsaTestKeypair` produces an RSA keypair plus a public JWK (carrying `kid`/`alg: "RS256"`/`use: "sig"`), `startTestJwksServer` publishes it at `/.well-known/jwks.json` on a random loopback port, and `createTestJwtRS256` mints a token with a matching `kid` header. The `options` argument of `createTestJwtRS256` and its `kid` field are **required** -- the `kid` must match the published JWK or key selection fails.
+
+```typescript
+import {
+  generateRsaTestKeypair,
+  startTestJwksServer,
+  createTestJwtRS256,
+} from '@connectum/auth/testing';
+import { createJwtAuthInterceptor } from '@connectum/auth';
+
+const keypair = await generateRsaTestKeypair();
+// { privateKey, publicKey, publicJwk, kid }
+const jwks = await startTestJwksServer(keypair.publicJwk); // or an array of JWKs
+
+const auth = createJwtAuthInterceptor({
+  jwksUri: jwks.url,
+  issuer: 'https://issuer.example',
+  audience: 'my-api',
+  algorithms: ['RS256'],
+});
+
+const token = await createTestJwtRS256(
+  keypair.privateKey,
+  { sub: 'user-123', roles: ['admin'], scope: 'read write' },
+  { kid: keypair.kid, issuer: 'https://issuer.example', audience: 'my-api' },
+);
+
+// ...exercise the interceptor with `Authorization: Bearer ${token}`...
+await jwks.close();
+```
 
 ## Security Considerations
 
@@ -719,6 +993,10 @@ import { createMockAuthContext, createTestJwt, withAuthContext, TEST_JWT_SECRET 
 | `createJwtAuthInterceptor` | `.` | JWT authentication interceptor (jose) |
 | `createGatewayAuthInterceptor` | `.` | Gateway-injected headers authentication interceptor |
 | `createSessionAuthInterceptor` | `.` | Session-based authentication interceptor |
+| `createInternalAuthInterceptor` | `.` | Internal (service-to-service) trust marker interceptor |
+| `meshIdentityTrust` | `.` | Trust source: mesh-forwarded peer identity (Istio/SPIFFE) |
+| `signedTokenTrust` | `.` | Trust source: per-service signed token via issuer-bound JWKS |
+| `sharedSecretTrust` | `.` | Trust source: dev-only single shared secret |
 | `createClientBearerInterceptor` | `.` | Client-side Bearer token interceptor |
 | `createClientGatewayInterceptor` | `.` | Client-side gateway service-to-service auth interceptor |
 | `createAuthzInterceptor` | `.` | Declarative rules-based authorization interceptor |
@@ -733,17 +1011,23 @@ import { createMockAuthContext, createTestJwt, withAuthContext, TEST_JWT_SECRET 
 | `AUTH_HEADERS` | `.` | Standard auth header name constants |
 | `AuthzEffect` | `.` | Authorization effect constants (ALLOW, DENY) |
 | `createProtoAuthzInterceptor` | `.` | Proto-based authorization interceptor |
-| `AuthContext`, `AuthInterceptorOptions`, `JwtAuthInterceptorOptions`, `GatewayAuthInterceptorOptions`, `GatewayHeaderMapping`, `SessionAuthInterceptorOptions`, `ClientBearerInterceptorOptions`, `ClientGatewayInterceptorOptions`, `AuthzInterceptorOptions`, `AuthzRule`, `ProtoAuthzInterceptorOptions`, `CacheOptions`, `InterceptorFactory`, `AuthzDeniedDetails` | `.` | TypeScript types |
+| `AuthContext`, `AuthInterceptorOptions`, `JwtAuthInterceptorOptions`, `GatewayAuthInterceptorOptions`, `GatewayHeaderMapping`, `SessionAuthInterceptorOptions`, `InternalAuthInterceptorOptions`, `InternalTrustSource`, `MeshIdentityEntry`, `MeshIdentityTrustOptions`, `SignedTokenIssuer`, `SignedTokenTrustOptions`, `SharedSecretTrustOptions`, `ClientBearerInterceptorOptions`, `ClientGatewayInterceptorOptions`, `AuthzInterceptorOptions`, `AuthzRule`, `ProtoAuthzInterceptorOptions`, `CacheOptions`, `InterceptorFactory`, `AuthzDeniedDetails` | `.` | TypeScript types |
 | `createProtoAuthzInterceptor` | `./proto` | Proto-based authorization interceptor |
 | `resolveMethodAuth` | `./proto` | Resolve proto auth config for a method |
 | `getPublicMethods` | `./proto` | Extract public method patterns from services |
+| `getInternalMethods` | `./proto` | Extract internal method patterns from services |
 | `AuthRequirements`, `MethodAuth`, `ServiceAuth` | `./proto` | Generated proto message types |
 | `AuthRequirementsSchema`, `MethodAuthSchema`, `ServiceAuthSchema` | `./proto` | Generated proto schemas |
 | `method_auth`, `service_auth` | `./proto` | Proto extension descriptors |
 | `createMockAuthContext` | `./testing` | Create mock AuthContext for tests |
-| `createTestJwt` | `./testing` | Generate signed test JWTs |
+| `createTestJwt` | `./testing` | Generate signed HS256 test JWTs |
 | `TEST_JWT_SECRET` | `./testing` | Pre-shared HMAC secret for tests |
 | `withAuthContext` | `./testing` | Run function within AuthContext |
+| `generateRsaTestKeypair` | `./testing` | Generate an RSA (RS256) test keypair + public JWK |
+| `startTestJwksServer` | `./testing` | Start an in-process JWKS server for tests |
+| `createTestJwtRS256` | `./testing` | Mint an RS256 test JWT (production JWKS branch) |
+| `TEST_JWT_KID` | `./testing` | Default `kid` for the RS256 test helpers |
+| `RsaTestKeypair`, `TestJwksServer` | `./testing` | TypeScript types for the RS256 helpers |
 
 ## Related Packages
 
