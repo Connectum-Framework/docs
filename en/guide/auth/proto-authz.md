@@ -56,6 +56,7 @@ service UserService {
 | `default_policy` | `string` | `"allow"` or `"deny"` when no rule matches |
 | `default_requires` | `AuthRequirements` | Default roles/scopes for all methods |
 | `public` | `bool` | Mark all methods as public (skip authn + authz) |
+| `internal` | `bool` | Mark all methods as internal (service-to-service). Skips end-user JWT auth; requires a trust marker from `createInternalAuthInterceptor`. Since 1.1.0. See [ADR-029](/en/contributing/adr/029-internal-service-to-service-auth). |
 
 #### `method_auth` (method-level)
 
@@ -64,6 +65,7 @@ service UserService {
 | `public` | `bool` | Skip authentication and authorization |
 | `requires` | `AuthRequirements` | Required roles and/or scopes |
 | `policy` | `string` | Override service-level default policy |
+| `internal` | `bool` | Mark the method as internal (service-to-service). Distinct from `public`: world-open vs. trusted-caller-only. Since 1.1.0. |
 
 #### `AuthRequirements`
 
@@ -106,8 +108,10 @@ The interceptor resolves authorization in this priority:
 
 ```
 1. Proto `public` option       → allow (skip authn + authz)
-2. Check auth context exists   → reject if unauthenticated
-3. Proto `requires` option     → check roles/scopes
+2. Proto `internal` option     → if no auth context, reject (Unauthenticated);
+                                  if no `requires`, allow (any trusted internal caller);
+                                  else evaluate `requires` in step 3
+3. Proto `requires` option     → if no auth context, reject (Unauthenticated); check roles/scopes
 4. Proto `policy`              → apply "allow" or "deny"
 5. Programmatic rules          → evaluate in order
 6. `authorize` callback        → custom logic
@@ -150,6 +154,7 @@ Service-level defaults are merged with method-level overrides:
 | Setting | Method-level | Service-level | Default |
 |---------|-------------|--------------|---------|
 | `public` | `method_auth.public` | `service_auth.public` | `false` |
+| `internal` | `method_auth.internal` | `service_auth.internal` | `false` |
 | `requires` | `method_auth.requires` | `service_auth.default_requires` | none |
 | `policy` | `method_auth.policy` | `service_auth.default_policy` | none |
 
