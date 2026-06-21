@@ -132,9 +132,10 @@ function createEventBus(options: EventBusOptions): EventBus & EventBusLike;
 | `routes` | `EventRoute[]` | `[]` | Event routes to register |
 | `group` | `string` | `undefined` | Consumer group name for load-balanced consumption |
 | `signal` | `AbortSignal` | `undefined` | Abort signal for graceful shutdown |
-| `handlerTimeout` | `number` | `undefined` | Timeout in ms for event handler execution |
+| `handlerTimeout` | `number` | `30000` | Timeout in ms for event handler execution |
 | `drainTimeout` | `number` | `30000` | Max ms to wait for in-flight handlers during `stop()` |
 | `middleware` | `MiddlewareConfig` | `undefined` | Middleware configuration (retry, DLQ, custom) |
+| `publishes` | `DescService[]` | `[]` | Event service descriptors this process publishes to (publisher-only, no subscription) |
 
 ### `EventBus`
 
@@ -190,7 +191,7 @@ function createEventBus(options: EventBusOptions): EventBus & EventBusLike;
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `topic` | `string` | *required* | DLQ topic name |
-| `errorSerializer` | `(error: unknown) => Record<string, unknown>` | `undefined` | Custom error serializer for DLQ metadata |
+| `errorSerializer` | `(error: unknown) => string` | `error.name` | Custom error serializer for DLQ metadata |
 
 ## Middleware
 
