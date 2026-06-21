@@ -1,11 +1,11 @@
 ---
 title: '@connectum/cli'
-description: CLI tools for Connectum -- proto sync via gRPC Server Reflection
+description: CLI tools for Connectum -- proto sync via gRPC Server Reflection, version reporting
 ---
 
 # @connectum/cli
 
-Command-line tools for the Connectum framework. Currently provides the `proto sync` command -- a pipeline that connects to a running Connectum server via gRPC Server Reflection, discovers all services and proto definitions, and generates TypeScript client types using `buf generate`.
+Command-line tools for the Connectum framework. Provides `connectum --version` (reports the installed CLI version) and the `proto sync` command -- a pipeline that connects to a running Connectum server via gRPC Server Reflection, discovers all services and proto definitions, and generates TypeScript client types using `buf generate`.
 
 **Layer**: 2 (CLI tooling)
 

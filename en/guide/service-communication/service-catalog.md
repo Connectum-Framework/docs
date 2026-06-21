@@ -223,6 +223,24 @@ const client = server.client(InventoryService);   // local or remote — same ca
 const stock = await client.checkStock({ sku: 'A-1' });
 ```
 
+Both `server.localClient` and `server.client` require a `Server` instance. For a process with **no server at all** — a Temporal worker, a scheduler, a CLI — use `createCatalogClient`. It provides the same catalog-typed `call`/`stream` surface as the handler `ctx`, routing every call through the supplied resolver (there is no in-process path without a `Server`):
+
+```typescript
+import { createCatalogClient, mapResolver } from '@connectum/core';
+import { createGrpcTransport } from '@connectrpc/connect-node';
+import { serviceCatalog } from './gen/catalog.js';
+
+const client = createCatalogClient({
+  catalog: serviceCatalog,
+  resolver: mapResolver({
+    'inventory.v1.InventoryService': createGrpcTransport({ baseUrl: process.env.INVENTORY_ADDR }),
+  }),
+});
+
+const stock = await client.call('inventory.v1.InventoryService/CheckStock', { sku: 'A-1' });
+// ctx.stream mirrors: client.stream('...')(request) for server-streaming, etc.
+```
+
 ## Error model
 
 Connectum splits **configuration mistakes** (programmer errors, thrown eagerly) from **operational failures** (runtime, mapped to RPC status codes).

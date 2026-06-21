@@ -7,7 +7,7 @@ Complete reference of CLI commands for working with the Connectum monorepo.
 ## Prerequisites
 
 - **Node.js**: >=25.2.0 (for development), >=22.13.0 (for consumers)
-- **pnpm**: 10+
+- **pnpm**: 11+
 - **Buf**: provided by the `@bufbuild/buf` workspace devDependency (no standalone install); proto generation runs via `pnpm build:proto`
 
 ### Installation Check
@@ -17,7 +17,7 @@ Complete reference of CLI commands for working with the Connectum monorepo.
 node --version  # Should be >= 25.2.0 for development (>= 22.13.0 for consumers)
 
 # Check pnpm version
-pnpm --version  # Should be >= 10.0.0
+pnpm --version  # Should be >= 11.0.0
 
 # Buf is bundled as a workspace devDependency; verify proto generation
 pnpm build:proto

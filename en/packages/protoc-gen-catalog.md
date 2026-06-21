@@ -6,8 +6,8 @@ description: Buf/protoc plugin that generates the typed Connectum service catalo
 # @connectum/protoc-gen-catalog
 
 A Buf/protoc plugin that generates a **Connectum service catalog** from your
-proto files. The generated `catalog.gen.ts` is what makes `ctx.call` and
-`ctx.stream` (from `@connectum/core`) fully typed.
+proto files. The generated `catalog.gen.ts` is what makes `ctx.call`,
+`ctx.stream`, and `createCatalogClient` (from `@connectum/core`) fully typed.
 
 **Layer**: 2 (Codegen tooling)
 
@@ -32,7 +32,7 @@ not imported at runtime.
 One `catalog.gen.ts` per buf module, containing:
 
 - a runtime `serviceCatalog` object keyed by proto `typeName` — pass it to
-  `createServer({ catalog: serviceCatalog })`;
+  `createServer({ catalog: serviceCatalog })` or `createCatalogClient({ catalog: serviceCatalog })`;
 - module augmentation of `@connectum/core`'s `ConnectumCallMap` (unary methods)
   and `ConnectumStreamMap` (streaming methods), typing every `ctx.call` /
   `ctx.stream` key.
