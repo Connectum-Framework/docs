@@ -27,6 +27,7 @@ Architecture Decision Records (ADRs) capture important design decisions with the
 | 026 | [EventBus Architecture](/en/contributing/adr/026-eventbus-architecture) | 2026-03-07 | Proto-first EventBus with pluggable broker adapters |
 | 027 | [External Contracts vs EventBus](/en/contributing/adr/027-external-contracts-vs-eventbus) | 2026-06-12 | External contracts at adapter layer; EventBus stays protobuf-only; remove `sync` |
 | 028 | [Service Catalog](/en/contributing/adr/028-service-catalog) | 2026-06-15 | Declarative `ctx.call`/`ctx.stream`, `defineService`, sync `RemoteResolver`, split error model, buf codegen |
+| 029 | [Internal Service-to-Service Auth](/en/contributing/adr/029-internal-service-to-service-auth) | 2026-06-21 | _Proposed_ — first-class `internal` marker distinct from `public`; trust-source interceptor for worker/out-of-process callers |
 
 ## Creating a New ADR
 
