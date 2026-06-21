@@ -4,7 +4,7 @@
 
 > **resolveMethodAuth**(`method`): [`ResolvedMethodAuth`](../interfaces/ResolvedMethodAuth.md)
 
-Defined in: [packages/auth/src/proto/reader.ts:65](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/proto/reader.ts#L65)
+Defined in: [packages/auth/src/proto/reader.ts:73](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/proto/reader.ts#L73)
 
 Resolve the effective authorization configuration for an RPC method.
 
@@ -16,7 +16,8 @@ so 100% cache hit after the first call for each method).
 
 Priority (method overrides service):
 ```
-method.public       -> service.public        -> false
+method.public       -> service.public           -> false
+method.internal     -> service.internal         -> false
 method.requires     -> service.default_requires -> undefined
 method.policy       -> service.default_policy    -> undefined
 ```

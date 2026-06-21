@@ -4,7 +4,7 @@
 
 > **ServiceAuth** = `Message`\<`"connectum.auth.v1.ServiceAuth"`\> & `object`
 
-Defined in: packages/auth/gen/connectum/auth/v1/options\_pb.d.ts:70
+Defined in: packages/auth/gen/connectum/auth/v1/options\_pb.d.ts:81
 
 Default authorization configuration for all methods in a service.
 
@@ -31,6 +31,19 @@ unless overridden at the method level.
 #### Generated
 
 from field: optional connectum.auth.v1.AuthRequirements default_requires = 2;
+
+### internal
+
+> **internal**: `boolean`
+
+Mark all methods in the service as internal (service-to-service).
+Skips end-user (JWT) authentication, but requires an internal trust
+marker established by createInternalAuthInterceptor. Method-level
+`internal` overrides this. See ADR-029.
+
+#### Generated
+
+from field: optional bool internal = 4;
 
 ### public
 

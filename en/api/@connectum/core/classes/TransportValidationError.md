@@ -2,7 +2,7 @@
 
 # Class: TransportValidationError
 
-Defined in: [packages/core/src/TransportValidation.ts:90](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/TransportValidation.ts#L90)
+Defined in: [packages/core/src/TransportValidation.ts:90](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L90)
 
 Startup validation error: bidi-streaming methods registered on a
 transport that cannot carry them. Carries the stable
@@ -18,7 +18,7 @@ transport that cannot carry them. Carries the stable
 
 > **new TransportValidationError**(`message`, `methods`): `TransportValidationError`
 
-Defined in: [packages/core/src/TransportValidation.ts:94](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/TransportValidation.ts#L94)
+Defined in: [packages/core/src/TransportValidation.ts:94](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L94)
 
 #### Parameters
 
@@ -56,7 +56,7 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 
 > `readonly` **code**: `"CONNECTUM_UNSUPPORTED_STREAMING_TRANSPORT"` = `TRANSPORT_VALIDATION_ERROR_CODE`
 
-Defined in: [packages/core/src/TransportValidation.ts:91](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/TransportValidation.ts#L91)
+Defined in: [packages/core/src/TransportValidation.ts:91](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L91)
 
 ***
 
@@ -76,7 +76,7 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 
 > `readonly` **methods**: readonly [`StreamingMethodInfo`](../interfaces/StreamingMethodInfo.md)[]
 
-Defined in: [packages/core/src/TransportValidation.ts:92](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/TransportValidation.ts#L92)
+Defined in: [packages/core/src/TransportValidation.ts:92](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L92)
 
 ***
 

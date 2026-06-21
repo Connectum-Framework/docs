@@ -4,7 +4,7 @@
 
 > **createSessionAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/session-auth-interceptor.ts:60](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/session-auth-interceptor.ts#L60)
+Defined in: [packages/auth/src/session-auth-interceptor.ts:60](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/session-auth-interceptor.ts#L60)
 
 Create a session-based authentication interceptor.
 

@@ -2,7 +2,7 @@
 
 # Interface: Context
 
-Defined in: [packages/core/src/context.ts:112](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/context.ts#L112)
+Defined in: [packages/core/src/context.ts:131](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L131)
 
 The context object passed to every Connectum service handler.
 
@@ -15,6 +15,27 @@ and adds [Context.call](#call) (unary catalog calls) and [Context.stream](#strea
 - `HandlerContext`
 
 ## Properties
+
+### call
+
+> **call**: [`CatalogCall`](../type-aliases/CatalogCall.md)
+
+Defined in: [packages/core/src/context.ts:142](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L142)
+
+Invoke a unary service in the catalog. The transport is chosen
+automatically: an in-process call when the target is mounted locally,
+otherwise the `remoteResolver`-supplied transport.
+
+`signal` and `timeoutMs` cascade from the incoming request unless
+overridden in `options` (see [CallOptions](../type-aliases/CallOptions.md)).
+
+#### Type Param
+
+**K**
+
+A `"${typeName}/${Method}"` key of [ConnectumCallMap](ConnectumCallMap.md).
+
+***
 
 ### method
 
@@ -136,6 +157,28 @@ The signal can be used to automatically cancel downstream calls.
 
 ***
 
+### stream
+
+> **stream**: [`CatalogStream`](../type-aliases/CatalogStream.md)
+
+Defined in: [packages/core/src/context.ts:155](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L155)
+
+Open a streaming call to a service in the catalog. Returns a kind-specific
+factory: server-streaming yields an `AsyncIterable`; client- and
+bidi-streaming return push handles (see [ClientStreamHandle](ClientStreamHandle.md) /
+[BidiStreamHandle](BidiStreamHandle.md)).
+
+On a mid-stream transport failure the iterator delivers the messages
+received so far and then throws the terminal `ConnectError`.
+
+#### Type Param
+
+**K**
+
+A `"${typeName}/${Method}"` key of [ConnectumStreamMap](ConnectumStreamMap.md).
+
+***
+
 ### timeoutMs
 
 > `readonly` **timeoutMs**: () => `number` \| `undefined`
@@ -180,78 +223,3 @@ Per RPC context values that can be used to pass data to handlers.
 #### Inherited from
 
 `HandlerContext.values`
-
-## Methods
-
-### call()
-
-> **call**\<`K`\>(`method`, `request`, `options?`): `Promise`\<[`ConnectumCallMap`](ConnectumCallMap.md)\[`K`\]\[`"response"`\]\>
-
-Defined in: [packages/core/src/context.ts:123](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/context.ts#L123)
-
-Invoke a unary service in the catalog. The transport is chosen
-automatically: an in-process call when the target is mounted locally,
-otherwise the `remoteResolver`-supplied transport.
-
-`signal` and `timeoutMs` cascade from the incoming request unless
-overridden in `options` (see [CallOptions](../type-aliases/CallOptions.md)).
-
-#### Type Parameters
-
-##### K
-
-`K` *extends* keyof [`ConnectumCallMap`](ConnectumCallMap.md)
-
-A `"${typeName}/${Method}"` key of [ConnectumCallMap](ConnectumCallMap.md).
-
-#### Parameters
-
-##### method
-
-`K`
-
-##### request
-
-[`ConnectumCallMap`](ConnectumCallMap.md)\[`K`\]\[`"request"`\]
-
-##### options?
-
-[`CallOptions`](../type-aliases/CallOptions.md)
-
-#### Returns
-
-`Promise`\<[`ConnectumCallMap`](ConnectumCallMap.md)\[`K`\]\[`"response"`\]\>
-
-***
-
-### stream()
-
-> **stream**\<`K`\>(`method`): [`StreamReturn`](../type-aliases/StreamReturn.md)\<[`ConnectumStreamMap`](ConnectumStreamMap.md)\[`K`\]\>
-
-Defined in: [packages/core/src/context.ts:136](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/context.ts#L136)
-
-Open a streaming call to a service in the catalog. Returns a kind-specific
-factory: server-streaming yields an `AsyncIterable`; client- and
-bidi-streaming return push handles (see [ClientStreamHandle](ClientStreamHandle.md) /
-[BidiStreamHandle](BidiStreamHandle.md)).
-
-On a mid-stream transport failure the iterator delivers the messages
-received so far and then throws the terminal `ConnectError`.
-
-#### Type Parameters
-
-##### K
-
-`K` *extends* keyof [`ConnectumStreamMap`](ConnectumStreamMap.md)
-
-A `"${typeName}/${Method}"` key of [ConnectumStreamMap](ConnectumStreamMap.md).
-
-#### Parameters
-
-##### method
-
-`K`
-
-#### Returns
-
-[`StreamReturn`](../type-aliases/StreamReturn.md)\<[`ConnectumStreamMap`](ConnectumStreamMap.md)\[`K`\]\>

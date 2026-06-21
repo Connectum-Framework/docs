@@ -2,7 +2,7 @@
 
 # Class: CatalogConfigError
 
-Defined in: [packages/core/src/catalogErrors.ts:18](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/catalogErrors.ts#L18)
+Defined in: [packages/core/src/catalogErrors.ts:18](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogErrors.ts#L18)
 
 ## Extends
 
@@ -14,7 +14,7 @@ Defined in: [packages/core/src/catalogErrors.ts:18](https://github.com/Connectum
 
 > **new CatalogConfigError**(`message`): `CatalogConfigError`
 
-Defined in: [packages/core/src/catalogErrors.ts:21](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/catalogErrors.ts#L21)
+Defined in: [packages/core/src/catalogErrors.ts:21](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogErrors.ts#L21)
 
 #### Parameters
 
@@ -60,7 +60,7 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 
 > `readonly` **name**: `"CatalogConfigError"` = `"CatalogConfigError"`
 
-Defined in: [packages/core/src/catalogErrors.ts:19](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/catalogErrors.ts#L19)
+Defined in: [packages/core/src/catalogErrors.ts:19](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogErrors.ts#L19)
 
 #### Overrides
 

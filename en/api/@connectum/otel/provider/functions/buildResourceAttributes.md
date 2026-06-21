@@ -4,7 +4,7 @@
 
 > **buildResourceAttributes**(`inputs`): `Record`\<`string`, `string` \| `number` \| `boolean`\>
 
-Defined in: [packages/otel/src/provider.ts:98](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/otel/src/provider.ts#L98)
+Defined in: [packages/otel/src/provider.ts:98](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L98)
 
 Build the flat resource-attribute record shared by traces, metrics, and logs.
 

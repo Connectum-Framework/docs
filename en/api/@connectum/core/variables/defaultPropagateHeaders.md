@@ -4,7 +4,7 @@
 
 > `const` **defaultPropagateHeaders**: readonly `string`[]
 
-Defined in: [packages/core/src/propagateHeaders.ts:30](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/propagateHeaders.ts#L30)
+Defined in: [packages/core/src/propagateHeaders.ts:30](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/propagateHeaders.ts#L30)
 
 Recommended default allow-list: W3C trace-context headers only.
 

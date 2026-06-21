@@ -4,7 +4,7 @@
 
 > **ShutdownHook** = () => `void` \| `Promise`\<`void`\>
 
-Defined in: [packages/core/src/types.ts:40](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/types.ts#L40)
+Defined in: [packages/core/src/types.ts:40](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L40)
 
 Shutdown hook function type
 

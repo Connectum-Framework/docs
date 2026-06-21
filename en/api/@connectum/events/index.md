@@ -12,9 +12,15 @@
 - [NonRetryableError](classes/NonRetryableError.md)
 - [RetryableError](classes/RetryableError.md)
 
+## Interfaces
+
+- [BroadcastReactor](interfaces/BroadcastReactor.md)
+- [BroadcastSubscribersOptions](interfaces/BroadcastSubscribersOptions.md)
+
 ## Functions
 
 - [composeMiddleware](functions/composeMiddleware.md)
+- [createBroadcastSubscribers](functions/createBroadcastSubscribers.md)
 - [createEventBus](functions/createEventBus.md)
 - [createEventContext](functions/createEventContext.md)
 - [deriveServiceName](functions/deriveServiceName.md)

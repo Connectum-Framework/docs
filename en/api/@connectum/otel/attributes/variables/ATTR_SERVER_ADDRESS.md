@@ -4,4 +4,4 @@
 
 > `const` **ATTR\_SERVER\_ADDRESS**: `"server.address"` = `"server.address"`
 
-Defined in: [packages/otel/src/attributes.ts:21](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/otel/src/attributes.ts#L21)
+Defined in: [packages/otel/src/attributes.ts:21](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L21)

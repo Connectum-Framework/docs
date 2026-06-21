@@ -10,6 +10,21 @@ Authorization configuration for an RPC method.
 
 ## Type Declaration
 
+### internal
+
+> **internal**: `boolean`
+
+Mark the method as internal (service-to-service). Skips end-user (JWT)
+authentication, but requires an internal trust marker established by
+createInternalAuthInterceptor (a per-service trust source). Distinct from
+`public`: `public` is world-open (no auth at all); `internal` is reachable
+only by a trusted internal caller. A method is at most one of
+`public` / `internal` / gated. See ADR-029.
+
+#### Generated
+
+from field: optional bool internal = 4;
+
 ### policy
 
 > **policy**: `string`

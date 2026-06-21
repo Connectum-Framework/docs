@@ -4,7 +4,7 @@
 
 > **readTLSCertificates**(`options?`): `object`
 
-Defined in: [packages/core/src/TLSConfig.ts:36](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/TLSConfig.ts#L36)
+Defined in: [packages/core/src/TLSConfig.ts:36](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TLSConfig.ts#L36)
 
 Read TLS certificates from configuration
 

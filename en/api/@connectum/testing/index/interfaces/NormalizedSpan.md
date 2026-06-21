@@ -2,7 +2,7 @@
 
 # Interface: NormalizedSpan
 
-Defined in: [testing/src/otel-collectors.ts:34](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/otel-collectors.ts#L34)
+Defined in: [testing/src/otel-collectors.ts:34](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L34)
 
 Structural, transport-agnostic representation of a span suitable for `deepEqual`.
 
@@ -12,7 +12,7 @@ Structural, transport-agnostic representation of a span suitable for `deepEqual`
 
 > **attributes**: `Record`\<`string`, `unknown`\>
 
-Defined in: [testing/src/otel-collectors.ts:37](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/otel-collectors.ts#L37)
+Defined in: [testing/src/otel-collectors.ts:37](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L37)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [testing/src/otel-collectors.ts:37](https://github.com/Connectum-Fra
 
 > **events**: `object`[]
 
-Defined in: [testing/src/otel-collectors.ts:38](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/otel-collectors.ts#L38)
+Defined in: [testing/src/otel-collectors.ts:38](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L38)
 
 #### attributes
 
@@ -36,7 +36,7 @@ Defined in: [testing/src/otel-collectors.ts:38](https://github.com/Connectum-Fra
 
 > **kind**: `number`
 
-Defined in: [testing/src/otel-collectors.ts:36](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/otel-collectors.ts#L36)
+Defined in: [testing/src/otel-collectors.ts:36](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L36)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: [testing/src/otel-collectors.ts:36](https://github.com/Connectum-Fra
 
 > **name**: `string`
 
-Defined in: [testing/src/otel-collectors.ts:35](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/otel-collectors.ts#L35)
+Defined in: [testing/src/otel-collectors.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L35)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: [testing/src/otel-collectors.ts:35](https://github.com/Connectum-Fra
 
 > **parentSpanId**: `string` \| `undefined`
 
-Defined in: [testing/src/otel-collectors.ts:42](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/otel-collectors.ts#L42)
+Defined in: [testing/src/otel-collectors.ts:42](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L42)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: [testing/src/otel-collectors.ts:42](https://github.com/Connectum-Fra
 
 > **spanId**: `string`
 
-Defined in: [testing/src/otel-collectors.ts:41](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/otel-collectors.ts#L41)
+Defined in: [testing/src/otel-collectors.ts:41](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L41)
 
 ***
 
@@ -68,7 +68,7 @@ Defined in: [testing/src/otel-collectors.ts:41](https://github.com/Connectum-Fra
 
 > **status**: `object`
 
-Defined in: [testing/src/otel-collectors.ts:39](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/otel-collectors.ts#L39)
+Defined in: [testing/src/otel-collectors.ts:39](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L39)
 
 #### code
 
@@ -84,4 +84,4 @@ Defined in: [testing/src/otel-collectors.ts:39](https://github.com/Connectum-Fra
 
 > **traceId**: `string`
 
-Defined in: [testing/src/otel-collectors.ts:40](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/otel-collectors.ts#L40)
+Defined in: [testing/src/otel-collectors.ts:40](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L40)

@@ -4,7 +4,7 @@
 
 > **createGatewayAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/gateway-auth-interceptor.ts:92](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/gateway-auth-interceptor.ts#L92)
+Defined in: [packages/auth/src/gateway-auth-interceptor.ts:92](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/gateway-auth-interceptor.ts#L92)
 
 Create a gateway authentication interceptor.
 

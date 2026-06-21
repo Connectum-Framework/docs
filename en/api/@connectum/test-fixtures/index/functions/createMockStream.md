@@ -4,7 +4,7 @@
 
 > **createMockStream**\<`T`\>(`items`, `options?`): `AsyncIterable`\<`T`\>
 
-Defined in: [mock-stream.ts:35](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/mock-stream.ts#L35)
+Defined in: [mock-stream.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-stream.ts#L35)
 
 Create an AsyncIterable that yields `items` sequentially.
 

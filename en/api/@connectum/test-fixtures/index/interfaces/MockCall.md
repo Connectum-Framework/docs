@@ -2,7 +2,7 @@
 
 # Interface: MockCall\<Args\>
 
-Defined in: [mock-compat.ts:15](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/mock-compat.ts#L15)
+Defined in: [mock-compat.ts:15](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-compat.ts#L15)
 
 A single recorded invocation of a [MockFn](MockFn.md).
 
@@ -18,6 +18,6 @@ A single recorded invocation of a [MockFn](MockFn.md).
 
 > `readonly` **arguments**: `Args`
 
-Defined in: [mock-compat.ts:17](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/mock-compat.ts#L17)
+Defined in: [mock-compat.ts:17](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-compat.ts#L17)
 
 The arguments passed to the mock function.

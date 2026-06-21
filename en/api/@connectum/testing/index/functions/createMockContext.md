@@ -4,7 +4,7 @@
 
 > **createMockContext**(`options`): `Context`
 
-Defined in: [testing/src/mockContext.ts:68](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/mockContext.ts#L68)
+Defined in: [testing/src/mockContext.ts:68](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockContext.ts#L68)
 
 Create a Context whose `ctx.call` / `ctx.stream` resolve against the
 given mocks. Pass it as the second argument to a handler under test.

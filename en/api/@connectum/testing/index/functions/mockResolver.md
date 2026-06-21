@@ -4,7 +4,7 @@
 
 > **mockResolver**(`mocks`): `RemoteResolver`
 
-Defined in: [testing/src/mockResolver.ts:54](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/testing/src/mockResolver.ts#L54)
+Defined in: [testing/src/mockResolver.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L54)
 
 Build a RemoteResolver that serves the given mocks in-process. Returns
 `null` for any service not in the mock set (so it composes with real

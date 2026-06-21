@@ -4,7 +4,7 @@
 
 > **createMockDescField**(`localName`, `options?`): `DescField`
 
-Defined in: [mock-desc.ts:62](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/test-fixtures/src/mock-desc.ts#L62)
+Defined in: [mock-desc.ts:62](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-desc.ts#L62)
 
 Create a mock DescField descriptor.
 

@@ -4,7 +4,7 @@
 
 > **StreamReturn**\<`E`\> = `E` *extends* `object` ? (`request`, `options?`) => `AsyncIterable`\<`Res`\> : `E` *extends* `object` ? (`options?`) => [`ClientStreamHandle`](../interfaces/ClientStreamHandle.md)\<`Req`, `Res`\> : `E` *extends* `object` ? (`options?`) => [`BidiStreamHandle`](../interfaces/BidiStreamHandle.md)\<`Req`, `Res`\> : `never`
 
-Defined in: [packages/core/src/context.ts:97](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/context.ts#L97)
+Defined in: [packages/core/src/context.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L97)
 
 Maps a [ConnectumStreamMap](../interfaces/ConnectumStreamMap.md) entry to the ergonomic shape returned by
 [Context.stream](../interfaces/Context.md#stream), discriminated by the entry's `kind`.

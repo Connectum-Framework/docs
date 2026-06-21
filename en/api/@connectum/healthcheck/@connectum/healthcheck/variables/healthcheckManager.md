@@ -4,7 +4,7 @@
 
 > `const` **healthcheckManager**: [`HealthcheckManager`](../classes/HealthcheckManager.md)
 
-Defined in: [Healthcheck.ts:41](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/Healthcheck.ts#L41)
+Defined in: [Healthcheck.ts:41](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/Healthcheck.ts#L41)
 
 Module-level singleton health manager
 
