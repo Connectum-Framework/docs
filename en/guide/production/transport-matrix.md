@@ -50,6 +50,64 @@ requires HTTP/2 for *every* RPC type — on the default plaintext HTTP/1.1
 server, gRPC clients and `grpcurl` do not work at all. Use h2c or TLS.
 :::
 
+## Serving gRPC and HTTP/1.1 on one **plaintext** port
+
+A single **plaintext** (no-TLS) port cannot serve **both** native gRPC (which
+needs HTTP/2 / h2c) **and** plain HTTP/1.1 clients. Per-connection protocol
+selection is done by **ALPN**, a TLS handshake extension — a cleartext socket
+has no handshake, so the server cannot tell an HTTP/1.1 request from the HTTP/2
+connection preface. This is a **Node runtime limitation, not a Connectum one**:
+Node core has declined to add cleartext `allowHTTP1`
+([nodejs/node#26795](https://github.com/nodejs/node/issues/26795),
+[#44887](https://github.com/nodejs/node/issues/44887) — both closed; maintainers
+prescribe userland byte-sniffing), and `Upgrade: h2c` is deprecated by RFC 9113.
+So `createServer()` offers `allowHTTP1: true` (HTTP/1.1 only) **or** `false`
+(h2c only) on a plaintext port — never both.
+
+This matters when a reverse proxy / API gateway that speaks **HTTP/1.1** (e.g.
+[Ory Oathkeeper](https://www.ory.sh/oathkeeper/), nginx) fronts a service whose
+internal peers use **native gRPC**. Resolve it with one of these, in order of
+preference:
+
+1. **Put a sidecar / edge proxy in front (recommended — runtime-agnostic).** A
+   proxy that multiplexes protocols — [Envoy](https://www.envoyproxy.io/) or
+   [Caddy](https://caddyserver.com/) — terminates the mixed edge and forwards a
+   single protocol upstream. The proxy does the protocol detection the runtime
+   cannot, and it works the same on **every** JS runtime (see the matrix below).
+   See [Envoy Gateway](/en/guide/production/envoy-gateway) and
+   [Service Mesh](/en/guide/production/service-mesh).
+2. **Use TLS + ALPN.** A TLS server serves HTTP/1.1 and HTTP/2 on one port (ALPN
+   negotiates per client). If app-level TLS is acceptable, this is the built-in
+   mixed-port answer.
+3. **Two listeners.** Serve native gRPC (h2c) and Connect/HTTP-1.1 on separate
+   ports/roles. Lower complexity, but not one port.
+
+::: tip Connect and gRPC-Web do not need any of this
+Only **native gRPC** needs HTTP/2. The **Connect** and **gRPC-Web** protocols
+run over HTTP/1.1, so the default plaintext HTTP/1.1 server already serves both —
+a gateway that downgrades to HTTP/1.1 works for them with no extra setup.
+:::
+
+## Runtime support for native gRPC
+
+Native gRPC depends on **HTTP/2 response trailers** (`grpc-status`). The
+fetch-style `Response` used by Bun, Deno, and Cloudflare Workers carries no
+trailers, so those `serve()` APIs **cannot serve native gRPC at all** — they
+serve Connect and gRPC-Web (which fold trailers into the body) over HTTP/1.1.
+
+| Runtime | Native gRPC server | Connect / gRPC-Web | gRPC + HTTP/1.1 on one plaintext port |
+|---|---|---|---|
+| **Node** (`node:http2` — what Connectum uses) | ✅ | ✅ | ❌ — use a sidecar proxy or TLS + ALPN |
+| **Bun** (`Bun.serve`) | ❌ (no HTTP/2 trailers) | ✅ | ❌ |
+| **Deno** (`Deno.serve`) | ❌ (no HTTP/2 trailers) | ✅ | ❌ |
+| **Cloudflare Workers** | ❌ (edge-terminated, no raw ports) | ✅ (Connect / gRPC-Web) | ❌ (n/a) |
+
+**Takeaway:** native gRPC is effectively a **Node** story; **Connect + gRPC-Web
+over HTTP/1.1 work on every runtime**. If you develop or deploy on Bun / Deno /
+Workers and must expose gRPC, terminate it at a **sidecar proxy** (Envoy / Caddy)
+and let the runtime serve Connect / HTTP-1.1 — the proxy owns the protocol
+multiplexing the runtime cannot do.
+
 ## Startup validation
 
 When a registered service defines bidi-streaming methods and the effective
