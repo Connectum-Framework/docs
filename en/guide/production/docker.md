@@ -133,7 +133,7 @@ These environment variables configure a Connectum service inside a container:
 | `HTTP_HEALTH_ENABLED` | Enable HTTP health endpoints | `false` |
 | `GRACEFUL_SHUTDOWN_ENABLED` | Enable graceful shutdown on SIGTERM/SIGINT | `true` |
 | `GRACEFUL_SHUTDOWN_TIMEOUT_MS` | Shutdown timeout in ms | `30000` |
-| `OTEL_SERVICE_NAME` | OpenTelemetry service name | `connectum-service` |
+| `OTEL_SERVICE_NAME` | OpenTelemetry service name | `npm_package_name` or `unknown-service` |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | OTLP collector endpoint | -- |
 | `OTEL_TRACES_EXPORTER` | Trace exporter (`console`, `otlp/http`, `otlp/grpc`, `none`) | -- |
 | `OTEL_METRICS_EXPORTER` | Metrics exporter | -- |

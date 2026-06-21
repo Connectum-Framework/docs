@@ -70,22 +70,34 @@ The `options.proto` file is included in the `@connectum/events` package proto di
 
 ## Publishing to Custom Topics
 
-When publishing an event whose handler uses a custom topic, you must specify the same topic in `PublishOptions`:
+The EventBus resolves the publish topic automatically when the publisher process has the relevant service registered — either via `routes` (subscriber side) or via the `publishes` option (publisher-only side). In that case no `PublishOptions.topic` override is needed:
 
 ```typescript
-import { OrderCancelledSchema } from '#gen/orders/v1/orders_pb.js';
+import { OrderCancelledSchema, OrderEventService } from '#gen/orders/v1/orders_pb.js';
 
-// Publish to custom topic "orders.cancelled"
+// Publisher-only process: declare the service in `publishes` so the
+// custom topic from the proto option is resolved automatically.
+const eventBus = createEventBus({ adapter, publishes: [OrderEventService] });
+
+// Topic resolves to "orders.cancelled" from the proto option — no manual override needed.
+await eventBus.publish(OrderCancelledSchema, {
+  orderId: 'abc-123',
+  reason: 'Changed my mind',
+});
+```
+
+If the publisher has neither `routes` nor `publishes` covering the event type, the lookup will be empty and `publish()` falls back to `schema.typeName`. In that case you must pass the topic explicitly:
+
+```typescript
+// Fallback: no routes/publishes registered — specify the topic manually.
 await eventBus.publish(OrderCancelledSchema, {
   orderId: 'abc-123',
   reason: 'Changed my mind',
 }, { topic: 'orders.cancelled' });
 ```
 
-Without the `topic` override, the event would be published to the default topic (`orders.v1.OrderCancelled`), which would not match the subscriber.
-
 ::: warning Consistency Required
-The custom topic in the proto option and the `topic` in `PublishOptions` must match exactly. A mismatch means the subscriber will never receive the event.
+Whichever resolution path you use, the topic must match what the subscriber declared in the proto option. A mismatch means the subscriber will never receive the event.
 :::
 
 ## Topic Resolution Flow
@@ -100,8 +112,11 @@ flowchart TD
 
     F["eventBus.publish()"] --> G{"Has PublishOptions.topic?"}
     G -->|Yes| H["Use options.topic"]
-    G -->|No| I["Use schema.typeName"]
+    G -->|No| P{"Found in publishTopicMap?\n(from routes or publishes)"}
+    P -->|Yes| Q["Use declared topic from proto option"]
+    P -->|No| I["Use schema.typeName"]
     H --> J["Publish to topic"]
+    Q --> J
     I --> J
 ```
 

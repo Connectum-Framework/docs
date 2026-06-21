@@ -157,10 +157,6 @@ const server = createServer({
 });
 
 // Register shutdown hooks with dependency ordering
-server.onShutdown('otel', async () => {
-  await shutdownProvider();
-});
-
 server.onShutdown('database', async () => {
   await db.close();
 });

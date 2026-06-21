@@ -148,7 +148,21 @@ const client = createClient(UserService, transport);
 
 `EventBus.publish()` now automatically resolves the topic from the proto `(connectum.events.v1.event).topic` option when no explicit topic is passed. Existing code that already sets `publishOptions.topic` is unaffected; the explicit value still wins.
 
-Priority order: explicit `publishOptions.topic` -> proto annotation -> `schema.typeName` (backward-compatible fallback).
+Priority order: explicit `publishOptions.topic` → declared topic from `routes`/`publishes` → `schema.typeName` (backward-compatible fallback).
+
+**Subscriber processes** (those with `routes`) already have the topic lookup populated — no changes needed.
+
+**Publisher-only processes** (no `routes`) must declare the event service in the new `publishes` option so the declared topic is resolved end-to-end:
+
+```typescript
+import { OrderEventService } from '#gen/orders/v1/orders_pb.js';
+
+const eventBus = createEventBus({ adapter, publishes: [OrderEventService] });
+// publish() now uses the proto-declared topic automatically
+await eventBus.publish(OrderCancelledSchema, data);
+```
+
+Without `publishes`, publisher-only processes still fall back to `schema.typeName` — same as before 1.1.0.
 
 ### `@connectum/events`: per-handler middleware configuration
 
@@ -402,7 +416,7 @@ build:proto → build (tsup) → typecheck (tsc --noEmit) → test
 
 ## Breaking Changes from Alpha
 
-If you are migrating from v0.2.0-alpha.x to v1.0.0-beta.x, the following breaking changes apply:
+If you are migrating from v0.2.0-alpha.x to v1.0.0, the following breaking changes apply:
 
 ### API Changes
 
@@ -475,7 +489,7 @@ await server.start();
 
 ### Interceptors: No Auto-Defaults
 
-Starting from v1.0.0-beta.x, `@connectum/core` has **zero internal dependencies**. Omitting the `interceptors` option (or passing `[]`) means **no interceptors are applied**. To use the default interceptor chain, explicitly pass `createDefaultInterceptors()`:
+Starting from v1.0.0, `@connectum/core` has **zero internal dependencies**. Omitting the `interceptors` option (or passing `[]`) means **no interceptors are applied**. To use the default interceptor chain, explicitly pass `createDefaultInterceptors()`:
 
 ```typescript
 import { createServer } from '@connectum/core';
@@ -489,7 +503,7 @@ const server = createServer({
 
 ## Key Resolution Priority Change (`@connectum/auth`)
 
-**Affected versions**: v1.0.0-beta.x onwards
+**Affected versions**: v1.0.0 onwards
 
 The JWT auth interceptor (`createJwtAuthInterceptor`) changed the key resolution priority when multiple key sources are provided:
 
