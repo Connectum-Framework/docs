@@ -172,7 +172,7 @@ Auth interceptors must be placed **immediately after** `errorHandler`, before ti
 :::
 
 ```typescript
-// Manual chain with auth (ADR-024 order):
+// Manual chain with auth (recommended order):
 // errorHandler -> AUTH -> AUTHZ -> timeout -> ...
 import {
   createErrorHandlerInterceptor,
