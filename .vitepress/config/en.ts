@@ -137,6 +137,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
                     { text: 'Custom Protocols', link: '/en/guide/protocols/custom' },
                 ],
             },
+            { text: 'OpenAPI', link: '/en/guide/openapi' },
             {
                 text: 'Testing',
                 link: '/en/guide/testing',
