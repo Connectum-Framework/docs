@@ -28,6 +28,7 @@ Architecture Decision Records (ADRs) capture important design decisions with the
 | 027 | [External Contracts vs EventBus](/en/contributing/adr/027-external-contracts-vs-eventbus) | 2026-06-12 | External contracts at adapter layer; EventBus stays protobuf-only; remove `sync` |
 | 028 | [Service Catalog](/en/contributing/adr/028-service-catalog) | 2026-06-15 | Declarative `ctx.call`/`ctx.stream`, `defineService`, sync `RemoteResolver`, split error model, buf codegen |
 | 029 | [Internal Service-to-Service Auth](/en/contributing/adr/029-internal-service-to-service-auth) | 2026-06-21 | First-class `internal` marker distinct from `public`; per-service trust-source interceptor (mesh identity / issuer-bound JWKS) for worker/out-of-process callers |
+| 030 | [OpenAPI generation with proto-authz overlay](/en/contributing/adr/030-openapi-authz-generation) | 2026-06-23 | Generate OpenAPI v3.1 (buf remote plugin) + overlay reading the same `resolveMethodAuth` the runtime uses → contract reflects authz, no drift; reference pattern in `car-sharing`, framework CLI deferred |
 
 ## Creating a New ADR
 
