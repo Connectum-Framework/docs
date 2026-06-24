@@ -56,6 +56,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
                 link: '/en/guide/service-communication',
                 collapsed: true,
                 items: [
+                    { text: 'Choosing a Mechanism', link: '/en/guide/service-communication/choosing-a-mechanism' },
                     { text: 'Communication Patterns', link: '/en/guide/service-communication/patterns' },
                     { text: 'Service Catalog', link: '/en/guide/service-communication/service-catalog' },
                     { text: 'Remote Resolvers', link: '/en/guide/service-communication/resolvers' },
