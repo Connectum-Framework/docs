@@ -40,6 +40,16 @@ npx connectum proto sync --from localhost:5000 --out ./gen
 
 ## Commands
 
+### `connectum --version`
+
+Print the installed CLI version and exit:
+
+```bash
+npx connectum --version   # e.g. 1.1.0
+```
+
+The version is read from the package's own `package.json`, so it always matches the installed release rather than a hardcoded string.
+
 ### `connectum proto sync`
 
 Syncs proto type definitions from a running Connectum server via gRPC Server Reflection.
