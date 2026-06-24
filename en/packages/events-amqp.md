@@ -117,6 +117,7 @@ Pass the result to `createEventBus({ adapter })`.
 | `persistent` | `boolean` | `true` | Mark messages as persistent (`deliveryMode: 2`). Messages survive broker restarts when the queue is durable |
 | `mandatory` | `boolean` | `false` | Reject the publish with `AmqpUnroutableError` when the broker cannot route the message to any queue |
 | `correlationHeader` | `boolean` | `true` | Correlate `basic.return` frames to mandatory publishes via a private `x-connectum-publish-id` header (visible on the wire); `false` switches to single-flight serialization of mandatory publishes |
+| `externalContract` | `boolean` | `false` | Publish against an external (non-EventBus) contract: suppress the EventBus envelope so the frame carries only contract-specified properties — no `x-event-id` / `x-published-at` headers, no auto `messageId` / `timestamp`, and `mandatory` uses single-flight correlation (so no `x-connectum-publish-id` reaches the wire; `correlationHeader` is ignored). The frame then carries only `contentType`, `persistent`, `mandatory`, and the headers passed via `PublishOptions.metadata`. Set a contract-required `messageId` / `timestamp` per-publish via `PublishOptions`. Available since 1.1.0. |
 
 ### `AmqpSerializationOptions`
 
@@ -323,7 +324,10 @@ const adapter = AmqpAdapter({
   queueOverrides: {
     partner: { queue: 'partner.inbound.v1' },
   },
-  publisherOptions: { persistent: true, mandatory: true },
+  // externalContract: emit ONLY contract-specified properties -- suppress the
+  // EventBus envelope (no x-event-id / x-published-at, no auto messageId /
+  // timestamp, no x-connectum-publish-id). Available since 1.1.0.
+  publisherOptions: { persistent: true, mandatory: true, externalContract: true },
 });
 
 await adapter.connect();
@@ -345,8 +349,10 @@ const body = new TextEncoder().encode(JSON.stringify({ code: '0104603...' }));
 await adapter.publish('inbound', body);
 ```
 
-::: warning Wire-visible correlation header
-With `mandatory: true` and the default `correlationHeader: true`, every mandatory publish carries a private `x-connectum-publish-id` header that external consumers will see. Either document the header in the contract, or set `publisherOptions.correlationHeader: false` for a clean wire -- mandatory publishes are then serialized single-flight (throughput trade-off).
+::: tip Keeping the external wire contract-pure
+`externalContract: true` (set above) is what keeps the frame contract-only: it suppresses the EventBus envelope (`x-event-id` / `x-published-at`), skips the auto `messageId` / `timestamp`, and serializes `mandatory` publishes single-flight so no private `x-connectum-publish-id` header reaches the wire (`correlationHeader` is ignored in this mode). The frame then carries only `contentType`, `persistent`, `mandatory`, and the headers you pass via `PublishOptions.metadata`; set a contract-required `messageId` / `timestamp` per-publish via [`PublishOptions`](/en/packages/events#publishoptions).
+
+Without `externalContract`, a `mandatory` publish at the default `correlationHeader: true` carries the wire-visible `x-connectum-publish-id` header (setting `correlationHeader: false` removes only that header -- the envelope headers are still stamped). Prefer `externalContract` for a genuinely contract-only wire. Available since 1.1.0.
 :::
 
 ## Reliable Publishing

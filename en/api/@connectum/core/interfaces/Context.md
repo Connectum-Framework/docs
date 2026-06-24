@@ -41,7 +41,7 @@ A `"${typeName}/${Method}"` key of [ConnectumCallMap](ConnectumCallMap.md).
 
 > `readonly` **method**: `DescMethod`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:21
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:21
 
 Metadata for the method being called.
 
@@ -55,7 +55,7 @@ Metadata for the method being called.
 
 > `readonly` **protocolName**: `string`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:62
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:62
 
 Name of the RPC protocol in use; one of "connect", "grpc" or "grpc-web".
 
@@ -69,7 +69,7 @@ Name of the RPC protocol in use; one of "connect", "grpc" or "grpc-web".
 
 > `readonly` **requestHeader**: `Headers`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:47
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:47
 
 Incoming request headers.
 
@@ -83,7 +83,7 @@ Incoming request headers.
 
 > `readonly` **requestMethod**: `string`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:43
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:43
 
 HTTP method of incoming request, usually "POST", but "GET" in the case of
 Connect Get.
@@ -98,7 +98,7 @@ Connect Get.
 
 > `readonly` **responseHeader**: `Headers`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:54
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:54
 
 Outgoing response headers.
 
@@ -115,7 +115,7 @@ yielding the first response message.
 
 > `readonly` **responseTrailer**: `Headers`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:58
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:58
 
 Outgoing response trailers.
 
@@ -129,7 +129,7 @@ Outgoing response trailers.
 
 > `readonly` **service**: `DescService`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:25
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:25
 
 Metadata for the service being called.
 
@@ -143,7 +143,7 @@ Metadata for the service being called.
 
 > `readonly` **signal**: `AbortSignal`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:33
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:33
 
 An AbortSignal that triggers when the deadline is reached, or when an error
 occurs that aborts processing of the request, but also when the RPC is
@@ -183,7 +183,7 @@ A `"${typeName}/${Method}"` key of [ConnectumStreamMap](ConnectumStreamMap.md).
 
 > `readonly` **timeoutMs**: () => `number` \| `undefined`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:38
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:38
 
 If the current request has a timeout, this function returns the remaining
 time.
@@ -202,7 +202,7 @@ time.
 
 > `readonly` **url**: `string`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:70
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:70
 
 The URL received by the server.
 
@@ -216,7 +216,7 @@ The URL received by the server.
 
 > `readonly` **values**: `ContextValues`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:66
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:66
 
 Per RPC context values that can be used to pass data to handlers.
 

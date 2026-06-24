@@ -2,7 +2,7 @@
 
 # Interface: EventAdapter
 
-Defined in: [packages/events/src/types.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L97)
+Defined in: [packages/events/src/types.ts:112](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L112)
 
 Minimal adapter interface for message brokers.
 
@@ -15,7 +15,7 @@ config in constructor, not in interface methods.
 
 > `readonly` **name**: `string`
 
-Defined in: [packages/events/src/types.ts:99](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L99)
+Defined in: [packages/events/src/types.ts:114](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L114)
 
 Adapter name for identification (e.g., "nats", "kafka", "redis", "memory")
 
@@ -25,7 +25,7 @@ Adapter name for identification (e.g., "nats", "kafka", "redis", "memory")
 
 > **connect**(`context?`): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:108](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L108)
+Defined in: [packages/events/src/types.ts:123](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L123)
 
 Connect to the message broker.
 
@@ -49,7 +49,7 @@ Optional adapter context with service-level information
 
 > **disconnect**(): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:111](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L111)
+Defined in: [packages/events/src/types.ts:126](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L126)
 
 Disconnect from the message broker
 
@@ -63,7 +63,7 @@ Disconnect from the message broker
 
 > **publish**(`eventType`, `payload`, `options?`): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:114](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L114)
+Defined in: [packages/events/src/types.ts:129](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L129)
 
 Publish a serialized event to a topic
 
@@ -91,7 +91,7 @@ Publish a serialized event to a topic
 
 > **subscribe**(`patterns`, `handler`, `options?`): `Promise`\<[`EventSubscription`](EventSubscription.md)\>
 
-Defined in: [packages/events/src/types.ts:117](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L117)
+Defined in: [packages/events/src/types.ts:132](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L132)
 
 Subscribe to event patterns with a raw handler
 

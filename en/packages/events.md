@@ -154,6 +154,8 @@ function createEventBus(options: EventBusOptions): EventBus & EventBusLike;
 | `key` | `string` | `undefined` | Partition/routing key for ordered delivery |
 | `group` | `string` | `undefined` | Named group tag for workflow grouping |
 | `metadata` | `Record<string, string>` | `undefined` | Additional metadata / headers |
+| `messageId` | `string` | `undefined` | Caller-supplied message id the adapter sets on the wire where supported (AMQP `messageId` property; other adapters ignore it). Mainly for external-contract publishing, where the adapter does not auto-generate one. Available since 1.1.0. |
+| `timestamp` | `number` | `undefined` | Caller-supplied message timestamp in Unix epoch seconds, set on the wire where supported (AMQP `timestamp` property; other adapters ignore it). Mainly for external-contract publishing. Available since 1.1.0. |
 
 ### `EventContext`
 

@@ -2,7 +2,7 @@
 
 # Interface: AdapterContext
 
-Defined in: [packages/events/src/types.ts:78](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L78)
+Defined in: [packages/events/src/types.ts:93](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L93)
 
 Context provided to adapters by the EventBus before connect().
 
@@ -17,7 +17,7 @@ Redis connectionName).
 
 > `readonly` `optional` **serviceName?**: `string`
 
-Defined in: [packages/events/src/types.ts:88](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L88)
+Defined in: [packages/events/src/types.ts:103](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L103)
 
 Service identifier derived from proto service names.
 

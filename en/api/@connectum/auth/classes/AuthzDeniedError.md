@@ -53,7 +53,7 @@ Defined in: [packages/auth/src/errors.ts:29](https://github.com/Connectum-Framew
 
 > **cause**: `unknown`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:46
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:46
 
 The underlying cause of this error, if any. In cases where the actual cause
 is elided with the error message, the cause is specified here so that we
@@ -81,7 +81,7 @@ Defined in: [packages/auth/src/errors.ts:27](https://github.com/Connectum-Framew
 
 > `readonly` **code**: `Code`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:20
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:20
 
 The Code for this error.
 
@@ -95,7 +95,7 @@ The Code for this error.
 
 > **details**: (`OutgoingDetail` \| `IncomingDetail`)[]
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:32
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:32
 
 When an error is parsed from the wire, incoming error details are stored
 in this property. They can be retrieved using findDetails().
@@ -125,7 +125,7 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 
 > `readonly` **metadata**: `Headers`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:24
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:24
 
 A union of response headers and trailers associated with this error.
 
@@ -139,7 +139,7 @@ A union of response headers and trailers associated with this error.
 
 > **name**: `string`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:40
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:40
 
 #### Inherited from
 
@@ -151,7 +151,7 @@ Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.
 
 > `readonly` **rawMessage**: `string`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:39
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:39
 
 The error message, but without a status code in front.
 
@@ -230,7 +230,7 @@ Defined in: [packages/auth/src/errors.ts:31](https://github.com/Connectum-Framew
 
 > **findDetails**\<`Desc`\>(`desc`): `MessageShape`\<`Desc`\>[]
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:77
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:77
 
 Retrieve error details from a ConnectError. On the wire, error details are
 wrapped with google.protobuf.Any, so that a server or middleware can attach
@@ -263,7 +263,7 @@ omitted from the list.
 
 > **findDetails**(`registry`): `Message`[]
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:78
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:78
 
 Retrieve error details from a ConnectError. On the wire, error details are
 wrapped with google.protobuf.Any, so that a server or middleware can attach
@@ -292,7 +292,7 @@ omitted from the list.
 
 > `static` **\[hasInstance\]**(`v`): `boolean`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:68
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:68
 
 #### Parameters
 
@@ -384,7 +384,7 @@ a();
 
 > `static` **from**(`reason`, `code?`): `ConnectError`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:67
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.1.2\_@bufbuild+protobuf@2.12.1/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:67
 
 Convert any value - typically a caught error into a ConnectError,
 following these rules:

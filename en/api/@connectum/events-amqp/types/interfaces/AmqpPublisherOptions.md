@@ -32,6 +32,44 @@ true
 
 ***
 
+### externalContract?
+
+> `readonly` `optional` **externalContract?**: `boolean`
+
+Defined in: [packages/events-amqp/src/types.ts:362](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L362)
+
+Publish against an EXTERNAL (non-EventBus) message contract: suppress the
+EventBus envelope so the wire frame carries ONLY contract-specified
+properties. For an external AsyncAPI/AMQP contract the oracle is the
+published spec, not this serializer — a third-party consumer validates the
+exact header/property set, which must not include adapter-internal fields.
+
+When `true`, `publish()`:
+- does NOT stamp the `x-event-id` / `x-published-at` headers;
+- does NOT auto-populate the `messageId` or `timestamp` properties;
+- uses single-flight correlation for `mandatory` publishes (so no
+  `x-connectum-publish-id` header reaches the wire) — `correlationHeader`
+  is ignored in this mode.
+
+The frame then carries only `contentType`, `persistent`/deliveryMode,
+`mandatory`, and exactly the headers passed via `PublishOptions.metadata`.
+Per-message confirms, `mandatory` → `AmqpUnroutableError`, the typed error
+taxonomy, and connection recovery are unchanged.
+
+Leave unset (default) for normal EventBus use, where the envelope is
+stamped on publish and stripped on delivery. When the contract requires a
+specific `messageId` / `timestamp`, set them per-publish via
+`PublishOptions.messageId` / `PublishOptions.timestamp` (a caller-supplied
+value is used as-is; in external-contract mode nothing is auto-generated).
+
+#### Default
+
+```ts
+false
+```
+
+***
+
 ### mandatory?
 
 > `readonly` `optional` **mandatory?**: `boolean`

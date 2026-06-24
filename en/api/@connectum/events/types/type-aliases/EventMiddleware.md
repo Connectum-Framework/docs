@@ -4,7 +4,7 @@
 
 > **EventMiddleware** = (`event`, `ctx`, `next`) => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:240](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L240)
+Defined in: [packages/events/src/types.ts:255](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L255)
 
 Event middleware function
 

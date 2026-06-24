@@ -28,6 +28,20 @@ Message key for partitioning (Kafka: partition key, others: ignored)
 
 ***
 
+### messageId?
+
+> `optional` **messageId?**: `string`
+
+Defined in: [packages/events/src/types.ts:75](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L75)
+
+Caller-supplied message identifier the adapter sets on the wire where
+supported (AMQP: the `messageId` property; other adapters ignore it).
+Primarily for external-contract publishing — in `@connectum/events-amqp`
+`externalContract` mode the adapter does not auto-generate a `messageId`,
+so set this when the contract requires one.
+
+***
+
 ### metadata?
 
 > `optional` **metadata?**: `Record`\<`string`, `string`\>
@@ -35,6 +49,19 @@ Message key for partitioning (Kafka: partition key, others: ignored)
 Defined in: [packages/events/src/types.ts:65](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L65)
 
 Additional metadata / headers
+
+***
+
+### timestamp?
+
+> `optional` **timestamp?**: `number`
+
+Defined in: [packages/events/src/types.ts:82](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L82)
+
+Caller-supplied message timestamp in **Unix epoch seconds**, set on the
+wire where supported (AMQP: the `timestamp` property; other adapters
+ignore it). Like [messageId](#messageid), mainly for external-contract
+publishing where the adapter does not auto-populate it.
 
 ***
 
