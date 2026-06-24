@@ -18,7 +18,7 @@ It has three parts:
    that keep docs true to the code.
 
 The over-arching principle: **the source code is the oracle.** Documentation
-describes what the published 1.0.0 packages actually do — verified against
+describes what the published 1.1.0 packages actually do — verified against
 `src/index.ts`, real signatures, and `package.json` — never against assumptions,
 older drafts, or test fixtures.
 

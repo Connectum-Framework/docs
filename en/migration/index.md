@@ -7,6 +7,49 @@ description: Migration guides and breaking changes for Connectum releases
 
 This page covers breaking changes and migration steps between Connectum releases.
 
+## 1.1.0 {#v1-1-0}
+
+Every 1.1.0 change is **additive** — no migration steps are required. New capabilities by package:
+
+### `@connectum/auth`: first-class `internal` service-to-service marker
+
+A method marked `internal` skips end-user (JWT) authentication but **requires an internal trust marker**, so promoting a method `public → internal` removes its world-open exposure instead of merely renaming it. Wire `createInternalAuthInterceptor` with a per-service trust source — `meshIdentityTrust` (production: Istio / SPIFFE identity), `signedTokenTrust` (per-service JWKS), or `sharedSecretTrust` (dev only) — and feed `getInternalMethods()` into the JWT interceptor's `skipMethods`. Interceptor order: `errorHandler → (jwtAuth | internalAuth) → protoAuthz`. See [ADR-029](/en/contributing/adr/029-internal-service-to-service-auth) and [`@connectum/auth`](/en/packages/auth).
+
+### `@connectum/core`: standalone `createCatalogClient`
+
+`createCatalogClient({ catalog, resolver })` brings the typed `call` / `stream` ergonomics of in-handler `ctx.call` to callers **outside** a `Server` — Temporal workers, schedulers, CLIs. Targets are routed through the supplied `RemoteResolver`; an unresolvable service fails with `Code.Unavailable`. See [`@connectum/core`](/en/packages/core).
+
+### `@connectum/events`: publisher-only topics, broadcast, strict validation
+
+- **`EventBusOptions.publishes: [Service]`** — publisher-only processes (no `routes`) now resolve a proto-declared `(connectum.events.v1.event).topic` end-to-end instead of silently falling back to `schema.typeName`:
+
+  ```typescript
+  import { OrderEventService } from '#gen/orders/v1/orders_pb.js';
+
+  const eventBus = createEventBus({ adapter, publishes: [OrderEventService] });
+  await eventBus.publish(OrderCancelledSchema, data); // uses the proto-declared topic
+  ```
+
+- **`createBroadcastSubscribers({ adapter, reactors })`** — first-class 1→N fan-out (one bus per reactor, distinct groups); the duplicate-topic error now explains the fix.
+- **`EventBusOptions.strictTopics: true`** (opt-in) — throw on an unresolved publish topic instead of the silent `typeName` fallback. Default `false`.
+- **`PublishOptions.messageId` / `timestamp`** (Unix epoch seconds) — set the message identity an external contract requires; adapters honor them where supported.
+
+See [`@connectum/events`](/en/packages/events).
+
+### `@connectum/events-amqp`: external-contract publishing
+
+`publisherOptions.externalContract: true` suppresses the EventBus envelope so the wire frame carries only contract-specified properties (no `x-event-id` / `x-published-at`, no auto `messageId` / `timestamp`, no `x-connectum-publish-id`). This closes the gap where `correlationHeader: false` alone was documented as a "clean wire" but the envelope still shipped. See [`@connectum/events-amqp`](/en/packages/events-amqp).
+
+### `@connectum/auth/testing`: RS256 + JWKS test helpers
+
+`generateRsaTestKeypair()`, `startTestJwksServer()`, and `createTestJwtRS256()` exercise the production RS256-via-JWKS path (`createJwtAuthInterceptor({ jwksUri })`) without hand-rolling a keypair, JWKS server, and minter.
+
+### `@connectum/cli`: `connectum --version`
+
+`connectum --version` now reports the real published version (read from `package.json`) instead of a hardcoded string.
+
+---
+
 ## BREAKING: Resilience interceptors are now opt-in in `createDefaultInterceptors()`
 
 > Applies to 1.0.0.
@@ -148,21 +191,11 @@ const client = createClient(UserService, transport);
 
 `EventBus.publish()` now automatically resolves the topic from the proto `(connectum.events.v1.event).topic` option when no explicit topic is passed. Existing code that already sets `publishOptions.topic` is unaffected; the explicit value still wins.
 
-Priority order: explicit `publishOptions.topic` → declared topic from `routes`/`publishes` → `schema.typeName` (backward-compatible fallback).
+Priority order: explicit `publishOptions.topic` → declared topic from `routes` → `schema.typeName` (backward-compatible fallback).
 
 **Subscriber processes** (those with `routes`) already have the topic lookup populated — no changes needed.
 
-**Publisher-only processes** (no `routes`) must declare the event service in the new `publishes` option so the declared topic is resolved end-to-end:
-
-```typescript
-import { OrderEventService } from '#gen/orders/v1/orders_pb.js';
-
-const eventBus = createEventBus({ adapter, publishes: [OrderEventService] });
-// publish() now uses the proto-declared topic automatically
-await eventBus.publish(OrderCancelledSchema, data);
-```
-
-Without `publishes`, publisher-only processes still fall back to `schema.typeName` — same as before 1.1.0.
+**Publisher-only processes** (no `routes`) fall back to `schema.typeName` at this release. The `publishes` option that resolves their proto-declared topic end-to-end arrived in [1.1.0](#v1-1-0).
 
 ### `@connectum/events`: per-handler middleware configuration
 
