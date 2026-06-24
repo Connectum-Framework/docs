@@ -4,7 +4,7 @@
 
 > `const` **EffectiveTransport**: `object`
 
-Defined in: [packages/core/src/TransportValidation.ts:54](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/TransportValidation.ts#L54)
+Defined in: [packages/core/src/TransportValidation.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L54)
 
 Effective transport resolved from `tls` + `allowHTTP1`.
 

@@ -135,8 +135,8 @@ const server = createServer({
   services: [deploymentService],
   port: 5000,
   protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
-  // Fixed-order chain (ADR-024): errorHandler first, then auth/authz immediately
-  // after it, then observability and the default validation chain.
+  // Fixed-order chain: errorHandler first, then auth/authz immediately after
+  // it, then observability and the default validation chain.
   interceptors: [
     createErrorHandlerInterceptor({ logErrors: true }),
     createJwtAuthInterceptor({ jwksUri: process.env.JWKS_URI! }),

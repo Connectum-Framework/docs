@@ -2,7 +2,7 @@
 
 # Interface: AmqpSerializationOptions
 
-Defined in: [packages/events-amqp/src/types.ts:140](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L140)
+Defined in: [packages/events-amqp/src/types.ts:140](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L140)
 
 Serialization metadata and optional wire transcoding.
 
@@ -12,7 +12,7 @@ Serialization metadata and optional wire transcoding.
 
 > `readonly` `optional` **contentType?**: `string`
 
-Defined in: [packages/events-amqp/src/types.ts:146](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L146)
+Defined in: [packages/events-amqp/src/types.ts:146](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L146)
 
 AMQP `contentType` message property.
 
@@ -28,7 +28,7 @@ AMQP `contentType` message property.
 
 > `readonly` `optional` **decode?**: (`content`) => `Uint8Array`
 
-Defined in: [packages/events-amqp/src/types.ts:159](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L159)
+Defined in: [packages/events-amqp/src/types.ts:159](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L159)
 
 Transform the incoming wire body before it reaches the event handler.
 Failures nack the message (requeue per consumer policy).
@@ -49,7 +49,7 @@ Failures nack the message (requeue per consumer policy).
 
 > `readonly` `optional` **encode?**: (`payload`) => `Uint8Array`
 
-Defined in: [packages/events-amqp/src/types.ts:153](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L153)
+Defined in: [packages/events-amqp/src/types.ts:153](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L153)
 
 Transform the outgoing wire body. Receives the payload bytes the
 EventBus (or the application) produced. Failures reject the publish

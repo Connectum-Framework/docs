@@ -4,7 +4,7 @@
 
 > **getMeter**(): [`Meter`](../../interfaces/Meter.md)
 
-Defined in: [packages/otel/src/meter.ts:14](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/otel/src/meter.ts#L14)
+Defined in: [packages/otel/src/meter.ts:14](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/meter.ts#L14)
 
 Returns the global Meter instance.
 Lazily initializes the OTel provider on first call.

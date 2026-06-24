@@ -4,7 +4,7 @@
 
 > **parseAuthHeaders**(`headers`): [`AuthContext`](../interfaces/AuthContext.md) \| `undefined`
 
-Defined in: [packages/auth/src/headers.ts:92](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/headers.ts#L92)
+Defined in: [packages/auth/src/headers.ts:92](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/headers.ts#L92)
 
 Parse AuthContext from request headers.
 

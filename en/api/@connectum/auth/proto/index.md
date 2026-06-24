@@ -30,6 +30,12 @@ Re-exports [createProtoAuthzInterceptor](../functions/createProtoAuthzIntercepto
 
 ***
 
+### getInternalMethods
+
+Re-exports [getInternalMethods](../functions/getInternalMethods.md)
+
+***
+
 ### getPublicMethods
 
 Re-exports [getPublicMethods](../functions/getPublicMethods.md)

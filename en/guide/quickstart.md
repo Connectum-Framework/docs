@@ -11,7 +11,7 @@ Build a fully functional gRPC/ConnectRPC microservice with health checks, server
 ## Prerequisites
 
 - **Node.js >= 25.2.0** -- native TypeScript via [type stripping](https://nodejs.org/api/typescript.html)
-- **pnpm >= 10** -- `corepack enable && corepack prepare pnpm@latest --activate`
+- **pnpm >= 11** -- `corepack enable && corepack prepare pnpm@latest --activate`
 - **buf** -- installed automatically via `@bufbuild/buf` npm package
 
 ::: tip Node.js version for consumers

@@ -49,7 +49,7 @@ const authz = createProtoAuthzInterceptor({ defaultPolicy: 'deny' });
 
 const server = createServer({
   services: [routes],
-  // ADR-024 order: errorHandler -> AUTH -> AUTHZ -> rest.
+  // Recommended order: errorHandler -> AUTH -> AUTHZ -> rest.
   // createDefaultInterceptors has no auth slot, so compose manually:
   // put errorHandler first, auth next, then disable the default errorHandler.
   interceptors: [

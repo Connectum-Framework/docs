@@ -117,7 +117,7 @@ const authz = createAuthzInterceptor({
 
 const server = createServer({
   services: [routes],
-  // ADR-024 order: errorHandler -> AUTH -> AUTHZ -> rest.
+  // Recommended order: errorHandler -> AUTH -> AUTHZ -> rest.
   interceptors: [
     createErrorHandlerInterceptor(),
     jwtAuth,

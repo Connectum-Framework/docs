@@ -4,7 +4,7 @@
 
 > **RawEventHandler** = (`event`, `ack`, `nack`) => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:38](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L38)
+Defined in: [packages/events/src/types.ts:38](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L38)
 
 Raw event handler function type.
 

@@ -4,7 +4,7 @@
 
 > **createProtoAuthzInterceptor**(`options?`): `Interceptor`
 
-Defined in: [packages/auth/src/proto/proto-authz-interceptor.ts:125](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/proto/proto-authz-interceptor.ts#L125)
+Defined in: [packages/auth/src/proto/proto-authz-interceptor.ts:132](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/proto/proto-authz-interceptor.ts#L132)
 
 Create a proto-based authorization interceptor.
 
@@ -14,21 +14,28 @@ falls back to programmatic rules and an authorize callback.
 
 Authorization decision flow:
 ```
-1. resolveMethodAuth(req.method)  -- read proto options
-2. public = true                  --> skip (allow without authn)
-3. Get auth context               -- lazy: don't throw yet
-4. requires defined, no context   --> throw Unauthenticated
-4b. requires defined, has context --> satisfiesRequirements? allow : deny
-5. policy = "allow"              --> allow
-6. policy = "deny"               --> deny
-7. Evaluate programmatic rules   -- unconditional rules work without context
-8. Fallback: authorize callback  --> requires auth context
-9. Apply defaultPolicy           --> deny without context = Unauthenticated
+1.  resolveMethodAuth(req.method)  -- read proto options
+2.  public = true                  --> skip (allow without authn)
+3.  Get auth context               -- lazy: don't throw yet
+3b. internal = true:               -- service-to-service (ADR-029)
+      no context                   --> throw Unauthenticated
+      no requires                  --> allow (any trusted internal caller)
+      has requires                 --> fall through to step 4 (inclusive roles)
+4.  requires defined, no context   --> throw Unauthenticated
+4b. requires defined, has context  --> satisfiesRequirements? allow : deny
+5.  policy = "allow"              --> allow
+6.  policy = "deny"               --> deny
+7.  Evaluate programmatic rules   -- unconditional rules work without context
+8.  Fallback: authorize callback  --> requires auth context
+9.  Apply defaultPolicy           --> deny without context = Unauthenticated
 ```
 
 IMPORTANT: This interceptor MUST run AFTER an authentication interceptor
 in the chain (except for methods marked as `public` in proto options
-or matched by unconditional programmatic rules).
+or matched by unconditional programmatic rules). For `internal` methods the
+upstream interceptor is [createInternalAuthInterceptor](createInternalAuthInterceptor.md); the chain order
+is `errorHandler -> (jwtAuth | internalAuth) -> protoAuthz` — the auth
+interceptors populate the `AuthContext` that this interceptor consumes.
 
 ## Parameters
 

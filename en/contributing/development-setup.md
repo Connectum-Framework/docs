@@ -5,7 +5,7 @@ How to set up the development environment for contributing to Connectum.
 ## Requirements
 
 - Node.js >= 25.2.0
-- pnpm >= 10
+- pnpm >= 11
 
 ## Quick Start
 
@@ -35,7 +35,7 @@ pnpm install
 node --version  # >= 25.2.0
 
 # Check pnpm
-pnpm --version  # >= 10
+pnpm --version  # >= 11
 
 # Type checking
 pnpm typecheck

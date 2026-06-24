@@ -136,6 +136,7 @@ function createEventBus(options: EventBusOptions): EventBus & EventBusLike;
 | `drainTimeout` | `number` | `30000` | Max ms to wait for in-flight handlers during `stop()` |
 | `middleware` | `MiddlewareConfig` | `undefined` | Middleware configuration (retry, DLQ, custom) |
 | `publishes` | `DescService[]` | `[]` | Event service descriptors this process publishes to (publisher-only, no subscription) |
+| `strictTopics` | `boolean` | `false` | Throw on an unresolved publish topic instead of silently falling back to the message `typeName`. Available since 1.1.0. |
 
 ### `EventBus`
 
@@ -153,6 +154,8 @@ function createEventBus(options: EventBusOptions): EventBus & EventBusLike;
 | `key` | `string` | `undefined` | Partition/routing key for ordered delivery |
 | `group` | `string` | `undefined` | Named group tag for workflow grouping |
 | `metadata` | `Record<string, string>` | `undefined` | Additional metadata / headers |
+| `messageId` | `string` | `undefined` | Caller-supplied message id the adapter sets on the wire where supported (AMQP `messageId` property; other adapters ignore it). Mainly for external-contract publishing, where the adapter does not auto-generate one. Available since 1.1.0. |
+| `timestamp` | `number` | `undefined` | Caller-supplied message timestamp in Unix epoch seconds, set on the wire where supported (AMQP `timestamp` property; other adapters ignore it). Mainly for external-contract publishing. Available since 1.1.0. |
 
 ### `EventContext`
 
@@ -192,6 +195,83 @@ function createEventBus(options: EventBusOptions): EventBus & EventBusLike;
 |--------|------|---------|-------------|
 | `topic` | `string` | *required* | DLQ topic name |
 | `errorSerializer` | `(error: unknown) => string` | `error.name` | Custom error serializer for DLQ metadata |
+
+### `createBroadcastSubscribers(options)`
+
+Builds 1→N fan-out wiring: one `EventBus` per reactor, each on its own consumer group, so a single published event is delivered to every reactor independently.
+
+Available since 1.1.0.
+
+```typescript
+function createBroadcastSubscribers(
+  options: BroadcastSubscribersOptions,
+): Array<EventBus & EventBusLike>;
+```
+
+Delivering one published event to N **independent** reactors requires one `EventBus` **per reactor**, each with its own consumer group:
+
+- The per-bus duplicate-topic guard rejects two routes resolving to the same topic on one bus, so reactors cannot share a bus.
+- On a real broker, a **shared** group load-balances (one reactor "steals" each event), while **distinct** groups give each reactor its own durable consumer.
+
+`createBroadcastSubscribers()` constructs that one-bus-per-reactor wiring from a list of reactors, so callers do not hand-roll N `createEventBus()` calls. It **throws** if two reactors share a consumer group.
+
+::: warning
+The returned buses are **not started** -- start (and later stop) them yourself.
+:::
+
+```typescript
+import { createBroadcastSubscribers } from '@connectum/events';
+import { NatsAdapter } from '@connectum/events-nats';
+
+// Per-bus adapter factory: each reactor bus gets its own connection / durable consumer
+const buses = createBroadcastSubscribers({
+  adapter: () => NatsAdapter({ servers: 'nats://localhost:4222' }),
+  reactors: [
+    { group: 'pricing', routes: [pricingRoutes] },
+    { group: 'audit', routes: [auditRoutes] },
+    { group: 'notify', routes: [notifyRoutes] },
+  ],
+});
+
+await Promise.all(buses.map((bus) => bus.start()));
+
+// On shutdown:
+await Promise.all(buses.map((bus) => bus.stop()));
+```
+
+For in-process tests, pass a single shared `MemoryAdapter()` instance instead of a factory (all buses share the in-memory registry):
+
+```typescript
+import { createBroadcastSubscribers, MemoryAdapter } from '@connectum/events';
+
+const buses = createBroadcastSubscribers({
+  adapter: MemoryAdapter(), // one shared instance
+  reactors: [
+    { group: 'pricing', routes: [pricingRoutes] },
+    { group: 'audit', routes: [auditRoutes] },
+  ],
+});
+
+await Promise.all(buses.map((bus) => bus.start()));
+```
+
+### `BroadcastSubscribersOptions`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `adapter` | `EventAdapter \| (() => EventAdapter)` | *required* | One shared adapter instance (fine for `MemoryAdapter` in tests) **or** a factory invoked once per reactor (use for real brokers so each bus gets its own connection / durable consumer) |
+| `reactors` | `BroadcastReactor[]` | *required* | The independent reactors -- each becomes its own `EventBus` with its own group |
+| `handlerTimeout` | `number` | `30000` | Shared per-bus handler timeout in ms |
+| `drainTimeout` | `number` | `30000` | Shared per-bus drain timeout in ms |
+| `signal` | `AbortSignal` | `undefined` | Shared abort signal for graceful shutdown |
+
+### `BroadcastReactor`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `group` | `string` | *required* | Consumer group -- MUST be distinct per reactor for true fan-out (a shared group load-balances) |
+| `routes` | `EventRoute[]` | *required* | The event routes (handlers) this reactor subscribes with |
+| `middleware` | `MiddlewareConfig` | `undefined` | Optional per-reactor middleware (retry / DLQ / custom) |
 
 ## Middleware
 
@@ -240,6 +320,7 @@ const eventBus = createEventBus({
 | Export | Description |
 |--------|-------------|
 | `createEventBus` | EventBus factory function |
+| `createBroadcastSubscribers` | 1→N fan-out factory: one `EventBus` per reactor, each with its own consumer group, so every reactor receives every event (available since 1.1.0) |
 | `deriveServiceName` | Derives a service identifier from proto service type names (format: `{packages}@{hostname}`) |
 | `createEventContext` | EventContext factory (advanced) |
 | `EventRouterImpl` | EventRouter implementation class |
@@ -258,6 +339,8 @@ const eventBus = createEventBus({
 |------|-------------|
 | `EventBus` | EventBus interface |
 | `EventBusOptions` | EventBus configuration |
+| `BroadcastSubscribersOptions` | Options for `createBroadcastSubscribers()` (available since 1.1.0) |
+| `BroadcastReactor` | One broadcast reactor: `group` + `routes` + optional `middleware` (available since 1.1.0) |
 | `AdapterContext` | Context passed to adapters on connect (contains `serviceName`) |
 | `EventAdapter` | Adapter interface |
 | `EventRouter` | Router interface |

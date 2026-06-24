@@ -4,7 +4,7 @@
 
 > **Reflection**(): `ProtocolRegistration`
 
-Defined in: [Reflection.ts:43](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/reflection/src/Reflection.ts#L43)
+Defined in: [Reflection.ts:43](https://github.com/Connectum-Framework/connectum/blob/main/packages/reflection/src/Reflection.ts#L43)
 
 Create reflection protocol registration
 

@@ -15,10 +15,12 @@
 ## Interfaces
 
 - [BidiStreamHandle](interfaces/BidiStreamHandle.md)
+- [CatalogClient](interfaces/CatalogClient.md)
 - [ClientStreamHandle](interfaces/ClientStreamHandle.md)
 - [ConnectumCallMap](interfaces/ConnectumCallMap.md)
 - [ConnectumStreamMap](interfaces/ConnectumStreamMap.md)
 - [Context](interfaces/Context.md)
+- [CreateCatalogClientOptions](interfaces/CreateCatalogClientOptions.md)
 - [CreateLocalTransportOptions](interfaces/CreateLocalTransportOptions.md)
 - [DnsResolverOptions](interfaces/DnsResolverOptions.md)
 - [PerServiceEnvResolverOptions](interfaces/PerServiceEnvResolverOptions.md)
@@ -30,6 +32,8 @@
 ## Type Aliases
 
 - [CallOptions](type-aliases/CallOptions.md)
+- [CatalogCall](type-aliases/CatalogCall.md)
+- [CatalogStream](type-aliases/CatalogStream.md)
 - [ConnectumEnv](type-aliases/ConnectumEnv.md)
 - [ConnectumMethodImpl](type-aliases/ConnectumMethodImpl.md)
 - [ConnectumServiceImpl](type-aliases/ConnectumServiceImpl.md)
@@ -57,6 +61,7 @@
 ## Functions
 
 - [collectStreamingMethods](functions/collectStreamingMethods.md)
+- [createCatalogClient](functions/createCatalogClient.md)
 - [createLocalTransport](functions/createLocalTransport.md)
 - [createServer](functions/createServer.md)
 - [defineCatalog](functions/defineCatalog.md)

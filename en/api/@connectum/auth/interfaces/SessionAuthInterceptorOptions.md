@@ -2,7 +2,7 @@
 
 # Interface: SessionAuthInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:326](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L326)
+Defined in: [packages/auth/src/types.ts:483](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L483)
 
 Session-based auth interceptor options.
 
@@ -14,7 +14,7 @@ Two-step authentication: verify session token, then map session data to AuthCont
 
 > `readonly` `optional` **cache?**: [`CacheOptions`](CacheOptions.md)
 
-Defined in: [packages/auth/src/types.ts:349](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L349)
+Defined in: [packages/auth/src/types.ts:506](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L506)
 
 LRU cache for session verification results
 
@@ -24,7 +24,7 @@ LRU cache for session verification results
 
 > `readonly` `optional` **extractToken?**: (`req`) => `string` \| `Promise`\<`string` \| `null`\> \| `null`
 
-Defined in: [packages/auth/src/types.ts:347](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L347)
+Defined in: [packages/auth/src/types.ts:504](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L504)
 
 Custom token extraction.
 Default: extracts Bearer token from Authorization header.
@@ -47,7 +47,7 @@ Default: extracts Bearer token from Authorization header.
 
 > `readonly` **mapSession**: (`session`) => [`AuthContext`](AuthContext.md) \| `Promise`\<[`AuthContext`](AuthContext.md)\>
 
-Defined in: [packages/auth/src/types.ts:342](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L342)
+Defined in: [packages/auth/src/types.ts:499](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L499)
 
 Map raw session data to AuthContext.
 
@@ -71,7 +71,7 @@ Normalized auth context
 
 > `readonly` `optional` **propagatedClaims?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:359](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L359)
+Defined in: [packages/auth/src/types.ts:516](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L516)
 
 Filter which claims are propagated in headers.
 When set, only listed claim keys are included in x-auth-claims header.
@@ -83,7 +83,7 @@ When not set, all claims are propagated.
 
 > `readonly` `optional` **propagateHeaders?**: `boolean`
 
-Defined in: [packages/auth/src/types.ts:353](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L353)
+Defined in: [packages/auth/src/types.ts:510](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L510)
 
 Propagate auth context as headers for downstream services
 
@@ -93,7 +93,7 @@ Propagate auth context as headers for downstream services
 
 > `readonly` `optional` **skipMethods?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:351](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L351)
+Defined in: [packages/auth/src/types.ts:508](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L508)
 
 Methods to skip authentication for
 
@@ -103,7 +103,7 @@ Methods to skip authentication for
 
 > `readonly` **verifySession**: (`token`, `headers`) => `unknown`
 
-Defined in: [packages/auth/src/types.ts:335](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L335)
+Defined in: [packages/auth/src/types.ts:492](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L492)
 
 Verify session token and return raw session data.
 Must throw on invalid/expired sessions.

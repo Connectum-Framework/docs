@@ -4,7 +4,7 @@
 
 > **EventRoute** = (`events`) => `void`
 
-Defined in: [packages/events/src/types.ts:222](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L222)
+Defined in: [packages/events/src/types.ts:237](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L237)
 
 Event route function -- mirrors ServiceRoute from @connectum/core
 

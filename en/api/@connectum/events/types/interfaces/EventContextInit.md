@@ -2,7 +2,7 @@
 
 # Interface: EventContextInit
 
-Defined in: [packages/events/src/types.ts:153](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L153)
+Defined in: [packages/events/src/types.ts:168](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L168)
 
 Initialization data for creating an EventContext
 
@@ -12,7 +12,7 @@ Initialization data for creating an EventContext
 
 > `readonly` **onAck**: () => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:156](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L156)
+Defined in: [packages/events/src/types.ts:171](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L171)
 
 #### Returns
 
@@ -24,7 +24,7 @@ Defined in: [packages/events/src/types.ts:156](https://github.com/Connectum-Fram
 
 > `readonly` **onNack**: (`requeue`) => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:157](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L157)
+Defined in: [packages/events/src/types.ts:172](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L172)
 
 #### Parameters
 
@@ -42,7 +42,7 @@ Defined in: [packages/events/src/types.ts:157](https://github.com/Connectum-Fram
 
 > `readonly` **raw**: [`RawEvent`](RawEvent.md)
 
-Defined in: [packages/events/src/types.ts:154](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L154)
+Defined in: [packages/events/src/types.ts:169](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L169)
 
 ***
 
@@ -50,4 +50,4 @@ Defined in: [packages/events/src/types.ts:154](https://github.com/Connectum-Fram
 
 > `readonly` **signal**: `AbortSignal`
 
-Defined in: [packages/events/src/types.ts:155](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L155)
+Defined in: [packages/events/src/types.ts:170](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L170)

@@ -24,15 +24,22 @@
 - [ClientGatewayInterceptorOptions](interfaces/ClientGatewayInterceptorOptions.md)
 - [GatewayAuthInterceptorOptions](interfaces/GatewayAuthInterceptorOptions.md)
 - [GatewayHeaderMapping](interfaces/GatewayHeaderMapping.md)
+- [InternalAuthInterceptorOptions](interfaces/InternalAuthInterceptorOptions.md)
 - [JwtAuthInterceptorOptions](interfaces/JwtAuthInterceptorOptions.md)
+- [MeshIdentityEntry](interfaces/MeshIdentityEntry.md)
+- [MeshIdentityTrustOptions](interfaces/MeshIdentityTrustOptions.md)
 - [ProtoAuthzInterceptorOptions](interfaces/ProtoAuthzInterceptorOptions.md)
 - [ResolvedMethodAuth](interfaces/ResolvedMethodAuth.md)
 - [SessionAuthInterceptorOptions](interfaces/SessionAuthInterceptorOptions.md)
+- [SharedSecretTrustOptions](interfaces/SharedSecretTrustOptions.md)
+- [SignedTokenIssuer](interfaces/SignedTokenIssuer.md)
+- [SignedTokenTrustOptions](interfaces/SignedTokenTrustOptions.md)
 
 ## Type Aliases
 
 - [AuthzEffect](type-aliases/AuthzEffect.md)
 - [InterceptorFactory](type-aliases/InterceptorFactory.md)
+- [InternalTrustSource](type-aliases/InternalTrustSource.md)
 
 ## Variables
 
@@ -47,13 +54,18 @@
 - [createClientBearerInterceptor](functions/createClientBearerInterceptor.md)
 - [createClientGatewayInterceptor](functions/createClientGatewayInterceptor.md)
 - [createGatewayAuthInterceptor](functions/createGatewayAuthInterceptor.md)
+- [createInternalAuthInterceptor](functions/createInternalAuthInterceptor.md)
 - [createJwtAuthInterceptor](functions/createJwtAuthInterceptor.md)
 - [createProtoAuthzInterceptor](functions/createProtoAuthzInterceptor.md)
 - [createSessionAuthInterceptor](functions/createSessionAuthInterceptor.md)
 - [getAuthContext](functions/getAuthContext.md)
+- [getInternalMethods](functions/getInternalMethods.md)
 - [getPublicMethods](functions/getPublicMethods.md)
 - [matchesMethodPattern](functions/matchesMethodPattern.md)
+- [meshIdentityTrust](functions/meshIdentityTrust.md)
 - [parseAuthHeaders](functions/parseAuthHeaders.md)
 - [requireAuthContext](functions/requireAuthContext.md)
 - [resolveMethodAuth](functions/resolveMethodAuth.md)
 - [setAuthHeaders](functions/setAuthHeaders.md)
+- [sharedSecretTrust](functions/sharedSecretTrust.md)
+- [signedTokenTrust](functions/signedTokenTrust.md)

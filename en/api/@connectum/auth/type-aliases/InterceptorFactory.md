@@ -4,7 +4,7 @@
 
 > **InterceptorFactory**\<`TOptions`\> = `TOptions` *extends* `void` ? () => `Interceptor` : (`options`) => `Interceptor`
 
-Defined in: [packages/auth/src/types.ts:14](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/types.ts#L14)
+Defined in: [packages/auth/src/types.ts:14](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L14)
 
 Interceptor factory function type
 

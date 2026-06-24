@@ -2,7 +2,7 @@
 
 # Interface: EventRouteEntry
 
-Defined in: [packages/events/src/types.ts:197](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L197)
+Defined in: [packages/events/src/types.ts:212](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L212)
 
 Registered event route (internal use)
 
@@ -12,7 +12,7 @@ Registered event route (internal use)
 
 > `readonly` **handler**: [`TypedEventHandler`](../type-aliases/TypedEventHandler.md)\<`unknown`\>
 
-Defined in: [packages/events/src/types.ts:203](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L203)
+Defined in: [packages/events/src/types.ts:218](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L218)
 
 Typed handler function
 
@@ -22,7 +22,7 @@ Typed handler function
 
 > `readonly` **method**: `DescMethod`
 
-Defined in: [packages/events/src/types.ts:201](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L201)
+Defined in: [packages/events/src/types.ts:216](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L216)
 
 Method descriptor for deserialization
 
@@ -32,7 +32,7 @@ Method descriptor for deserialization
 
 > `readonly` `optional` **middleware?**: [`EventMiddleware`](../type-aliases/EventMiddleware.md)[]
 
-Defined in: [packages/events/src/types.ts:205](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L205)
+Defined in: [packages/events/src/types.ts:220](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L220)
 
 Per-handler middleware (overrides global when present)
 
@@ -42,6 +42,6 @@ Per-handler middleware (overrides global when present)
 
 > `readonly` **topic**: `string`
 
-Defined in: [packages/events/src/types.ts:199](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events/src/types.ts#L199)
+Defined in: [packages/events/src/types.ts:214](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L214)
 
 Topic pattern to subscribe to

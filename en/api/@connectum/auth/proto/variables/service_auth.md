@@ -4,7 +4,7 @@
 
 > `const` **service\_auth**: `GenExtension`\<`ServiceOptions`, [`ServiceAuth`](../type-aliases/ServiceAuth.md)\>
 
-Defined in: packages/auth/gen/connectum/auth/v1/options\_pb.d.ts:105
+Defined in: packages/auth/gen/connectum/auth/v1/options\_pb.d.ts:125
 
 ## Generated
 

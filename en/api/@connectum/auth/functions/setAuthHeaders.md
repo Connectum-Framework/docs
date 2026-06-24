@@ -4,7 +4,7 @@
 
 > **setAuthHeaders**(`headers`, `context`, `propagatedClaims?`): `void`
 
-Defined in: [packages/auth/src/headers.ts:36](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/headers.ts#L36)
+Defined in: [packages/auth/src/headers.ts:36](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/headers.ts#L36)
 
 Serialize AuthContext to request headers.
 

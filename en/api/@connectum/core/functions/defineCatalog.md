@@ -4,7 +4,7 @@
 
 > **defineCatalog**\<`T`\>(`record`): `Readonly`\<`T`\>
 
-Defined in: [packages/core/src/serviceCatalog.ts:61](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/serviceCatalog.ts#L61)
+Defined in: [packages/core/src/serviceCatalog.ts:61](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/serviceCatalog.ts#L61)
 
 Build a [ServiceCatalog](../type-aliases/ServiceCatalog.md) from a literal record, preserving the literal
 key type for downstream inference. Equivalent to writing the record inline,

@@ -4,7 +4,7 @@
 
 > `const` **ServiceAuthSchema**: `GenMessage`\<[`ServiceAuth`](../type-aliases/ServiceAuth.md)\>
 
-Defined in: packages/auth/gen/connectum/auth/v1/options\_pb.d.ts:97
+Defined in: packages/auth/gen/connectum/auth/v1/options\_pb.d.ts:117
 
 Describes the message connectum.auth.v1.ServiceAuth.
 Use `create(ServiceAuthSchema)` to create a new message.

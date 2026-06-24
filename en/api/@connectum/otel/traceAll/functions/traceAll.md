@@ -4,7 +4,7 @@
 
 > **traceAll**\<`T`\>(`target`, `options?`): `T`
 
-Defined in: [packages/otel/src/traceAll.ts:36](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/otel/src/traceAll.ts#L36)
+Defined in: [packages/otel/src/traceAll.ts:36](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/traceAll.ts#L36)
 
 Wraps all methods of an object in OpenTelemetry spans using ES6 Proxy.
 

@@ -4,7 +4,7 @@
 
 > **mergeCatalogs**(...`catalogs`): [`ServiceCatalog`](../type-aliases/ServiceCatalog.md)
 
-Defined in: [packages/core/src/serviceCatalog.ts:79](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/serviceCatalog.ts#L79)
+Defined in: [packages/core/src/serviceCatalog.ts:79](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/serviceCatalog.ts#L79)
 
 Merge several catalogs into one.
 

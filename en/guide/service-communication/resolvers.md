@@ -4,9 +4,9 @@ outline: deep
 
 # Remote Resolvers
 
-A **remote resolver** is the service-catalog routing layer: it maps a proto service identity to the `Transport` used to reach that service when it is *not* mounted on the local server. The unified client factory (`server.client(Desc)`) and the catalog primitive (`ctx.call(...)`) both consult it — locally-mounted services dispatch in-process and never touch the resolver, everything else is resolved through it.
+A **remote resolver** is the service-catalog routing layer: it maps a proto service identity to the `Transport` used to reach that service. Three APIs consult it: the unified client factory (`server.client(Desc)`), the catalog primitive (`ctx.call(...)`), and the standalone catalog client (`createCatalogClient(...)`). For the first two, locally-mounted services dispatch in-process and never touch the resolver; everything else is resolved through it. `createCatalogClient` has no local server, so every call goes through the resolver unconditionally.
 
-You configure one resolver per server via `createServer({ remoteResolver })`. The framework calls it lazily, on the first route to a given service, and caches the result.
+You pass a resolver to `createServer({ remoteResolver })` for server-side routing, or directly to `createCatalogClient({ resolver })` for out-of-process workers, schedulers, and CLIs. The framework calls it lazily, on the first route to a given service, and caches the result.
 
 ## The `RemoteResolver` contract
 

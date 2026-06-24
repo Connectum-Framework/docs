@@ -2,7 +2,7 @@
 
 # Class: HealthcheckManager
 
-Defined in: [HealthcheckManager.ts:79](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/HealthcheckManager.ts#L79)
+Defined in: [HealthcheckManager.ts:79](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L79)
 
 Healthcheck manager
 
@@ -45,7 +45,7 @@ server.on('stopping', () => healthcheckManager.set('process', ServingStatus.NOT_
 
 > **areAllHealthy**(): `boolean`
 
-Defined in: [HealthcheckManager.ts:206](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/HealthcheckManager.ts#L206)
+Defined in: [HealthcheckManager.ts:206](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L206)
 
 Check if all services and components are healthy (SERVING)
 
@@ -61,7 +61,7 @@ True if all entries are SERVING; false for an empty registry
 
 > **clear**(): `void`
 
-Defined in: [HealthcheckManager.ts:254](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/HealthcheckManager.ts#L254)
+Defined in: [HealthcheckManager.ts:254](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L254)
 
 Clear all services and components
 
@@ -75,7 +75,7 @@ Clear all services and components
 
 > **getAllStatuses**(): `Map`\<`string`, [`ServiceStatus`](../types/interfaces/ServiceStatus.md)\>
 
-Defined in: [HealthcheckManager.ts:193](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/HealthcheckManager.ts#L193)
+Defined in: [HealthcheckManager.ts:193](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L193)
 
 Get all services health status
 
@@ -91,7 +91,7 @@ Map of service/component name to health status
 
 > **getStatus**(`service`): [`ServiceStatus`](../types/interfaces/ServiceStatus.md) \| `undefined`
 
-Defined in: [HealthcheckManager.ts:183](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/HealthcheckManager.ts#L183)
+Defined in: [HealthcheckManager.ts:183](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L183)
 
 Get service health status
 
@@ -115,7 +115,7 @@ Service status or undefined if not found
 
 > **initialize**(`serviceNames`): `void`
 
-Defined in: [HealthcheckManager.ts:229](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/HealthcheckManager.ts#L229)
+Defined in: [HealthcheckManager.ts:229](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L229)
 
 Initialize the RPC service slice of the registry.
 
@@ -148,7 +148,7 @@ Array of RPC service typeNames to track
 
 > **register**(`component`, `initialStatus?`): `void`
 
-Defined in: [HealthcheckManager.ts:123](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/HealthcheckManager.ts#L123)
+Defined in: [HealthcheckManager.ts:123](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L123)
 
 Register an application health component.
 
@@ -185,7 +185,7 @@ Error on invalid name or when the name belongs to an RPC service
 
 > **set**(`component`, `status`): `void`
 
-Defined in: [HealthcheckManager.ts:149](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/HealthcheckManager.ts#L149)
+Defined in: [HealthcheckManager.ts:149](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L149)
 
 Set a component's status (upsert).
 
@@ -221,7 +221,7 @@ Error on invalid name or when the name belongs to an RPC service
 
 > **unregister**(`component`): `void`
 
-Defined in: [HealthcheckManager.ts:166](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/HealthcheckManager.ts#L166)
+Defined in: [HealthcheckManager.ts:166](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L166)
 
 Remove a registered component.
 
@@ -247,7 +247,7 @@ Error when the name belongs to an RPC service
 
 > **update**(`status`, `service?`): `void`
 
-Defined in: [HealthcheckManager.ts:93](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/healthcheck/src/HealthcheckManager.ts#L93)
+Defined in: [HealthcheckManager.ts:93](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L93)
 
 Update service health status
 

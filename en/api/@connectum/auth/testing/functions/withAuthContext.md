@@ -4,7 +4,7 @@
 
 > **withAuthContext**\<`T`\>(`context`, `fn`): `Promise`\<`T`\>
 
-Defined in: [packages/auth/src/testing/with-context.ts:31](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/auth/src/testing/with-context.ts#L31)
+Defined in: [packages/auth/src/testing/with-context.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/testing/with-context.ts#L31)
 
 Run a function with a pre-set AuthContext.
 

@@ -4,7 +4,7 @@
 
 > `const` **method\_auth**: `GenExtension`\<`MethodOptions`, [`MethodAuth`](../type-aliases/MethodAuth.md)\>
 
-Defined in: packages/auth/gen/connectum/auth/v1/options\_pb.d.ts:101
+Defined in: packages/auth/gen/connectum/auth/v1/options\_pb.d.ts:121
 
 ## Generated
 

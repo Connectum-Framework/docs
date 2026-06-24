@@ -2,7 +2,7 @@
 
 # Interface: AmqpRecoveryOptions
 
-Defined in: [packages/events-amqp/src/types.ts:209](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L209)
+Defined in: [packages/events-amqp/src/types.ts:209](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L209)
 
 Recovery knobs (passed through to amqplib's opt-in recovery).
 
@@ -12,7 +12,7 @@ Recovery knobs (passed through to amqplib's opt-in recovery).
 
 > `readonly` `optional` **factor?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:215](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L215)
+Defined in: [packages/events-amqp/src/types.ts:215](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L215)
 
 #### Default
 
@@ -26,7 +26,7 @@ Defined in: [packages/events-amqp/src/types.ts:215](https://github.com/Connectum
 
 > `readonly` `optional` **initialDelay?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:211](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L211)
+Defined in: [packages/events-amqp/src/types.ts:211](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L211)
 
 #### Default
 
@@ -40,7 +40,7 @@ Defined in: [packages/events-amqp/src/types.ts:211](https://github.com/Connectum
 
 > `readonly` `optional` **jitter?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:217](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L217)
+Defined in: [packages/events-amqp/src/types.ts:217](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L217)
 
 0..1
 
@@ -56,7 +56,7 @@ Defined in: [packages/events-amqp/src/types.ts:217](https://github.com/Connectum
 
 > `readonly` `optional` **maxDelay?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:213](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L213)
+Defined in: [packages/events-amqp/src/types.ts:213](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L213)
 
 #### Default
 
@@ -70,7 +70,7 @@ Defined in: [packages/events-amqp/src/types.ts:213](https://github.com/Connectum
 
 > `readonly` `optional` **maxRetries?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:219](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/events-amqp/src/types.ts#L219)
+Defined in: [packages/events-amqp/src/types.ts:219](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L219)
 
 #### Default
 

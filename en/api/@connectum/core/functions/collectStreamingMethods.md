@@ -4,7 +4,7 @@
 
 > **collectStreamingMethods**(`registry`): [`StreamingMethodInfo`](../interfaces/StreamingMethodInfo.md)[]
 
-Defined in: [packages/core/src/TransportValidation.ts:106](https://github.com/Connectum-Framework/connectum/blob/a01886190a74a7110bf96486238bdcb7740ecf6e/packages/core/src/TransportValidation.ts#L106)
+Defined in: [packages/core/src/TransportValidation.ts:106](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L106)
 
 Collect bidi-streaming methods from a DescFile registry (built during
 route registration). Client-streaming is NOT collected — the Connect
