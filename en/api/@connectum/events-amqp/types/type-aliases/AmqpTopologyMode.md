@@ -4,6 +4,6 @@
 
 > **AmqpTopologyMode** = *typeof* [`AmqpTopologyMode`](../variables/AmqpTopologyMode.md)\[keyof *typeof* [`AmqpTopologyMode`](../variables/AmqpTopologyMode.md)\]
 
-Defined in: [packages/events-amqp/src/types.ts:131](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L131)
+Defined in: [packages/events-amqp/src/types.ts:169](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L169)
 
 Topology establishment mode.
