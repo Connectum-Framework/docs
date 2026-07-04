@@ -2,7 +2,7 @@
 
 # Class: AmqpAdapterError
 
-Defined in: [packages/events-amqp/src/errors.ts:13](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L13)
+Defined in: [packages/events-amqp/src/errors.ts:30](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L30)
 
 Base class for all AMQP adapter errors.
 
@@ -25,7 +25,7 @@ Base class for all AMQP adapter errors.
 
 > **new AmqpAdapterError**(`message`, `options?`): `AmqpAdapterError`
 
-Defined in: [packages/events-amqp/src/errors.ts:14](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L14)
+Defined in: [packages/events-amqp/src/errors.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L31)
 
 #### Parameters
 

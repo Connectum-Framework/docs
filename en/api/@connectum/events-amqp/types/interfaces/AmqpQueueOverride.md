@@ -2,7 +2,7 @@
 
 # Interface: AmqpQueueOverride
 
-Defined in: [packages/events-amqp/src/types.ts:199](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L199)
+Defined in: [packages/events-amqp/src/types.ts:237](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L237)
 
 External queue override for a consumer group.
 
@@ -12,7 +12,7 @@ External queue override for a consumer group.
 
 > `readonly` `optional` **arguments?**: `Record`\<`string`, `unknown`\>
 
-Defined in: [packages/events-amqp/src/types.ts:203](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L203)
+Defined in: [packages/events-amqp/src/types.ts:241](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L241)
 
 Raw AMQP arguments used when asserting the queue (assert mode only).
 
@@ -22,7 +22,7 @@ Raw AMQP arguments used when asserting the queue (assert mode only).
 
 > `readonly` `optional` **durable?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:205](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L205)
+Defined in: [packages/events-amqp/src/types.ts:243](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L243)
 
 #### Default
 
@@ -36,6 +36,6 @@ true
 
 > `readonly` **queue**: `string`
 
-Defined in: [packages/events-amqp/src/types.ts:201](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L201)
+Defined in: [packages/events-amqp/src/types.ts:239](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L239)
 
 Externally-defined queue name to consume from.

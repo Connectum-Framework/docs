@@ -2,7 +2,7 @@
 
 # Interface: AmqpTopology
 
-Defined in: [packages/events-amqp/src/types.ts:163](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L163)
+Defined in: [packages/events-amqp/src/types.ts:201](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L201)
 
 Declarative topology.
 
@@ -12,7 +12,7 @@ Declarative topology.
 
 > `readonly` `optional` **bindings?**: readonly [`AmqpBindingDeclaration`](AmqpBindingDeclaration.md)[]
 
-Defined in: [packages/events-amqp/src/types.ts:166](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L166)
+Defined in: [packages/events-amqp/src/types.ts:204](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L204)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [packages/events-amqp/src/types.ts:166](https://github.com/Connectum
 
 > `readonly` `optional` **exchanges?**: readonly [`AmqpExchangeDeclaration`](AmqpExchangeDeclaration.md)[]
 
-Defined in: [packages/events-amqp/src/types.ts:164](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L164)
+Defined in: [packages/events-amqp/src/types.ts:202](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L202)
 
 ***
 
@@ -28,4 +28,4 @@ Defined in: [packages/events-amqp/src/types.ts:164](https://github.com/Connectum
 
 > `readonly` `optional` **queues?**: readonly [`AmqpQueueDeclaration`](AmqpQueueDeclaration.md)[]
 
-Defined in: [packages/events-amqp/src/types.ts:165](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L165)
+Defined in: [packages/events-amqp/src/types.ts:203](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L203)

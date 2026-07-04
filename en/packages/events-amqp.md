@@ -83,6 +83,7 @@ Pass the result to `createEventBus({ adapter })`.
 | `topologyMode` | `"assert" \| "check" \| "skip"` | `"assert"` | How topology is established |
 | `queueOverrides` | `Record<string, AmqpQueueOverride>` | `undefined` | Map a consumer group to an externally named queue |
 | `recovery` | `boolean \| AmqpRecoveryOptions` | `true` | Automatic connection recovery (amqplib native); `false` disables |
+| `failFastOnInitialSetupError` | `boolean` | `false` | Reject `connect()` with the typed `AmqpTopologyError` on a deterministic setup/topology error at the **first** connect, instead of hanging in infinite recovery. Transient broker-unreachable still blocks-and-retries. Available since 1.2.0 |
 | `lifecycle` | `AmqpLifecycleCallbacks` | `undefined` | Connection lifecycle callbacks |
 | `publishTimeoutMs` | `number` | `30000` | Per-publish broker-outcome deadline in milliseconds |
 
@@ -182,10 +183,10 @@ const adapter = AmqpAdapter({
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `initialDelay` | `number` | `100` | First reconnect delay in ms |
-| `maxDelay` | `number` | `30000` | Delay cap in ms |
+| `maxDelay` | `number` | `30000` | Base delay cap in ms. Jitter is applied on top of the capped base, so the effective wait can exceed this (~20% at the default jitter, up to ~2x at `jitter: 1`) |
 | `factor` | `number` | `2` | Exponential backoff factor |
-| `jitter` | `number` | `0.2` | Randomization factor (0..1) |
-| `maxRetries` | `number` | `Infinity` | Give up after this many attempts |
+| `jitter` | `number` | `0.2` | Symmetric jitter factor (0..1): the delay is drawn uniformly from `[base × (1 − jitter), base × (1 + jitter)]` |
+| `maxRetries` | `number` | `Infinity` | Attempts per series before giving up. Governs **both** the initial connect and each later recovery series; the counter resets on every success |
 
 ### `AmqpLifecycleCallbacks`
 
@@ -193,8 +194,9 @@ const adapter = AmqpAdapter({
 |----------|-----------|------------|
 | `onConnected` | `() => void` | Connection established (initial connect and after each recovery) |
 | `onDisconnected` | `(cause: Error) => void` | Connection lost |
-| `onReconnecting` | `(info: { attempt: number; delay: number; error: Error }) => void` | A reconnect attempt is scheduled |
+| `onReconnecting` | `(info: { attempt: number; delay: number; error: Error }) => void` | A reconnect attempt is scheduled (fires exactly once per scheduled retry) |
 | `onReconnectFailed` | `(cause: Error) => void` | Recovery exhausted (`maxRetries` reached) |
+| `onSetupFailed` | `(error: Error, ctx: { initial: boolean; attempt: number }) => void` | Topology/setup failed on the initial validation probe (`initial: true`) or a reconnect re-assert (`initial: false`). The initial-connect call requires the startup probe, which runs when this callback or `failFastOnInitialSetupError` is set. Available since 1.2.0 |
 
 Connection errors are surfaced through these callbacks -- never console-only.
 
@@ -245,6 +247,7 @@ const adapter = AmqpAdapter({
     onDisconnected: (cause) => console.error('AMQP disconnected', cause),
     onReconnecting: ({ attempt, delay }) => console.warn(`Reconnect #${attempt} in ${delay}ms`),
     onReconnectFailed: (cause) => console.error('AMQP recovery exhausted', cause),
+    onSetupFailed: (error, { initial }) => console.error('AMQP topology/setup failed', { initial }, error),
   },
   publishTimeoutMs: 30_000,
 });
@@ -393,10 +396,33 @@ On every successful (re)connect the adapter:
 
 Connection behavior:
 
-- **With recovery enabled**, `connect()` retries with backoff until the broker becomes reachable -- convenient for `docker-compose` startup ordering where the broker may not be up yet.
+- **With recovery enabled**, `connect()` retries with backoff until the broker becomes reachable -- convenient for `docker-compose` startup ordering where the broker may not be up yet. Under the default `maxRetries: Infinity`, `connect()` blocks rather than failing fast; set `failFastOnInitialSetupError: true` to reject `connect()` with a typed `AmqpTopologyError` on a **permanent** setup/topology error at startup while still recovering from transient broker outages.
+- **`maxRetries` scope.** The retry budget governs **both** the initial connect and every later recovery series, with the counter reset on each success. A finite value chosen only to bound startup therefore also caps steady-state recovery: a transient blip of that many consecutive failures in any single series permanently stops recovery.
+- **Reconnect delay.** The effective delay is symmetric jitter around the exponential base -- uniform in `[base × (1 − jitter), base × (1 + jitter)]` with `base = min(maxDelay, initialDelay × factor^(attempt − 1))`. The cap applies to the base **before** jitter, so the wait can overshoot `maxDelay` (~20% at the default `jitter: 0.2`, up to ~2x at `jitter: 1`).
 - **With `recovery: false`**, `connect()` rejects immediately if the broker is unreachable, and a lost connection is not restored.
 
-Observe connection state through the `lifecycle` callbacks (`onConnected`, `onDisconnected`, `onReconnecting`, `onReconnectFailed`).
+Observe connection state through the `lifecycle` callbacks (`onConnected`, `onDisconnected`, `onReconnecting`, `onReconnectFailed`, `onSetupFailed`).
+
+### Tuning the reconnect backoff
+
+The delay strategy is fixed inside amqplib -- a pluggable backoff hook and an independent initial-connect budget are proposed upstream ([amqp-node/amqplib#855](https://github.com/amqp-node/amqplib/issues/855), [amqp-node/amqplib#856](https://github.com/amqp-node/amqplib/issues/856); tracked in [connectum#199](https://github.com/Connectum-Framework/connectum/issues/199) and [connectum#198](https://github.com/Connectum-Framework/connectum/issues/198)).
+
+One shape that **is** expressible exactly with the current knobs is AWS-style **full jitter** with a hard cap -- the delay drawn uniformly from `[0, min(cap, schedule step)]`, never above the cap. Set `jitter: 1` and halve both `initialDelay` and `maxDelay`:
+
+```typescript
+// Full jitter over an intended 500ms → 30s exponential schedule, hard-capped at 30s:
+recovery: {
+  jitter: 1,          // delay becomes uniform in [0, 2 × base]
+  initialDelay: 250,  // half of the intended 500ms first step
+  maxDelay: 15_000,   // half of the intended 30s cap
+}
+```
+
+With `jitter: 1` the delay is uniform in `[0, 2 × base]`; halving the knobs makes `2 × base` trace the intended schedule, so the effective delay never exceeds the intended cap.
+
+::: warning Caveat
+This leans on the exact internal delay formula of amqplib v2 (verified against 2.0.1: `base = min(maxDelay, initialDelay × factor^(attempt − 1))`, then a uniform offset of `± base × jitter`). It is precise today but is not a documented amqplib contract -- re-verify after amqplib upgrades.
+:::
 
 ## Adapter Lifecycle
 

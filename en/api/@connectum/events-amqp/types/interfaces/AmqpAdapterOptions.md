@@ -60,11 +60,47 @@ Exchange type.
 
 ***
 
+### failFastOnInitialSetupError?
+
+> `readonly` `optional` **failFastOnInitialSetupError?**: `boolean`
+
+Defined in: [packages/events-amqp/src/types.ts:149](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L149)
+
+Fail fast on a DETERMINISTIC setup/topology error on the FIRST connect,
+instead of entering amqplib's infinite recovery loop.
+
+amqplib's opt-in recovery resolves `connect()` only after its setup hook
+succeeds, and rejects only once `maxRetries` is exhausted (default
+`Infinity`). A permanent topology error on the first connect under the
+default recovery therefore HANGS `connect()` forever, with no thrown error
+and — because the lifecycle listeners attach only after that never-returning
+await — no callback. When this flag is `true` (and recovery is enabled), the
+adapter first validates topology against a throwaway non-recovering
+connection; a topology error rejects `connect()` with the typed
+`AmqpTopologyError` / `AmqpConnectionError`.
+
+Only deterministic setup/topology errors fail fast. A transient
+broker-unreachable at startup is NOT a fail-fast condition — it falls
+through to normal recovery (block-until-broker). SUBSEQUENT reconnects
+always keep infinite-recovery behavior.
+
+No-op with `recovery: false` (that path already fails fast on setup).
+Enabling this (or supplying [AmqpLifecycleCallbacks.onSetupFailed](AmqpLifecycleCallbacks.md#onsetupfailed))
+adds one extra short-lived connection at startup for the validation probe.
+
+#### Default
+
+```ts
+false
+```
+
+***
+
 ### lifecycle?
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/types.ts:117](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L117)
+Defined in: [packages/events-amqp/src/types.ts:155](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L155)
 
 Connection lifecycle callbacks. Connection errors are surfaced here —
 not just logged.
@@ -85,7 +121,7 @@ Publisher options.
 
 > `readonly` `optional` **publishTimeoutMs?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:127](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L127)
+Defined in: [packages/events-amqp/src/types.ts:165](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L165)
 
 Per-publish broker-outcome deadline in milliseconds. A publish whose
 ack/nack/return/connection-loss outcome does not arrive in time
@@ -114,7 +150,7 @@ Default queue assertion options.
 
 > `readonly` `optional` **queueOverrides?**: `Record`\<`string`, [`AmqpQueueOverride`](AmqpQueueOverride.md)\>
 
-Defined in: [packages/events-amqp/src/types.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L97)
+Defined in: [packages/events-amqp/src/types.ts:101](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L101)
 
 Map a consumer group name to an externally-named queue.
 
@@ -128,7 +164,7 @@ lets a subscription attach to a queue from an external contract
 
 > `readonly` `optional` **recovery?**: `boolean` \| [`AmqpRecoveryOptions`](AmqpRecoveryOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:111](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L111)
+Defined in: [packages/events-amqp/src/types.ts:122](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L122)
 
 Automatic connection recovery (delegated to amqplib's opt-in
 recovery). Enabled by default; pass `false` to restore
@@ -138,6 +174,13 @@ On every (re)connect the adapter re-creates its channels, re-applies
 topology (per `topologyMode`), and replays active subscriptions.
 In-flight publishes at the moment of a connection loss reject with
 `AmqpConnectionError`.
+
+`maxRetries` governs BOTH the initial connect and steady-state recovery
+(counter reset on success); under the default `Infinity`, `connect()`
+blocks until the broker is reachable rather than failing fast (see
+[AmqpAdapterOptions.failFastOnInitialSetupError](#failfastoninitialsetuperror) to fail fast on a
+deterministic startup misconfiguration). See [AmqpRecoveryOptions](AmqpRecoveryOptions.md)
+for the retry-budget scope and jitter/`maxDelay` overshoot.
 
 #### Default
 
@@ -190,12 +233,16 @@ exchange-to-exchange.
 
 > `readonly` `optional` **topologyMode?**: [`AmqpTopologyMode`](../type-aliases/AmqpTopologyMode.md)
 
-Defined in: [packages/events-amqp/src/types.ts:88](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L88)
+Defined in: [packages/events-amqp/src/types.ts:92](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L92)
 
 How topology is established:
 - `"assert"` (default) — declare idempotently (assertExchange/assertQueue/bind);
-- `"check"` — existence-only verification (checkExchange/checkQueue), fail
-  fast with AmqpTopologyError on missing objects. AMQP offers no passive
+- `"check"` — existence-only verification (checkExchange/checkQueue). A
+  missing object raises AmqpTopologyError, which fails `connect()` fast
+  ONLY with `recovery: false` or `failFastOnInitialSetupError: true`; under
+  the default recovery a first-connect check failure otherwise enters the
+  (infinite) recovery loop and is surfaced via `onSetupFailed` /
+  `onReconnecting` rather than rejecting `connect()`. AMQP offers no passive
   introspection: argument equivalence and binding presence are NOT
   verifiable in this mode (a conflicting redeclare elsewhere is
   PRECONDITION_FAILED 406);
