@@ -64,7 +64,7 @@ Exchange type.
 
 > `readonly` `optional` **failFastOnInitialSetupError?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:149](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L149)
+Defined in: [packages/events-amqp/src/types.ts:152](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L152)
 
 Fail fast on a DETERMINISTIC setup/topology error on the FIRST connect,
 instead of entering amqplib's infinite recovery loop.
@@ -85,8 +85,11 @@ through to normal recovery (block-until-broker). SUBSEQUENT reconnects
 always keep infinite-recovery behavior.
 
 No-op with `recovery: false` (that path already fails fast on setup).
-Enabling this (or supplying [AmqpLifecycleCallbacks.onSetupFailed](AmqpLifecycleCallbacks.md#onsetupfailed))
-adds one extra short-lived connection at startup for the validation probe.
+Enabling this — or supplying [AmqpLifecycleCallbacks.onLifecycle](AmqpLifecycleCallbacks.md#onlifecycle)
+or [AmqpLifecycleCallbacks.onSetupFailed](AmqpLifecycleCallbacks.md#onsetupfailed) — adds one extra
+short-lived connection plus a topology validation pass at startup for
+the probe (recovery must be enabled; with `recovery: false` no probe
+runs and no `setup-failed` event is delivered).
 
 #### Default
 
@@ -100,7 +103,7 @@ false
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/types.ts:155](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L155)
+Defined in: [packages/events-amqp/src/types.ts:158](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L158)
 
 Connection lifecycle callbacks. Connection errors are surfaced here —
 not just logged.
@@ -121,7 +124,7 @@ Publisher options.
 
 > `readonly` `optional` **publishTimeoutMs?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:165](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L165)
+Defined in: [packages/events-amqp/src/types.ts:168](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L168)
 
 Per-publish broker-outcome deadline in milliseconds. A publish whose
 ack/nack/return/connection-loss outcome does not arrive in time

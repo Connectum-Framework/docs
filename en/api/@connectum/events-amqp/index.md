@@ -59,6 +59,12 @@ Re-exports [AmqpLifecycleCallbacks](types/interfaces/AmqpLifecycleCallbacks.md)
 
 ***
 
+### AmqpLifecycleEvent
+
+Re-exports [AmqpLifecycleEvent](types/type-aliases/AmqpLifecycleEvent.md)
+
+***
+
 ### AmqpPublisherOptions
 
 Re-exports [AmqpPublisherOptions](types/interfaces/AmqpPublisherOptions.md)

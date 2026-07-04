@@ -2,7 +2,7 @@
 
 # Interface: AmqpRecoveryOptions
 
-Defined in: [packages/events-amqp/src/types.ts:270](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L270)
+Defined in: [packages/events-amqp/src/types.ts:273](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L273)
 
 Recovery knobs (passed through to amqplib's opt-in recovery).
 
@@ -33,7 +33,7 @@ pluggable backoff hook, are tracked as future options — see
 
 > `readonly` `optional` **factor?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:276](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L276)
+Defined in: [packages/events-amqp/src/types.ts:279](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L279)
 
 #### Default
 
@@ -47,7 +47,7 @@ Defined in: [packages/events-amqp/src/types.ts:276](https://github.com/Connectum
 
 > `readonly` `optional` **initialDelay?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:272](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L272)
+Defined in: [packages/events-amqp/src/types.ts:275](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L275)
 
 #### Default
 
@@ -61,7 +61,7 @@ Defined in: [packages/events-amqp/src/types.ts:272](https://github.com/Connectum
 
 > `readonly` `optional` **jitter?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:278](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L278)
+Defined in: [packages/events-amqp/src/types.ts:281](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L281)
 
 Symmetric jitter factor (0..1): the delay is uniform in `[base × (1 − jitter), base × (1 + jitter)]`.
 
@@ -77,7 +77,7 @@ Symmetric jitter factor (0..1): the delay is uniform in `[base × (1 − jitter)
 
 > `readonly` `optional` **maxDelay?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:274](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L274)
+Defined in: [packages/events-amqp/src/types.ts:277](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L277)
 
 Base delay cap in ms; jitter is applied on top of the capped base, so the effective wait can exceed it.
 
@@ -93,7 +93,7 @@ Base delay cap in ms; jitter is applied on top of the capped base, so the effect
 
 > `readonly` `optional` **maxRetries?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:280](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L280)
+Defined in: [packages/events-amqp/src/types.ts:283](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L283)
 
 Attempts per series (initial connect and each recovery series); resets on success.
 
