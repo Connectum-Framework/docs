@@ -190,13 +190,37 @@ const adapter = AmqpAdapter({
 
 ### `AmqpLifecycleCallbacks`
 
-| Callback | Signature | Fires when |
-|----------|-----------|------------|
-| `onConnected` | `() => void` | Connection established (initial connect and after each recovery) |
-| `onDisconnected` | `(cause: Error) => void` | Connection lost |
-| `onReconnecting` | `(info: { attempt: number; delay: number; error: Error }) => void` | A reconnect attempt is scheduled (fires exactly once per scheduled retry) |
-| `onReconnectFailed` | `(cause: Error) => void` | Recovery exhausted (`maxRetries` reached) |
-| `onSetupFailed` | `(error: Error, ctx: { initial: boolean; attempt: number }) => void` | Topology/setup failed on the initial validation probe (`initial: true`) or a reconnect re-assert (`initial: false`). The initial-connect call requires the startup probe, which runs when this callback or `failFastOnInitialSetupError` is set. Available since 1.2.0 |
+The preferred surface is the single discriminated **`onLifecycle`** callback (since 1.3.0); the flat callbacks below are a compatibility shim over the same event stream, deprecated since 1.3.0 (removal not before 2.0). When both are set, flat callbacks fire after `onLifecycle` for the same underlying event.
+
+Callbacks **must not throw** -- dispatch runs inside the connection driver's event handlers, so exceptions are isolated (swallowed) to protect the connection. Setting `onLifecycle` (like `onSetupFailed` / `failFastOnInitialSetupError`) enables the startup validation probe -- one extra short-lived connection plus a topology validation pass at `connect()` (requires recovery enabled).
+
+```typescript
+lifecycle: {
+  onLifecycle: (event) => {
+    if (event.type === 'disconnected') metrics.increment('amqp.disconnects');
+    if (event.type === 'setup-failed' && event.initial) log.fatal(event.error);
+    if (event.type === 'blocked') log.warn(`broker flow control: ${event.reason}`);
+  },
+},
+```
+
+| Event `type` | Payload | Fires when |
+|--------------|---------|------------|
+| `connected` | `reconnected: boolean` | Connection established -- exactly once per (re)connect; `false` for the initial connect, `true` after a recovery |
+| `disconnected` | `error: Error` | Connection lost -- exactly once per drop |
+| `reconnecting` | `attempt, delay, error` | A reconnect attempt is scheduled (exactly once per scheduled retry) |
+| `reconnect-failed` | `error: Error` | Recovery exhausted (`maxRetries` reached) |
+| `setup-failed` | `initial, attempt, error` | Topology/setup failed on the initial validation probe (`initial: true`) or a reconnect re-assert (`initial: false`) |
+| `blocked` | `reason: string` | Broker flow control (`connection.blocked`, e.g. a memory/disk alarm). Union-only -- no flat equivalent |
+| `unblocked` | -- | Broker resumed after flow control. Union-only -- no flat equivalent |
+
+Deprecated flat callbacks (compatibility shim): `onConnected()`, `onDisconnected(cause)`, `onReconnecting({ attempt, delay, error })`, `onReconnectFailed(cause)`, `onSetupFailed(error, { initial, attempt })` (since 1.2.0).
+
+**Scope**: the retry loop of the **initial** connect (broker unreachable when `connect()` is called) runs before the lifecycle wiring can attach, so its per-retry events are not surfaced; the startup probe covers the deterministic-misconfiguration case. Full initial-window observability is tracked in [connectum#198](https://github.com/Connectum-Framework/connectum/issues/198).
+
+::: tip Fixed in 1.3.0
+A socket-level connection cut used to fire `onDisconnected` twice; it now fires exactly once per drop on both surfaces (disconnect-counter metrics roughly halve). In `recovery: false` mode a server-forced graceful close now surfaces a single `disconnected` (previously no event).
+:::
 
 Connection errors are surfaced through these callbacks -- never console-only.
 
@@ -243,11 +267,7 @@ const adapter = AmqpAdapter({
     jitter: 0.2,
   },
   lifecycle: {
-    onConnected: () => console.log('AMQP connected'),
-    onDisconnected: (cause) => console.error('AMQP disconnected', cause),
-    onReconnecting: ({ attempt, delay }) => console.warn(`Reconnect #${attempt} in ${delay}ms`),
-    onReconnectFailed: (cause) => console.error('AMQP recovery exhausted', cause),
-    onSetupFailed: (error, { initial }) => console.error('AMQP topology/setup failed', { initial }, error),
+    onLifecycle: (event) => console.log('AMQP lifecycle:', event.type, event),
   },
   publishTimeoutMs: 30_000,
 });
@@ -401,7 +421,7 @@ Connection behavior:
 - **Reconnect delay.** The effective delay is symmetric jitter around the exponential base -- uniform in `[base × (1 − jitter), base × (1 + jitter)]` with `base = min(maxDelay, initialDelay × factor^(attempt − 1))`. The cap applies to the base **before** jitter, so the wait can overshoot `maxDelay` (~20% at the default `jitter: 0.2`, up to ~2x at `jitter: 1`).
 - **With `recovery: false`**, `connect()` rejects immediately if the broker is unreachable, and a lost connection is not restored.
 
-Observe connection state through the `lifecycle` callbacks (`onConnected`, `onDisconnected`, `onReconnecting`, `onReconnectFailed`, `onSetupFailed`).
+Observe connection state through `lifecycle.onLifecycle` (discriminated union; preferred since 1.3.0) or the deprecated flat callbacks (`onConnected`, `onDisconnected`, `onReconnecting`, `onReconnectFailed`, `onSetupFailed`).
 
 ### Tuning the reconnect backoff
 
