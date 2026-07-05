@@ -13,6 +13,7 @@ Configuration types for the AMQP/RabbitMQ adapter.
 - [AmqpExchangeOptions](interfaces/AmqpExchangeOptions.md)
 - [AmqpLifecycleCallbacks](interfaces/AmqpLifecycleCallbacks.md)
 - [AmqpPublisherOptions](interfaces/AmqpPublisherOptions.md)
+- [AmqpPublishRetryOptions](interfaces/AmqpPublishRetryOptions.md)
 - [AmqpQueueDeclaration](interfaces/AmqpQueueDeclaration.md)
 - [AmqpQueueOptions](interfaces/AmqpQueueOptions.md)
 - [AmqpQueueOverride](interfaces/AmqpQueueOverride.md)

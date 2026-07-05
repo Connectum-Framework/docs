@@ -4,7 +4,7 @@
 
 > **AmqpLifecycleEvent** = \{ `reconnected`: `boolean`; `type`: `"connected"`; \} \| \{ `error`: `Error`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `delay`: `number`; `error`: `Error`; `type`: `"reconnecting"`; \} \| \{ `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `initial`: `boolean`; `type`: `"setup-failed"`; \} \| \{ `reason`: `string`; `type`: `"blocked"`; \} \| \{ `type`: `"unblocked"`; \}
 
-Defined in: [packages/events-amqp/src/types.ts:394](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L394)
+Defined in: [packages/events-amqp/src/types.ts:446](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L446)
 
 Discriminated connection lifecycle event, delivered to
 [AmqpLifecycleCallbacks.onLifecycle](../interfaces/AmqpLifecycleCallbacks.md#onlifecycle).

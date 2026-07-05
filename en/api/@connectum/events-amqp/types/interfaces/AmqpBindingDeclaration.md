@@ -2,7 +2,7 @@
 
 # Interface: AmqpBindingDeclaration
 
-Defined in: [packages/events-amqp/src/types.ts:267](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L267)
+Defined in: [packages/events-amqp/src/types.ts:319](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L319)
 
 ## Properties
 
@@ -10,7 +10,7 @@ Defined in: [packages/events-amqp/src/types.ts:267](https://github.com/Connectum
 
 > `readonly` `optional` **arguments?**: `Record`\<`string`, `unknown`\>
 
-Defined in: [packages/events-amqp/src/types.ts:275](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L275)
+Defined in: [packages/events-amqp/src/types.ts:327](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L327)
 
 ***
 
@@ -18,7 +18,7 @@ Defined in: [packages/events-amqp/src/types.ts:275](https://github.com/Connectum
 
 > `readonly` `optional` **exchange?**: `string`
 
-Defined in: [packages/events-amqp/src/types.ts:271](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L271)
+Defined in: [packages/events-amqp/src/types.ts:323](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L323)
 
 Destination exchange name (exchange-to-exchange binding).
 
@@ -28,7 +28,7 @@ Destination exchange name (exchange-to-exchange binding).
 
 > `readonly` `optional` **queue?**: `string`
 
-Defined in: [packages/events-amqp/src/types.ts:269](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L269)
+Defined in: [packages/events-amqp/src/types.ts:321](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L321)
 
 Destination queue name (queue binding) — mutually exclusive with `exchange`.
 
@@ -38,7 +38,7 @@ Destination queue name (queue binding) — mutually exclusive with `exchange`.
 
 > `readonly` **routingKey**: `string`
 
-Defined in: [packages/events-amqp/src/types.ts:274](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L274)
+Defined in: [packages/events-amqp/src/types.ts:326](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L326)
 
 ***
 
@@ -46,6 +46,6 @@ Defined in: [packages/events-amqp/src/types.ts:274](https://github.com/Connectum
 
 > `readonly` **source**: `string`
 
-Defined in: [packages/events-amqp/src/types.ts:273](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L273)
+Defined in: [packages/events-amqp/src/types.ts:325](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L325)
 
 Source exchange.
