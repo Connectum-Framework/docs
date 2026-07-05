@@ -16,6 +16,10 @@
 - [AmqpTopologyError](classes/AmqpTopologyError.md)
 - [AmqpUnroutableError](classes/AmqpUnroutableError.md)
 
+## Type Aliases
+
+- [AmqpTopologyObject](type-aliases/AmqpTopologyObject.md)
+
 ## Functions
 
 - [AmqpAdapter](functions/AmqpAdapter.md)

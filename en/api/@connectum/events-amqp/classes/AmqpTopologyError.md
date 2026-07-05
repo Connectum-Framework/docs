@@ -2,11 +2,17 @@
 
 # Class: AmqpTopologyError
 
-Defined in: [packages/events-amqp/src/errors.ts:72](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L72)
+Defined in: [packages/events-amqp/src/errors.ts:93](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L93)
 
 Topology declaration or verification failed: missing exchange/queue in
 `check`/`skip` mode, or a conflicting redeclare (PRECONDITION_FAILED) in
 `assert` mode.
+
+`object` identifies the failing topology object structurally (known at the
+declare/check site — no broker-reply text parsing needed for CI drift
+checks or observability). `object.kind` says WHAT was being declared;
+failure classification (WHY it failed) stays with the error class and
+`cause`.
 
 ## Extends
 
@@ -18,7 +24,7 @@ Topology declaration or verification failed: missing exchange/queue in
 
 > **new AmqpTopologyError**(`message`, `options?`): `AmqpTopologyError`
 
-Defined in: [packages/events-amqp/src/errors.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L31)
+Defined in: [packages/events-amqp/src/errors.ts:99](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L99)
 
 #### Parameters
 
@@ -32,11 +38,15 @@ Defined in: [packages/events-amqp/src/errors.ts:31](https://github.com/Connectum
 
 `unknown`
 
+###### object?
+
+[`AmqpTopologyObject`](../type-aliases/AmqpTopologyObject.md)
+
 #### Returns
 
 `AmqpTopologyError`
 
-#### Inherited from
+#### Overrides
 
 [`AmqpAdapterError`](AmqpAdapterError.md).[`constructor`](AmqpAdapterError.md#constructor)
 
@@ -75,6 +85,14 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 #### Inherited from
 
 [`AmqpAdapterError`](AmqpAdapterError.md).[`name`](AmqpAdapterError.md#name)
+
+***
+
+### object?
+
+> `readonly` `optional` **object?**: [`AmqpTopologyObject`](../type-aliases/AmqpTopologyObject.md)
+
+Defined in: [packages/events-amqp/src/errors.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L97)
 
 ***
 
