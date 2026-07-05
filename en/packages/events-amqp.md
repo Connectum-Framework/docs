@@ -401,8 +401,20 @@ Every terminal publish/topology outcome is distinguishable by error class -- wha
 | `AmqpUnroutableError` | Broker returned a `mandatory` message as unroutable (`basic.return`); has `.routingKey` |
 | `AmqpPublishNackError` | Broker negatively acknowledged (nacked) a published message |
 | `AmqpPublishTimeoutError` | No broker outcome within `publishTimeoutMs`; message state UNKNOWN |
-| `AmqpTopologyError` | Topology declaration or verification failed (missing object in `check` mode, conflicting redeclare in `assert` mode) |
+| `AmqpTopologyError` | Topology declaration or verification failed (missing object in `check` mode, conflicting redeclare in `assert` mode); carries a machine-readable `.object` since 1.3.0 |
 | `AmqpSerializationError` | Payload encoding failed in a custom `serialization.encode` hook |
+
+Since 1.3.0, `AmqpTopologyError` also carries **`object`** (`AmqpTopologyObject`) identifying the failing topology object -- `{ kind: 'exchange' | 'queue', name }` or `{ kind: 'binding', source, destination, destinationType, routingKey }` (a binding has no name of its own). It is populated structurally at the declare/check/consume site, so CI drift checks and observability never parse broker-reply text. One documented exception: the config-validation error for a malformed binding declaration (neither `queue` nor `exchange` set) carries no `object`.
+
+```typescript
+try {
+  await bus.start();
+} catch (err) {
+  if (err instanceof AmqpTopologyError && err.object?.kind === 'queue') {
+    console.error(`Topology drift: queue '${err.object.name}' rejected by the broker`, err.cause);
+  }
+}
+```
 
 ## Connection Recovery
 
@@ -578,7 +590,8 @@ Internal headers (`x-event-id`, `x-published-at`, `x-connectum-publish-id`) are 
 | `AmqpUnroutableError` | Mandatory message returned as unroutable (has `.routingKey`) |
 | `AmqpPublishNackError` | Broker nacked a published message |
 | `AmqpPublishTimeoutError` | No broker outcome within `publishTimeoutMs` |
-| `AmqpTopologyError` | Topology declaration or verification failed |
+| `AmqpTopologyError` | Topology declaration or verification failed; carries `.object` (since 1.3.0) |
+| `AmqpTopologyObject` | Machine-readable identity of the failing topology object (exchange/queue by name; binding by endpoints) — since 1.3.0 |
 | `AmqpSerializationError` | Payload encoding/decoding failed in a custom hook |
 | `AmqpAdapterOptions` | Configuration options type |
 | `AmqpExchangeOptions` | Exchange declaration options type |
@@ -590,6 +603,7 @@ Internal headers (`x-event-id`, `x-published-at`, `x-connectum-publish-id`) are 
 | `AmqpQueueOverride` | External queue override type |
 | `AmqpRecoveryOptions` | Recovery backoff options type |
 | `AmqpLifecycleCallbacks` | Connection lifecycle callbacks type |
+| `AmqpLifecycleEvent` | Discriminated lifecycle event union delivered to `onLifecycle` — since 1.3.0 |
 
 ## Related Packages
 
