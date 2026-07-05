@@ -582,6 +582,56 @@ const routes = (events: EventRouter) => {
 
 Internal headers (`x-event-id`, `x-published-at`, `x-connectum-publish-id`) are set by the adapter on publish and stripped from metadata on delivery.
 
+## Testing
+
+A programmable test double ships via the **`@connectum/events-amqp/testing`** subpath (since 1.3.0) -- model AMQP failure semantics in unit tests without a broker and without `amqplib` in the runtime graph:
+
+```typescript
+import { FakeAmqpAdapter } from '@connectum/events-amqp/testing';
+import { AmqpPublishNackError, AmqpPublishTimeoutError } from '@connectum/events-amqp';
+
+const fake = FakeAmqpAdapter({ lifecycle: { onLifecycle: (e) => log.push(e) } });
+const bus = createEventBus({ adapter: fake, routes: [eventRoutes] });
+await bus.start();
+
+// Inject publish outcomes (FIFO; empty queue = ack). This includes
+// AmqpPublishTimeoutError -- the state-UNKNOWN outcome that no real broker
+// (or even Toxiproxy) reproduces deterministically:
+fake.control.nextPublish(new AmqpPublishNackError('nacked'), new AmqpPublishTimeoutError('no outcome'));
+await assert.rejects(() => bus.publish(OrderSchema, order), AmqpPublishNackError);
+await assert.rejects(() => bus.publish(OrderSchema, order), AmqpPublishTimeoutError);
+
+// Drive the connection lifecycle deterministically:
+fake.control.dropConnection();     // disconnected → reconnecting (publishes fail fast; subscribes PARK)
+fake.control.failSetup();          // the next recovery re-assert fails (setup-failed for topology errors)
+fake.control.completeRecovery();   // …consume it, then heal on the next call
+fake.control.completeRecovery();   // connected { reconnected: true }, parked subscribes complete
+
+// Deliver events (wildcards + competing-consumer groups) and assert settlement:
+const result = await fake.control.deliver('order.created', payload);
+// result: { delivered, acked, nacked, requeued, failed }
+```
+
+**Parity contract.** Lifecycle events go through the real adapter's dispatch, so the canonical `AmqpLifecycleEvent` union ordering, the deprecated flat callbacks, and exception isolation match by construction. Errors are the real typed classes -- `instanceof` holds across the subpath boundary. The state machine mirrors the real adapter: `connect()` on a live, recovering, or retries-exhausted fake throws `already connected`; a mid-recovery `subscribe()` parks and settles with the recovery outcome; `setup-failed` and fail-fast gate on `AmqpTopologyError` exactly like the real probe. Incoming envelope headers (`x-event-id`, `x-published-at`) are honored and stripped like the real consumer.
+
+**Documented divergences.** There is no timing simulation: recovery advances only via explicit `control` calls, and `reconnecting.delay` is `0`. Handler `ack`/`nack` calls are recorded in the `deliver()` result but do not drive redelivery -- re-deliver explicitly with `attempt + 1` (handler rejections are swallowed and counted as `failed`, like the real nack-on-error consumer). `control.published` records the bus-facing call, not the wire envelope. A queued topology `failSetup` at `connect()` without `failFastOnInitialSetupError` reports and proceeds instead of blocking forever.
+
+::: tip Choosing a test double
+For the generic happy path (routing, handlers, middleware, DLQ flows) prefer `MemoryAdapter` from `@connectum/events`. Reach for `FakeAmqpAdapter` when the test needs AMQP failure semantics: typed publish outcomes, recovery/lifecycle sequences, or topology-error classification. For real-broker semantics, run the integration suite against RabbitMQ.
+:::
+
+### `./testing` subpath exports
+
+| Export | Description |
+|--------|-------------|
+| `FakeAmqpAdapter` | Factory creating the programmable fake (returns `FakeAmqpAdapterInstance`) |
+| `FakeAmqpAdapterInstance` | The fake itself -- an `EventAdapter` extended with the `control` handle |
+| `FakeAmqpAdapterOptions` | Options type (`lifecycle`, `failFastOnInitialSetupError`) |
+| `FakeAmqpControl` | The control-surface type (`nextPublish`, `dropConnection`, `completeRecovery`, `exhaustRecovery`, `failSetup`, `block`/`unblock`, `deliver`, `published`) |
+| `FakePublishOutcome` | One queued publish outcome: `"ack"` or an `Error` to reject with |
+| `FakePublishedRecord` | One recorded bus-facing publish (`eventType`, `payload`, `options`) |
+| `FakeDeliveryResult` | Settlement counts returned by `control.deliver()` |
+
 ## Exports Summary
 
 | Export | Description |
