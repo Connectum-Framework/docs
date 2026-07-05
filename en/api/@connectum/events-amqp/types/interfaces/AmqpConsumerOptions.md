@@ -2,7 +2,7 @@
 
 # Interface: AmqpConsumerOptions
 
-Defined in: [packages/events-amqp/src/types.ts:478](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L478)
+Defined in: [packages/events-amqp/src/types.ts:518](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L518)
 
 Consumer options.
 
@@ -12,7 +12,7 @@ Consumer options.
 
 > `readonly` `optional` **exclusive?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:492](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L492)
+Defined in: [packages/events-amqp/src/types.ts:532](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L532)
 
 Whether the consumer is exclusive to this connection.
 
@@ -28,7 +28,7 @@ false
 
 > `readonly` `optional` **prefetch?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:485](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L485)
+Defined in: [packages/events-amqp/src/types.ts:525](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L525)
 
 Prefetch count (QoS) — how many unacknowledged messages
 a consumer can have at a time.

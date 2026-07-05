@@ -4,7 +4,7 @@
 
 > **AmqpAdapter**(`options`): `EventAdapter`
 
-Defined in: [packages/events-amqp/src/AmqpAdapter.ts:401](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/AmqpAdapter.ts#L401)
+Defined in: [packages/events-amqp/src/AmqpAdapter.ts:442](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/AmqpAdapter.ts#L442)
 
 Create an AMQP/RabbitMQ adapter for @connectum/events.
 

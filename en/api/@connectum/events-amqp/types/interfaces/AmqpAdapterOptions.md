@@ -103,7 +103,7 @@ false
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/types.ts:196](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L196)
+Defined in: [packages/events-amqp/src/types.ts:197](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L197)
 
 Connection lifecycle callbacks. Connection errors are surfaced here —
 not just logged.
@@ -124,7 +124,7 @@ Publisher options.
 
 > `readonly` `optional` **publishTimeoutMs?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:206](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L206)
+Defined in: [packages/events-amqp/src/types.ts:207](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L207)
 
 Per-publish broker-outcome deadline in milliseconds. A publish whose
 ack/nack/return/connection-loss outcome does not arrive in time
@@ -263,7 +263,7 @@ How topology is established:
 
 > `readonly` `optional` **treatTopologyErrorAsFatal?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:190](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L190)
+Defined in: [packages/events-amqp/src/types.ts:191](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L191)
 
 Treat DETERMINISTIC topology drift during steady-state recovery as
 fatal: stop the reconnect cycle instead of retrying forever against a
@@ -293,10 +293,11 @@ re-subscribe explicitly.
 
 Scope: steady-state recovery only. Boot-time drift is the startup
 probe's job — see [failFastOnInitialSetupError](#failfastoninitialsetuperror). Setting both
-covers boot and steady state; the remaining gap — broker unreachable at
-`connect()` time with drift surfacing before the first successful
-connect — is covered by neither flag until the bounded initial phase
-lands ([https://github.com/Connectum-Framework/connectum/issues/198](https://github.com/Connectum-Framework/connectum/issues/198)).
+covers boot and steady state; the remaining window — broker unreachable
+at `connect()` time with drift surfacing before the first successful
+connect — is closed by
+[AmqpRecoveryOptions.initialConnectMaxRetries](AmqpRecoveryOptions.md#initialconnectmaxretries) (since 1.3.0),
+whose bounded phase surfaces those failures and rejects on exhaustion.
 
 #### Default
 
