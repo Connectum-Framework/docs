@@ -2,7 +2,7 @@
 
 # Interface: EventContextInit
 
-Defined in: [packages/events/src/types.ts:168](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L168)
+Defined in: [packages/events/src/types.ts:183](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L183)
 
 Initialization data for creating an EventContext
 
@@ -12,7 +12,7 @@ Initialization data for creating an EventContext
 
 > `readonly` **onAck**: () => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:171](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L171)
+Defined in: [packages/events/src/types.ts:186](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L186)
 
 #### Returns
 
@@ -24,7 +24,7 @@ Defined in: [packages/events/src/types.ts:171](https://github.com/Connectum-Fram
 
 > `readonly` **onNack**: (`requeue`) => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:172](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L172)
+Defined in: [packages/events/src/types.ts:187](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L187)
 
 #### Parameters
 
@@ -42,7 +42,7 @@ Defined in: [packages/events/src/types.ts:172](https://github.com/Connectum-Fram
 
 > `readonly` **raw**: [`RawEvent`](RawEvent.md)
 
-Defined in: [packages/events/src/types.ts:169](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L169)
+Defined in: [packages/events/src/types.ts:184](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L184)
 
 ***
 
@@ -50,4 +50,4 @@ Defined in: [packages/events/src/types.ts:169](https://github.com/Connectum-Fram
 
 > `readonly` **signal**: `AbortSignal`
 
-Defined in: [packages/events/src/types.ts:170](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L170)
+Defined in: [packages/events/src/types.ts:185](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L185)

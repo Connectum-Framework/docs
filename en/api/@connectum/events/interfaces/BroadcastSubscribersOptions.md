@@ -10,7 +10,7 @@ Options for [createBroadcastSubscribers](../functions/createBroadcastSubscribers
 
 ### adapter
 
-> `readonly` **adapter**: [`EventAdapter`](../types/interfaces/EventAdapter.md) \| (() => [`EventAdapter`](../types/interfaces/EventAdapter.md))
+> `readonly` **adapter**: [`EventAdapter`](../types/interfaces/EventAdapter.md) \| [`EventAdapterFactory`](../types/type-aliases/EventAdapterFactory.md)
 
 Defined in: [packages/events/src/broadcast.ts:40](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L40)
 

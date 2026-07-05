@@ -25,6 +25,7 @@ Type definitions for the event adapter layer.
 
 ## Type Aliases
 
+- [EventAdapterFactory](type-aliases/EventAdapterFactory.md)
 - [EventMiddleware](type-aliases/EventMiddleware.md)
 - [EventMiddlewareNext](type-aliases/EventMiddlewareNext.md)
 - [EventRoute](type-aliases/EventRoute.md)

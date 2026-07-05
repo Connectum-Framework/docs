@@ -29,7 +29,7 @@ instead of fanning out).
 
 ```typescript
 const buses = createBroadcastSubscribers({
-  adapter: () => new NatsAdapter({ servers, stream: 'orders' }),
+  adapter: () => NatsAdapter({ servers, stream: 'orders' }),
   reactors: [
     { group: 'pricing', routes: [pricingRoutes] },
     { group: 'audit',   routes: [auditRoutes] },

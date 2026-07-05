@@ -2,7 +2,7 @@
 
 # Interface: MiddlewareConfig
 
-Defined in: [packages/events/src/types.ts:297](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L297)
+Defined in: [packages/events/src/types.ts:312](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L312)
 
 Built-in middleware configuration
 
@@ -12,7 +12,7 @@ Built-in middleware configuration
 
 > `optional` **custom?**: [`EventMiddleware`](../type-aliases/EventMiddleware.md)[]
 
-Defined in: [packages/events/src/types.ts:303](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L303)
+Defined in: [packages/events/src/types.ts:318](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L318)
 
 Custom user middleware (executed outermost)
 
@@ -22,7 +22,7 @@ Custom user middleware (executed outermost)
 
 > `optional` **dlq?**: [`DlqOptions`](DlqOptions.md)
 
-Defined in: [packages/events/src/types.ts:301](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L301)
+Defined in: [packages/events/src/types.ts:316](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L316)
 
 Dead letter queue configuration
 
@@ -32,6 +32,6 @@ Dead letter queue configuration
 
 > `optional` **retry?**: [`RetryOptions`](RetryOptions.md)
 
-Defined in: [packages/events/src/types.ts:299](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L299)
+Defined in: [packages/events/src/types.ts:314](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L314)
 
 Retry configuration
