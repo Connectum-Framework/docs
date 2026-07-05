@@ -134,6 +134,7 @@ function createEventBus(options: EventBusOptions): EventBus & EventBusLike;
 | `signal` | `AbortSignal` | `undefined` | Abort signal for graceful shutdown |
 | `handlerTimeout` | `number` | `30000` | Timeout in ms for event handler execution |
 | `drainTimeout` | `number` | `30000` | Max ms to wait for in-flight handlers during `stop()` |
+| `drainPublishTimeout` | `number` | `undefined` | Opt-in: max ms to wait for in-flight `publish()` promises during `stop()`, before the adapter disconnects. Runs concurrently with the handler drain (slower-of, never the sum). `undefined`/`0` = disabled. Available since 1.3.0 |
 | `middleware` | `MiddlewareConfig` | `undefined` | Middleware configuration (retry, DLQ, custom) |
 | `publishes` | `DescService[]` | `[]` | Event service descriptors this process publishes to (publisher-only, no subscription) |
 | `strictTopics` | `boolean` | `false` | Throw on an unresolved publish topic instead of silently falling back to the message `typeName`. Available since 1.1.0. |
@@ -263,6 +264,7 @@ await Promise.all(buses.map((bus) => bus.start()));
 | `reactors` | `BroadcastReactor[]` | *required* | The independent reactors -- each becomes its own `EventBus` with its own group |
 | `handlerTimeout` | `number` | `30000` | Shared per-bus handler timeout in ms |
 | `drainTimeout` | `number` | `30000` | Shared per-bus drain timeout in ms |
+| `drainPublishTimeout` | `number` | `undefined` | Shared per-bus opt-in publish drain budget at `stop()` (ms). Available since 1.3.0 |
 | `signal` | `AbortSignal` | `undefined` | Shared abort signal for graceful shutdown |
 
 ### `BroadcastReactor`
@@ -337,7 +339,7 @@ await bus.stop();
 Two related boundaries:
 
 - **Publishing from a draining handler is rejected** — once `stop()` begins, `publish()` throws, including from handlers that are still draining. Relay topologies (consume → transform → publish) lose the in-flight tail at shutdown; the design discussion is tracked in [connectum#212](https://github.com/Connectum-Framework/connectum/issues/212).
-- **An opt-in symmetric publish drain** (`drainPublishTimeout`) is planned — tracked in [connectum#196](https://github.com/Connectum-Framework/connectum/issues/196).
+- **An opt-in symmetric publish drain** ships since 1.3.0: set `drainPublishTimeout` and `stop()` waits (up to that budget, concurrently with the handler drain) for publishes started before `stop()` to settle, before the adapter disconnects. A post-deadline settlement never becomes an `unhandledRejection`. Publishes issued from draining handlers stay uncovered (the stopping gate; design tracked in [connectum#212](https://github.com/Connectum-Framework/connectum/issues/212)). Note: `createServer`'s `shutdown.timeout` does not bound the bus-stopping hook — size the budget below your orchestrator's kill grace.
 
 ## Exports Summary
 

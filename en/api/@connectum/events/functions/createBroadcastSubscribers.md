@@ -4,7 +4,7 @@
 
 > **createBroadcastSubscribers**(`options`): [`EventBus`](../types/interfaces/EventBus.md) & `EventBusLike`[]
 
-Defined in: [packages/events/src/broadcast.ts:74](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L74)
+Defined in: [packages/events/src/broadcast.ts:76](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L76)
 
 Build one `EventBus` per reactor (each with its own consumer group) so a
 single published event fans out to ALL reactors independently.
