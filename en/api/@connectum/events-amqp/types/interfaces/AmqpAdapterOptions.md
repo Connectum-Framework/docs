@@ -103,7 +103,7 @@ false
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/types.ts:158](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L158)
+Defined in: [packages/events-amqp/src/types.ts:196](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L196)
 
 Connection lifecycle callbacks. Connection errors are surfaced here —
 not just logged.
@@ -124,7 +124,7 @@ Publisher options.
 
 > `readonly` `optional` **publishTimeoutMs?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:168](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L168)
+Defined in: [packages/events-amqp/src/types.ts:206](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L206)
 
 Per-publish broker-outcome deadline in milliseconds. A publish whose
 ack/nack/return/connection-loss outcome does not arrive in time
@@ -255,6 +255,53 @@ How topology is established:
 
 ```ts
 "assert"
+```
+
+***
+
+### treatTopologyErrorAsFatal?
+
+> `readonly` `optional` **treatTopologyErrorAsFatal?**: `boolean`
+
+Defined in: [packages/events-amqp/src/types.ts:190](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L190)
+
+Treat DETERMINISTIC topology drift during steady-state recovery as
+fatal: stop the reconnect cycle instead of retrying forever against a
+misconfigured broker.
+
+Under the default `maxRetries: Infinity`, a queue/exchange deleted or
+redeclared incompatibly while the adapter is reconnecting makes every
+recovery attempt fail deterministically — the adapter would retry
+forever, reporting `setup-failed` on each attempt but never giving up.
+With this flag the adapter stops the cycle on the first such failure
+and reports the terminal `reconnect-failed` lifecycle event (after the
+`setup-failed` event for the same attempt); subsequent publishes fail
+fast with `AmqpConnectionError`.
+
+The gate is the AMQP reply code of the failure cause — `404`
+(NOT_FOUND) or `406` (PRECONDITION_FAILED) — NOT the error class:
+transient causes wrapped into `AmqpTopologyError` during a setup pass
+(broker restarting `320`, internal error `541`, resource locked `405`,
+a mid-setup connection drop) stay in normal recovery. One known
+transient 404 is excluded explicitly: a RabbitMQ cluster classic queue
+whose home node is down ("... down or inaccessible") stays in recovery.
+
+After the fatal stop the adapter is fully torn down: consumers are dead
+(subscription records are cleared, mirroring `disconnect()`), publishes
+fail fast, and a later `connect()` starts from a clean slate —
+re-subscribe explicitly.
+
+Scope: steady-state recovery only. Boot-time drift is the startup
+probe's job — see [failFastOnInitialSetupError](#failfastoninitialsetuperror). Setting both
+covers boot and steady state; the remaining gap — broker unreachable at
+`connect()` time with drift surfacing before the first successful
+connect — is covered by neither flag until the bounded initial phase
+lands ([https://github.com/Connectum-Framework/connectum/issues/198](https://github.com/Connectum-Framework/connectum/issues/198)).
+
+#### Default
+
+```ts
+false
 ```
 
 ***
