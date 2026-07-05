@@ -2,7 +2,7 @@
 
 # Class: AmqpPublishTimeoutError
 
-Defined in: [packages/events-amqp/src/errors.ts:65](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L65)
+Defined in: [packages/events-amqp/src/errors.ts:68](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L68)
 
 No broker outcome (ack/nack/return/connection loss) arrived within
 `publishTimeoutMs`. The message state is UNKNOWN — it may or may not

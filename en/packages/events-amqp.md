@@ -87,6 +87,7 @@ Pass the result to `createEventBus({ adapter })`.
 | `treatTopologyErrorAsFatal` | `boolean` | `false` | Stop the reconnect cycle on **deterministic** topology drift during steady-state recovery (AMQP reply code `404`/`406` on the cause) instead of retrying forever; reports terminal `reconnect-failed` after `setup-failed` and tears down fully. Transient causes stay in recovery. Available since 1.3.0 |
 | `lifecycle` | `AmqpLifecycleCallbacks` | `undefined` | Connection lifecycle callbacks |
 | `publishTimeoutMs` | `number` | `30000` | Per-publish broker-outcome deadline in milliseconds |
+| `publishRetry` | `boolean \| AmqpPublishRetryOptions` | `false` | Opt-in bounded retry for **connection-class** publish failures (`AmqpConnectionError`; timeouts only via `retryOnTimeout`) — a broker blip becomes a transparent delay. At-least-once; `x-event-id`/`messageId` stay stable across attempts (consumer-side dedup anchor). Deterministic outcomes (nack, unroutable, `404`/`406` channel-close) never retry. The loop aborts on `disconnect()` and is covered by the bus-level `drainPublishTimeout`. Available since 1.3.0 |
 
 ### `AmqpExchangeOptions`
 
@@ -385,7 +386,7 @@ Without `externalContract`, a `mandatory` publish at the default `correlationHea
 The adapter publishes on a confirm channel with **per-message confirms**: every `publish()` resolves when the broker acknowledges that specific message and rejects when the broker nacks it. There is no confirm batching -- each publish has its own outcome.
 
 - No broker outcome (ack/nack/return/connection loss) within `publishTimeoutMs` (default 30000 ms) → rejects with `AmqpPublishTimeoutError`. The message state is UNKNOWN -- it may or may not have been routed; an at-least-once producer should republish.
-- Publishing during a disconnected window (or while recovery is in progress) fails fast with `AmqpConnectionError`. In-flight publishes at the moment of a connection loss also reject with `AmqpConnectionError`.
+- Publishing during a disconnected window (or while recovery is in progress) fails fast with `AmqpConnectionError` — unless the opt-in `publishRetry` is enabled (since 1.3.0), which retries connection-class failures in place with bounded backoff. In-flight publishes at the moment of a connection loss also reject with `AmqpConnectionError` (retried under the same opt-in). The auto-retry boundary is the exported `isAutoRetriablePublishError` and is deliberately narrower than the at-least-once republish policy: a broker nack and other deterministic outcomes never auto-retry.
 - With `mandatory: true`, an unroutable message rejects with `AmqpUnroutableError` (carries `.routingKey`).
 
 ::: tip Per-message confirms

@@ -2,7 +2,7 @@
 
 # Class: AmqpPublishNackError
 
-Defined in: [packages/events-amqp/src/errors.ts:58](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L58)
+Defined in: [packages/events-amqp/src/errors.ts:61](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L61)
 
 The broker negatively acknowledged (nacked) a published message.
 

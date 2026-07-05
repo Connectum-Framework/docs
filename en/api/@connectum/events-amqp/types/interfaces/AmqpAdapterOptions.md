@@ -103,7 +103,7 @@ false
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/types.ts:197](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L197)
+Defined in: [packages/events-amqp/src/types.ts:249](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L249)
 
 Connection lifecycle callbacks. Connection errors are surfaced here —
 not just logged.
@@ -120,11 +120,72 @@ Publisher options.
 
 ***
 
+### publishRetry?
+
+> `readonly` `optional` **publishRetry?**: `boolean` \| [`AmqpPublishRetryOptions`](AmqpPublishRetryOptions.md)
+
+Defined in: [packages/events-amqp/src/types.ts:243](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L243)
+
+Opt-in bounded publish retry for CONNECTION-CLASS outcomes (since 1.3.0).
+
+When enabled, a `publish()` that fails with `AmqpConnectionError` —
+publishing during a recovery window, or an in-flight confirm lost to a
+connection drop — is retried in place (the caller's promise stays
+pending) instead of rejecting immediately: a short broker blip becomes
+a transparent delay. `true` = defaults; an object tunes the budget.
+
+The retry boundary is [isAutoRetriablePublishError](../../functions/isAutoRetriablePublishError.md) — deliberately
+NARROWER than the at-least-once republish matrix in the error taxonomy:
+a broker `nack` is republish-safe by policy but is NOT auto-retried
+inline (it is an explicit broker refusal, e.g. an over-capacity queue —
+hammering it in a tight loop helps nobody). `AmqpPublishTimeoutError`
+joins the boundary only with `retryOnTimeout: true`.
+
+Semantics — read before enabling:
+- **At-least-once, full stop.** A retried publish whose previous attempt
+  was lost IN FLIGHT (confirm never arrived: state UNKNOWN) may
+  duplicate on the broker. `x-event-id` / `messageId` stay STABLE across
+  attempts (also with `externalContract` — a caller-supplied id is
+  reused as-is), so consumer-side dedup keys on them.
+- **Worst-case latency**: each attempt is bounded by `publishTimeoutMs`
+  (default 30s), so `maxRetries: 5` can hold a single `publish()` for
+  several minutes worst-case — far beyond typical 30s RPC timeouts.
+  There is deliberately no second overall-deadline knob: bound the
+  budget via `maxRetries`/`publishTimeoutMs`.
+- **Shutdown-aware**: the loop aborts on `disconnect()` (throws the last
+  connection error) and, living inside the `adapter.publish()` promise,
+  is automatically covered by the bus-level `drainPublishTimeout`.
+- **Single-flight** (`mandatory: true` with `correlationHeader: false`;
+  `externalContract` forces the latter but single-flight still requires
+  `mandatory`): retries hold the chain — ordering is preserved at the
+  cost of head-of-line blocking during backoff. In this headerless mode
+  a late `basic.return` from an abandoned timed-out attempt may mark the
+  current one (correlation is attempt-agnostic without the header) —
+  prefer the default header correlation when combining `mandatory` with
+  `retryOnTimeout`.
+- **Deterministic channel-close is not retried**: a broker reply with a
+  `404`/`406` code that killed the publish CHANNEL (e.g. a publish to a
+  missing exchange under `topologyMode: "skip"`) surfaces immediately
+  with the broker reply as `cause` — the connection stays up, recovery
+  never recreates the channel, so retrying cannot heal.
+
+Backoff mirrors the recovery formula (same knob names and semantics,
+incl. cap-before-jitter), but the DEFAULT budget differs: `maxRetries`
+here defaults to **5** (bounded), not `Infinity`.
+
+#### Default
+
+```ts
+undefined (disabled — behavior unchanged)
+```
+
+***
+
 ### publishTimeoutMs?
 
 > `readonly` `optional` **publishTimeoutMs?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:207](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L207)
+Defined in: [packages/events-amqp/src/types.ts:259](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L259)
 
 Per-publish broker-outcome deadline in milliseconds. A publish whose
 ack/nack/return/connection-loss outcome does not arrive in time

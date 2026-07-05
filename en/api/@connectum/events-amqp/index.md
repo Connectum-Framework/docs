@@ -23,6 +23,7 @@
 ## Functions
 
 - [AmqpAdapter](functions/AmqpAdapter.md)
+- [isAutoRetriablePublishError](functions/isAutoRetriablePublishError.md)
 - [toAmqpPattern](functions/toAmqpPattern.md)
 
 ## References
@@ -72,6 +73,12 @@ Re-exports [AmqpLifecycleEvent](types/type-aliases/AmqpLifecycleEvent.md)
 ### AmqpPublisherOptions
 
 Re-exports [AmqpPublisherOptions](types/interfaces/AmqpPublisherOptions.md)
+
+***
+
+### AmqpPublishRetryOptions
+
+Re-exports [AmqpPublishRetryOptions](types/interfaces/AmqpPublishRetryOptions.md)
 
 ***
 
