@@ -84,6 +84,7 @@ Pass the result to `createEventBus({ adapter })`.
 | `queueOverrides` | `Record<string, AmqpQueueOverride>` | `undefined` | Map a consumer group to an externally named queue |
 | `recovery` | `boolean \| AmqpRecoveryOptions` | `true` | Automatic connection recovery (amqplib native); `false` disables |
 | `failFastOnInitialSetupError` | `boolean` | `false` | Reject `connect()` with the typed `AmqpTopologyError` on a deterministic setup/topology error at the **first** connect, instead of hanging in infinite recovery. Transient broker-unreachable still blocks-and-retries. Available since 1.2.0 |
+| `treatTopologyErrorAsFatal` | `boolean` | `false` | Stop the reconnect cycle on **deterministic** topology drift during steady-state recovery (AMQP reply code `404`/`406` on the cause) instead of retrying forever; reports terminal `reconnect-failed` after `setup-failed` and tears down fully. Transient causes stay in recovery. Available since 1.3.0 |
 | `lifecycle` | `AmqpLifecycleCallbacks` | `undefined` | Connection lifecycle callbacks |
 | `publishTimeoutMs` | `number` | `30000` | Per-publish broker-outcome deadline in milliseconds |
 
@@ -209,7 +210,7 @@ lifecycle: {
 | `connected` | `reconnected: boolean` | Connection established -- exactly once per (re)connect; `false` for the initial connect, `true` after a recovery |
 | `disconnected` | `error: Error` | Connection lost -- exactly once per drop |
 | `reconnecting` | `attempt, delay, error` | A reconnect attempt is scheduled (exactly once per scheduled retry) |
-| `reconnect-failed` | `error: Error` | Recovery exhausted (`maxRetries` reached) |
+| `reconnect-failed` | `error: Error` | Terminal: retry budget exhausted (`maxRetries`), or the cycle was stopped by the fatal topology policy (`treatTopologyErrorAsFatal`) |
 | `setup-failed` | `initial, attempt, error` | Topology/setup failed on the initial validation probe (`initial: true`) or a reconnect re-assert (`initial: false`) |
 | `blocked` | `reason: string` | Broker flow control (`connection.blocked`, e.g. a memory/disk alarm). Union-only -- no flat equivalent |
 | `unblocked` | -- | Broker resumed after flow control. Union-only -- no flat equivalent |
@@ -431,6 +432,7 @@ Connection behavior:
 - **With recovery enabled**, `connect()` retries with backoff until the broker becomes reachable -- convenient for `docker-compose` startup ordering where the broker may not be up yet. Under the default `maxRetries: Infinity`, `connect()` blocks rather than failing fast; set `failFastOnInitialSetupError: true` to reject `connect()` with a typed `AmqpTopologyError` on a **permanent** setup/topology error at startup while still recovering from transient broker outages.
 - **`maxRetries` scope.** The retry budget governs **both** the initial connect and every later recovery series, with the counter reset on each success. A finite value chosen only to bound startup therefore also caps steady-state recovery: a transient blip of that many consecutive failures in any single series permanently stops recovery.
 - **Reconnect delay.** The effective delay is symmetric jitter around the exponential base -- uniform in `[base × (1 − jitter), base × (1 + jitter)]` with `base = min(maxDelay, initialDelay × factor^(attempt − 1))`. The cap applies to the base **before** jitter, so the wait can overshoot `maxDelay` (~20% at the default `jitter: 0.2`, up to ~2x at `jitter: 1`).
+- **Topology drift during recovery.** Under the default policy, a queue/exchange deleted or incompatibly redeclared while the adapter reconnects makes every recovery attempt fail deterministically -- the cycle retries forever, reporting `setup-failed` per attempt (and heals if the topology is restored). Set `treatTopologyErrorAsFatal: true` to stop the cycle on the first such failure instead: the adapter reports `setup-failed` then the terminal `reconnect-failed`, tears down fully (consumers are dead; a later `connect()` starts from a clean slate), and subsequent publishes fail fast with `AmqpConnectionError`. The gate is the AMQP reply code of the cause (`404`/`406` = deterministic; transient causes -- including the cluster classic-queue "home node ... down or inaccessible" 404 -- stay in recovery). Boot-time drift is `failFastOnInitialSetupError`'s job; the broker-unreachable-at-boot window is covered by neither flag until [connectum#198](https://github.com/Connectum-Framework/connectum/issues/198).
 - **With `recovery: false`**, `connect()` rejects immediately if the broker is unreachable, and a lost connection is not restored.
 
 Observe connection state through `lifecycle.onLifecycle` (discriminated union; preferred since 1.3.0) or the deprecated flat callbacks (`onConnected`, `onDisconnected`, `onReconnecting`, `onReconnectFailed`, `onSetupFailed`).
