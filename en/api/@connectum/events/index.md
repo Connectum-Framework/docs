@@ -50,6 +50,12 @@ Re-exports [EventAdapter](types/interfaces/EventAdapter.md)
 
 ***
 
+### EventAdapterFactory
+
+Re-exports [EventAdapterFactory](types/type-aliases/EventAdapterFactory.md)
+
+***
+
 ### EventBus
 
 Re-exports [EventBus](types/interfaces/EventBus.md)

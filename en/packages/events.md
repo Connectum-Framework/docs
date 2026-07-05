@@ -97,6 +97,8 @@ The central component managing adapter lifecycle, event routes, middleware pipel
 
 A minimal interface for message brokers. Each adapter (NATS, Kafka, Redis, AMQP, Memory) implements `connect(context?)`, `disconnect()`, `publish()`, and `subscribe()`. The optional `AdapterContext` parameter on `connect()` carries service-level information (like `serviceName`) derived from registered proto service descriptors, enabling adapters to identify themselves to brokers automatically. Broker-specific configuration is passed to the adapter constructor, not to the interface methods.
 
+The named companion type `EventAdapterFactory` (`() => EventAdapter`) is the zero-argument factory shape used where a fresh adapter per consumer is needed -- most notably `createBroadcastSubscribers()`, where a factory gives each reactor bus its own broker connection. Use it to type dependency-injection seams (a service that accepts `EventAdapter | EventAdapterFactory` can take a shared instance in tests and a per-use factory in production). Available since 1.3.0.
+
 ### EventRouter
 
 Mirrors ConnectRPC's `ConnectRouter` pattern for event handlers. Register typed handlers per proto service:
@@ -260,7 +262,7 @@ await Promise.all(buses.map((bus) => bus.start()));
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `adapter` | `EventAdapter \| (() => EventAdapter)` | *required* | One shared adapter instance (fine for `MemoryAdapter` in tests) **or** a factory invoked once per reactor (use for real brokers so each bus gets its own connection / durable consumer) |
+| `adapter` | `EventAdapter \| EventAdapterFactory` | *required* | One shared adapter instance (fine for `MemoryAdapter` in tests) **or** an `EventAdapterFactory` invoked once per reactor (use for real brokers so each bus gets its own connection / durable consumer). The named factory type is available since 1.3.0 |
 | `reactors` | `BroadcastReactor[]` | *required* | The independent reactors -- each becomes its own `EventBus` with its own group |
 | `handlerTimeout` | `number` | `30000` | Shared per-bus handler timeout in ms |
 | `drainTimeout` | `number` | `30000` | Shared per-bus drain timeout in ms |
@@ -304,6 +306,25 @@ const server = createServer({
 ```
 
 The server calls `eventBus.start()` on startup and `eventBus.stop()` on shutdown.
+
+### Dependency Injection and Testing
+
+**Primary pattern -- inject an `EventAdapter` instance.** Construct the adapter at your composition root and pass it in; a test swaps it for a double without touching the wiring:
+
+```typescript
+// Composition root (production):
+const adapter = NatsAdapter({ servers: process.env.NATS_URL! });
+const bus = createEventBus({ adapter, routes: [eventRoutes] });
+```
+
+```typescript
+// Test: the same wiring, a different instance.
+const bus = createEventBus({ adapter: MemoryAdapter(), routes: [eventRoutes] });
+```
+
+**Secondary pattern -- `EventAdapterFactory`** (`() => EventAdapter`, exported since 1.3.0): a zero-argument factory for the places where each consumer needs its **own** broker connection -- `createBroadcastSubscribers()` invokes it once per reactor. Prefer the instance elsewhere: a test double with its own configuration does not fit a zero-argument factory signature without a wrapper closure.
+
+**Test doubles:** `MemoryAdapter` covers the generic happy path (routing, handlers, middleware, DLQ flows). Broker-specific failure semantics (typed AMQP error taxonomy, recovery/lifecycle behavior) cannot be modeled generically -- a programmable `FakeAmqpAdapter` will ship via the `@connectum/events-amqp/testing` subpath (tracked in [connectum#203](https://github.com/Connectum-Framework/connectum/issues/203)). For real-broker integration semantics, see each adapter package's testing notes.
 
 ### Consumer Groups
 

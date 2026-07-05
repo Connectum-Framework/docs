@@ -2,7 +2,7 @@
 
 # Interface: EventRouteEntry
 
-Defined in: [packages/events/src/types.ts:212](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L212)
+Defined in: [packages/events/src/types.ts:227](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L227)
 
 Registered event route (internal use)
 
@@ -12,7 +12,7 @@ Registered event route (internal use)
 
 > `readonly` **handler**: [`TypedEventHandler`](../type-aliases/TypedEventHandler.md)\<`unknown`\>
 
-Defined in: [packages/events/src/types.ts:218](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L218)
+Defined in: [packages/events/src/types.ts:233](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L233)
 
 Typed handler function
 
@@ -22,7 +22,7 @@ Typed handler function
 
 > `readonly` **method**: `DescMethod`
 
-Defined in: [packages/events/src/types.ts:216](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L216)
+Defined in: [packages/events/src/types.ts:231](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L231)
 
 Method descriptor for deserialization
 
@@ -32,7 +32,7 @@ Method descriptor for deserialization
 
 > `readonly` `optional` **middleware?**: [`EventMiddleware`](../type-aliases/EventMiddleware.md)[]
 
-Defined in: [packages/events/src/types.ts:220](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L220)
+Defined in: [packages/events/src/types.ts:235](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L235)
 
 Per-handler middleware (overrides global when present)
 
@@ -42,6 +42,6 @@ Per-handler middleware (overrides global when present)
 
 > `readonly` **topic**: `string`
 
-Defined in: [packages/events/src/types.ts:214](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L214)
+Defined in: [packages/events/src/types.ts:229](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L229)
 
 Topic pattern to subscribe to
