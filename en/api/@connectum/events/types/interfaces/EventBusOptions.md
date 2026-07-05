@@ -18,6 +18,39 @@ Adapter instance (e.g., NatsAdapter, KafkaAdapter, MemoryAdapter)
 
 ***
 
+### drainPublishTimeout?
+
+> `optional` **drainPublishTimeout?**: `number`
+
+Defined in: [packages/events/src/types.ts:379](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L379)
+
+Opt-in symmetric publish drain during `stop()`: maximum time in
+milliseconds to wait for in-flight `publish()` promises (started BEFORE
+`stop()` was called) to settle, before the adapter is disconnected.
+
+Runs concurrently with the handler drain (`drainTimeout`) — shutdown
+waits for the slower of the two, not their sum. Tracked promises carry
+a no-op observer, so a publish that settles (even rejects) after the
+deadline never becomes an `unhandledRejection`; the caller's own
+`publish()` promise is unaffected (rejections still propagate to it).
+
+NOT covered: publishes issued from inside handlers (including the DLQ
+republish) — those are governed by the handler drain and its post-abort
+settle window; new `publish()` calls after `stop()` begins are rejected
+by the stopping gate (the relay-pattern design is tracked in
+https://github.com/Connectum-Framework/connectum/issues/212).
+
+Budget note: `createServer`'s `shutdown.timeout` bounds the transport
+phase, not the shutdown hooks that stop the bus — a large value here
+extends total process shutdown accordingly; size it below your
+orchestrator's kill grace period.
+
+Default: `undefined` — disabled: `stop()` behavior is unchanged and
+in-flight publishes race the adapter disconnect exactly as before.
+`0` (or negative) also disables waiting. Available since 1.3.0.
+
+***
+
 ### drainTimeout?
 
 > `optional` **drainTimeout?**: `number`
@@ -111,7 +144,7 @@ Automatically set when used with `createServer({ eventBus })`.
 
 > `optional` **strictTopics?**: `boolean`
 
-Defined in: [packages/events/src/types.ts:366](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L366)
+Defined in: [packages/events/src/types.ts:393](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L393)
 
 Reject a `publish()` whose topic cannot be resolved instead of silently
 falling back to the message `typeName`.
