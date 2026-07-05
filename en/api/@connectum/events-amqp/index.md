@@ -4,6 +4,7 @@
 
 ## Modules
 
+- [testing](testing/index.md)
 - [types](types/index.md)
 
 ## Classes
