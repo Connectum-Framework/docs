@@ -93,8 +93,8 @@ onBeforeUnmount(() => {
                 <span>{{ RUNTIME_LABELS[runtime] }}</span>
             </button>
             <p class="runtime-switch-note">
-                Bun samples are verified on Bun 1.3.13; CI coverage is Node.js unless a page says otherwise.
-                <a href="/en/guide/runtime-compatibility">Runtime compatibility</a>
+                Bun samples are verified on Bun 1.3.13; HTTP/2 clients need Bun &gt;= 1.2.6, and a few packages
+                skip their Bun suite in CI. <a href="/en/guide/runtime-compatibility">Runtime compatibility</a>
             </p>
         </div>
     </div>

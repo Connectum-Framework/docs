@@ -416,7 +416,7 @@ bun add @connectum/otel
 
 Instrument manually, as shown below: OpenTelemetry auto-instrumentation
 (`@opentelemetry/auto-instrumentations-node`) does not load under Bun. See
-[Runtime Compatibility](/en/guide/runtime-compatibility#opentelemetry).
+[Runtime Compatibility](/en/guide/runtime-compatibility#otel).
 :::
 
 ```typescript
