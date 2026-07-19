@@ -13,9 +13,9 @@ A production `Dockerfile` is available in the [car-sharing example](https://gith
 
 ## Multi-Stage Dockerfile
 
-### Recommended: `node:25-slim`
+### Recommended Layout
 
-Two-stage build: install dependencies in an isolated stage, then copy only production `node_modules` into a slim runtime image with a non-root user and health check.
+Two-stage build: install dependencies in an isolated stage, then copy only production `node_modules` into a slim runtime image (`node:25-slim` on Node.js, `oven/bun:1-slim` on Bun) with a non-root user and health check.
 
 See [Dockerfile](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/Dockerfile) for the full listing.
 
