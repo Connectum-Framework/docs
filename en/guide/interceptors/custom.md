@@ -240,7 +240,13 @@ function createAuditLogInterceptor(options: {
 
 ## Testing Custom Interceptors
 
-Use `node:test`. Create a mock `next` function and invoke the interceptor directly:
+Create a mock `next` function and invoke the interceptor directly:
+
+::: runtime bun
+Use `bun test` and import the runner from `bun:test` instead of `node:test`. The rest of
+the example is unchanged -- `node:assert` works under Bun, and the Connectum mock helpers
+do not depend on `node:test`.
+:::
 
 ```typescript
 import { describe, it } from 'node:test';

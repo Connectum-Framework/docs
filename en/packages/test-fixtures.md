@@ -26,9 +26,16 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/test-f
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add -D @connectum/test-fixtures
 ```
+== bun
+```bash
+bun add -d @connectum/test-fixtures
+```
+:::
 
 **Requires**: Node.js 22.13+
 

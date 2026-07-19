@@ -10,23 +10,47 @@ Build a fully functional gRPC/ConnectRPC microservice with health checks, server
 
 ## Prerequisites
 
+::: runtime
+== node
 - **Node.js >= 25.2.0** -- native TypeScript via [type stripping](https://nodejs.org/api/typescript.html)
 - **pnpm >= 11** -- `corepack enable && corepack prepare pnpm@latest --activate`
 - **buf** -- installed automatically via `@bufbuild/buf` npm package
+== bun
+- **Bun >= 1.3.6** -- TypeScript runs natively, no loader needed
+- **buf** -- installed automatically via `@bufbuild/buf` npm package
+:::
 
+:::: runtime node
 ::: tip Node.js version for consumers
 This guide uses Node.js 25+ for native `.ts` execution of your own source files. However, `@connectum/*` packages ship **compiled JavaScript**, so if you compile your own code (e.g., with tsx or a build tool), you can run on **Node.js >= 22.13.0**. See [Runtime Support](/en/guide/typescript/runtime-support).
+:::
+::::
+
+::: runtime bun
+Bun executes your TypeScript sources directly, and `@connectum/*` packages ship compiled
+JavaScript, so nothing else is required. See
+[Runtime Compatibility](/en/guide/runtime-compatibility) for the current support level.
 :::
 
 ## 1. Project Setup
 
+::: runtime
+== node
 ```bash
 mkdir greeter-service && cd greeter-service
 pnpm init
 ```
+== bun
+```bash
+mkdir greeter-service && cd greeter-service
+bun init -y -m   # -m keeps it to package.json + tsconfig.json
+```
+:::
 
 Install dependencies:
 
+::: runtime
+== node
 ```bash
 # Core framework
 pnpm add @connectum/core @connectum/healthcheck @connectum/reflection @connectum/interceptors
@@ -40,9 +64,26 @@ pnpm add @bufbuild/protovalidate @connectrpc/validate
 # Dev dependencies (buf + code generation)
 pnpm add -D typescript @types/node @bufbuild/buf @bufbuild/protoc-gen-es
 ```
+== bun
+```bash
+# Core framework
+bun add @connectum/core @connectum/healthcheck @connectum/reflection @connectum/interceptors
+
+# ConnectRPC runtime
+bun add @connectrpc/connect @connectrpc/connect-node @bufbuild/protobuf
+
+# Validation (recommended: @connectrpc/validate)
+bun add @bufbuild/protovalidate @connectrpc/validate
+
+# Dev dependencies (buf + code generation)
+bun add -d typescript @types/node @bufbuild/buf @bufbuild/protoc-gen-es
+```
+:::
 
 Configure `package.json`:
 
+::: runtime
+== node
 ```json
 {
   "name": "greeter-service",
@@ -61,6 +102,25 @@ Configure `package.json`:
   "engines": { "node": ">=22.13.0" }
 }
 ```
+== bun
+```json
+{
+  "name": "greeter-service",
+  "version": "1.0.0",
+  "type": "module",
+  "imports": {
+    "#gen/*": "./gen/*",
+    "#*": "./src/*"
+  },
+  "scripts": {
+    "start": "bun src/index.ts",
+    "dev": "bun --watch src/index.ts",
+    "typecheck": "bunx tsc --noEmit",
+    "build:proto": "buf generate proto"
+  }
+}
+```
+:::
 
 Create `tsconfig.json` (type checking only -- no compilation):
 
@@ -211,16 +271,20 @@ await server.start();
 
 ## 6. Run & Test
 
+::: runtime
+== node
 ```bash
 # Node.js 25+ (native TypeScript)
 pnpm dev
 
-# Bun
-bun src/index.ts
-
 # tsx (Node.js 22+)
 npx tsx src/index.ts
 ```
+== bun
+```bash
+bun --watch src/index.ts
+```
+:::
 
 ### gRPC (grpcurl)
 
@@ -302,9 +366,16 @@ See [Security (TLS)](/en/guide/security) for `keyPath`/`certPath`, mTLS, and pro
 
 ## 9. Add Authentication & Authorization
 
+::: runtime
+== node
 ```bash
 pnpm add @connectum/auth
 ```
+== bun
+```bash
+bun add @connectum/auth
+```
+:::
 
 ```typescript
 import { createJwtAuthInterceptor, createAuthzInterceptor } from '@connectum/auth';
@@ -333,9 +404,20 @@ See [Auth & Authorization](/en/guide/auth) for HMAC secrets, gateway auth, sessi
 
 ## 10. Add Observability
 
+::: runtime
+== node
 ```bash
 pnpm add @connectum/otel
 ```
+== bun
+```bash
+bun add @connectum/otel
+```
+
+Instrument manually, as shown below: OpenTelemetry auto-instrumentation
+(`@opentelemetry/auto-instrumentations-node`) does not load under Bun. See
+[Runtime Compatibility](/en/guide/runtime-compatibility#opentelemetry).
+:::
 
 ```typescript
 import { createOtelInterceptor } from '@connectum/otel';
@@ -400,11 +482,24 @@ See [Interceptors](/en/guide/interceptors) for the full options reference and cu
 
 When Reflection is enabled, clients can sync proto types without `.proto` files:
 
+::: runtime
+== node
 ```bash
 pnpm add -D @connectum/cli
 npx connectum proto sync --from localhost:5000 --out ./gen --dry-run  # discover
 npx connectum proto sync --from localhost:5000 --out ./gen            # generate
 ```
+== bun
+```bash
+bun add -d @connectum/cli
+npx connectum proto sync --from localhost:5000 --out ./gen --dry-run  # discover
+npx connectum proto sync --from localhost:5000 --out ./gen            # generate
+```
+
+The CLI itself is exercised on Node.js only -- it reaches the server through the
+Node.js gRPC transport -- so run it with `npx` even in a Bun project. The generated
+code has no such restriction.
+:::
 
 ## 14. Call Another Service
 

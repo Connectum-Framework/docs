@@ -23,14 +23,23 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/events
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add @connectum/events
 ```
+== bun
+```bash
+bun add @connectum/events
+```
+:::
 
 **Peer dependency**: `@connectum/core`
 
 You also need at least one adapter package for production use:
 
+::: runtime
+== node
 ```bash
 # Choose one (or more) broker adapters:
 pnpm add @connectum/events-nats    # NATS JetStream
@@ -38,6 +47,15 @@ pnpm add @connectum/events-kafka   # Kafka / Redpanda
 pnpm add @connectum/events-redis   # Redis Streams / Valkey
 pnpm add @connectum/events-amqp    # AMQP / RabbitMQ
 ```
+== bun
+```bash
+# Choose one (or more) broker adapters:
+bun add @connectum/events-nats    # NATS JetStream
+bun add @connectum/events-kafka   # Kafka / Redpanda
+bun add @connectum/events-redis   # Redis Streams / Valkey
+bun add @connectum/events-amqp    # AMQP / RabbitMQ
+```
+:::
 
 The built-in `MemoryAdapter` is included in `@connectum/events` for testing.
 

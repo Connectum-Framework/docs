@@ -23,9 +23,16 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/core/)
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add @connectum/core
 ```
+== bun
+```bash
+bun add @connectum/core
+```
+:::
 
 **Requires**: Node.js >= 22.13.0 (packages ship compiled `.js` + `.d.ts` + source maps)
 

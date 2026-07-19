@@ -91,22 +91,33 @@ a gateway that downgrades to HTTP/1.1 works for them with no extra setup.
 ## Runtime support for native gRPC
 
 Native gRPC depends on **HTTP/2 response trailers** (`grpc-status`). The
-fetch-style `Response` used by Bun, Deno, and Cloudflare Workers carries no
-trailers, so those `serve()` APIs **cannot serve native gRPC at all** — they
-serve Connect and gRPC-Web (which fold trailers into the body) over HTTP/1.1.
+fetch-style `Response` used by `Bun.serve`, `Deno.serve`, and Cloudflare Workers
+carries no trailers, so those `serve()` APIs **cannot serve native gRPC at all** —
+they serve Connect and gRPC-Web (which fold trailers into the body) over HTTP/1.1.
+Connectum does not use them: `createServer()` builds on `node:http2`.
 
 | Runtime | Native gRPC server | Connect / gRPC-Web | gRPC + HTTP/1.1 on one plaintext port |
 |---|---|---|---|
 | **Node** (`node:http2` — what Connectum uses) | ✅ | ✅ | ❌ — use a sidecar proxy or TLS + ALPN |
+| **Bun** (`node:http2` — what Connectum uses) | ✅ | ✅ | ❌ |
 | **Bun** (`Bun.serve`) | ❌ (no HTTP/2 trailers) | ✅ | ❌ |
 | **Deno** (`Deno.serve`) | ❌ (no HTTP/2 trailers) | ✅ | ❌ |
 | **Cloudflare Workers** | ❌ (edge-terminated, no raw ports) | ✅ (Connect / gRPC-Web) | ❌ (n/a) |
 
-**Takeaway:** native gRPC is effectively a **Node** story; **Connect + gRPC-Web
-over HTTP/1.1 work on every runtime**. If you develop or deploy on Bun / Deno /
-Workers and must expose gRPC, terminate it at a **sidecar proxy** (Envoy / Caddy)
-and let the runtime serve Connect / HTTP-1.1 — the proxy owns the protocol
-multiplexing the runtime cannot do.
+**Takeaway:** the fetch-style `serve()` APIs cannot host native gRPC, but that
+does not apply to a Connectum server on Bun: `createServer()` builds on
+`node:http2`, whose server side delivers trailers on Bun as well — including
+plaintext h2c. **Connect + gRPC-Web over HTTP/1.1 work on every runtime.** If you
+deploy on Deno / Workers, or write your own `Bun.serve` handler, and must expose
+gRPC, terminate it at a **sidecar proxy** (Envoy / Caddy) and let the runtime
+serve Connect / HTTP-1.1 — the proxy owns the protocol multiplexing the runtime
+cannot do.
+
+::: tip Bun client versions
+Serving is unaffected on every Bun version, but Bun's `node:http2` **client** only
+became usable in **Bun 1.2.6** — see
+[Runtime Compatibility](/en/guide/runtime-compatibility#http2-client).
+:::
 
 ## Startup validation
 

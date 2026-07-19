@@ -24,9 +24,16 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/auth/)
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add @connectum/auth
 ```
+== bun
+```bash
+bun add @connectum/auth
+```
+:::
 
 **Requires**: Node.js 22+
 

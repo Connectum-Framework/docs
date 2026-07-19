@@ -20,9 +20,16 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/cli/)
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add -D @connectum/cli
 ```
+== bun
+```bash
+bun add -d @connectum/cli
+```
+:::
 
 **Requires**: Node.js 22+, `buf` CLI available on PATH
 

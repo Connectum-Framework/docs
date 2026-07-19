@@ -21,9 +21,16 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/events
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add @connectum/events-nats
 ```
+== bun
+```bash
+bun add @connectum/events-nats
+```
+:::
 
 **Peer dependency**: `@connectum/events`
 
