@@ -6,6 +6,15 @@ outline: deep
 
 Connectum targets **Node.js 22+** as the primary runtime. Bun compatibility is a secondary goal -- most packages work, but some features require workarounds or have known limitations. This page documents the current state of runtime compatibility across all `@connectum/*` packages.
 
+::: tip Scaffolding picks the right defaults
+The Bun limitations below are narrow — they affect the HTTP/2 **client** transport, not
+the server. `connectum init --runtime bun` (see [Scaffolding a Service](/en/guide/scaffolding))
+already emits Bun-appropriate defaults (the `bun test` runner and the in-process
+`createLocalClient` test transport), so a scaffolded Bun project sidesteps them. The
+Node floor also depends on how you run your source: raw `.ts` needs Node ≥25.2, while the
+`tsx` / compiled path runs on Node ≥22.13.
+:::
+
 ## Compatibility Matrix
 
 | Package | Node.js 22 | Node.js 25 | Bun |

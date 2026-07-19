@@ -7,6 +7,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
         items: [
             { text: 'About Connectum', link: '/en/guide/about' },
             { text: 'Quickstart', link: '/en/guide/quickstart' },
+            { text: 'Scaffolding a Service', link: '/en/guide/scaffolding' },
             { text: 'Architecture Overview', link: '/en/guide/production/architecture' },
             { text: 'Runtime Compatibility', link: '/en/guide/runtime-compatibility' },
         ],

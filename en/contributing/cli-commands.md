@@ -4,6 +4,17 @@
 
 Complete reference of CLI commands for working with the Connectum monorepo.
 
+::: tip The `connectum` CLI
+This page covers the monorepo development scripts. The published `@connectum/cli` tool
+(`connectum init`, `connectum generate service`, `connectum proto sync`) is documented
+in [Scaffolding a New Service](/en/guide/scaffolding). In short:
+
+```bash
+npx @connectum/cli init my-service      # scaffold a new project
+npx @connectum/cli generate service x   # add a service to an existing project
+```
+:::
+
 ## Prerequisites
 
 - **Node.js**: >=25.2.0 (for development), >=22.13.0 (for consumers)
