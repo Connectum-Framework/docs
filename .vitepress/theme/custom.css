@@ -209,17 +209,34 @@ html[data-runtime='bun'] .runtime-tab[data-runtime-value='bun'] {
 .RuntimeSwitch {
     position: relative;
     display: none;
-    margin-left: 8px;
 }
 
 /*
  * Below 960px the navigation bar has no room left for another control (it already
  * overflows at 768px without it), and VitePress hides the hamburger from 768px up.
  * In that band the per-block tabs are the way to switch runtimes.
+ *
+ * The control lives in the `nav-bar-content-after` slot -- the only injection point the
+ * default theme offers -- and is reordered next to the search box, which gives up its
+ * `flex-grow` so the pair stays on the left instead of drifting towards the menu.
  */
 @media (min-width: 960px) {
+    .VPNavBar .content-body > .search {
+        order: -2;
+        flex-grow: 0;
+    }
+
     .RuntimeSwitch {
-        display: block;
+        order: -1;
+        flex-grow: 1;
+        display: flex;
+        justify-content: flex-start;
+        margin: 0 16px 0 12px;
+    }
+
+    .runtime-switch-menu {
+        left: 0;
+        right: auto;
     }
 }
 
