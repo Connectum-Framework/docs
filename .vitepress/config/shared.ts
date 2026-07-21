@@ -1,5 +1,24 @@
 import { defineConfig } from 'vitepress';
 import llmstxt, { copyOrDownloadAsMarkdownButtons } from 'vitepress-plugin-llms';
+import { runtimeContainerPlugin } from '../plugins/runtimeContainer.js';
+import { DEFAULT_RUNTIME, RUNTIME_STORAGE_KEY } from '../theme/runtime.js';
+
+/**
+ * Applies the stored runtime before the first paint, the same way VitePress restores the
+ * dark-mode class -- otherwise a reader who picked Bun would see a flash of Node content.
+ * `?runtime=bun` wins over the stored value so a link can carry the choice.
+ */
+const restoreRuntimeScript = `;(() => {
+  try {
+    const fromUrl = new URLSearchParams(location.search).get('runtime')
+    const shared = fromUrl === 'node' || fromUrl === 'bun' ? fromUrl : null
+    const stored = shared ?? localStorage.getItem('${RUNTIME_STORAGE_KEY}')
+    document.documentElement.dataset.runtime = stored === 'bun' ? 'bun' : '${DEFAULT_RUNTIME}'
+    if (shared) localStorage.setItem('${RUNTIME_STORAGE_KEY}', shared)
+  } catch {
+    document.documentElement.dataset.runtime = '${DEFAULT_RUNTIME}'
+  }
+})()`;
 
 export const sharedConfig = defineConfig({
     title: 'Connectum',
@@ -14,6 +33,7 @@ export const sharedConfig = defineConfig({
         ['meta', { property: 'og:site_name', content: 'Connectum' }],
         ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
         ['meta', { name: 'twitter:image', content: 'https://connectum.dev/assets/splash.png' }],
+        ['script', { id: 'restore-runtime' }, restoreRuntimeScript],
     ],
     themeConfig: {
         logo: '/assets/name.png',
@@ -37,6 +57,7 @@ export const sharedConfig = defineConfig({
         lineNumbers: true,
         config(md) {
             md.use(copyOrDownloadAsMarkdownButtons);
+            md.use(runtimeContainerPlugin);
         },
     },
     srcExclude: ['**/api/_media/**'],

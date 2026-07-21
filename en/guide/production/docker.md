@@ -13,44 +13,62 @@ A production `Dockerfile` is available in the [car-sharing example](https://gith
 
 ## Multi-Stage Dockerfile
 
-### Recommended: `node:25-slim`
+### Recommended Layout
 
-Two-stage build: install dependencies in an isolated stage, then copy only production `node_modules` into a slim runtime image with a non-root user and health check.
+Two-stage build: install dependencies in an isolated stage, then copy only production `node_modules` into a slim runtime image (`node:25-slim` on Node.js, `oven/bun:1-slim` on Bun) with a non-root user and health check.
 
 See [Dockerfile](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/Dockerfile) for the full listing.
 
 Key highlights:
 
+::: runtime
+== node
 - **Stage 1 (deps)** -- `pnpm install --frozen-lockfile --prod` for reproducible, minimal dependencies
 - **Stage 2 (runtime)** -- non-root `node` user, `wget`-based HEALTHCHECK against `/healthz`, native TypeScript via `node src/index.ts`
 - Environment defaults: `NODE_ENV=production`, `PORT=5000`, `LOG_FORMAT=json`, health and graceful shutdown enabled
+== bun
+- **Stage 1 (deps)** -- `bun install --frozen-lockfile` for reproducible dependencies
+- **Stage 2 (runtime)** -- `oven/bun:1-slim`, HEALTHCHECK against `/healthz`, TypeScript executed directly via `bun run src/index.ts`
+- Environment defaults: `NODE_ENV=production`, `PORT=5000`, `LOG_FORMAT=json`, health and graceful shutdown enabled
 
+The reference `Dockerfile` in the examples repository targets Node.js; the Bun variant
+above mirrors it stage for stage.
+:::
+
+:::: runtime node
 ::: tip Base image selection
 If your own application code is compiled to JavaScript (e.g., via tsup or tsx), you can use any Node.js 22+ base image instead of `node:25-slim`. Use `node:25-slim` only when you want to run your own `.ts` files natively via Node.js type stripping.
 :::
+::::
 
-### Alternative Runtimes: Bun and tsx
+### Runtime Command
 
-You can replace the Node.js `CMD` with Bun or tsx:
-
+::: runtime
+== node
 ```dockerfile
 # Node.js 25+ (native TypeScript for your own .ts files)
 CMD ["node", "src/index.ts"]
-
-# Bun
-CMD ["bun", "src/index.ts"]
 
 # tsx (works on Node.js 22+)
 CMD ["npx", "tsx", "src/index.ts"]
 ```
 
 When using **tsx**, you can use any Node.js 22+ base image (e.g., `node:22-slim`, `node:24-slim`) and add `tsx` as a dependency. Since `@connectum/*` packages ship compiled JavaScript, no special loader is needed for any runtime.
+== bun
+```dockerfile
+FROM oven/bun:1-slim AS runtime
+CMD ["bun", "run", "src/index.ts"]
+```
 
-### Alpine Variant (Smaller Image)
+Code generation runs the same way inside the image -- `RUN bunx buf generate`. Since
+`@connectum/*` packages ship compiled JavaScript, no loader or register hook is needed.
+:::
+
+### Alpine Variant (Node.js Images)
 
 If you need a smaller image and do not depend on native modules requiring glibc, use the Alpine variant: swap both `FROM node:25-slim` lines in the [Dockerfile](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/Dockerfile) for `node:25-alpine`. Verify the HEALTHCHECK command still resolves on Alpine (its BusyBox `wget` differs from the GNU build); adjust the probe command if needed.
 
-### Image Size Comparison
+### Image Size Comparison (Node.js Images)
 
 | Base Image | Approximate Size | Use Case |
 |---|---|---|

@@ -25,9 +25,16 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/otel/)
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add @connectum/otel
 ```
+== bun
+```bash
+bun add @connectum/otel
+```
+:::
 
 **Requires**: Node.js 22+
 

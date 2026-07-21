@@ -116,11 +116,61 @@ hand-edit it.
   ````
 
 - **Admonitions** for callouts: `::: tip`, `::: warning`, `::: danger`, `::: info`.
+- **Runtime blocks** for content that differs between Node.js and Bun — see
+  [Runtime-specific content](#runtime-specific-content).
 - **Heading levels.** One `#` H1 per page (or the `title:` frontmatter); use `##`
   / `###` for structure. Keep heading text in sync with the sidebar label.
 - **Package layer** statements must match the [architecture map](/en/guide/about)
   (Layer 0 / 1 / 2). Do not state a different layer on a package page than the
   canonical map.
+
+### Runtime-specific content
+
+The site has a runtime switcher (Node.js | Bun) in the navigation bar. Its state lives in
+`data-runtime` on `<html>`, is persisted in `localStorage`, and can be shared through a
+`?runtime=bun` query parameter. Use the `::: runtime` container to write content that
+differs between the two runtimes:
+
+````md
+::: runtime
+== node
+```bash
+pnpm add @connectum/core
+```
+== bun
+```bash
+bun add @connectum/core
+```
+:::
+````
+
+A block with a single runtime is written as `::: runtime bun` (or `::: runtime node`) and
+is shown only when that runtime is selected — use it for a caveat that has no Node.js
+counterpart. Wrap a block that contains another container in four colons
+(`:::: runtime` … `::::`).
+
+Rules:
+
+- **No headings inside a runtime block.** Both variants are rendered into the page, so a
+  heading would appear twice in the outline and the second one would get a suffixed
+  anchor (`#install-1`). Keep the heading above the block and put only the body inside.
+  The build fails if a heading is found inside a block.
+- **Keep both variants in step.** Every grouped block must carry both `== node` and
+  `== bun`; if the runtimes really do the same thing, use a normal code block instead of
+  a runtime block.
+- **Only for consumer-facing pages.** Contributor documentation (`docs/en/contributing/**`)
+  always uses pnpm and Node.js — the framework itself is developed on that stack, and a
+  runtime switch there would be a lie.
+- **Do not leave a section empty.** A `::: runtime bun` block must not be the only content
+  under a heading, or Node.js readers see a heading with nothing under it.
+- **Bun content must be verified**, exactly like every other statement in these docs — a
+  command that was never run under Bun does not go into a `== bun` section. See
+  [Runtime Compatibility](/en/guide/runtime-compatibility) for the support level.
+
+Implementation: `.vitepress/plugins/runtimeContainer.ts` (markdown container),
+`.vitepress/theme/RuntimeSwitch.vue` (navbar control), `.vitepress/theme/custom.css`
+(visibility rules). Every variant is server-rendered and only hidden with CSS, so the
+local search index, `llms.txt` and crawlers always see both.
 
 ### Where things go
 

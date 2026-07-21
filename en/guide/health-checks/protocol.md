@@ -198,6 +198,10 @@ curl http://localhost:5000/healthz
 
 Use `createHealthcheckManager()` to create isolated instances for tests or multi-server setups:
 
+::: runtime bun
+Import the runner from `bun:test` instead of `node:test` and run the file with `bun test`.
+:::
+
 ```typescript
 import { describe, it } from 'node:test';
 import assert from 'node:assert';

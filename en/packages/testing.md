@@ -20,9 +20,16 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/testin
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add -D @connectum/testing
 ```
+== bun
+```bash
+bun add -d @connectum/testing
+```
+:::
 
 **Requires**: Node.js 22+
 
@@ -31,6 +38,12 @@ pnpm add -D @connectum/testing
 ## Quick Start
 
 A typical interceptor unit test using @connectum/testing utilities:
+
+::: runtime bun
+Import the runner from `bun:test` instead of `node:test` and run the file with `bun test`.
+The helpers themselves are runner-agnostic; only the `@connectum/testing/parity` subpath
+requires `node:test`.
+:::
 
 ```typescript
 import assert from 'node:assert';
@@ -126,7 +139,7 @@ const req = createMockRequest({ stream: true, message: createMockStream([{ id: '
 
 #### `createMockNext(options?)`
 
-Creates a mock `next` handler returning a successful response. Returns a `mock.fn()` spy from `node:test`.
+Creates a mock `next` handler returning a successful response. Returns a portable spy that mirrors the `node:test` `mock.fn()` surface (`.mock.calls`, `.mock.callCount()`) without importing `node:test`, so the same test code runs on Node.js and Bun.
 
 ```typescript
 function createMockNext(options?: MockNextOptions): MockFunction;

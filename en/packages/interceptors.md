@@ -22,9 +22,16 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/interc
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add @connectum/interceptors
 ```
+== bun
+```bash
+bun add @connectum/interceptors
+```
+:::
 
 **Requires**: Node.js 22+
 

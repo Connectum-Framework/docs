@@ -21,9 +21,16 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/health
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add @connectum/healthcheck
 ```
+== bun
+```bash
+bun add @connectum/healthcheck
+```
+:::
 
 **Peer dependency**: `@connectum/core`
 
