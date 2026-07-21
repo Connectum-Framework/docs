@@ -8,7 +8,8 @@ select on top.
 ::: tip Requirements
 `connectum init` fetches the base from GitHub, so it needs network access the first
 time. It produces a standalone project that depends on the published `@connectum/*`
-packages.
+packages. The CLI itself is exercised on Node.js — run it with `npx` even when the
+project you are scaffolding targets Bun.
 :::
 
 ## `connectum init`
@@ -43,6 +44,20 @@ pnpm run start
 `buf generate` is wired into the `start`, `test`, and `typecheck` scripts, so the
 generated code under `gen/` is always current — you never hit a "cannot find module
 `#gen/...`" wall.
+
+The generated scripts match the runtime you picked:
+
+::: runtime
+== node
+- `start` — `buf generate && node src/index.ts` (raw `.ts` execution; Node >= 25.2, or `tsx` on Node >= 22.13)
+- `test` — `buf generate && node --test tests/**/*.test.ts`
+== bun
+- `start` — `buf generate && bun src/index.ts`
+- `test` — `buf generate && bun test tests/`
+:::
+
+The generated e2e test itself is runtime-agnostic: it uses the in-process
+`createLocalClient`, which opens no socket and behaves identically on both runtimes.
 
 ### Options
 

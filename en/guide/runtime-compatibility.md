@@ -14,13 +14,11 @@ navigation bar (and next to each affected block). This page deliberately shows b
 runtimes side by side.
 :::
 
-::: tip Scaffolding picks the right defaults
-The Bun limitations below are narrow — they affect the HTTP/2 **client** transport, not
-the server. `connectum init --runtime bun` (see [Scaffolding a Service](/en/guide/scaffolding))
-already emits Bun-appropriate defaults (the `bun test` runner and the in-process
-`createLocalClient` test transport), so a scaffolded Bun project sidesteps them. The
-Node floor also depends on how you run your source: raw `.ts` needs Node ≥25.2, while the
-`tsx` / compiled path runs on Node ≥22.13.
+::: tip Scaffolding emits runtime-appropriate defaults
+`connectum init --runtime bun` (see [Scaffolding a Service](/en/guide/scaffolding)) emits
+Bun-appropriate defaults — the `bun test` runner and the in-process `createLocalClient`
+test transport, which opens no socket and behaves identically on both runtimes. The CLI
+itself is exercised on Node.js, so run it with `npx` even inside a Bun project.
 :::
 
 ## Compatibility Matrix
