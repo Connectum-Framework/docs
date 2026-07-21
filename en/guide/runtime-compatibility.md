@@ -4,7 +4,15 @@ outline: deep
 
 # Runtime Compatibility
 
-Connectum targets **Node.js 22+** as the primary runtime. Bun compatibility is a secondary goal -- most packages work, but some features require workarounds or have known limitations. This page documents the current state of runtime compatibility across all `@connectum/*` packages.
+Connectum targets **Node.js 22+** as the primary runtime and is exercised on Bun in CI on
+every pull request. This page documents the current state of runtime compatibility across
+all `@connectum/*` packages.
+
+::: tip Runtime switcher
+Pages that show runtime-specific commands have a **Node.js | Bun** switch in the
+navigation bar (and next to each affected block). This page deliberately shows both
+runtimes side by side.
+:::
 
 ::: tip Scaffolding picks the right defaults
 The Bun limitations below are narrow — they affect the HTTP/2 **client** transport, not
@@ -17,8 +25,8 @@ Node floor also depends on how you run your source: raw `.ts` needs Node ≥25.2
 
 ## Compatibility Matrix
 
-| Package | Node.js 22 | Node.js 25 | Bun |
-|---------|:----------:|:----------:|:---:|
+| Package | Node.js 22 | Node.js 25 | Bun >= 1.2.6 |
+|---------|:----------:|:----------:|:------------:|
 | `@connectum/core` | Yes | Yes | Yes |
 | `@connectum/interceptors` | Yes | Yes | Yes |
 | `@connectum/healthcheck` | Yes | Yes | Yes |
@@ -30,10 +38,14 @@ Node floor also depends on how you run your source: raw `.ts` needs Node ≥25.2
 | `@connectum/events-redis` | Yes | Yes | Yes |
 | `@connectum/events-amqp` | Yes | Yes | Yes |
 | `@connectum/otel` | Yes | Yes | Partial |
-| `@connectum/cli` | Yes | Yes | Yes |
+| `@connectum/cli` | Yes | Yes | Partial |
 | `@connectum/testing` | Yes | Yes | Partial |
 
 **Legend:** Yes = fully supported, Partial = works with limitations (see details below).
+
+**Bun floor:** HTTP/2 client transports require **Bun >= 1.2.6** (see
+[HTTP/2 Client Transport](#http2-client)); the examples repository pins Bun >= 1.3.6.
+`@connectum/cli` is exercised on Node.js only -- run it with `npx` even in a Bun project.
 
 ## HTTP/2 Client Transport {#http2-client}
 
@@ -59,9 +71,18 @@ This uses Node.js native `node:http2` module for full HTTP/2 multiplexing.
 
 ### Bun
 
-Bun does not fully support the `node:http2` client API. Calling `createGrpcTransport()` or `createConnectTransport({ httpVersion: '2' })` from `@connectrpc/connect-node` throws a `TypeError` at runtime.
+**Bun >= 1.2.6 needs no special client code** -- the snippet above works unchanged. Unary,
+server-streaming and bidi-streaming calls over `createGrpcTransport()` and
+`createConnectTransport({ httpVersion: '2' })` all complete, and status codes carried in
+HTTP/2 trailers arrive intact.
 
-**Workaround:** use `createConnectTransport()` with `httpVersion: '1.1'` (the default):
+Bun's `node:http2` **client** was incomplete before 1.2.6: on those versions the transport
+is constructed without error and the **first RPC hangs** -- the call never completes and
+no error is thrown. Bun 1.2.6 rewrote the `node:http2` client and closed this.
+
+::: warning Bun <= 1.2.5
+Upgrade Bun. If you cannot, the only working option is `createConnectTransport()` over
+HTTP/1.1 (the default `httpVersion`):
 
 ```typescript
 import { createClient } from '@connectrpc/connect';
@@ -77,11 +98,14 @@ const client = createClient(GreeterService, transport);
 const res = await client.sayHello({ name: 'Alice' });
 ```
 
-::: warning Limitations on Bun
-- **No native gRPC protocol** -- only the Connect protocol (JSON/Protobuf over HTTP/1.1) is available
-- **No HTTP/2 multiplexing** -- each request opens a separate connection
-- **Server must support Connect protocol** -- Connectum servers support it by default alongside gRPC
+That path carries unary and server-streaming calls but **not bidi streaming**, gives up
+HTTP/2 multiplexing, and requires the server to accept HTTP/1.1 (`allowHTTP1: true`, the
+default). Connectum servers speak the Connect protocol alongside gRPC, so no server change
+is needed.
 :::
+
+**Servers are unaffected on every Bun version.** A Connectum server -- including plaintext
+h2c (`allowHTTP1: false`) -- serves HTTP/2 correctly; the limitation was always client-side.
 
 ## Streaming RPC {#streaming}
 
@@ -109,54 +133,21 @@ for await (const event of client.watchEvents({ filter: 'error' })) {
 
 ### Bun
 
-In Bun, streaming RPCs over `createConnectTransport()` from `@connectrpc/connect-node` may fail because the Node.js HTTP adapter does not work correctly in Bun's `node:http` compatibility layer. The solution is to build a transport that uses `globalThis.fetch` directly:
+The same code runs on Bun -- **no runtime branching is needed**, and Connectum itself
+contains none.
 
-```typescript
-import { createClient } from '@connectrpc/connect';
-import { createTransport } from '@connectrpc/connect/protocol-connect';
-import { createFetchClient } from '@connectrpc/connect/protocol';
-import { MonitorService } from '#gen/monitor/v1/monitor_pb.js';
+- **Server streaming** works on every Bun version tested, over both HTTP/2 and HTTP/1.1
+  transports.
+- **Bidi streaming** requires HTTP/2, and therefore Bun >= 1.2.6 for the client. This is a
+  protocol constraint, not a Bun one: bidi streaming is impossible over HTTP/1.1 on any
+  runtime, and Connectum refuses to start a server that hosts bidi methods on plaintext
+  HTTP/1.1 (`CONNECTUM_UNSUPPORTED_STREAMING_TRANSPORT`).
 
-// Use Bun's native fetch implementation
-const transport = createTransport({
-  baseUrl: 'http://localhost:5000',
-  fetch: createFetchClient(globalThis.fetch),
-  useBinaryFormat: true,
-});
-
-const client = createClient(MonitorService, transport);
-
-// Server streaming -- uses Bun's native fetch with ReadableStream
-for await (const event of client.watchEvents({ filter: 'error' })) {
-  console.log(`Event: ${event.type} -- ${event.message}`);
-}
-```
-
-::: tip Cross-Runtime Helper
-You can create a helper function that selects the right transport based on the runtime:
-
-```typescript
-import { createConnectTransport } from '@connectrpc/connect-node';
-
-function createClientTransport(baseUrl: string) {
-  // Bun sets globalThis.Bun
-  if (typeof globalThis.Bun !== 'undefined') {
-    // Dynamic import to avoid loading connect/protocol-connect on Node.js
-    const { createTransport } = await import('@connectrpc/connect/protocol-connect');
-    const { createFetchClient } = await import('@connectrpc/connect/protocol');
-    return createTransport({
-      baseUrl,
-      fetch: createFetchClient(globalThis.fetch),
-      useBinaryFormat: true,
-    });
-  }
-
-  return createConnectTransport({
-    baseUrl,
-    httpVersion: '2',
-  });
-}
-```
+::: warning Do not hand-build a fetch transport
+Earlier revisions of this page suggested `createTransport()` from
+`@connectrpc/connect/protocol-connect` together with `createFetchClient(globalThis.fetch)`.
+Do not use that pattern: `createTransport` is marked internal by ConnectRPC and is not
+covered by semantic versioning, and on Bun 1.1.x it silently drops the request body.
 :::
 
 ## Testing Utilities {#testing}
@@ -178,6 +169,10 @@ describe('my interceptor', () => {
 
 `createMockFn()` is API-compatible with the subset of `node:test`'s `mock.fn()` that the testing helpers rely on (`.mock.calls`, `.mock.callCount()`), so assertions written against one runtime work on the other. Full API: [@connectum/testing](/en/packages/testing).
 
+The package is marked **Partial** on Bun for one reason: the `@connectum/testing/parity`
+subpath registers a `node:test` test (`transportParityTest`) and therefore runs on Node.js
+only. The main entry point has no such dependency.
+
 ## OpenTelemetry {#otel}
 
 `@connectum/otel` depends on the official `@opentelemetry/*` SDK packages, which use `node:perf_hooks`, `node:diagnostics_channel`, and other Node.js-specific APIs.
@@ -197,10 +192,10 @@ If you use `@connectum/otel` on Bun, test your specific instrumentation setup th
 
 | Issue | Runtime | Status | Workaround |
 |-------|---------|--------|------------|
-| `createGrpcTransport()` throws TypeError | Bun | Open (Bun) | Use `createConnectTransport()` with HTTP/1.1 |
-| `createConnectTransport({ httpVersion: '2' })` throws TypeError | Bun | Open (Bun) | Omit `httpVersion` or set to `'1.1'` |
-| Streaming RPC fails with Node.js HTTP adapter | Bun | Open (Bun) | Use `createTransport` + `createFetchClient(globalThis.fetch)` |
+| HTTP/2 client transports (`createGrpcTransport()`, `createConnectTransport({ httpVersion: '2' })`) hang on the first RPC | Bun <= 1.2.5 | **Fixed in Bun 1.2.6** | Upgrade Bun; on older Bun use `createConnectTransport()` over HTTP/1.1 (no bidi) |
 | `node:test` mock API unavailable | Bun | By design | Use `bun:test` mock directly |
+| `@connectum/testing/parity` requires `node:test` | Bun | By design | Use the main entry point; run parity tests on Node.js |
+| `@connectum/cli` is exercised on Node.js only | Bun | Open | Run the CLI with `npx`; generated code is unaffected |
 | OpenTelemetry auto-instrumentation | Bun | Open (OTel) | Use manual instrumentation |
 
 ## Related

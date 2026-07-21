@@ -23,14 +23,23 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/events
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add @connectum/events
 ```
+== bun
+```bash
+bun add @connectum/events
+```
+:::
 
 **Peer dependency**: `@connectum/core`
 
 You also need at least one adapter package for production use:
 
+::: runtime
+== node
 ```bash
 # Choose one (or more) broker adapters:
 pnpm add @connectum/events-nats    # NATS JetStream
@@ -38,6 +47,15 @@ pnpm add @connectum/events-kafka   # Kafka / Redpanda
 pnpm add @connectum/events-redis   # Redis Streams / Valkey
 pnpm add @connectum/events-amqp    # AMQP / RabbitMQ
 ```
+== bun
+```bash
+# Choose one (or more) broker adapters:
+bun add @connectum/events-nats    # NATS JetStream
+bun add @connectum/events-kafka   # Kafka / Redpanda
+bun add @connectum/events-redis   # Redis Streams / Valkey
+bun add @connectum/events-amqp    # AMQP / RabbitMQ
+```
+:::
 
 The built-in `MemoryAdapter` is included in `@connectum/events` for testing.
 
@@ -324,7 +342,7 @@ const bus = createEventBus({ adapter: MemoryAdapter(), routes: [eventRoutes] });
 
 **Secondary pattern -- `EventAdapterFactory`** (`() => EventAdapter`, exported since 1.3.0): a zero-argument factory for the places where each consumer needs its **own** broker connection -- `createBroadcastSubscribers()` invokes it once per reactor. Prefer the instance elsewhere: a test double with its own configuration does not fit a zero-argument factory signature without a wrapper closure.
 
-**Test doubles:** `MemoryAdapter` covers the generic happy path (routing, handlers, middleware, DLQ flows). Broker-specific failure semantics (typed AMQP error taxonomy, recovery/lifecycle behavior) cannot be modeled generically -- a programmable `FakeAmqpAdapter` will ship via the `@connectum/events-amqp/testing` subpath (tracked in [connectum#203](https://github.com/Connectum-Framework/connectum/issues/203)). For real-broker integration semantics, see each adapter package's testing notes.
+**Test doubles:** `MemoryAdapter` covers the generic happy path (routing, handlers, middleware, DLQ flows). Broker-specific failure semantics (typed AMQP error taxonomy, recovery/lifecycle behavior) cannot be modeled generically -- use the programmable `FakeAmqpAdapter` from the `@connectum/events-amqp/testing` subpath (since 1.3.0; see [events-amqp Testing](./events-amqp.md#testing)). For real-broker integration semantics, see each adapter package's testing notes.
 
 ### Consumer Groups
 

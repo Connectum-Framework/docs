@@ -94,6 +94,8 @@ console.log(`Listening on port ${port}`);
 
 Run type checking as a separate step (not compilation):
 
+::: runtime
+== node
 ```bash
 # Check types
 pnpm typecheck   # or: tsc --noEmit
@@ -101,15 +103,23 @@ pnpm typecheck   # or: tsc --noEmit
 # Watch mode for development
 tsc --noEmit --watch
 ```
+== bun
+```bash
+# Check types
+bun run typecheck   # or: bunx tsc --noEmit
+
+# Watch mode for development
+bunx tsc --noEmit --watch
+```
+:::
 
 ## Development Workflow
 
+::: runtime
+== node
 ```bash
 # Node.js 25+: start with auto-reload (watches for file changes)
 node --watch src/index.ts
-
-# Bun: start with auto-reload
-bun --watch src/index.ts
 
 # tsx: start with auto-reload (Node.js 22+)
 tsx --watch src/index.ts
@@ -120,20 +130,43 @@ tsc --noEmit --watch
 # Or run once
 pnpm typecheck && pnpm start
 ```
+== bun
+```bash
+# Start with auto-reload (watches for file changes)
+bun --watch src/index.ts
+
+# Type check in a separate terminal
+bunx tsc --noEmit --watch
+
+# Or run once
+bun run typecheck && bun run start
+```
+:::
 
 ## Checklist
 
 Before running your Connectum service, verify:
 
-- [ ] Node.js 25+ installed (`node --version`), Bun installed (`bun --version`), or tsx installed (`npx tsx --version`)
 - [ ] `"type": "module"` in `package.json`
-- [ ] `erasableSyntaxOnly: true` in `tsconfig.json`
 - [ ] `verbatimModuleSyntax: true` in `tsconfig.json`
-- [ ] No `enum` in application code (use `const` objects)
 - [ ] `import type` for all type-only imports
-- [ ] `.ts` extensions in relative imports
 - [ ] `node:` prefix for built-in modules
-- [ ] Proto enums handled via two-step generation (if applicable, Node.js only; not needed for Bun or tsx)
+
+::: runtime
+== node
+- [ ] Node.js 25+ installed (`node --version`), or tsx installed (`npx tsx --version`)
+- [ ] `erasableSyntaxOnly: true` in `tsconfig.json`
+- [ ] No `enum` in application code (use `const` objects) -- type stripping cannot execute it
+- [ ] `.ts` extensions in relative imports
+- [ ] Proto enums handled via [two-step generation](/en/guide/typescript/proto-enums) (if applicable; not needed with tsx)
+== bun
+- [ ] Bun installed (`bun --version`)
+- [ ] `.ts` extensions in relative imports (optional for Bun, but keeps the code portable to Node.js)
+
+Bun transpiles TypeScript instead of stripping types, so `enum`, `namespace` and
+parameter properties execute as written and proto enums need no extra generation step.
+Keep to the erasable subset anyway if the same code has to run on Node.js.
+:::
 
 ## Related
 

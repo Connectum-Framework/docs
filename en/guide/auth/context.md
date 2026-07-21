@@ -122,6 +122,11 @@ const token = await createTestJwt({ sub: 'user-1', roles: ['admin'] });
 
 ### Full Test Example
 
+::: runtime bun
+Import the runner from `bun:test` instead of `node:test` and run the file with `bun test`.
+Everything else is identical -- `node:assert` works under Bun.
+:::
+
 ```typescript
 import { describe, it } from 'node:test';
 import assert from 'node:assert';

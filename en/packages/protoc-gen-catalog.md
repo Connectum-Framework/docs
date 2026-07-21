@@ -18,9 +18,16 @@ proto files. The generated `catalog.gen.ts` is what makes `ctx.call`,
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add -D @connectum/protoc-gen-catalog
 ```
+== bun
+```bash
+bun add -d @connectum/protoc-gen-catalog
+```
+:::
 
 **Requires**: Node.js 22.13+
 

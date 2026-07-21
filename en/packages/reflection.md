@@ -20,9 +20,16 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/reflec
 
 ## Installation
 
+::: runtime
+== node
 ```bash
 pnpm add @connectum/reflection
 ```
+== bun
+```bash
+bun add @connectum/reflection
+```
+:::
 
 **Peer dependency**: `@connectum/core`
 
