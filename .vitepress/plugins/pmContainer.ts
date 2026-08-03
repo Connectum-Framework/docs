@@ -30,6 +30,7 @@
  */
 
 import {
+    PACKAGE_MANAGER_ICONS,
     PACKAGE_MANAGER_LABELS,
     PACKAGE_MANAGER_PREFIXES,
     PACKAGE_MANAGERS,
@@ -155,6 +156,7 @@ export const pmContainerPlugin = createVariantContainer<PackageManager>({
     prefix: 'pm',
     values: PACKAGE_MANAGERS,
     labels: PACKAGE_MANAGER_LABELS,
+    icons: PACKAGE_MANAGER_ICONS,
     // Every package manager must be filled in: a reader who picked npm and finds an
     // empty tab has no command at all, which is worse than no switcher.
     requireAll: true,

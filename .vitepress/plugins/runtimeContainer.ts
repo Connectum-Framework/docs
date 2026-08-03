@@ -26,7 +26,7 @@
  * the inner one (`:::: runtime` wrapping a `::: tip`).
  */
 
-import { RUNTIME_LABELS, RUNTIMES, type Runtime } from '../theme/runtime.ts';
+import { RUNTIME_ICONS, RUNTIME_LABELS, RUNTIMES, type Runtime } from '../theme/runtime.ts';
 import { createVariantContainer } from './variantContainer.ts';
 
 export const runtimeContainerPlugin = createVariantContainer<Runtime>({
@@ -34,6 +34,7 @@ export const runtimeContainerPlugin = createVariantContainer<Runtime>({
     prefix: 'runtime',
     values: RUNTIMES,
     labels: RUNTIME_LABELS,
+    icons: RUNTIME_ICONS,
     // A runtime caveat often exists for one runtime only, so a grouped block is not
     // required to carry both -- unlike `::: pm`, where an empty tab would strand a
     // reader with no command at all.

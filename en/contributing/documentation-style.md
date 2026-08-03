@@ -128,9 +128,10 @@ hand-edit it.
 
 ### Runtime-specific content
 
-The site has a runtime switcher (Node.js | Bun) in the navigation bar. Its state lives in
-`data-runtime` on `<html>`, is persisted in `localStorage`, and can be shared through a
-`?runtime=bun` query parameter.
+The site switches runtime-specific content with tabs on the block itself -- there is no
+navigation-bar control, so both switchers work the same way. The state lives in
+`data-runtime` on `<html>`, is persisted in `localStorage`, syncs every block on every
+page, and can be shared through a `?runtime=bun` query parameter.
 
 Use `::: runtime` only for content that differs because of **what executes the code** —
 the test runner, the watch flag, native type stripping. A command that differs only in
@@ -151,10 +152,11 @@ bun test tests/
 :::
 ````
 
-A block with a single runtime is written as `::: runtime bun` (or `::: runtime node`) and
-is shown only when that runtime is selected — use it for a caveat that has no Node.js
-counterpart. Wrap a block that contains another container in four colons
-(`:::: runtime` … `::::`).
+A block with a single runtime is written as `::: runtime bun` (or `::: runtime node`).
+It has no tab strip, so it is **always visible**, rendered as a callout labelled with the
+runtime — hiding it would leave no control to bring it back. Use it for a caveat that has
+no counterpart on the other runtime. Wrap a block that contains another container in four
+colons (`:::: runtime` … `::::`).
 
 Rules:
 
@@ -168,8 +170,8 @@ Rules:
 - **Only for consumer-facing pages.** Contributor documentation (`docs/en/contributing/**`)
   always uses pnpm and Node.js — the framework itself is developed on that stack, and a
   runtime switch there would be a lie.
-- **Do not leave a section empty.** A `::: runtime bun` block must not be the only content
-  under a heading, or Node.js readers see a heading with nothing under it.
+- **Keep single-runtime blocks short.** They are always on screen, so a long one is noise
+  for readers on the other runtime. A caveat, not an alternative version of the section.
 - **Bun content must be verified**, exactly like every other statement in these docs — a
   command that was never run under Bun does not go into a `== bun` section. See
   [Runtime Compatibility](/en/guide/runtime-compatibility) for the support level.
@@ -178,8 +180,8 @@ Rules:
 
 Commands that differ only in which tool installs a package or runs a script go in a
 `::: pm` block. It carries **npm, pnpm and bun**, is persisted in `localStorage` under a
-key of its own, and can be shared through `?pm=npm`. pnpm is the fallback, so that is
-what crawlers and readers without JavaScript see.
+key of its own, syncs every block on every page, and can be shared through `?pm=npm`.
+pnpm is the fallback, so that is what crawlers and readers without JavaScript see.
 
 ````md
 ::: pm
@@ -221,9 +223,11 @@ Rules:
   reads better with the shared part stated once.
 - **Contributor documentation stays on pnpm** with no block: the framework is developed
   on pnpm, and offering a choice there would be a lie.
-- **Do not nest it inside `::: code-group`.** Where a page already tabs by something else
-  (the event adapters, for instance), the two tab strips would fight; leave that page on
-  its existing axis.
+- **Do not nest it inside `::: code-group`.** Two tab strips would fight. Where a page
+  tabs by something else, decide which axis earns the tabs: on the events getting-started
+  page the adapters became a table (they differ only by package name) so the tabs could
+  carry the package manager, while the adapter *code* further down keeps its code-group
+  because the snippets genuinely differ.
 
 Implementation: `.vitepress/plugins/runtimeContainer.ts` (markdown container),
 `.vitepress/theme/RuntimeSwitch.vue` (navbar control), `.vitepress/theme/custom.css`

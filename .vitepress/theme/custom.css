@@ -188,7 +188,7 @@ html:not([data-pm]) .pm-tab[data-pm-value='pnpm'] {
     border-radius: 0;
 }
 
-/* --- Single-runtime block (`::: runtime bun`) --- */
+/* --- Single-variant block (`::: runtime bun`): always visible, labelled --- */
 
 .runtime-only {
     margin: 16px 0;
@@ -198,13 +198,32 @@ html:not([data-pm]) .pm-tab[data-pm-value='pnpm'] {
     background-color: var(--vp-c-bg-soft);
 }
 
-.runtime-only-label {
+.runtime-only-label,
+.pm-only-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     margin: 12px 0 -8px;
     color: var(--vp-c-text-2);
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.4px;
     text-transform: uppercase;
+}
+
+/* --- Tab icons --- */
+
+.runtime-tab,
+.pm-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.runtime-icon,
+.pm-icon {
+    flex: none;
+    opacity: 0.8;
 }
 
 /* --- Print: no interactivity, so show every variant, labelled --- */
@@ -216,8 +235,7 @@ html:not([data-pm]) .pm-tab[data-pm-value='pnpm'] {
     }
 
     .runtime-tabs,
-    .pm-tabs,
-    .RuntimeSwitch {
+    .pm-tabs {
         display: none !important;
     }
 
@@ -238,158 +256,4 @@ html:not([data-pm]) .pm-tab[data-pm-value='pnpm'] {
         font-weight: 600;
         text-transform: uppercase;
     }
-}
-
-/* --- Navbar control --- */
-
-.RuntimeSwitch {
-    position: relative;
-    display: none;
-}
-
-/*
- * Below 960px the navigation bar has no room left for another control (it already
- * overflows at 768px without it), and VitePress hides the hamburger from 768px up.
- * In that band the per-block tabs are the way to switch runtimes.
- *
- * The control lives in the `nav-bar-content-after` slot -- the only injection point the
- * default theme offers -- and is reordered next to the search box, which gives up its
- * `flex-grow` so the pair stays on the left instead of drifting towards the menu.
- */
-@media (min-width: 960px) {
-    .VPNavBar .content-body > .search {
-        order: -2;
-        flex-grow: 0;
-    }
-
-    .RuntimeSwitch {
-        order: -1;
-        flex-grow: 1;
-        display: flex;
-        justify-content: flex-start;
-        margin: 0 16px 0 12px;
-    }
-
-    .runtime-switch-menu {
-        left: 0;
-        right: auto;
-    }
-}
-
-.runtime-switch-trigger {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0 10px;
-    height: 32px;
-    border: 1px solid var(--vp-c-divider);
-    border-radius: 8px;
-    color: var(--vp-c-text-1);
-    font-size: 13px;
-    font-weight: 500;
-    transition: border-color 0.25s, color 0.25s;
-}
-
-.runtime-switch-trigger:hover {
-    border-color: var(--vp-c-brand-1);
-    color: var(--vp-c-brand-1);
-}
-
-.runtime-switch-current {
-    display: none;
-    align-items: center;
-    gap: 6px;
-}
-
-html:not([data-runtime='bun']) .runtime-switch-current[data-runtime-value='node'],
-html[data-runtime='bun'] .runtime-switch-current[data-runtime-value='bun'] {
-    display: inline-flex;
-}
-
-.runtime-switch-chevron {
-    display: inline-flex;
-    color: var(--vp-c-text-3);
-}
-
-.runtime-switch-menu {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    z-index: 100;
-    width: 240px;
-    padding: 6px;
-    border: 1px solid var(--vp-c-divider);
-    border-radius: 12px;
-    background-color: var(--vp-c-bg-elv);
-    box-shadow: var(--vp-shadow-3);
-}
-
-.runtime-switch-option,
-.runtime-switch-segment {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    padding: 8px 10px;
-    border-radius: 8px;
-    color: var(--vp-c-text-2);
-    font-size: 14px;
-    font-weight: 500;
-    transition: background-color 0.25s, color 0.25s;
-}
-
-.runtime-switch-option:hover,
-.runtime-switch-segment:hover {
-    background-color: var(--vp-c-default-soft);
-    color: var(--vp-c-text-1);
-}
-
-html:not([data-runtime='bun']) .runtime-switch-option[data-runtime-value='node'],
-html[data-runtime='bun'] .runtime-switch-option[data-runtime-value='bun'],
-html:not([data-runtime='bun']) .runtime-switch-segment[data-runtime-value='node'],
-html[data-runtime='bun'] .runtime-switch-segment[data-runtime-value='bun'] {
-    background-color: var(--vp-c-default-soft);
-    color: var(--vp-c-brand-1);
-}
-
-.runtime-switch-note {
-    margin: 6px 6px 2px;
-    padding-top: 8px;
-    /* The navbar sets `white-space: nowrap` on its content. */
-    white-space: normal;
-    border-top: 1px solid var(--vp-c-divider);
-    color: var(--vp-c-text-3);
-    font-size: 11px;
-    line-height: 1.5;
-}
-
-.runtime-switch-note a {
-    color: var(--vp-c-text-2);
-    text-decoration: underline;
-}
-
-/* --- Mobile nav screen --- */
-
-.runtime-switch-screen {
-    display: block;
-    margin: 0;
-    padding-top: 24px;
-    border-top: 1px solid var(--vp-c-divider);
-}
-
-.runtime-switch-caption {
-    margin-bottom: 8px;
-    color: var(--vp-c-text-1);
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.runtime-switch-segments {
-    display: flex;
-    gap: 8px;
-}
-
-.runtime-switch-segment {
-    justify-content: center;
-    border: 1px solid var(--vp-c-divider);
 }

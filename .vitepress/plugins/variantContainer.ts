@@ -80,6 +80,8 @@ export interface VariantContainerOptions<V extends string> {
     prefix: string;
     values: readonly V[];
     labels: Record<V, string>;
+    /** `d` of a single 24x24 SVG path per value, shown on the tab. */
+    icons: Record<V, string>;
     /** Fail the build when a grouped block omits any value. */
     requireAll?: boolean;
     /** Allow `::: <name> <value>` blocks that target a single value. */
@@ -137,7 +139,10 @@ function walkBody(
 }
 
 export function createVariantContainer<V extends string>(options: VariantContainerOptions<V>) {
-    const { name, prefix, values, labels, requireAll, allowSingle, validate } = options;
+    const { name, prefix, values, labels, icons, requireAll, allowSingle, validate } = options;
+    const icon = (value: V) =>
+        `<svg class="${prefix}-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">` +
+        `<path fill="currentColor" d="${icons[value]}"/></svg>`;
     const tokenType = `${prefix}_html`;
     const isValue = (candidate: string): candidate is V => (values as readonly string[]).includes(candidate);
 
@@ -205,15 +210,19 @@ export function createVariantContainer<V extends string>(options: VariantContain
                 .map(
                     ({ value }) =>
                         `<button type="button" class="${prefix}-tab" data-${prefix}-value="${value}"` +
-                        ` aria-label="Show ${labels[value]} instructions">${labels[value]}</button>`,
+                        ` aria-label="Show ${labels[value]} instructions">${icon(value)}<span>${labels[value]}</span></button>`,
                 )
                 .join('');
             openTag(state, `<div class="${prefix}-group"><div class="${prefix}-tabs">${tabs}</div>`);
         }
 
         for (const section of sections) {
-            const label = grouped ? '' : `<div class="${prefix}-only-label">${labels[section.value]}</div>`;
-            const className = grouped ? `${prefix}-panel` : `${prefix}-panel ${prefix}-only`;
+            // A single-variant block has no tab strip, so it is never hidden -- there
+            // would be no control to reveal it. It reads as a labelled callout instead.
+            const label = grouped
+                ? ''
+                : `<div class="${prefix}-only-label">${icon(section.value)}<span>${labels[section.value]}</span></div>`;
+            const className = grouped ? `${prefix}-panel` : `${prefix}-panel-static ${prefix}-only`;
             openTag(state, `<div class="${className}" data-${prefix}-value="${section.value}">${label}`);
             state.md.block.tokenize(state, section.start, section.end);
             openTag(state, '</div>');

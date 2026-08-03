@@ -3,7 +3,6 @@ import DefaultTheme from 'vitepress/theme'
 import { onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRoute } from 'vitepress'
 import mediumZoom from 'medium-zoom'
-import RuntimeSwitch from './RuntimeSwitch.vue'
 import { isPackageManager, PACKAGE_MANAGER_STORAGE_KEY, setPackageManager } from './packageManager.ts'
 import { isRuntime, RUNTIME_STORAGE_KEY, setRuntime } from './runtime.ts'
 
@@ -121,12 +120,5 @@ watch(() => route.path, () => nextTick(initImageZoom))
 </script>
 
 <template>
-    <DefaultTheme.Layout>
-        <template #nav-bar-content-after>
-            <RuntimeSwitch />
-        </template>
-        <template #nav-screen-content-after>
-            <RuntimeSwitch screen />
-        </template>
-    </DefaultTheme.Layout>
+    <DefaultTheme.Layout />
 </template>
