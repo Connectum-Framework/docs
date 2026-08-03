@@ -18,8 +18,12 @@ proto files. The generated `catalog.gen.ts` is what makes `ctx.call`,
 
 ## Installation
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+npm install -D @connectum/protoc-gen-catalog
+```
+== pnpm
 ```bash
 pnpm add -D @connectum/protoc-gen-catalog
 ```

@@ -22,8 +22,12 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/interc
 
 ## Installation
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+npm install @connectum/interceptors
+```
+== pnpm
 ```bash
 pnpm add @connectum/interceptors
 ```

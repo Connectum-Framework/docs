@@ -28,9 +28,20 @@ await server.start();
 
 ## Installation
 
+::: pm
+== npm
+```bash
+npm install @connectum/healthcheck
+```
+== pnpm
 ```bash
 pnpm add @connectum/healthcheck
 ```
+== bun
+```bash
+bun add @connectum/healthcheck
+```
+:::
 
 ## Key Concepts
 

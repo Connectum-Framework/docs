@@ -26,8 +26,12 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/test-f
 
 ## Installation
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+npm install -D @connectum/test-fixtures
+```
+== pnpm
 ```bash
 pnpm add -D @connectum/test-fixtures
 ```

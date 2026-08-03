@@ -21,8 +21,12 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/health
 
 ## Installation
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+npm install @connectum/healthcheck
+```
+== pnpm
 ```bash
 pnpm add @connectum/healthcheck
 ```

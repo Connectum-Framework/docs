@@ -1,24 +1,42 @@
 import { defineConfig } from 'vitepress';
 import llmstxt, { copyOrDownloadAsMarkdownButtons } from 'vitepress-plugin-llms';
+import { pmContainerPlugin } from '../plugins/pmContainer.js';
 import { runtimeContainerPlugin } from '../plugins/runtimeContainer.js';
-import { DEFAULT_RUNTIME, RUNTIME_STORAGE_KEY } from '../theme/runtime.js';
+import { DEFAULT_PACKAGE_MANAGER, PACKAGE_MANAGER_STORAGE_KEY, PACKAGE_MANAGERS } from '../theme/packageManager.js';
+import { DEFAULT_RUNTIME, RUNTIME_STORAGE_KEY, RUNTIMES } from '../theme/runtime.js';
 
 /**
- * Applies the stored runtime before the first paint, the same way VitePress restores the
- * dark-mode class -- otherwise a reader who picked Bun would see a flash of Node content.
- * `?runtime=bun` wins over the stored value so a link can carry the choice.
+ * Applies the stored selection before the first paint, the same way VitePress restores
+ * the dark-mode class -- otherwise a reader who picked Bun would see a flash of Node
+ * content. A query parameter wins over the stored value so a link can carry the choice,
+ * and is then persisted so it survives navigation.
+ *
+ * Both switchers get the same treatment from one generator: the runtime (what executes
+ * the code) and the package manager (what installs it) are independent selections.
  */
-const restoreRuntimeScript = `;(() => {
+const restoreSelection = (param: string, attribute: string, key: string, values: readonly string[], fallback: string) =>
+    `;(() => {
+  var VALUES = ${JSON.stringify(values)}
   try {
-    const fromUrl = new URLSearchParams(location.search).get('runtime')
-    const shared = fromUrl === 'node' || fromUrl === 'bun' ? fromUrl : null
-    const stored = shared ?? localStorage.getItem('${RUNTIME_STORAGE_KEY}')
-    document.documentElement.dataset.runtime = stored === 'bun' ? 'bun' : '${DEFAULT_RUNTIME}'
-    if (shared) localStorage.setItem('${RUNTIME_STORAGE_KEY}', shared)
-  } catch {
-    document.documentElement.dataset.runtime = '${DEFAULT_RUNTIME}'
+    var fromUrl = new URLSearchParams(location.search).get('${param}')
+    var shared = VALUES.indexOf(fromUrl) !== -1 ? fromUrl : null
+    var stored = shared || localStorage.getItem('${key}')
+    document.documentElement.dataset.${attribute} = VALUES.indexOf(stored) !== -1 ? stored : '${fallback}'
+    if (shared) localStorage.setItem('${key}', shared)
+  } catch (e) {
+    document.documentElement.dataset.${attribute} = '${fallback}'
   }
 })()`;
+
+const restoreRuntimeScript = restoreSelection('runtime', 'runtime', RUNTIME_STORAGE_KEY, RUNTIMES, DEFAULT_RUNTIME);
+
+const restorePackageManagerScript = restoreSelection(
+    'pm',
+    'pm',
+    PACKAGE_MANAGER_STORAGE_KEY,
+    PACKAGE_MANAGERS,
+    DEFAULT_PACKAGE_MANAGER,
+);
 
 export const sharedConfig = defineConfig({
     title: 'Connectum',
@@ -34,6 +52,7 @@ export const sharedConfig = defineConfig({
         ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
         ['meta', { name: 'twitter:image', content: 'https://connectum.dev/assets/splash.png' }],
         ['script', { id: 'restore-runtime' }, restoreRuntimeScript],
+        ['script', { id: 'restore-pm' }, restorePackageManagerScript],
     ],
     themeConfig: {
         logo: '/assets/name.png',
@@ -58,6 +77,7 @@ export const sharedConfig = defineConfig({
         config(md) {
             md.use(copyOrDownloadAsMarkdownButtons);
             md.use(runtimeContainerPlugin);
+            md.use(pmContainerPlugin);
         },
     },
     srcExclude: ['**/api/_media/**'],

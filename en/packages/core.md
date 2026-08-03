@@ -23,8 +23,12 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/core/)
 
 ## Installation
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+npm install @connectum/core
+```
+== pnpm
 ```bash
 pnpm add @connectum/core
 ```
