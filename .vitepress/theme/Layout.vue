@@ -4,6 +4,7 @@ import { onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRoute } from 'vitepress'
 import mediumZoom from 'medium-zoom'
 import RuntimeSwitch from './RuntimeSwitch.vue'
+import { isPackageManager, PACKAGE_MANAGER_STORAGE_KEY, setPackageManager } from './packageManager.ts'
 import { isRuntime, RUNTIME_STORAGE_KEY, setRuntime } from './runtime.ts'
 
 const route = useRoute()
@@ -64,40 +65,55 @@ const setupMermaidZoom = () => {
     observer.observe(document.body, { childList: true, subtree: true })
 }
 
-// --- Runtime switcher (Node.js | Bun) ---
-// The in-page tabs rendered by the `::: runtime` markdown container are static HTML,
-// so they are handled by one delegated listener instead of a component per block.
-const onRuntimeTabClick = (event: MouseEvent) => {
-    const tab = (event.target as HTMLElement | null)?.closest<HTMLElement>('.runtime-tab')
-    const value = tab?.dataset.runtimeValue
-    if (!isRuntime(value)) return
+// --- Variant switchers (runtime, package manager) ---
+// The in-page tabs rendered by the `::: runtime` and `::: pm` markdown containers are
+// static HTML, so one delegated listener handles both instead of a component per block.
+const AXES = [
+    { selector: '.runtime-tab', group: '.runtime-group', read: (el: HTMLElement) => el.dataset.runtimeValue, apply: setRuntime, isValid: isRuntime },
+    { selector: '.pm-tab', group: '.pm-group', read: (el: HTMLElement) => el.dataset.pmValue, apply: setPackageManager, isValid: isPackageManager },
+] as const
 
-    // Keep the clicked block where it is: panels differ in height, so switching would
-    // otherwise scroll the surrounding text out from under the reader.
-    const group = tab!.closest<HTMLElement>('.runtime-group')
-    const before = group?.getBoundingClientRect().top
-    setRuntime(value)
-    if (group && before !== undefined) {
-        const delta = group.getBoundingClientRect().top - before
-        if (delta) window.scrollBy({ top: delta, behavior: 'instant' as ScrollBehavior })
+const onTabClick = (event: MouseEvent) => {
+    const target = event.target as HTMLElement | null
+    if (!target) return
+
+    for (const axis of AXES) {
+        const tab = target.closest<HTMLElement>(axis.selector)
+        if (!tab) continue
+        const value = axis.read(tab)
+        if (!axis.isValid(value)) return
+
+        // Keep the clicked block where it is: panels differ in height, so switching
+        // would otherwise scroll the surrounding text out from under the reader.
+        const group = tab.closest<HTMLElement>(axis.group)
+        const before = group?.getBoundingClientRect().top
+        ;(axis.apply as (v: string) => void)(value)
+        if (group && before !== undefined) {
+            const delta = group.getBoundingClientRect().top - before
+            if (delta) window.scrollBy({ top: delta, behavior: 'instant' as ScrollBehavior })
+        }
+        return
     }
 }
 
-// Another tab of the same site changed the runtime -- follow it without writing back.
+// Another browser tab changed a selection -- follow it without writing back.
 const onStorage = (event: StorageEvent) => {
-    if (event.key !== RUNTIME_STORAGE_KEY || !isRuntime(event.newValue)) return
-    document.documentElement.dataset.runtime = event.newValue
+    if (event.key === RUNTIME_STORAGE_KEY && isRuntime(event.newValue)) {
+        document.documentElement.dataset.runtime = event.newValue
+    } else if (event.key === PACKAGE_MANAGER_STORAGE_KEY && isPackageManager(event.newValue)) {
+        document.documentElement.dataset.pm = event.newValue
+    }
 }
 
 onMounted(() => {
     initImageZoom()
     setupMermaidZoom()
-    document.addEventListener('click', onRuntimeTabClick)
+    document.addEventListener('click', onTabClick)
     window.addEventListener('storage', onStorage)
 })
 
 onBeforeUnmount(() => {
-    document.removeEventListener('click', onRuntimeTabClick)
+    document.removeEventListener('click', onTabClick)
     window.removeEventListener('storage', onStorage)
 })
 

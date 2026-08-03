@@ -43,9 +43,20 @@ MemoryAdapter provides no persistence, no consumer groups, and at-most-once deli
 
 Provides persistent at-least-once delivery through NATS JetStream with durable consumers, wildcard routing, and metadata propagation via NATS headers.
 
+::: pm
+== npm
+```bash
+npm install @connectum/events-nats
+```
+== pnpm
 ```bash
 pnpm add @connectum/events-nats
 ```
+== bun
+```bash
+bun add @connectum/events-nats
+```
+:::
 
 ```typescript
 import { NatsAdapter } from '@connectum/events-nats';
@@ -89,9 +100,20 @@ const adapter = NatsAdapter({
 
 KafkaJS-based adapter for Apache Kafka and Kafka-compatible brokers like **Redpanda**.
 
+::: pm
+== npm
+```bash
+npm install @connectum/events-kafka
+```
+== pnpm
 ```bash
 pnpm add @connectum/events-kafka
 ```
+== bun
+```bash
+bun add @connectum/events-kafka
+```
+:::
 
 ```typescript
 import { KafkaAdapter } from '@connectum/events-kafka';
@@ -142,9 +164,20 @@ See the [with-events-redpanda](https://github.com/Connectum-Framework/examples/t
 
 Uses Redis Streams (`XADD` / `XREADGROUP` / `XACK`) for durable, ordered event delivery with consumer groups.
 
+::: pm
+== npm
+```bash
+npm install @connectum/events-redis
+```
+== pnpm
 ```bash
 pnpm add @connectum/events-redis
 ```
+== bun
+```bash
+bun add @connectum/events-redis
+```
+:::
 
 ```typescript
 import { RedisAdapter } from '@connectum/events-redis';
@@ -196,9 +229,20 @@ const adapter = RedisAdapter({
 
 Uses the AMQP 0-9-1 protocol via [amqplib](https://amqp-node.github.io/amqplib/) for durable messaging with topic exchanges, competing consumers, and native dead letter exchange (DLX) support. Provides per-message publisher confirms, automatic connection recovery (enabled by default), explicit external topology (`topology` / `topologyMode` / `queueOverrides`), and serialization control for external AMQP contracts -- see [@connectum/events-amqp](/en/packages/events-amqp) for the full reference.
 
+::: pm
+== npm
+```bash
+npm install @connectum/events-amqp
+```
+== pnpm
 ```bash
 pnpm add @connectum/events-amqp
 ```
+== bun
+```bash
+bun add @connectum/events-amqp
+```
+:::
 
 ```typescript
 import { AmqpAdapter } from '@connectum/events-amqp';

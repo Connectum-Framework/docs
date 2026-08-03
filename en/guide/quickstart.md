@@ -34,23 +34,46 @@ JavaScript, so nothing else is required. See
 
 ## 1. Project Setup
 
-::: runtime
-== node
 ```bash
 mkdir greeter-service && cd greeter-service
+```
+
+::: pm
+== npm
+```bash
+npm init -y
+```
+== pnpm
+```bash
 pnpm init
 ```
 == bun
 ```bash
-mkdir greeter-service && cd greeter-service
-bun init -y -m   # -m keeps it to package.json + tsconfig.json
+bun init -y -m
 ```
 :::
 
+The Bun form passes `-m` so `bun init` writes only `package.json` and `tsconfig.json`
+instead of also scaffolding a sample entry point and README.
+
 Install dependencies:
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+# Core framework
+npm install @connectum/core @connectum/healthcheck @connectum/reflection @connectum/interceptors
+
+# ConnectRPC runtime
+npm install @connectrpc/connect @connectrpc/connect-node @bufbuild/protobuf
+
+# Validation (recommended: @connectrpc/validate)
+npm install @bufbuild/protovalidate @connectrpc/validate
+
+# Dev dependencies (buf + code generation)
+npm install -D typescript @types/node @bufbuild/buf @bufbuild/protoc-gen-es
+```
+== pnpm
 ```bash
 # Core framework
 pnpm add @connectum/core @connectum/healthcheck @connectum/reflection @connectum/interceptors
@@ -184,9 +207,20 @@ deps:
 
 Then fetch dependencies:
 
+::: pm
+== npm
 ```bash
 npx buf dep update
 ```
+== pnpm
+```bash
+pnpm exec buf dep update
+```
+== bun
+```bash
+bunx buf dep update
+```
+:::
 
 ## 3. Code Generation
 
@@ -206,9 +240,20 @@ inputs:
 
 Run code generation:
 
+::: pm
+== npm
+```bash
+npm run build:proto
+```
+== pnpm
 ```bash
 pnpm run build:proto
 ```
+== bun
+```bash
+bun run build:proto
+```
+:::
 
 This produces `gen/greeter_pb.ts` containing message schemas, types, and the service definition.
 
@@ -366,8 +411,12 @@ See [Security (TLS)](/en/guide/security) for `keyPath`/`certPath`, mTLS, and pro
 
 ## 9. Add Authentication & Authorization
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+npm install @connectum/auth
+```
+== pnpm
 ```bash
 pnpm add @connectum/auth
 ```
@@ -404,8 +453,12 @@ See [Auth & Authorization](/en/guide/auth) for HMAC secrets, gateway auth, sessi
 
 ## 10. Add Observability
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+npm install @connectum/otel
+```
+== pnpm
 ```bash
 pnpm add @connectum/otel
 ```
@@ -482,24 +535,31 @@ See [Interceptors](/en/guide/interceptors) for the full options reference and cu
 
 When Reflection is enabled, clients can sync proto types without `.proto` files:
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+npm install -D @connectum/cli
+```
+== pnpm
 ```bash
 pnpm add -D @connectum/cli
-npx connectum proto sync --from localhost:5000 --out ./gen --dry-run  # discover
-npx connectum proto sync --from localhost:5000 --out ./gen            # generate
 ```
 == bun
 ```bash
 bun add -d @connectum/cli
+```
+:::
+
+Then, whichever package manager you used -- the CLI reaches the server through the
+Node.js gRPC transport and is exercised on Node.js only, so run it with `npx` even in a
+Bun project:
+
+```bash
 npx connectum proto sync --from localhost:5000 --out ./gen --dry-run  # discover
 npx connectum proto sync --from localhost:5000 --out ./gen            # generate
 ```
 
-The CLI itself is exercised on Node.js only -- it reaches the server through the
-Node.js gRPC transport -- so run it with `npx` even in a Bun project. The generated
-code has no such restriction.
-:::
+The generated code has no such restriction.
 
 ## 14. Call Another Service
 

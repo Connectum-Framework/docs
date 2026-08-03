@@ -103,20 +103,35 @@
 }
 
 /* ==========================================================================
-   Runtime switcher (Node.js | Bun)
+   Variant switchers: runtime (Node.js | Bun) and package manager (npm | pnpm | bun)
 
-   Every runtime variant is server-rendered into the page; only CSS decides which
-   one is visible, driven by `data-runtime` on <html>. Node.js is the fallback, so
-   crawlers and readers without JavaScript always get a complete page.
+   Every variant is server-rendered into the page; only CSS decides which one is
+   visible, driven by `data-runtime` / `data-pm` on <html>. Both axes are
+   independent -- a Bun-runtime project can be installed with npm.
+
+   Panels are hidden by default and the selected one is shown, so a third value can
+   be added without rewriting the rules. The `:not()` rules keep a complete page in
+   front of crawlers and readers without JavaScript, where no attribute is set.
    ========================================================================== */
 
-html:not([data-runtime='bun']) .runtime-panel[data-runtime-value='bun'],
-html[data-runtime='bun'] .runtime-panel[data-runtime-value='node'] {
+.runtime-panel[data-runtime-value],
+.pm-panel[data-pm-value] {
     display: none;
+}
+
+html[data-runtime='node'] .runtime-panel[data-runtime-value='node'],
+html[data-runtime='bun'] .runtime-panel[data-runtime-value='bun'],
+html:not([data-runtime]) .runtime-panel[data-runtime-value='node'],
+html[data-pm='npm'] .pm-panel[data-pm-value='npm'],
+html[data-pm='pnpm'] .pm-panel[data-pm-value='pnpm'],
+html[data-pm='bun'] .pm-panel[data-pm-value='bun'],
+html:not([data-pm]) .pm-panel[data-pm-value='pnpm'] {
+    display: block;
 }
 
 /* --- In-page block: tabs + panels --- */
 
+.pm-group,
 .runtime-group {
     margin: 16px 0;
     border: 1px solid var(--vp-c-divider);
@@ -124,6 +139,7 @@ html[data-runtime='bun'] .runtime-panel[data-runtime-value='node'] {
     overflow: hidden;
 }
 
+.pm-tabs,
 .runtime-tabs {
     display: flex;
     gap: 4px;
@@ -132,6 +148,7 @@ html[data-runtime='bun'] .runtime-panel[data-runtime-value='node'] {
     border-bottom: 1px solid var(--vp-c-divider);
 }
 
+.pm-tab,
 .runtime-tab {
     padding: 8px 12px;
     border-bottom: 1px solid transparent;
@@ -143,21 +160,29 @@ html[data-runtime='bun'] .runtime-panel[data-runtime-value='node'] {
     transition: color 0.25s, border-color 0.25s;
 }
 
+.pm-tab:hover,
 .runtime-tab:hover {
     color: var(--vp-c-text-1);
 }
 
-html:not([data-runtime='bun']) .runtime-tab[data-runtime-value='node'],
-html[data-runtime='bun'] .runtime-tab[data-runtime-value='bun'] {
+html[data-runtime='node'] .runtime-tab[data-runtime-value='node'],
+html[data-runtime='bun'] .runtime-tab[data-runtime-value='bun'],
+html:not([data-runtime]) .runtime-tab[data-runtime-value='node'],
+html[data-pm='npm'] .pm-tab[data-pm-value='npm'],
+html[data-pm='pnpm'] .pm-tab[data-pm-value='pnpm'],
+html[data-pm='bun'] .pm-tab[data-pm-value='bun'],
+html:not([data-pm]) .pm-tab[data-pm-value='pnpm'] {
     color: var(--vp-c-brand-1);
     border-bottom-color: var(--vp-c-brand-1);
 }
 
+.pm-panel,
 .runtime-panel {
     padding: 0 16px;
 }
 
 /* Code blocks sit flush inside the panel, matching VitePress code groups. */
+.pm-panel > div[class*='language-'],
 .runtime-panel > div[class*='language-'] {
     margin: 16px -16px;
     border-radius: 0;
@@ -185,13 +210,24 @@ html[data-runtime='bun'] .runtime-tab[data-runtime-value='bun'] {
 /* --- Print: no interactivity, so show every variant, labelled --- */
 
 @media print {
-    .runtime-panel[data-runtime-value] {
+    .runtime-panel[data-runtime-value],
+    .pm-panel[data-pm-value] {
         display: block !important;
     }
 
     .runtime-tabs,
+    .pm-tabs,
     .RuntimeSwitch {
         display: none !important;
+    }
+
+    .pm-panel::before {
+        content: 'Package manager: ' attr(data-pm-value);
+        display: block;
+        margin-top: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
     }
 
     .runtime-panel::before {

@@ -23,8 +23,12 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/events
 
 ## Installation
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+npm install @connectum/events
+```
+== pnpm
 ```bash
 pnpm add @connectum/events
 ```
@@ -38,8 +42,16 @@ bun add @connectum/events
 
 You also need at least one adapter package for production use:
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+# Choose one (or more) broker adapters:
+npm install @connectum/events-nats    # NATS JetStream
+npm install @connectum/events-kafka   # Kafka / Redpanda
+npm install @connectum/events-redis   # Redis Streams / Valkey
+npm install @connectum/events-amqp    # AMQP / RabbitMQ
+```
+== pnpm
 ```bash
 # Choose one (or more) broker adapters:
 pnpm add @connectum/events-nats    # NATS JetStream

@@ -24,13 +24,22 @@ Validation runs as the 7th interceptor in the default chain (before serializer, 
 
 Install the required packages:
 
+::: pm
+== npm
 ```bash
-# Validation runtime
-pnpm add @bufbuild/protovalidate @connectrpc/validate
-
-# Proto dependency (buf.yaml)
-# Add buf.build/bufbuild/protovalidate to deps
+npm install @bufbuild/protovalidate @connectrpc/validate
 ```
+== pnpm
+```bash
+pnpm add @bufbuild/protovalidate @connectrpc/validate
+```
+== bun
+```bash
+bun add @bufbuild/protovalidate @connectrpc/validate
+```
+:::
+
+The proto dependency is declared separately, in `buf.yaml` (below).
 
 Declare the dependency in `buf.yaml`:
 

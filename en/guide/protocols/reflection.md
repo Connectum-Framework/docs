@@ -20,9 +20,20 @@ Server Reflection exposes your service schema to any client that can connect. In
 
 ## Installation
 
+::: pm
+== npm
+```bash
+npm install @connectum/reflection
+```
+== pnpm
 ```bash
 pnpm add @connectum/reflection
 ```
+== bun
+```bash
+bun add @connectum/reflection
+```
+:::
 
 Peer dependency: `@connectum/core`.
 

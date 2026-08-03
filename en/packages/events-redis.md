@@ -21,8 +21,12 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/events
 
 ## Installation
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+npm install @connectum/events-redis
+```
+== pnpm
 ```bash
 pnpm add @connectum/events-redis
 ```

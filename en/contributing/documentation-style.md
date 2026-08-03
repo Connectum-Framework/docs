@@ -116,8 +116,10 @@ hand-edit it.
   ````
 
 - **Admonitions** for callouts: `::: tip`, `::: warning`, `::: danger`, `::: info`.
-- **Runtime blocks** for content that differs between Node.js and Bun — see
-  [Runtime-specific content](#runtime-specific-content).
+- **Runtime blocks** for content that differs between Node.js and Bun, and
+  **package-manager blocks** for commands that differ between npm, pnpm and bun — see
+  [Runtime-specific content](#runtime-specific-content) and
+  [Package-manager commands](#package-manager-commands).
 - **Heading levels.** One `#` H1 per page (or the `title:` frontmatter); use `##`
   / `###` for structure. Keep heading text in sync with the sidebar label.
 - **Package layer** statements must match the [architecture map](/en/guide/about)
@@ -128,18 +130,23 @@ hand-edit it.
 
 The site has a runtime switcher (Node.js | Bun) in the navigation bar. Its state lives in
 `data-runtime` on `<html>`, is persisted in `localStorage`, and can be shared through a
-`?runtime=bun` query parameter. Use the `::: runtime` container to write content that
-differs between the two runtimes:
+`?runtime=bun` query parameter.
+
+Use `::: runtime` only for content that differs because of **what executes the code** —
+the test runner, the watch flag, native type stripping. A command that differs only in
+which tool installs a package belongs in [`::: pm`](#package-manager-commands): the
+runtime and the package manager are independent, and a Bun-runtime project can be
+installed with npm.
 
 ````md
 ::: runtime
 == node
 ```bash
-pnpm add @connectum/core
+node --test tests/
 ```
 == bun
 ```bash
-bun add @connectum/core
+bun test tests/
 ```
 :::
 ````
@@ -166,6 +173,57 @@ Rules:
 - **Bun content must be verified**, exactly like every other statement in these docs — a
   command that was never run under Bun does not go into a `== bun` section. See
   [Runtime Compatibility](/en/guide/runtime-compatibility) for the support level.
+
+### Package-manager commands
+
+Commands that differ only in which tool installs a package or runs a script go in a
+`::: pm` block. It carries **npm, pnpm and bun**, is persisted in `localStorage` under a
+key of its own, and can be shared through `?pm=npm`. pnpm is the fallback, so that is
+what crawlers and readers without JavaScript see.
+
+````md
+::: pm
+== npm
+```bash
+npm install -D @connectum/cli
+```
+== pnpm
+```bash
+pnpm add -D @connectum/cli
+```
+== bun
+```bash
+bun add -d @connectum/cli
+```
+:::
+````
+
+`bun` appears in both switchers and means different things: the runtime that executes
+your TypeScript, and the tool that installs dependencies. They are chosen independently.
+
+Three checks run at build time, because "every tab is present" is not the same as "every
+tab is right". Each one fails the build with the file and line:
+
+1. **Every package manager must be filled in.** A reader who picked npm and finds an
+   empty tab has no command at all, which is worse than no switcher.
+2. **Each tab must run its own tool** — the `npm` tab starts with `npm` or `npx`, and so
+   on. This catches a snippet copied from a neighbouring tab and left unedited.
+3. **The tabs must operate on the same arguments.** Tool names, subcommands and flags may
+   differ (`npm install -D` / `pnpm add -D` / `bun add -d`); package and script names may
+   not. This catches a package added to one tab and forgotten in the others.
+
+Rules:
+
+- **No headings inside the block**, for the same reason as runtime blocks.
+- **Hoist whatever does not vary.** If a step also runs a command that is identical
+  everywhere (`mkdir …`, `npx connectum …`, which runs under Node.js whatever installed
+  it), put it in a plain code block outside — check 2 will reject it inside, and the page
+  reads better with the shared part stated once.
+- **Contributor documentation stays on pnpm** with no block: the framework is developed
+  on pnpm, and offering a choice there would be a lie.
+- **Do not nest it inside `::: code-group`.** Where a page already tabs by something else
+  (the event adapters, for instance), the two tab strips would fight; leave that page on
+  its existing axis.
 
 Implementation: `.vitepress/plugins/runtimeContainer.ts` (markdown container),
 `.vitepress/theme/RuntimeSwitch.vue` (navbar control), `.vitepress/theme/custom.css`
