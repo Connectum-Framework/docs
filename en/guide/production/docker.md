@@ -24,11 +24,11 @@ Key highlights:
 ::: runtime
 == node
 - **Stage 1 (deps)** -- `pnpm install --frozen-lockfile --prod` for reproducible, minimal dependencies
-- **Stage 2 (runtime)** -- non-root `node` user, `wget`-based HEALTHCHECK against `/healthz`, native TypeScript via `node src/index.ts`
+- **Stage 2 (runtime)** -- non-root `node` user, `curl`-based HEALTHCHECK against `/healthz`, native TypeScript via `node src/index.ts`
 - Environment defaults: `NODE_ENV=production`, `PORT=5000`, `LOG_FORMAT=json`, health and graceful shutdown enabled
 == bun
 - **Stage 1 (deps)** -- `bun install --frozen-lockfile` for reproducible dependencies
-- **Stage 2 (runtime)** -- `oven/bun:1-slim`, HEALTHCHECK against `/healthz`, TypeScript executed directly via `bun run src/index.ts`
+- **Stage 2 (runtime)** -- `oven/bun:1-slim`, `curl`-based HEALTHCHECK against `/healthz`, TypeScript executed directly via `bun run src/index.ts`
 - Environment defaults: `NODE_ENV=production`, `PORT=5000`, `LOG_FORMAT=json`, health and graceful shutdown enabled
 
 The reference `Dockerfile` in the examples repository targets Node.js; the Bun variant
@@ -40,6 +40,37 @@ above mirrors it stage for stage.
 If your own application code is compiled to JavaScript (e.g., via tsup or tsx), you can use any Node.js 22+ base image instead of `node:25-slim`. Use `node:25-slim` only when you want to run your own `.ts` files natively via Node.js type stripping.
 :::
 ::::
+
+### HEALTHCHECK on a Plaintext h2c Server
+
+If your server runs plaintext h2c -- `allowHTTP1: false` without TLS, the recommended
+posture for internal gRPC services -- the probe **must speak HTTP/2**:
+
+```dockerfile
+HEALTHCHECK --interval=10s --timeout=3s --start-period=15s --retries=3 \
+    CMD curl -fsS --http2-prior-knowledge http://localhost:${PORT:-5000}/healthz || exit 1
+```
+
+::: danger Do not probe an h2c server with `wget`
+`wget` speaks HTTP/1.1 only. Against an h2c listener it receives an empty status line
+and **still exits 0**, so the probe passes for any URL on an open port -- including a
+path that does not exist, and including a service reporting `NOT_SERVING`. The container
+is then reported healthy while being unable to serve. Verified against a running server:
+`wget -q --spider .../healthz` and `wget -q --spider .../does-not-exist` both exit 0,
+while `curl -fsS --http2-prior-knowledge` returns 200 for the first and fails on the
+second.
+
+`curl` alone is not enough either -- without `--http2-prior-knowledge` it reports
+`Received HTTP/0.9 when not allowed` and the container never becomes healthy.
+:::
+
+`-f` makes curl fail on a non-2xx status, which is what distinguishes a healthy service
+from a sick one: `/healthz` answers **200** for `SERVING` and **503** for `NOT_SERVING`
+and `UNKNOWN`.
+
+On a server that accepts HTTP/1.1 (`allowHTTP1: true`, the default) the plain
+`curl -fsS http://localhost:${PORT:-5000}/healthz` is correct. If one image serves both
+postures, chain the two probes with `||`.
 
 ### Runtime Command
 
@@ -66,7 +97,7 @@ Code generation runs the same way inside the image -- `RUN bunx buf generate`. S
 
 ### Alpine Variant (Node.js Images)
 
-If you need a smaller image and do not depend on native modules requiring glibc, use the Alpine variant: swap both `FROM node:25-slim` lines in the [Dockerfile](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/Dockerfile) for `node:25-alpine`. Verify the HEALTHCHECK command still resolves on Alpine (its BusyBox `wget` differs from the GNU build); adjust the probe command if needed.
+If you need a smaller image and do not depend on native modules requiring glibc, use the Alpine variant: swap both `FROM node:25-slim` lines in the [Dockerfile](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/Dockerfile) for `node:25-alpine`, and install `curl` with `apk add --no-cache curl` instead of `apt-get`. Alpine's BusyBox applets differ from the GNU builds, so re-verify the HEALTHCHECK actually reports `unhealthy` for a bad URL rather than only checking that it passes for a good one.
 
 ### Image Size Comparison (Node.js Images)
 
