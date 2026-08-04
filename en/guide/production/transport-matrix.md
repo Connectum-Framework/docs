@@ -100,13 +100,23 @@ Connectum does not use them: `createServer()` builds on `node:http2`.
 |---|---|---|---|
 | **Node** (`node:http2` — what Connectum uses) | ✅ | ✅ | ❌ — use a sidecar proxy or TLS + ALPN |
 | **Bun** (`node:http2` — what Connectum uses) | ✅ | ✅ | ❌ |
-| **Bun** (`Bun.serve`) | ❌ (no HTTP/2 trailers)* | ✅ | ❌ |
-| **Deno** (`Deno.serve`) | ❌ (no HTTP/2 trailers) | ✅ | ❌ |
+| **Bun** (`Bun.serve`) | ❌ (no HTTP/2 at all)* | ✅ | ❌ |
+| **Deno** (`Deno.serve`) | ❌ (no HTTP/2 trailers)† | ✅ | ❌ |
 | **Cloudflare Workers** | ❌ (edge-terminated, no raw ports) | ✅ (Connect / gRPC-Web) | ❌ (n/a) |
 
-\* `Bun.serve` and `Deno.serve` are marked from their fetch-style `Response` API, which
-carries no trailers -- Connectum does not build on them, so this project has not executed
-that case. Everything Connectum *does* use is covered in
+\* **Measured on Bun 1.3.13 and 1.3.14**, and the reason is stronger than the missing
+trailers: `Bun.serve` has **no HTTP/2 server at all**. Offered `["h2","http/1.1"]` over
+TLS it selects no protocol (`alpnProtocol === false`); an h2c prior-knowledge request
+fails with `ERR_HTTP2_ERROR Protocol error`; and `Response` has no trailer member, so a
+`Trailer:` header is echoed but nothing follows the body. There is no `http2` option to
+enable -- `Bun.serve` silently ignores unknown keys, so passing one proves nothing. Bun
+1.3.14 adds an HTTP/3 server and an experimental HTTP/2 client for `fetch()`; neither is
+an HTTP/2 *server*.
+
+† `Deno.serve` is marked from its documented fetch-style `Response` API. **This project
+has not executed that case** -- unlike the Bun row above it.
+
+Connectum builds on neither API. Everything it *does* use is covered in
 [Verified behaviour by runtime](#verified).
 
 **Takeaway:** the fetch-style `serve()` APIs cannot host native gRPC, but that
@@ -158,8 +168,14 @@ trailers in both directions -- verified down to Bun 1.1.38, including an error w
 | **Bun >= 1.2.6** | unary ✅ · server streaming ✅ · bidi ✅ · trailers ✅ | unary ✅ · server streaming ✅ · bidi ❌ (protocol) |
 
 The Bun boundary was located by bisection over 1.1.38, 1.2.0, 1.2.5, 1.2.6, 1.2.7, 1.2.8,
-1.2.9, 1.2.10, 1.2.15, 1.2.21, 1.3.0 and 1.3.13: **1.2.5 hangs, 1.2.6 passes**, and every
-later version passes. Bun 1.2.6 rewrote the `node:http2` client.
+1.2.9, 1.2.10, 1.2.15, 1.2.21, 1.3.0, 1.3.13 and 1.3.14: **1.2.5 hangs, 1.2.6 passes**, and
+every later version passes. Bun 1.2.6 rewrote the `node:http2` client.
+
+Re-checked on **Bun 1.3.14** (the latest release at the time of writing) with no
+regressions, in-process and cross-process in both directions -- a Connectum server hosted
+by Bun answering a Node.js gRPC client, and the reverse. The cross-process runs captured a
+real DATA-then-TRAILERS frame sequence carrying `grpc-status`, so the trailer claim is a
+wire observation rather than an inference from a client library.
 
 ::: warning A hang, not an error
 Earlier revisions of these docs described this as a `TypeError`. That symptom was **not
@@ -188,7 +204,8 @@ letting it hang -- see [Startup validation](#startup-validation).
 Stated so the table above is not read as broader than it is:
 
 - **TLS + ALPN under Bun.** Every run above was plaintext (h2c or HTTP/1.1).
-- **Bun below 1.1.38**, and the `Bun.serve` API, which Connectum does not use.
+- **Bun below 1.1.38.**
+- **`Deno.serve`**, and Deno generally.
 - **`@connectrpc/connect-node` 1.x** (protobuf-es v1). Only 2.x was exercised, so the
   original `TypeError` report cannot be disproved for that generation.
 
