@@ -84,7 +84,24 @@ CMD ["node", "src/index.ts"]
 CMD ["npx", "tsx", "src/index.ts"]
 ```
 
-When using **tsx**, you can use any Node.js 22+ base image (e.g., `node:22-slim`, `node:24-slim`) and add `tsx` as a dependency. Since `@connectum/*` packages ship compiled JavaScript, no special loader is needed for any runtime.
+When using **tsx**, you can use any Node.js 22+ base image (e.g., `node:22-slim`, `node:24-slim`). Since `@connectum/*` packages ship compiled JavaScript, no special loader is needed for any runtime.
+
+::: danger tsx must be a regular dependency, not a devDependency
+A production image installs with `--omit=dev` (or `--prod`), so a tsx left in
+`devDependencies` is **not in the image**. `npx` then tries to download it from the
+registry when the container starts: with no network the container fails to start at all,
+and with network every start silently fetches a package.
+
+Verified in a container: with tsx in `devDependencies` and `--network none`, the image
+exits with `request to https://registry.npmjs.org/tsx failed`. Moving tsx to
+`dependencies` makes the same image start normally.
+
+`connectum init --node-exec tsx` puts tsx in `devDependencies`, which is right for a
+project that runs from source but wrong for a `--prod` image -- move it before
+containerising, or pin the run command to the resolved binary
+(`CMD ["./node_modules/.bin/tsx", "src/index.ts"]`) so a missing dependency fails loudly
+at build time instead of at start-up.
+:::
 == bun
 ```dockerfile
 FROM oven/bun:1-slim AS runtime
