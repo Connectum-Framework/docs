@@ -1,15 +1,22 @@
 # Scaffolding a New Service
 
 The `connectum` CLI scaffolds a production-ready Connectum project and adds services to
-an existing one. It fetches the dogfooded `getting-started` example as the base (so the
-starter layout is always in sync with a tested example) and composes the modules you
-select on top.
+an existing one. It fetches the dogfooded `getting-started` example as the base — so the
+starter layout comes from a real, tested example rather than a template copy — and
+composes the modules you select on top.
 
 ::: tip Requirements
 `connectum init` fetches the base from GitHub, so it needs network access the first
 time. It produces a standalone project that depends on the published `@connectum/*`
 packages. The CLI itself is exercised on Node.js — run it with `npx` even when the
 project you are scaffolding targets Bun.
+:::
+
+::: tip The base is pinned per CLI release
+Each CLI release fetches a **fixed tag** of the examples repository, not its default
+branch, so the same CLI version always scaffolds the same base. Pass `--ref` to fetch a
+different one (`--ref main` for the latest example). Drift between the pinned base and
+the live example is caught by CI on the framework repository, not by your `init`.
 :::
 
 ## `connectum init`
@@ -88,6 +95,11 @@ The generated scripts match the runtime you picked:
 The generated e2e test itself is runtime-agnostic: it uses the in-process
 `createLocalClient`, which opens no socket and behaves identically on both runtimes.
 
+It also calls the project's own `buildServer()` rather than assembling a throwaway
+server, so the request travels the same interceptor chain, protocols and services your
+process entry starts. That matters: a test that builds its own bare server passes even
+when a module has made the service unreachable.
+
 ### Options
 
 | Flag | Values | Description |
@@ -105,6 +117,21 @@ The generated e2e test itself is runtime-agnostic: it uses the in-process
 | `--sample` / `--no-sample` | — | Emit the runnable sample Greeter service (default on) |
 | `--yes`, `-y` | — | Non-interactive; use flags and defaults |
 | `--force` | — | Overwrite existing files |
+| `--ref` | any git ref | Base example ref to fetch (advanced; defaults to the tag pinned for this CLI release) |
+
+### What `--auth` generates
+
+Proto-driven authorization is **deny-by-default**, so the sample service is annotated to
+be both usable and demonstrative:
+
+- `SayHello` carries `option (connectum.auth.v1.method_auth) = { public: true }` — it
+  skips authentication and authorization, so the scaffolded project answers a call the
+  moment it starts;
+- `SayGoodbye` is left unannotated — it requires a valid JWT.
+
+The generated e2e test asserts both directions: the public rpc succeeds and the
+authenticated one is rejected without credentials. Remove the option from `SayHello` once
+you want every method to require a token.
 
 ### Interceptor order
 
