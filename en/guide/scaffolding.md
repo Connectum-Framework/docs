@@ -18,8 +18,11 @@ Create a new project. Run it interactively:
 
 ```bash
 npx @connectum/cli init
-# or: pnpm dlx @connectum/cli init
 ```
+
+Run the CLI with `npx` whatever you use day to day: it reaches a server through the
+Node.js gRPC transport and is exercised on Node.js only. The project it generates has no
+such restriction.
 
 The wizard asks for a project name, runtime, package manager, and which modules to
 include. Or pass everything as flags for a non-interactive run:
@@ -37,9 +40,35 @@ Then:
 
 ```bash
 cd payments
+```
+
+::: pm
+== npm
+```bash
+npm install
+npm run start
+```
+== pnpm
+```bash
 pnpm install
 pnpm run start
 ```
+== bun
+```bash
+bun install
+bun run start
+```
+:::
+
+::: warning `--package-manager` accepts pnpm and npm only
+The flag has no `bun` value today, so scaffold with `pnpm` or `npm` and install with
+whatever you prefer afterwards: `bun install` works on the generated project unchanged,
+since it lays out an ordinary `node_modules`. The only thing you do not get from the
+scaffold is a matching lockfile.
+
+This is independent of `--runtime bun`, which does work and is what decides whether the
+generated scripts and tests target Bun.
+:::
 
 `buf generate` is wired into the `start`, `test`, and `typecheck` scripts, so the
 generated code under `gen/` is always current — you never hit a "cannot find module
