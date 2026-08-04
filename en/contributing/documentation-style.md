@@ -116,8 +116,10 @@ hand-edit it.
   ````
 
 - **Admonitions** for callouts: `::: tip`, `::: warning`, `::: danger`, `::: info`.
-- **Runtime blocks** for content that differs between Node.js and Bun — see
-  [Runtime-specific content](#runtime-specific-content).
+- **Runtime blocks** for content that differs between Node.js and Bun, and
+  **package-manager blocks** for commands that differ between npm, pnpm and bun — see
+  [Runtime-specific content](#runtime-specific-content) and
+  [Package-manager commands](#package-manager-commands).
 - **Heading levels.** One `#` H1 per page (or the `title:` frontmatter); use `##`
   / `###` for structure. Keep heading text in sync with the sidebar label.
 - **Package layer** statements must match the [architecture map](/en/guide/about)
@@ -126,28 +128,35 @@ hand-edit it.
 
 ### Runtime-specific content
 
-The site has a runtime switcher (Node.js | Bun) in the navigation bar. Its state lives in
-`data-runtime` on `<html>`, is persisted in `localStorage`, and can be shared through a
-`?runtime=bun` query parameter. Use the `::: runtime` container to write content that
-differs between the two runtimes:
+The site switches runtime-specific content with tabs on the block itself -- there is no
+navigation-bar control, so both switchers work the same way. The state lives in
+`data-runtime` on `<html>`, is persisted in `localStorage`, syncs every block on every
+page, and can be shared through a `?runtime=bun` query parameter.
+
+Use `::: runtime` only for content that differs because of **what executes the code** —
+the test runner, the watch flag, native type stripping. A command that differs only in
+which tool installs a package belongs in [`::: pm`](#package-manager-commands): the
+runtime and the package manager are independent, and a Bun-runtime project can be
+installed with npm.
 
 ````md
 ::: runtime
 == node
 ```bash
-pnpm add @connectum/core
+node --test tests/
 ```
 == bun
 ```bash
-bun add @connectum/core
+bun test tests/
 ```
 :::
 ````
 
-A block with a single runtime is written as `::: runtime bun` (or `::: runtime node`) and
-is shown only when that runtime is selected — use it for a caveat that has no Node.js
-counterpart. Wrap a block that contains another container in four colons
-(`:::: runtime` … `::::`).
+A block with a single runtime is written as `::: runtime bun` (or `::: runtime node`).
+It has no tab strip, so it is **always visible**, rendered as a callout labelled with the
+runtime — hiding it would leave no control to bring it back. Use it for a caveat that has
+no counterpart on the other runtime. Wrap a block that contains another container in four
+colons (`:::: runtime` … `::::`).
 
 Rules:
 
@@ -161,11 +170,64 @@ Rules:
 - **Only for consumer-facing pages.** Contributor documentation (`docs/en/contributing/**`)
   always uses pnpm and Node.js — the framework itself is developed on that stack, and a
   runtime switch there would be a lie.
-- **Do not leave a section empty.** A `::: runtime bun` block must not be the only content
-  under a heading, or Node.js readers see a heading with nothing under it.
+- **Keep single-runtime blocks short.** They are always on screen, so a long one is noise
+  for readers on the other runtime. A caveat, not an alternative version of the section.
 - **Bun content must be verified**, exactly like every other statement in these docs — a
   command that was never run under Bun does not go into a `== bun` section. See
   [Runtime Compatibility](/en/guide/runtime-compatibility) for the support level.
+
+### Package-manager commands
+
+Commands that differ only in which tool installs a package or runs a script go in a
+`::: pm` block. It carries **npm, pnpm and bun**, is persisted in `localStorage` under a
+key of its own, syncs every block on every page, and can be shared through `?pm=npm`.
+pnpm is the fallback, so that is what crawlers and readers without JavaScript see.
+
+````md
+::: pm
+== npm
+```bash
+npm install -D @connectum/cli
+```
+== pnpm
+```bash
+pnpm add -D @connectum/cli
+```
+== bun
+```bash
+bun add -d @connectum/cli
+```
+:::
+````
+
+`bun` appears in both switchers and means different things: the runtime that executes
+your TypeScript, and the tool that installs dependencies. They are chosen independently.
+
+Three checks run at build time, because "every tab is present" is not the same as "every
+tab is right". Each one fails the build with the file and line:
+
+1. **Every package manager must be filled in.** A reader who picked npm and finds an
+   empty tab has no command at all, which is worse than no switcher.
+2. **Each tab must run its own tool** — the `npm` tab starts with `npm` or `npx`, and so
+   on. This catches a snippet copied from a neighbouring tab and left unedited.
+3. **The tabs must operate on the same arguments.** Tool names, subcommands and flags may
+   differ (`npm install -D` / `pnpm add -D` / `bun add -d`); package and script names may
+   not. This catches a package added to one tab and forgotten in the others.
+
+Rules:
+
+- **No headings inside the block**, for the same reason as runtime blocks.
+- **Hoist whatever does not vary.** If a step also runs a command that is identical
+  everywhere (`mkdir …`, `npx connectum …`, which runs under Node.js whatever installed
+  it), put it in a plain code block outside — check 2 will reject it inside, and the page
+  reads better with the shared part stated once.
+- **Contributor documentation stays on pnpm** with no block: the framework is developed
+  on pnpm, and offering a choice there would be a lie.
+- **Do not nest it inside `::: code-group`.** Two tab strips would fight. Where a page
+  tabs by something else, decide which axis earns the tabs: on the events getting-started
+  page the adapters became a table (they differ only by package name) so the tabs could
+  carry the package manager, while the adapter *code* further down keeps its code-group
+  because the snippets genuinely differ.
 
 Implementation: `.vitepress/plugins/runtimeContainer.ts` (markdown container),
 `.vitepress/theme/RuntimeSwitch.vue` (navbar control), `.vitepress/theme/custom.css`

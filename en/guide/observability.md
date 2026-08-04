@@ -35,9 +35,20 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
 
 ## Installation
 
+::: pm
+== npm
+```bash
+npm install @connectum/otel
+```
+== pnpm
 ```bash
 pnpm add @connectum/otel
 ```
+== bun
+```bash
+bun add @connectum/otel
+```
+:::
 
 Peer dependencies (installed automatically): `@opentelemetry/api`, `@opentelemetry/sdk-node`.
 

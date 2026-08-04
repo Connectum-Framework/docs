@@ -14,31 +14,32 @@ This guide walks you through setting up event-driven communication between Conne
 
 ## Step 1: Install Packages
 
-Install the core events package and a broker adapter:
+Install `@connectum/events` plus the adapter for your broker:
 
-::: code-group
+| Broker | Adapter package |
+|---|---|
+| NATS JetStream | `@connectum/events-nats` |
+| Kafka / Redpanda | `@connectum/events-kafka` |
+| Redis Streams / Valkey | `@connectum/events-redis` |
+| AMQP / RabbitMQ | `@connectum/events-amqp` |
+| Memory (testing) | built in -- no extra package |
 
-```bash [NATS JetStream]
+The commands below install the NATS adapter; substitute the package from the table for
+another broker, or drop it entirely to start with the in-memory adapter.
+
+::: pm
+== npm
+```bash
+npm install @connectum/events @connectum/events-nats
+```
+== pnpm
+```bash
 pnpm add @connectum/events @connectum/events-nats
 ```
-
-```bash [Kafka / Redpanda]
-pnpm add @connectum/events @connectum/events-kafka
+== bun
+```bash
+bun add @connectum/events @connectum/events-nats
 ```
-
-```bash [Redis Streams]
-pnpm add @connectum/events @connectum/events-redis
-```
-
-```bash [AMQP / RabbitMQ]
-pnpm add @connectum/events @connectum/events-amqp
-```
-
-```bash [Memory (testing)]
-pnpm add @connectum/events
-# MemoryAdapter is built-in — no extra package needed
-```
-
 :::
 
 ## Step 2: Define Proto Event Handlers

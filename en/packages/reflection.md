@@ -20,8 +20,12 @@ Complete TypeScript API documentation: [API Reference](/en/api/@connectum/reflec
 
 ## Installation
 
-::: runtime
-== node
+::: pm
+== npm
+```bash
+npm install @connectum/reflection
+```
+== pnpm
 ```bash
 pnpm add @connectum/reflection
 ```
