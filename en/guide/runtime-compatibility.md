@@ -14,6 +14,13 @@ navigation bar (and next to each affected block). This page deliberately shows b
 runtimes side by side.
 :::
 
+::: tip Scaffolding emits runtime-appropriate defaults
+`connectum init --runtime bun` (see [Scaffolding a Service](/en/guide/scaffolding)) emits
+Bun-appropriate defaults — the `bun test` runner and the in-process `createLocalClient`
+test transport, which opens no socket and behaves identically on both runtimes. The CLI
+itself is exercised on Node.js, so run it with `npx` even inside a Bun project.
+:::
+
 ## Compatibility Matrix
 
 | Package | Node.js 22 | Node.js 25 | Bun >= 1.2.6 |
