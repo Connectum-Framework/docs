@@ -67,14 +67,12 @@ bun run start
 ```
 :::
 
-::: warning `--package-manager` accepts pnpm and npm only
-The flag has no `bun` value today, so scaffold with `pnpm` or `npm` and install with
-whatever you prefer afterwards: `bun install` works on the generated project unchanged,
-since it lays out an ordinary `node_modules`. The only thing you do not get from the
-scaffold is a matching lockfile.
-
-This is independent of `--runtime bun`, which does work and is what decides whether the
-generated scripts and tests target Bun.
+::: tip `--package-manager` and `--runtime` are independent
+`--package-manager` decides what installs dependencies and runs scripts;
+`--runtime` decides what executes your TypeScript. Either accepts `bun`, and they do
+not have to agree: `bun install` lays out an ordinary `node_modules`, so a
+bun-installed project runs on Node.js and an npm-installed one runs on Bun. Both
+crossings are exercised in CI.
 :::
 
 `buf generate` is wired into the `start`, `test`, and `typecheck` scripts, so the
@@ -105,7 +103,7 @@ when a module has made the service unreachable.
 | Flag | Values | Description |
 |------|--------|-------------|
 | `--runtime` | `node` (default), `bun` | Target runtime |
-| `--package-manager` | `pnpm` (default), `npm` | Package manager |
+| `--package-manager` | `pnpm` (default), `npm`, `bun` | Package manager |
 | `--node-exec` | `raw` (default), `tsx` | Node execution model: `raw` runs `.ts` directly (Node ≥25.2); `tsx` compiles (Node ≥22.13) |
 | `--otel` | — | Add OpenTelemetry (interceptor + provider lifecycle) |
 | `--events` | `nats`, `kafka`, `redpanda`, `redis`, `amqp` | Add an EventBus with the chosen adapter |
