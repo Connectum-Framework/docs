@@ -326,14 +326,16 @@ Do not describe a client-side compatibility page as a permanent HTTP redirect.
 ## Documented version and release checklist
 
 `.vitepress/data/site.json` is the single maintained source for the documented
-Connectum release line and supported Node.js floors. The documentation maintainer
-updates it in the release documentation change; components must not hard-code a
-second version string.
+Connectum release line. The documentation maintainer updates it in the release
+documentation change; components must not hard-code a second version string.
+Runtime floors and environment-specific support belong in the canonical
+[Runtime Compatibility](/en/guide/runtime-compatibility) matrix rather than shared
+site metadata.
 
-For every release:
+For every release line:
 
-1. Update the documented release line after package versions are finalized.
-2. Regenerate TypeDoc from the released framework source; do not hand-edit output.
+1. Update the documented release line when the portal begins targeting that line.
+2. Regenerate TypeDoc from the targeted framework source; do not hand-edit output.
 3. Add focused migration instructions for required user action.
 4. Review Quickstart, Runtime Compatibility, package hubs, and representative
    interface links against the released source.
