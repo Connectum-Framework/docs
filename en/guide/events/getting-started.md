@@ -1,10 +1,13 @@
 ---
+title: Build Your First Event Flow
+description: Publish and consume one typed event through a lifecycle-managed Connectum EventBus.
+docType: tutorial
 outline: deep
 ---
 
 # Getting Started with Events
 
-This guide walks you through setting up event-driven communication between Connectum microservices using the EventBus.
+This guide walks you through setting up event-driven communication between Connectum microservices using the EventBus. You finish with one published event handled successfully; broker selection and middleware tuning are optional next steps.
 
 ## Prerequisites
 
@@ -154,7 +157,7 @@ export const notificationEvents: EventRoute = (events) => {
 ```
 
 ::: tip Acknowledgment
-Explicit ack/nack is optional. Successful handler completion auto-acks the event. Use `ctx.ack()` or `ctx.nack()` when you need explicit control over acknowledgment timing.
+Successful handler completion auto-acks the event. The [Events concept guide](/en/guide/events#eventcontext) owns acknowledgment and metadata semantics.
 :::
 
 ## Step 5: Create the EventBus
@@ -211,7 +214,7 @@ server.on('ready', () => {
 await server.start();
 ```
 
-The server automatically calls `eventBus.start()` on startup and `eventBus.stop()` on graceful shutdown.
+The server now owns the EventBus lifecycle. See the [Events concept guide](/en/guide/events#architecture) for that lifecycle boundary.
 
 ## Step 7: Publish Events
 

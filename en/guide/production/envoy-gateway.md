@@ -56,86 +56,10 @@ The `google/api/http.proto` and `google/api/annotations.proto` files are availab
 
 ## Step 2: Generate OpenAPI Spec
 
-Generate an OpenAPI v3 specification from your annotated proto files using `protoc-gen-openapiv3`:
-
-### Install
-
-```bash
-# Install the protoc plugin
-go install github.com/google/gnostic/cmd/protoc-gen-openapi@latest
-
-# Or via buf plugin
-# Add to buf.gen.yaml
-```
-
-### buf.gen.yaml Configuration
-
-Configure buf to generate both ConnectRPC TypeScript stubs (`protoc-gen-es`) and an OpenAPI v3 spec (`protoc-gen-openapi`) with proto-style naming and string enums — add a `protoc-gen-openapi` plugin entry to your `buf.gen.yaml` alongside the existing `protoc-gen-es` plugin.
-
-### Generate
-
-```bash
-# Generate TypeScript stubs + OpenAPI spec
-buf generate
-
-# Output: openapi/mycompany/orders/v1/orders.openapi.yaml
-```
-
-### Example Generated OpenAPI
-
-```yaml
-openapi: 3.0.3
-info:
-  title: Order Service API
-  version: 1.0.0
-paths:
-  /v1/orders:
-    post:
-      operationId: OrderService_CreateOrder
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateOrderRequest'
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreateOrderResponse'
-    get:
-      operationId: OrderService_ListOrders
-      parameters:
-        - name: page_size
-          in: query
-          schema:
-            type: integer
-        - name: page_token
-          in: query
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListOrdersResponse'
-  /v1/orders/{order_id}:
-    get:
-      operationId: OrderService_GetOrder
-      parameters:
-        - name: order_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Order'
-```
+Generate the canonical OpenAPI artifact with the dedicated [OpenAPI and authz
+workflow](/en/guide/openapi). Keeping generation in one guide prevents the gateway
+from drifting to a different plugin, schema version, or authorization mapping. The
+gateway consumes that artifact; it does not own its generation policy.
 
 ## Step 3: Generate Proto Descriptor
 

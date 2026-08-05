@@ -1,4 +1,7 @@
 ---
+title: Configure TLS
+description: Load a server certificate and select the secure Connectum transport behavior.
+docType: how-to
 outline: deep
 ---
 
@@ -6,22 +9,14 @@ outline: deep
 
 Configure TLS for secure gRPC/ConnectRPC communication in Connectum services.
 
+**Outcome:** the server starts with a trusted key/certificate pair and clients verify it. Client-certificate enforcement is a separate [mTLS task](/en/guide/security/mtls); exact loading fields live in [`TLSOptions`](/en/api/@connectum/core/types/interfaces/TLSOptions).
+
 ## TLS Options
 
-The `tls` option in `createServer()` accepts a `TLSOptions` object:
-
-```typescript
-interface TLSOptions {
-  /** Path to TLS private key file */
-  keyPath?: string;
-
-  /** Path to TLS certificate file */
-  certPath?: string;
-
-  /** TLS directory path (alternative to keyPath/certPath) */
-  dirPath?: string;
-}
-```
+The `tls` option accepts either explicit key/certificate paths or a directory that
+contains `server.key` and `server.crt`. Do not copy this shape into application
+types; use the generated [`TLSOptions`](/en/api/@connectum/core/types/interfaces/TLSOptions)
+contract.
 
 ### Explicit File Paths
 

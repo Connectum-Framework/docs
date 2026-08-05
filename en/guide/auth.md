@@ -1,146 +1,41 @@
 ---
+title: Auth and Authz
+description: Choose authentication, authorization, propagation, and testing paths for a Connectum service.
+docType: concept
 outline: deep
 ---
 
-# Auth & Authz
+# Auth and Authz
 
-The `@connectum/auth` package provides authentication interceptors and two authorization models: **proto-based** (rules in `.proto` files) and **code-based** (programmatic rules in TypeScript). Proto-based is the recommended approach -- it keeps access control alongside your API contract and requires zero application code changes when rules evolve.
+Authentication establishes an `AuthContext`; authorization decides whether that identity may invoke a method. Keep those decisions separate in the interceptor chain even when they are configured together.
 
-## Quick Start
+## Choose the trust boundary
 
-### Proto-Based Authorization (Recommended)
+| Boundary | Start here |
+|---|---|
+| Clients send bearer JWTs directly | [JWT authentication](/en/guide/auth/jwt) |
+| A trusted gateway verifies credentials first | [Gateway authentication](/en/guide/auth/gateway) |
+| A web application resolves a session | [Session authentication](/en/guide/auth/session) |
+| Internal services attach outgoing identity | [Client interceptors](/en/guide/auth/client-interceptors) |
+| Handlers need the authenticated identity | [Auth context](/en/guide/auth/context) |
 
-Define access rules directly in `.proto` files -- the interceptor reads them at runtime:
+## Choose authorization ownership
 
-```protobuf
-import "connectum/auth/v1/options.proto";
-
-service UserService {
-  option (connectum.auth.v1.service_auth) = { default_policy: "deny" };
-
-  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse) {
-    option (connectum.auth.v1.method_auth) = { public: true };
-  }
-
-  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
-    option (connectum.auth.v1.method_auth) = { requires: { roles: ["admin"] } };
-  }
-}
-```
+Use [proto-based authorization](/en/guide/auth/proto-authz) when access policy belongs with the RPC contract. It keeps public methods, roles, scopes, and the runtime resolver on the same generated descriptor. Use [code-based authorization](/en/guide/auth/authorization) for dynamic rules or legacy services whose policy cannot live in proto options.
 
 ```typescript
-import { createServer } from '@connectum/core';
-import { createDefaultInterceptors, createErrorHandlerInterceptor } from '@connectum/interceptors';
-import {
-  createJwtAuthInterceptor,
-  createProtoAuthzInterceptor,
-  getPublicMethods,
-} from '@connectum/auth';
-import { UserService } from '#gen/user_pb.js';
-
-const publicMethods = getPublicMethods([UserService]);
-
-const jwtAuth = createJwtAuthInterceptor({
-  jwksUri: 'https://auth.example.com/.well-known/jwks.json',
-  skipMethods: publicMethods, // synced from proto `public: true`
-});
-
-const authz = createProtoAuthzInterceptor({ defaultPolicy: 'deny' });
-
-const server = createServer({
-  services: [routes],
-  // Recommended order: errorHandler -> AUTH -> AUTHZ -> rest.
-  // createDefaultInterceptors has no auth slot, so compose manually:
-  // put errorHandler first, auth next, then disable the default errorHandler.
-  interceptors: [
-    createErrorHandlerInterceptor(),
-    jwtAuth,
-    authz,
-    ...createDefaultInterceptors({ errorHandler: false }),
-  ],
-});
-
-await server.start();
+interceptors: [
+  createErrorHandlerInterceptor(),
+  createJwtAuthInterceptor({ jwksUri, skipMethods }),
+  createProtoAuthzInterceptor({ defaultPolicy: 'deny' }),
+  ...createDefaultInterceptors({ errorHandler: false }),
+]
 ```
 
-### Code-Based Authorization
+The security invariant is `error handling → authentication → authorization → remaining behavior`. Public-method discovery and exact factory fields are deliberately not duplicated here; use the focused guide and generated interfaces such as [`JwtAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/JwtAuthInterceptorOptions).
 
-For services without proto annotations, use programmatic rules:
+## Learn, configure, inspect
 
-```typescript
-import { createAuthzInterceptor } from '@connectum/auth';
-
-const authz = createAuthzInterceptor({
-  defaultPolicy: 'deny',
-  rules: [
-    { name: 'public', methods: ['public.v1.PublicService/*'], effect: 'allow' },
-    { name: 'admin', methods: ['admin.v1.AdminService/*'], requires: { roles: ['admin'] }, effect: 'allow' },
-  ],
-});
-```
-
-Both approaches can be combined -- proto options take priority, programmatic rules act as fallback.
-
-## Key Concepts
-
-### Authorization: Proto vs Code
-
-| | Proto-Based | Code-Based |
-|-|-------------|------------|
-| **Where rules live** | `.proto` files | TypeScript code |
-| **Interceptor** | `createProtoAuthzInterceptor()` | `createAuthzInterceptor()` |
-| **Change access rules** | Edit `.proto`, regenerate | Edit code, redeploy |
-| **Single source of truth** | Proto contract = access policy | Separate from API contract |
-| **Best for** | Most services (recommended) | Dynamic rules, legacy services |
-
-### Authentication Strategies
-
-#### Server-side (validate incoming requests)
-
-| Factory | Credential source | Use case |
-|---------|-------------------|----------|
-| `createAuthInterceptor` | Any (pluggable callback) | API keys, mTLS, opaque tokens |
-| `createJwtAuthInterceptor` | `Authorization: Bearer <JWT>` | Auth0, Keycloak, custom issuers |
-| `createGatewayAuthInterceptor` | Gateway-injected headers | Kong, Envoy, Traefik pre-auth |
-| `createSessionAuthInterceptor` | Session token (cookie or header) | better-auth, lucia, custom sessions |
-
-All server-side factories produce a standard ConnectRPC `Interceptor` and store the authenticated identity in `AuthContext` via `AsyncLocalStorage`.
-
-#### Client-side (attach credentials to outgoing requests)
-
-| Factory | Header set | Use case |
-|---------|------------|----------|
-| `createClientBearerInterceptor` | `Authorization: Bearer <token>` | Calling JWT/session-protected services |
-| `createClientGatewayInterceptor` | `x-gateway-secret`, `x-auth-subject`, `x-auth-roles` | Service-to-service trust behind gateway |
-
-See [Client Interceptors](/en/guide/auth/client-interceptors) for configuration and examples.
-
-### When Do You Need App-Level Auth?
-
-| Scenario | Auth approach |
-|----------|--------------|
-| Services behind an API gateway that verifies tokens | Gateway auth (`createGatewayAuthInterceptor`) |
-| Services exposed directly to clients | JWT auth (`createJwtAuthInterceptor`) |
-| Services with session-based web clients | Session auth (`createSessionAuthInterceptor`) |
-| Custom or exotic credential schemes | Generic auth (`createAuthInterceptor`) |
-
-### Interceptor Chain Position
-
-Auth interceptors must be placed **after** `errorHandler` and **before** resilience interceptors:
-
-```
-errorHandler -> AUTH -> AUTHZ -> timeout -> bulkhead -> circuitBreaker -> ...
-```
-
-## Learn More
-
-- [JWT Authentication](/en/guide/auth/jwt) -- JWKS, HMAC, public key verification
-- [Gateway Authentication](/en/guide/auth/gateway) -- pre-authenticated headers from API gateways
-- [Session Authentication](/en/guide/auth/session) -- cookie-based and session-framework auth
-- [Authorization (RBAC)](/en/guide/auth/authorization) -- declarative rules, programmatic callbacks
-- [Proto-Based Authorization](/en/guide/auth/proto-authz) -- authz rules defined in `.proto` files
-- [Client Interceptors](/en/guide/auth/client-interceptors) -- Bearer token and gateway headers for outgoing requests
-- [Auth Context](/en/guide/auth/context) -- accessing identity in handlers, cross-service propagation, testing
-- [@connectum/auth](/en/packages/auth) -- Package Guide
-- [@connectum/auth API](/en/api/@connectum/auth/) -- Full API Reference
-- [ADR-024: Auth/Authz Strategy](/en/contributing/adr/024-auth-authz-strategy) -- design rationale
+- Learn the model here and in [ADR-024](/en/contributing/adr/024-auth-authz-strategy).
+- Configure a concrete trust boundary in the focused guides above.
+- Use the [`@connectum/auth` module hub](/en/packages/auth) and [generated API](/en/api/@connectum/auth/) for exact symbols.

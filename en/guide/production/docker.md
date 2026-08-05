@@ -184,26 +184,20 @@ FROM node:25-slim@sha256:<digest> AS runtime
 Never use the `latest` tag in production Dockerfiles. Always pin to a specific Node.js version (e.g., `node:25.2.0-slim`) to avoid unexpected breaking changes.
 :::
 
-## Environment Variables Reference
+## Runtime Configuration
 
-These environment variables configure a Connectum service inside a container:
+Keep the container responsible for supplying configuration, not documenting a second
+copy of every field. The canonical owners are:
 
-| Variable | Description | Default |
-|---|---|---|
-| `NODE_ENV` | Runtime environment | `development` |
-| `PORT` | Server listen port | `5000` |
-| `LISTEN` | Bind address | `0.0.0.0` |
-| `LOG_LEVEL` | Log verbosity (`debug`, `info`, `warn`, `error`) | `info` |
-| `LOG_FORMAT` | Log output format (`json`, `pretty`) | `json` |
-| `LOG_BACKEND` | Logger backend (`otel`, `pino`, `console`) | `otel` |
-| `HTTP_HEALTH_ENABLED` | Enable HTTP health endpoints | `false` |
-| `GRACEFUL_SHUTDOWN_ENABLED` | Enable graceful shutdown on SIGTERM/SIGINT | `true` |
-| `GRACEFUL_SHUTDOWN_TIMEOUT_MS` | Shutdown timeout in ms | `30000` |
-| `OTEL_SERVICE_NAME` | OpenTelemetry service name | `npm_package_name` or `unknown-service` |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | OTLP collector endpoint | -- |
-| `OTEL_TRACES_EXPORTER` | Trace exporter (`console`, `otlp/http`, `otlp/grpc`, `none`) | -- |
-| `OTEL_METRICS_EXPORTER` | Metrics exporter | -- |
-| `OTEL_LOGS_EXPORTER` | Logs exporter | -- |
+- [Server configuration](/en/guide/server/configuration) for listen, logging, health,
+  and shutdown environment values;
+- [Runtime compatibility](/en/guide/runtime-compatibility) for supported Node.js and
+  Bun execution modes;
+- [Observability backends](/en/guide/observability/backends) for OpenTelemetry
+  exporters and endpoints.
+
+At minimum set a production environment, a stable service name, and the intended
+listen port; pass secrets through the deployment platform rather than the image.
 
 ## What's Next
 

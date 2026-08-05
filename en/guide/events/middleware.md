@@ -1,10 +1,15 @@
 ---
+title: Configure Event Middleware
+description: Add retry, dead-letter routing, or custom behavior around an EventBus handler.
+docType: how-to
 outline: deep
 ---
 
 # Middleware
 
 The EventBus middleware pipeline wraps event handlers in a composable onion model. Built-in middleware provides retry with configurable backoff and dead letter queue (DLQ) routing. You can add custom middleware for logging, metrics, validation, or any cross-cutting concern.
+
+**Outcome:** configure one middleware chain and verify success, retry exhaustion, and DLQ behavior. Broker choice and delivery guarantees are owned by [Adapter selection](/en/guide/events/adapters); exact exported types are in the [`@connectum/events` API](/en/api/@connectum/events/).
 
 ## Pipeline Order
 

@@ -214,30 +214,11 @@ Configure resource limits for the Istio sidecar to prevent it from starving the 
 
 ## Health Check Configuration with Istio
 
-Istio rewrites health check probes by default. Ensure your probe configuration works correctly:
-
-```yaml
-# In your Deployment pod template
-spec:
-  containers:
-    - name: order-service
-      # Connectum healthcheck HTTP endpoints work through the Istio sidecar
-      # because Istio automatically handles probe rewriting
-      livenessProbe:
-        httpGet:
-          path: /healthz
-          port: 5000
-        periodSeconds: 15
-      readinessProbe:
-        httpGet:
-          path: /readyz
-          port: 5000
-        periodSeconds: 10
-```
-
-::: tip
-Istio 1.20+ rewrites HTTP health probes automatically to route through the sidecar. Connectum's `/healthz`, `/readyz`, and `/health` endpoints work without any special configuration.
-:::
+Use the same `/healthz` liveness and `/readyz` readiness probes documented in
+[Kubernetes health checks](/en/guide/health-checks/kubernetes). Istio 1.20+ rewrites
+HTTP probes through the sidecar by default, so the Connectum application does not
+need a second health model. Verify probe rewriting against the Istio version deployed
+by your cluster before rollout.
 
 ## Kiali: Service Mesh Dashboard
 

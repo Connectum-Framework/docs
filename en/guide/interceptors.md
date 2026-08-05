@@ -1,75 +1,40 @@
 ---
+title: Interceptors
+description: Choose and compose Connectum middleware without duplicating exact option reference.
+docType: concept
 outline: deep
 ---
 
 # Interceptors
 
-Interceptors are the primary mechanism for cross-cutting concerns in Connectum. They wrap RPC calls at the transport level -- adding error handling, timeouts, retries, validation, and more -- without touching business logic.
+Interceptors wrap RPC execution with cross-cutting behavior while handlers stay focused on business logic. Their order is observable: a request moves from the first interceptor toward the handler and the response unwinds in reverse.
 
-## Quick Start
+## Start with the default chain
 
 ```typescript
-import { createServer } from '@connectum/core';
 import { createDefaultInterceptors } from '@connectum/interceptors';
-import routes from '#gen/routes.js';
 
-const server = createServer({
-  services: [routes],
-  port: 5000,
-  // errorHandler + validation by default; resilience is opt-in
-  interceptors: createDefaultInterceptors({
-    timeout: { duration: 10_000 },  // explicitly enabled
-    retry: { maxRetries: 5 },       // explicitly enabled
-  }),
-  shutdown: { autoShutdown: true },
+const interceptors = createDefaultInterceptors({
+  timeout: { duration: 10_000 },
+  retry: { maxRetries: 2 },
 });
-
-await server.start();
 ```
 
-## Key Concepts
+Error handling and validation are structural defaults. Timeout, bulkhead, circuit breaker, retry, fallback, and serializer behavior is opt-in because it changes request semantics. The canonical chain order, defaults, and standalone factories live in [Built-in interceptors](/en/guide/interceptors/built-in); exact fields live in [`DefaultInterceptorOptions`](/en/api/@connectum/interceptors/defaults/interfaces/DefaultInterceptorOptions).
 
-### How Interceptors Work
+## Choose the extension route
 
-A ConnectRPC interceptor is a function that receives `next` and returns a handler. The handler gets control before and after each request, forming a layered pipeline:
+| Need | Route |
+|---|---|
+| Configure the supported chain | [Built-in interceptors](/en/guide/interceptors/built-in) |
+| Add business-specific middleware | [Custom interceptors](/en/guide/interceptors/custom) |
+| Apply behavior to selected services or methods | [Method filtering](/en/guide/interceptors/method-filtering) |
+| Authenticate or authorize calls | [Auth and authz](/en/guide/auth) |
+| Trace incoming or outgoing calls | [Tracing](/en/guide/observability/tracing) |
+| Look up an exact factory or option | [`@connectum/interceptors` API](/en/api/@connectum/interceptors/) |
 
-```
-Request  -> interceptor1 -> interceptor2 -> ... -> handler
-Response <- interceptor1 <- interceptor2 <- ... <- handler
-```
+Use native router scoping when an interceptor belongs to one service, a method-filter interceptor for declarative name patterns, and a custom interceptor only when selection depends on runtime request data.
 
-### Built-in Chain
+## Module route
 
-`createDefaultInterceptors()` is a chain factory for 8 production-ready interceptors in a fixed order:
-
-| # | Interceptor | Purpose | Default |
-|---|-------------|---------|---------|
-| 1 | **errorHandler** | Normalizes errors into ConnectError | Enabled |
-| 2 | **timeout** | Limits request execution time | **Opt-in** (30s when enabled) |
-| 3 | **bulkhead** | Limits concurrent requests | **Opt-in** (capacity 10, queue 10 when enabled) |
-| 4 | **circuitBreaker** | Prevents cascading failures (outbound pattern) | **Opt-in** (threshold 5 when enabled) |
-| 5 | **retry** | Retries transient failures with exponential backoff | **Opt-in** (3 retries when enabled) |
-| 6 | **fallback** | Graceful degradation | **Opt-in** (requires a handler) |
-| 7 | **validation** | Validates via @connectrpc/validate | Enabled |
-| 8 | **serializer** | JSON serialization for protobuf | **Opt-in** |
-
-**No hidden behavioral logic.** Only structural interceptors (errorHandler, validation) are enabled by default. Resilience interceptors (timeout, bulkhead, circuitBreaker, retry) alter request behavior and must be enabled explicitly with `true` or an options object.
-
-### Per-Method Routing
-
-Three approaches for applying interceptors selectively:
-
-| Scenario | Approach |
-|----------|----------|
-| Interceptor bound to a specific service router | ConnectRPC native (`router.service()`) |
-| Declarative routing by pattern | `createMethodFilterInterceptor` |
-| Dynamic logic, filtering by request content | Custom interceptor |
-
-## Learn More
-
-- [Built-in Interceptors](/en/guide/interceptors/built-in) -- detailed chain reference, customization, and standalone usage
-- [Custom Interceptors](/en/guide/interceptors/custom) -- factory pattern, error handling, testing
-- [Method Filtering](/en/guide/interceptors/method-filtering) -- per-service and per-method routing
-- [Auth & Authz](/en/guide/auth) -- authentication and authorization interceptors
-- [@connectum/interceptors](/en/packages/interceptors) -- Package Guide
-- [@connectum/interceptors API](/en/api/@connectum/interceptors/) -- Full API Reference
+The [`@connectum/interceptors` module hub](/en/packages/interceptors) owns installation, the minimal example, key entry points, and Learn / Configure / API navigation.

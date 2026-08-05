@@ -1,108 +1,75 @@
 ---
+title: TypeScript Execution Models
+description: Choose native Node.js, Bun, or tsx for application TypeScript without duplicating the runtime support matrix.
+docType: concept
 outline: deep
 ---
 
-# Runtime Support
+# TypeScript Execution Models
 
-Connectum packages ship **compiled JavaScript** with TypeScript declarations (`.d.ts`) and source maps. This means **no special loader or register hook is needed** for any runtime -- all runtimes can import `@connectum/*` packages directly.
+All `@connectum/*` packages ship compiled ESM JavaScript, declarations, and source
+maps. Your application can therefore choose how to execute its own TypeScript
+without loading Connectum through a custom register hook.
 
-## Node.js 25+
+For supported versions, feature coverage, and known limitations, use the
+canonical [Runtime Compatibility](/en/guide/runtime-compatibility) matrix.
 
-Node.js 25+ supports [type stripping](https://nodejs.org/api/typescript.html) for your own `.ts` source files. Since `@connectum/*` packages ship compiled `.js`, no loader is required:
+## Native Node.js Type Stripping
+
+The current development baseline can execute erasable TypeScript directly:
 
 ```bash
 node src/index.ts
+node --watch src/index.ts
 ```
 
-In `package.json`:
-
-```json
-{
-  "scripts": {
-    "start": "node src/index.ts",
-    "dev": "node --watch src/index.ts"
-  }
-}
-```
-
-### What Packages Ship
-
-Each `@connectum/*` package is built with [tsup](https://tsup.egoist.dev/) and publishes:
-
-- **Compiled `.js` files** (ESM) -- ready to run on any ES module-capable runtime
-- **TypeScript declarations** (`.d.ts`) -- full type information for IDE support and type checking
-- **Source maps** (`.js.map`) -- accurate stack traces pointing to the original TypeScript source
+This path requires the syntax and import rules in [Erasable Syntax](/en/guide/typescript/erasable-syntax).
+`tsc --noEmit` still performs type checking; Node.js removes types but does not
+type-check the program.
 
 ## Bun
 
-Bun natively supports TypeScript for your own source files. Since `@connectum/*` packages ship compiled `.js`, everything works out of the box:
+Bun can execute the same application sources directly:
 
 ```bash
 bun src/index.ts
+bun --watch src/index.ts
 ```
 
-In `package.json`:
+Use runtime variants in task guides where a command or limitation genuinely
+differs. Do not assume Node.js-only OpenTelemetry auto-instrumentation works under
+Bun; check [Runtime Compatibility](/en/guide/runtime-compatibility#otel).
 
-```json
-{
-  "scripts": {
-    "start": "bun src/index.ts",
-    "dev": "bun --watch src/index.ts"
-  }
-}
-```
+## tsx on the Consumer Node.js Line
 
-## tsx (Node.js 22+)
-
-[tsx](https://tsx.is) is a TypeScript execution engine powered by [esbuild](https://esbuild.github.io/). It works as a drop-in replacement for `node` and runs on **Node.js 22+**, making it a good option when you cannot use Node.js 25+. Since `@connectum/*` packages ship compiled `.js`, no special configuration is needed.
+Applications on the supported consumer Node.js line can execute TypeScript with
+tsx instead of relying on native type stripping:
 
 ```bash
 npx tsx src/index.ts
+npx tsx watch src/index.ts
 ```
 
-In `package.json`:
+Install `tsx` as a development dependency for repeatable project scripts. This
+choice changes how application source is executed; it does not change the
+compiled format of Connectum packages.
 
-```json
-{
-  "scripts": {
-    "start": "tsx src/index.ts",
-    "dev": "tsx --watch src/index.ts"
-  }
-}
-```
+## Choose an Execution Model
 
-::: tip
-Install tsx as a devDependency (`pnpm add -D tsx`) for faster invocation without `npx`.
-:::
+| Need | Use |
+|---|---|
+| Match Connectum's native-TypeScript development workflow | Native Node.js type stripping |
+| Run and test the application on Bun | Bun, after checking the compatibility matrix |
+| Stay on the consumer Node.js line while executing TypeScript source | tsx |
+| Publish a compiled application artifact | Your normal ESM build pipeline |
 
-## Comparison
-
-| Feature | Node.js 25+ | Bun | tsx (Node.js 22+) |
-|---------|------------|-----|-------------------|
-| Your `.ts` files | Native type stripping | Native | esbuild |
-| `@connectum/*` packages | Compiled `.js` (no loader needed) | Compiled `.js` (no loader needed) | Compiled `.js` (no loader needed) |
-| `--watch` mode | `node --watch` | `bun --watch` | `tsx --watch` |
-| Proto enum support | Requires [two-step generation](/en/guide/typescript/proto-enums) | Native | Native (esbuild) |
-| Min Node.js version | 25.2.0 (for native `.ts` execution) | N/A (Bun runtime) | 22.13.0 |
-
-## Docker
-
-In Dockerfiles, use the appropriate `CMD` for your runtime:
-
-```dockerfile
-# Node.js 25+ (native TypeScript for your own .ts files)
-CMD ["node", "src/index.ts"]
-
-# Bun
-CMD ["bun", "src/index.ts"]
-
-# tsx (Node.js 22+)
-CMD ["npx", "tsx", "src/index.ts"]
-```
+Generated import extensions must match the project's `buf.gen.yaml` and execution
+model. The Quickstart executes generated TypeScript directly and therefore uses
+`.ts`; compiled distributions normally generate imports for their emitted `.js`.
 
 ## Related
 
-- [TypeScript Overview](/en/guide/typescript) -- back to overview
-- [Erasable Syntax](/en/guide/typescript/erasable-syntax) -- constraints for native TypeScript execution
-- [Proto Enums](/en/guide/typescript/proto-enums) -- workaround for proto enum generation
-- [@connectum/core](/en/packages/core) -- Package Guide
+- [Runtime Compatibility](/en/guide/runtime-compatibility) — supported versions and limitations
+- [Erasable Syntax](/en/guide/typescript/erasable-syntax) — native type-stripping constraints
+- [Proto Enums](/en/guide/typescript/proto-enums) — generation when enums require transformation
+- [Patterns and Workflow](/en/guide/typescript/patterns) — project conventions

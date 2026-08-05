@@ -246,7 +246,7 @@ See [@connectum/testing](/en/packages/testing) for the full API.
 
 ## See Also
 
-- [@connectum/core — In-Process Transport](/en/packages/core#in-process-transport)
+- [@connectum/core](/en/packages/core) — module overview and generated API routes
 - [@connectum/otel](/en/packages/otel) — `connectum.transport` attribute and `transport` metric label
 - [@connectum/testing](/en/packages/testing) — `createLocalClient`, `transportParityTest`
 - [Microservice Architecture Patterns](/en/guide/production/architecture)

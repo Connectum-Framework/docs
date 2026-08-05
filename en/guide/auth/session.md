@@ -25,14 +25,11 @@ const sessionAuth = createSessionAuthInterceptor({
 });
 ```
 
-### Options
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `verifySession` | `(token, headers) => Promise<Session>` | Yes | Validates the session token and returns session data |
-| `mapSession` | `(session) => AuthContext` | Yes | Maps the session object to a standard `AuthContext` |
-| `extractToken` | `(req) => string \| null \| Promise<...>` | No | Custom token extraction (default: Bearer token from the `Authorization` header) |
-| `cache` | `{ ttl: number; maxSize?: number }` | No | Cache verified sessions to reduce backend calls (`maxSize` caps the LRU entry count) |
+The two application-owned callbacks are `verifySession`, which talks to the session
+backend, and `mapSession`, which creates the stable `AuthContext`. Override token
+extraction only when the framework cannot read your credential shape. The full cache
+and callback contract lives in
+[`SessionAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/SessionAuthInterceptorOptions).
 
 ## How It Works
 

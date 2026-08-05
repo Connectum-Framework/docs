@@ -1,4 +1,7 @@
 ---
+title: Configure the Health Protocol
+description: Configure health endpoints and model service, component, and dependency status.
+docType: how-to
 outline: deep
 ---
 
@@ -19,12 +22,10 @@ Healthcheck({
 })
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `httpEnabled` | `boolean` | `false` | Enable HTTP health endpoints |
-| `httpPaths` | `string[]` | `['/healthz', '/health', '/readyz']` | HTTP endpoint paths |
-| `watchInterval` | `number` | `500` | Polling interval for Watch streaming (ms) |
-| `manager` | `HealthcheckManager` | `healthcheckManager` (singleton) | Custom manager for tests or multi-server setups |
+Use `httpEnabled` and `httpPaths` for platform endpoints, `watchInterval` for the
+stream polling cadence, and `manager` when a test or multi-server process must avoid
+the singleton. See [`HealthcheckOptions`](/en/api/@connectum/healthcheck/@connectum/healthcheck/types/interfaces/HealthcheckOptions)
+for the exact field types and defaults.
 
 ## The healthcheckManager Singleton
 

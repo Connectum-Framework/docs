@@ -1,12 +1,15 @@
 ---
 title: Validation
 description: Proto-first input validation with protovalidate in Connectum services.
+docType: how-to
 outline: deep
 ---
 
 # Validation
 
 Connectum uses `@connectrpc/validate` (backed by `@bufbuild/protovalidate`) for schema-based input validation. Constraints are defined directly in `.proto` files and enforced automatically by the validation interceptor.
+
+**Outcome:** add constraints to a request message, regenerate code, and verify that an invalid RPC is rejected before its handler runs. The generated [`@connectum/interceptors` API](/en/api/@connectum/interceptors/) remains the exact symbol reference.
 
 ## Overview
 

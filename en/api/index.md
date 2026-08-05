@@ -13,6 +13,7 @@
 - [@connectum/healthcheck](@connectum/healthcheck/index.md)
 - [@connectum/interceptors](@connectum/interceptors/index.md)
 - [@connectum/otel](@connectum/otel/index.md)
+- [@connectum/protoc-gen-catalog](@connectum/protoc-gen-catalog/index.md)
 - [@connectum/reflection](@connectum/reflection/index.md)
 - [@connectum/test-fixtures](@connectum/test-fixtures/index.md)
 - [@connectum/testing](@connectum/testing/index.md)

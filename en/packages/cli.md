@@ -1,219 +1,76 @@
 ---
 title: '@connectum/cli'
-description: CLI tools for Connectum -- proto sync via gRPC Server Reflection, version reporting
+description: Command-line scaffolding, service generation, package-version reporting, and reflection-based proto synchronization.
+docType: package-hub
 ---
 
 # @connectum/cli
 
-Command-line tools for the Connectum framework. Provides `connectum --version` (reports the installed CLI version) and the `proto sync` command -- a pipeline that connects to a running Connectum server via gRPC Server Reflection, discovers all services and proto definitions, and generates TypeScript client types using `buf generate`.
+Command-line scaffolding, service generation, package-version reporting, and reflection-based proto synchronization.
 
-**Layer**: 2 (CLI tooling)
-
-::: tip Related Guides
-- [Quickstart](/en/guide/quickstart) -- CLI proto sync in the tutorial
-- [Server Reflection](/en/guide/protocols/reflection) -- reflection protocol used by proto sync
-:::
-
-::: tip Full API Reference
-Complete TypeScript API documentation: [API Reference](/en/api/@connectum/cli/)
-:::
-
-## Installation
+## Install {#installation}
 
 ::: pm
 == npm
-```bash
+~~~bash
 npm install -D @connectum/cli
-```
+~~~
 == pnpm
-```bash
+~~~bash
 pnpm add -D @connectum/cli
-```
+~~~
 == bun
-```bash
+~~~bash
 bun add -d @connectum/cli
-```
+~~~
 :::
 
-**Requires**: Node.js 22+, `buf` CLI available on PATH
+## Start Here {#quick-start}
 
-**Built with**: [citty](https://github.com/unjs/citty) for CLI framework
+~~~bash
+npx connectum init payments
+cd payments
+npx connectum generate service invoices
+npx connectum --version
+~~~
 
-## Quick Start
+For a complete, source-verified workflow, continue with the focused guide below.
 
-```bash
-# Dry run: list discovered services and files
-npx connectum proto sync --from localhost:5000 --out ./gen --dry-run
+## Key Entry Points
 
-# Full sync: generate TypeScript types from a running server
-npx connectum proto sync --from localhost:5000 --out ./gen
-```
+| Entry point | Use it to |
+|---|---|
+| `connectum init` | Create a service from the version-pinned official base. |
+| `connectum generate service` | Add a service contract and implementation. |
+| `connectum proto sync` | Discover and generate types from server reflection. |
 
-## Commands
+Architecture-layer and dependency details remain in the [Architecture Overview](/en/guide/production/architecture).
 
-### `connectum --version`
+## Learn / Configure / API Reference {#api-reference}
 
-Print the installed CLI version and exit:
+- **Learn:** [Focused guide](/en/guide/scaffolding)
+- **Configure:** [Task and configuration guidance](/en/guide/protocols/reflection)
+- **API reference:** [Exact options and symbols](/en/api/@connectum/cli/commands/proto-sync/interfaces/ProtoSyncOptions)
+- **Package API index:** [Generated TypeDoc](/en/api/@connectum/cli/)
+- **Source:** [@connectum/cli on GitHub](https://github.com/Connectum-Framework/connectum/tree/main/packages/cli)
 
-```bash
-npx connectum --version   # e.g. 1.1.0
-```
+## Related Modules {#related-packages}
 
-The version is read from the package's own `package.json`, so it always matches the installed release rather than a hardcoded string.
+[Compare all Connectum packages](/en/packages/) by capability.
 
-### `connectum proto sync`
-
-Syncs proto type definitions from a running Connectum server via gRPC Server Reflection.
-
-#### Pipeline
-
-1. Connects to the server via `ServerReflectionClient`
-2. Discovers all services and builds a `FileRegistry`
-3. Serializes the file descriptors as a `FileDescriptorSet` binary (`.binpb`)
-4. Runs `buf generate` with the `.binpb` as input
-5. Cleans up temporary files
-
-#### Arguments
-
-| Argument | Type | Required | Description |
-|----------|------|----------|-------------|
-| `--from` | `string` | Yes | Server address (e.g., `localhost:5000` or `http://localhost:5000`) |
-| `--out` | `string` | Yes | Output directory for generated types |
-| `--template` | `string` | No | Path to custom `buf.gen.yaml` template |
-| `--dry-run` | `boolean` | No | Show what would be synced without generating code |
-
-#### Examples
-
-```bash
-# Basic sync
-npx connectum proto sync --from localhost:5000 --out ./src/gen
-
-# With custom buf template
-npx connectum proto sync \
-  --from localhost:5000 \
-  --out ./src/gen \
-  --template ./buf.gen.custom.yaml
-
-# Dry run to inspect services
-npx connectum proto sync --from http://localhost:5000 --out ./gen --dry-run
-```
-
-#### Dry Run Output
-
-```
-Connecting to http://localhost:5000...
-Connected to http://localhost:5000
-
-Services:
-  - grpc.health.v1.Health
-  - my.service.v1.MyService
-  - grpc.reflection.v1.ServerReflection
-
-Files:
-  - google/protobuf/descriptor.proto
-  - grpc/health/v1/health.proto
-  - my/service/v1/service.proto
-
-Would generate to: ./gen
-```
-
-## API Reference
-
-The CLI exports its internals for programmatic usage:
-
-### `executeProtoSync(options)`
-
-Execute the proto sync pipeline programmatically.
-
-```typescript
-import { executeProtoSync } from '@connectum/cli/commands/proto-sync';
-
-await executeProtoSync({
-  from: 'http://localhost:5000',
-  out: './src/gen',
-  template: './buf.gen.yaml',
-  dryRun: false,
-});
-```
-
-```typescript
-interface ProtoSyncOptions {
-  from: string;       // Server URL
-  out: string;        // Output directory
-  template?: string;  // Custom buf.gen.yaml path
-  dryRun?: boolean;   // Preview mode
-}
-```
-
-### Reflection Utilities
-
-```typescript
-import {
-  fetchReflectionData,
-  fetchFileDescriptorSetBinary,
-} from '@connectum/cli/utils/reflection';
-```
-
-#### `fetchReflectionData(url)`
-
-Fetches service and file descriptor information from a running server.
-
-```typescript
-const result = await fetchReflectionData('http://localhost:5000');
-console.log(result.services);   // ['grpc.health.v1.Health', ...]
-console.log(result.fileNames);  // ['grpc/health/v1/health.proto', ...]
-console.log(result.registry);   // FileRegistry instance
-```
-
-```typescript
-interface ReflectionResult {
-  services: string[];
-  registry: FileRegistry;
-  fileNames: string[];
-}
-```
-
-#### `fetchFileDescriptorSetBinary(url)`
-
-Fetches `FileDescriptorSet` as binary (`.binpb`) suitable for `buf generate` input.
-
-```typescript
-const binpb = await fetchFileDescriptorSetBinary('http://localhost:5000');
-writeFileSync('/tmp/descriptors.binpb', binpb);
-// Then: buf generate /tmp/descriptors.binpb --output ./gen
-```
-
-## Prerequisites
-
-The `proto sync` command requires:
-
-1. **A running Connectum server** with the `Reflection()` protocol enabled
-2. **buf CLI** installed and available on PATH (`pnpm add -D @bufbuild/buf`)
-3. **A `buf.gen.yaml`** in the working directory (or specified via `--template`)
-
-Example `buf.gen.yaml`:
-
-```yaml
-version: v2
-plugins:
-  - local: protoc-gen-es
-    out: .
-    opt:
-      - target=ts
-      - import_extension=.js
-```
-
-## Package Exports
-
-```json
-{
-  ".": "./dist/index.js",
-  "./commands/proto-sync": "./dist/commands/proto-sync.js",
-  "./utils/reflection": "./dist/utils/reflection.js"
-}
-```
-
-## Related Packages
-
-- **[@connectum/reflection](./reflection.md)** -- Server-side reflection protocol (required for `proto sync`)
-- **[@connectum/core](./core.md)** -- Server framework
+<!-- Compatibility anchors retained from the former exhaustive package page. -->
+<div class="legacy-anchors" aria-hidden="true">
+<span id="commands"></span>
+<span id="connectum-version"></span>
+<span id="connectum-proto-sync"></span>
+<span id="pipeline"></span>
+<span id="arguments"></span>
+<span id="examples"></span>
+<span id="dry-run-output"></span>
+<span id="executeprotosyncoptions"></span>
+<span id="reflection-utilities"></span>
+<span id="fetchreflectiondataurl"></span>
+<span id="fetchfiledescriptorsetbinaryurl"></span>
+<span id="prerequisites"></span>
+<span id="package-exports"></span>
+</div>

@@ -1,4 +1,7 @@
 ---
+title: Events
+description: Understand the Connectum EventBus model and when asynchronous communication fits.
+docType: concept
 outline: deep
 ---
 
@@ -138,16 +141,9 @@ Both `ack()` and `nack()` are idempotent -- calling either multiple times after 
 
 ## Adapter Comparison
 
-| Feature | Memory | NATS JetStream | Kafka | Redis Streams | AMQP / RabbitMQ |
-|---------|--------|---------------|-------|---------------|-----------------|
-| **Package** | `@connectum/events` | `@connectum/events-nats` | `@connectum/events-kafka` | `@connectum/events-redis` | `@connectum/events-amqp` |
-| **Use case** | Testing | Low-latency, cloud-native | High-throughput, event sourcing | Simple streaming, caching stack | Complex routing, enterprise integration |
-| **Persistence** | No | Yes (JetStream) | Yes (log-based) | Yes (AOF/RDB) | Yes (durable queues) |
-| **Consumer groups** | No | Yes (durable consumers) | Yes (native) | Yes (XREADGROUP) | Yes (competing consumers) |
-| **Ordering** | Per-publish | Per-subject | Per-partition | Per-stream | Per-queue |
-| **Wildcard topics** | Yes (`*`, `>`) | Yes (NATS native) | No | No | Yes (`*`, `#`) |
-| **Delivery guarantee** | At-most-once | At-least-once | At-least-once | At-least-once | At-least-once |
-| **Compatible with** | -- | NATS 2.x+ | Apache Kafka, Redpanda | Redis 5+, Valkey | RabbitMQ 3.x+, LavinMQ |
+Use the canonical [Event Adapter selection matrix](/en/guide/events/adapters#adapter-comparison)
+for broker trade-offs and direct links to exact adapter options. This overview
+owns the EventBus mental model; it does not duplicate broker configuration.
 
 ## When to Use Events
 
