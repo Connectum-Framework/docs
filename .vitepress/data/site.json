@@ -1,6 +1,4 @@
 {
-    "documentedVersion": "1.2.x",
-    "consumerNodeVersion": ">=22.13.0",
-    "developmentNodeVersion": ">=25.2.0",
+    "documentedVersion": "1.3.x",
     "redirects": []
 }

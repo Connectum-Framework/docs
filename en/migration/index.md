@@ -11,8 +11,9 @@ import site from '../../.vitepress/data/site.json'
 # Upgrade and Migration
 
 The documentation describes the **{{ site.documentedVersion }}** release line. Check every installed
-`@connectum/*` version before applying a migration; packages currently release on
-the same line, but your application can still contain an older or mixed install.
+`@connectum/*` version before applying a migration; packages can use different
+compatible release lines, so verify the complete set rather than inferring it from
+one package.
 
 ::: code-group
 ```bash [npm]
@@ -30,18 +31,20 @@ bun pm ls
 
 ## Current Release Line
 
-No framework API migration is required from 1.1.x to the documented release
-line. The current package release synchronizes package versions; package-specific release details remain
-in the public [GitHub releases](https://github.com/Connectum-Framework/connectum/releases).
+The portal may document the next release line before every package on that line is
+published. Use the package-specific [GitHub releases](https://github.com/Connectum-Framework/connectum/releases)
+and the [Runtime Compatibility](/en/guide/runtime-compatibility) matrix to decide
+whether an upgrade applies to your installed set.
 
 If you are upgrading from a pre-1.0 or 1.0 installation, review every applicable
-action below rather than assuming a direct 1.1-to-1.2 upgrade.
+action below rather than assuming a direct upgrade to the documented line.
 
 ## Required Actions by Starting Version
 
 | Installed version | Required action |
 |---|---|
-| 1.1.x | No framework API changes required; update and run your existing tests |
+| 1.2.x | Review the 1.3 release notes for each installed package and run your existing tests |
+| 1.1.x | Review the 1.2 and 1.3 release notes for each installed package and run your existing tests |
 | 1.0.x | Review package release notes; 1.1 capabilities are additive |
 | RC or alpha | Follow [Migrating to 1.0](/en/migration/1.0), then review the [Service Catalog migration](/en/migration/service-catalog) |
 

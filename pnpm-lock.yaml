@@ -41,9 +41,6 @@ importers:
       mermaid:
         specifier: ^11.15.0
         version: 11.15.0
-      simple-icons:
-        specifier: 16.28.0
-        version: 16.28.0
       vitepress:
         specifier: ^1.6.3
         version: 1.6.4(@algolia/client-search@5.52.0)(postcss@8.5.25)(search-insights@2.17.3)
@@ -1372,10 +1369,6 @@ packages:
 
   shiki@2.5.0:
     resolution: {integrity: sha512-mI//trrsaiCIPsja5CNfsyNOqgAZUb6VpJA+340toL42UpzQlXpwRV9nch69X6gaUxrr9kaOOa6e3y3uAkGFxQ==}
-
-  simple-icons@16.28.0:
-    resolution: {integrity: sha512-sQPR5AtK/ijRjou7zw7mlLp08oB6FH7i0lOy5XJ2zp9mJs/yejgiOn7KvQoe2q4YJIx6VmgUSW5AOefebPt5kg==}
-    engines: {node: '>=0.12.18'}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -3023,8 +3016,6 @@ snapshots:
       '@shikijs/types': 2.5.0
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
-
-  simple-icons@16.28.0: {}
 
   source-map-js@1.2.1: {}
 

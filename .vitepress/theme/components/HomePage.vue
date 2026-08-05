@@ -83,8 +83,10 @@ const lifecycle = [
                 </div>
                 <dl class="home-support" aria-label="Documentation support information">
                     <div><dt>Docs</dt><dd>{{ site.documentedVersion }}</dd></div>
-                    <div><dt>Consumer Node.js</dt><dd>{{ site.consumerNodeVersion }}</dd></div>
-                    <div><dt>Status</dt><dd>Beta</dd></div>
+                    <div>
+                        <dt>Compatibility</dt>
+                        <dd><a href="/en/guide/runtime-compatibility">Runtime matrix <span aria-hidden="true">→</span></a></dd>
+                    </div>
                 </dl>
             </div>
             <div class="home-hero__art" aria-hidden="true"></div>
@@ -179,11 +181,15 @@ const lifecycle = [
                 <h2 id="resources-title">From evaluation to operation.</h2>
             </div>
             <nav aria-label="Connectum resources">
-                <a href="https://github.com/Connectum-Framework/examples"><span>Examples</span><span aria-hidden="true">↗</span></a>
-                <a href="/en/guide/runtime-compatibility"><span>Runtime compatibility</span><span aria-hidden="true">→</span></a>
-                <a href="/en/migration/"><span>Migration</span><span aria-hidden="true">→</span></a>
-                <a href="/en/contributing/"><span>Contributing</span><span aria-hidden="true">→</span></a>
-                <a href="https://github.com/Connectum-Framework/connectum"><span>GitHub</span><span aria-hidden="true">↗</span></a>
+                <div class="home-resources__column" aria-label="Documentation links">
+                    <a href="/en/guide/runtime-compatibility"><span>Runtime compatibility</span><span aria-hidden="true">→</span></a>
+                    <a href="/en/migration/"><span>Migration</span><span aria-hidden="true">→</span></a>
+                    <a href="/en/contributing/"><span>Contributing</span><span aria-hidden="true">→</span></a>
+                </div>
+                <div class="home-resources__column" aria-label="External project links">
+                    <a class="no-icon" href="https://github.com/Connectum-Framework/examples" target="_blank" rel="noreferrer"><span>Examples</span><span aria-hidden="true">↗</span></a>
+                    <a class="no-icon" href="https://github.com/Connectum-Framework/connectum" target="_blank" rel="noreferrer"><span>GitHub</span><span aria-hidden="true">↗</span></a>
+                </div>
             </nav>
         </section>
     </main>
