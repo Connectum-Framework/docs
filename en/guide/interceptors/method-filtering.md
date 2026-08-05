@@ -75,14 +75,13 @@ Pattern keys use the protobuf fully-qualified service name (`service.typeName`) 
 
 All matching patterns execute sequentially, from most general to most specific:
 
-```
-Request: user.v1.UserService/GetUser
-
-1. "*": [logRequest]                       -- global (always runs)
-2. "user.v1.UserService/*": [auth]         -- service-level match
-3. "user.v1.UserService/GetUser": [cache]  -- exact method match
-
-Final chain: logRequest -> auth -> cache -> next(req)
+```mermaid
+flowchart TD
+    Request["user.v1.UserService/GetUser"]
+    Request --> Global["* → logRequest"]
+    Global --> Service["user.v1.UserService/* → auth"]
+    Service --> Exact["user.v1.UserService/GetUser → cache"]
+    Exact --> Next["next(req)"]
 ```
 
 If no patterns match, the request passes through to the next interceptor in the chain unchanged.

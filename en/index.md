@@ -10,4 +10,26 @@ docType: landing
 import HomePage from '../.vitepress/theme/components/HomePage.vue'
 </script>
 
-<HomePage />
+<HomePage>
+<template #server-example>
+
+```typescript
+import { createServer } from '@connectum/core';
+import { Healthcheck } from '@connectum/healthcheck';
+import { createDefaultInterceptors } from '@connectum/interceptors';
+import { Reflection } from '@connectum/reflection';
+import { greeterService } from './services/greeterService.ts';
+
+const server = createServer({
+  services: [greeterService],
+  port: 5000,
+  protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
+  interceptors: createDefaultInterceptors(),
+  shutdown: { autoShutdown: true },
+});
+
+await server.start();
+```
+
+</template>
+</HomePage>

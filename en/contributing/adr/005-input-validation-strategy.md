@@ -199,15 +199,15 @@ const server = createServer({
 
 The default chain order is fixed (see [ADR-023](./023-uniform-registration-api.md)):
 
-```
-1. errorHandler     — Catch-all error normalization (outermost, must be first)
-2. timeout          — Enforce deadline before any processing
-3. bulkhead         — Limit concurrency
-4. circuitBreaker   — Prevent cascading failures
-5. retry            — Retry transient failures (exponential backoff)
-6. fallback         — Graceful degradation (DISABLED by default)
-7. validation       — @connectrpc/validate (createValidateInterceptor)
-8. serializer       — JSON serialization (innermost)
+```mermaid
+flowchart LR
+    Error["1 · errorHandler"] --> Timeout["2 · timeout"]
+    Timeout --> Bulkhead["3 · bulkhead"]
+    Bulkhead --> Breaker["4 · circuitBreaker"]
+    Breaker --> Retry["5 · retry"]
+    Retry --> Fallback["6 · fallback"]
+    Fallback --> Validation["7 · validation"]
+    Validation --> Serializer["8 · serializer"]
 ```
 
 **Rationale for validation position (7th, not 1st):**

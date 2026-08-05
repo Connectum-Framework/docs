@@ -35,8 +35,12 @@ and callback contract lives in
 
 Unlike `createJwtAuthInterceptor`, the session interceptor receives the **full request `Headers`** in its `verifySession` callback. This enables cookie-based auth flows where the session token is sent as a cookie rather than an `Authorization` header.
 
-```
-Request → extract token/cookies → verifySession(token, headers) → mapSession(session) → AuthContext
+```mermaid
+flowchart LR
+    Request[Request] --> Extract[Extract token or cookies]
+    Extract --> Verify["verifySession(token, headers)"]
+    Verify --> Map["mapSession(session)"]
+    Map --> Context[AuthContext]
 ```
 
 ## Cookie-Based Auth

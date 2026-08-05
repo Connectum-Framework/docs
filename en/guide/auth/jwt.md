@@ -62,8 +62,10 @@ const jwtAuth = createJwtAuthInterceptor({ publicKey });
 
 When multiple key sources are provided, resolution follows this priority:
 
-```
-jwksUri > publicKey > secret
+```mermaid
+flowchart LR
+    Jwks[jwksUri] -->|preferred over| PublicKey[publicKey]
+    PublicKey -->|preferred over| Secret[secret]
 ```
 
 At least one must be provided. If `jwksUri` is set, `publicKey` and `secret` are ignored.

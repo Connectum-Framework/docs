@@ -15,10 +15,14 @@ Connectum uses `@connectrpc/validate` (backed by `@bufbuild/protovalidate`) for 
 
 The validation approach is **proto-first**: validation rules live alongside message definitions in `.proto` files. This ensures the proto schema is the single source of truth for both data structure and constraints.
 
-```
-Client → errorHandler → ... → validation → serializer → Handler
-                                   ↓
-                          Invalid: INVALID_ARGUMENT
+```mermaid
+flowchart LR
+    Client[Client] --> Error[errorHandler]
+    Error --> More["..."]
+    More --> Validation[validation]
+    Validation --> Serializer[serializer]
+    Serializer --> Handler[Handler]
+    Validation -->|Invalid request| Rejected[INVALID_ARGUMENT]
 ```
 
 Validation runs as the 7th interceptor in the default chain (before serializer, after any explicitly enabled resilience interceptors). Invalid requests are rejected with `INVALID_ARGUMENT` before reaching the handler.

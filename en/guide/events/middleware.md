@@ -15,10 +15,6 @@ The EventBus middleware pipeline wraps event handlers in a composable onion mode
 
 Middleware executes from outermost to innermost:
 
-```
-Custom[0] → Custom[1] → ... → DLQ → Retry → Handler
-```
-
 ```mermaid
 graph LR
     E["Raw Event"] --> C1["Custom Middleware"]

@@ -248,6 +248,17 @@ parity between tabs.
 
 ## Source accuracy
 
+### Diagrams and process flows
+
+Use Mermaid for process flows, state machines, sequences, and architecture diagrams.
+Do not represent a diagram as aligned text, Unicode arrows, or ASCII boxes inside a
+plain code fence. Mermaid diagrams inherit light/dark colors, remain readable at narrow
+widths, and provide a keyboard-accessible fullscreen view.
+
+Use a fenced text block only for literal command output or a file tree. Use a generated
+image only when the subject cannot be expressed clearly in Mermaid; include useful alt
+text, preserve the editable source, and verify both themes.
+
 Documentation contract failures are user-facing defects.
 
 1. Verify every named symbol, option, field, default, and export against current
@@ -300,6 +311,7 @@ Do not describe a client-side compatibility page as a permanent HTTP redirect.
 - [ ] Runtime and package-manager variants are complete and semantically equivalent.
 - [ ] Heading order is logical and established anchors remain valid.
 - [ ] Images have useful alt text or are explicitly decorative.
+- [ ] Process, state, sequence, and architecture diagrams use Mermaid instead of aligned text.
 - [ ] Links and controls have visible keyboard focus and meaningful labels.
 - [ ] Mobile layouts have usable touch targets and no horizontal overflow.
 - [ ] Motion is non-essential and respects reduced-motion preferences.

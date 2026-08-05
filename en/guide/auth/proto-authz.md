@@ -106,16 +106,28 @@ const authz = createProtoAuthzInterceptor({
 
 The interceptor resolves authorization in this priority:
 
-```
-1. Proto `public` option       → allow (skip authn + authz)
-2. Proto `internal` option     → if no auth context, reject (Unauthenticated);
-                                  if no `requires`, allow (any trusted internal caller);
-                                  else evaluate `requires` in step 3
-3. Proto `requires` option     → if no auth context, reject (Unauthenticated); check roles/scopes
-4. Proto `policy`              → apply "allow" or "deny"
-5. Programmatic rules          → evaluate in order
-6. `authorize` callback        → custom logic
-7. `defaultPolicy`             → final fallback (default: "deny")
+```mermaid
+flowchart TD
+    Start[Resolve method authorization] --> Public{Proto public?}
+    Public -->|yes| Allow[Allow · skip authn and authz]
+    Public -->|no| Internal{Proto internal?}
+    Internal -->|yes| Trusted{Auth context exists?}
+    Trusted -->|no| Unauthenticated[Reject · Unauthenticated]
+    Trusted -->|yes| InternalRequires{Proto requires?}
+    InternalRequires -->|no| Allow
+    InternalRequires -->|yes| Requirements[Evaluate roles and scopes]
+    Internal -->|no| Requires{Proto requires?}
+    Requires -->|yes| HasContext{Auth context exists?}
+    HasContext -->|no| Unauthenticated
+    HasContext -->|yes| Requirements
+    Requires -->|no| Policy{Proto policy?}
+    Requirements --> Policy
+    Policy -->|yes| ProtoResult[Apply allow or deny]
+    Policy -->|no| Rules{Programmatic rule matches?}
+    Rules -->|yes| RuleResult[Apply matching rule]
+    Rules -->|no| Callback{authorize callback?}
+    Callback -->|yes| CallbackResult[Apply callback result]
+    Callback -->|no| Default[Apply defaultPolicy · deny by default]
 ```
 
 Proto options take priority over programmatic rules. This means you can define fine-grained access in `.proto` files and use programmatic rules as a safety net.

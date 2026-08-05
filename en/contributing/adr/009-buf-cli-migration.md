@@ -14,8 +14,12 @@
 
 The `@connectum/proto` package contained 15+ third-party proto files (googleapis, grpc health/reflection, buf validate, openapiv3) and used `protoc` for code generation. [Update: @connectum/proto removed, see ADR-003] The pipeline was:
 
-```
-proto/*.proto -> protoc + protoc-gen-es -> gen-ts/*.ts -> tsc -> gen/*.js
+```mermaid
+flowchart LR
+    Proto["proto/*.proto"] --> Protoc["protoc + protoc-gen-es"]
+    Protoc --> GeneratedTs["gen-ts/*.ts"]
+    GeneratedTs --> Tsc[tsc]
+    Tsc --> GeneratedJs["gen/*.js"]
 ```
 
 **Problems with this approach:**

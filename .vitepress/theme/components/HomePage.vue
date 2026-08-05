@@ -1,6 +1,30 @@
 <script setup lang="ts">
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import site from '../../data/site.json';
+import EcosystemRail from './EcosystemRail.vue';
 import ModuleGrid from './ModuleGrid.vue';
+
+const homeRoot = ref<HTMLElement>();
+let revealObserver: IntersectionObserver | undefined;
+
+onMounted(async () => {
+    await nextTick();
+    const sections = homeRoot.value?.querySelectorAll<HTMLElement>('.home-section');
+    if (!sections || window.location.hash || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    for (const section of sections) section.classList.add('home-reveal');
+    homeRoot.value?.setAttribute('data-motion', 'ready');
+    revealObserver = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add('is-visible');
+            revealObserver?.unobserve(entry.target);
+        }
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 });
+    for (const section of sections) revealObserver.observe(section);
+});
+
+onBeforeUnmount(() => revealObserver?.disconnect());
 
 const goals = [
     {
@@ -41,25 +65,10 @@ const lifecycle = [
     ['Operate', 'Health, shutdown, and deployment'],
 ] as const;
 
-const serverExample = `import { createServer } from '@connectum/core';
-import { Healthcheck } from '@connectum/healthcheck';
-import { createDefaultInterceptors } from '@connectum/interceptors';
-import { Reflection } from '@connectum/reflection';
-import { greeterService } from './services/greeterService.ts';
-
-const server = createServer({
-  services: [greeterService],
-  port: 5000,
-  protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
-  interceptors: createDefaultInterceptors(),
-  shutdown: { autoShutdown: true },
-});
-
-await server.start();`;
 </script>
 
 <template>
-    <main class="connectum-home">
+    <main ref="homeRoot" class="connectum-home">
         <section class="home-hero" aria-labelledby="home-title">
             <div class="home-hero__copy">
                 <p class="home-eyebrow">gRPC + ConnectRPC for Node.js</p>
@@ -116,6 +125,20 @@ await server.start();`;
             </ol>
         </section>
 
+        <section class="home-section home-ecosystem" aria-labelledby="ecosystem-title">
+            <div class="home-section__heading home-section__heading--split">
+                <div>
+                    <p class="home-eyebrow">Fits your stack</p>
+                    <h2 id="ecosystem-title">One runtime across your service ecosystem.</h2>
+                </div>
+                <p>
+                    Build on ConnectRPC and gRPC, operate with cloud-native tooling, and choose the
+                    brokers and runtimes that fit each service.
+                </p>
+            </div>
+            <EcosystemRail />
+        </section>
+
         <section class="home-section home-example" aria-labelledby="example-title">
             <div class="home-example__copy">
                 <p class="home-eyebrow">The central primitive</p>
@@ -132,7 +155,9 @@ await server.start();`;
             </div>
             <div class="home-code" aria-label="TypeScript createServer example">
                 <div class="home-code__bar"><span></span><span></span><span></span><strong>server.ts</strong></div>
-                <pre><code>{{ serverExample }}</code></pre>
+                <div class="home-code__highlight">
+                    <slot name="server-example"></slot>
+                </div>
             </div>
         </section>
 
@@ -154,11 +179,11 @@ await server.start();`;
                 <h2 id="resources-title">From evaluation to operation.</h2>
             </div>
             <nav aria-label="Connectum resources">
-                <a href="https://github.com/Connectum-Framework/examples">Examples <span aria-hidden="true">↗</span></a>
-                <a href="/en/guide/runtime-compatibility">Runtime compatibility <span aria-hidden="true">→</span></a>
-                <a href="/en/migration/">Migration <span aria-hidden="true">→</span></a>
-                <a href="/en/contributing/">Contributing <span aria-hidden="true">→</span></a>
-                <a href="https://github.com/Connectum-Framework/connectum">GitHub <span aria-hidden="true">↗</span></a>
+                <a href="https://github.com/Connectum-Framework/examples"><span>Examples</span><span aria-hidden="true">↗</span></a>
+                <a href="/en/guide/runtime-compatibility"><span>Runtime compatibility</span><span aria-hidden="true">→</span></a>
+                <a href="/en/migration/"><span>Migration</span><span aria-hidden="true">→</span></a>
+                <a href="/en/contributing/"><span>Contributing</span><span aria-hidden="true">→</span></a>
+                <a href="https://github.com/Connectum-Framework/connectum"><span>GitHub</span><span aria-hidden="true">↗</span></a>
             </nav>
         </section>
     </main>

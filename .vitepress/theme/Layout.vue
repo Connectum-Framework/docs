@@ -11,6 +11,7 @@ const route = useRoute()
 
 // --- Medium Zoom for images ---
 let zoom: ReturnType<typeof mediumZoom>
+let mermaidObserver: MutationObserver | undefined
 
 const initImageZoom = () => {
     if (!zoom) {
@@ -27,8 +28,13 @@ const openOverlay = (container: HTMLElement) => {
     const svgEl = container.querySelector('svg')
     if (!svgEl) return
 
+    const previousFocus = document.activeElement as HTMLElement | null
     const overlay = document.createElement('div')
     overlay.className = 'mermaid-zoom-overlay'
+    overlay.setAttribute('role', 'dialog')
+    overlay.setAttribute('aria-modal', 'true')
+    overlay.setAttribute('aria-label', 'Expanded diagram')
+    overlay.tabIndex = -1
 
     const clone = svgEl.cloneNode(true) as SVGElement
     clone.removeAttribute('width')
@@ -36,33 +42,51 @@ const openOverlay = (container: HTMLElement) => {
     clone.style.maxHeight = '90vh'
     clone.style.height = 'auto'
 
-    overlay.appendChild(clone)
+    const closeButton = document.createElement('button')
+    closeButton.className = 'mermaid-zoom-overlay__close'
+    closeButton.type = 'button'
+    closeButton.textContent = 'Close diagram'
 
     const close = () => {
         overlay.remove()
         document.removeEventListener('keydown', onKey)
+        previousFocus?.focus()
     }
 
     const onKey = (e: KeyboardEvent) => {
         if (e.key === 'Escape') close()
     }
 
-    overlay.addEventListener('click', close)
+    closeButton.addEventListener('click', close)
+    overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) close()
+    })
     document.addEventListener('keydown', onKey)
+    overlay.append(clone, closeButton)
     document.body.appendChild(overlay)
+    overlay.focus()
 }
 
 const setupMermaidZoom = () => {
-    const observer = new MutationObserver(() => {
+    const enhanceDiagrams = () => {
         document.querySelectorAll('.mermaid:not([data-zoom])').forEach((el) => {
             if (!el.querySelector('svg')) return
             el.setAttribute('data-zoom', '')
-            ;(el as HTMLElement).style.cursor = 'zoom-in'
+            el.setAttribute('role', 'button')
+            el.setAttribute('aria-label', 'Open diagram in fullscreen')
+            ;(el as HTMLElement).tabIndex = 0
             el.addEventListener('click', () => openOverlay(el as HTMLElement))
+            el.addEventListener('keydown', (event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return
+                event.preventDefault()
+                openOverlay(el as HTMLElement)
+            })
         })
-    })
+    }
 
-    observer.observe(document.body, { childList: true, subtree: true })
+    enhanceDiagrams()
+    mermaidObserver = new MutationObserver(enhanceDiagrams)
+    mermaidObserver.observe(document.body, { childList: true, subtree: true })
 }
 
 // --- Variant switchers (runtime, package manager) ---
@@ -113,6 +137,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+    mermaidObserver?.disconnect()
     document.removeEventListener('click', onTabClick)
     window.removeEventListener('storage', onStorage)
 })

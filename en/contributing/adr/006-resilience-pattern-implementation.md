@@ -91,26 +91,23 @@ Recovers from transient failures. **Only retries `ResourceExhausted` errors (Cod
 
 ### Interceptor Chain Order
 
-```
-Request
-  |
-[Validation] --(invalid)--> Reject (400 Invalid Argument)
-  | (valid)
-[Timeout] --(timeout)--> Reject (504 Deadline Exceeded)
-  | (in time)
-[Circuit Breaker] --(open)--> Reject (503 Unavailable)
-  | (closed)
-[Bulkhead] --(exhausted)--> Reject (503 Resource Exhausted)
-  | (available)
-[Security/Redact]
-  |
-[Error Handler]
-  |
-[Observability]
-  |
-[Retry] --(ResourceExhausted)--> Wait -> Retry
-  | (success)
-Response
+```mermaid
+flowchart TD
+    Request --> Validation
+    Validation -->|invalid| Invalid[Reject · 400 Invalid Argument]
+    Validation -->|valid| Timeout
+    Timeout -->|timeout| Deadline[Reject · 504 Deadline Exceeded]
+    Timeout -->|in time| Breaker[Circuit Breaker]
+    Breaker -->|open| Unavailable[Reject · 503 Unavailable]
+    Breaker -->|closed| Bulkhead
+    Bulkhead -->|exhausted| Exhausted[Reject · 503 Resource Exhausted]
+    Bulkhead -->|available| Security[Security / Redact]
+    Security --> Error[Error Handler]
+    Error --> Observability
+    Observability --> Retry
+    Retry -->|ResourceExhausted| Wait
+    Wait --> Retry
+    Retry -->|success| Response
 ```
 
 **Why this order?**

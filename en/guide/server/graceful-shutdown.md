@@ -127,12 +127,13 @@ server.onShutdown('message-queue', ['database', 'cache'], async () => {
 });
 ```
 
-Execution order:
+Execution order follows the dependency edges:
 
-```
-1. database      (no dependencies, runs first)
-2. cache         (depends on database)
-3. message-queue (depends on database + cache)
+```mermaid
+flowchart LR
+    Database["1. database"] --> Cache["2. cache"]
+    Database --> Queue["3. message-queue"]
+    Cache --> Queue
 ```
 
 ::: warning Cycle detection
@@ -271,15 +272,15 @@ spec:
 
 ### Shutdown Timeline
 
-```
-0s    SIGTERM received (Kubernetes sends SIGTERM)
-0s    'stopping' event -> healthcheckManager.update(NOT_SERVING)
-0-5s  Kubernetes removes pod from service endpoints
-5s    In-flight requests drain
-25s   Shutdown timeout (forceCloseOnTimeout: true)
-25s   Shutdown hooks execute
-25s   'stop' event
-30s   Kubernetes terminationGracePeriodSeconds (hard kill)
+```mermaid
+flowchart TD
+    Signal["0s · SIGTERM received"] --> NotServing["0s · stopping → NOT_SERVING"]
+    NotServing --> Endpoints["0–5s · Pod removed from service endpoints"]
+    Endpoints --> Drain["5–25s · In-flight requests drain"]
+    Drain --> Timeout["25s · Shutdown timeout boundary"]
+    Timeout --> Hooks["25s · Shutdown hooks execute"]
+    Hooks --> Stop["25s · stop event"]
+    Stop --> Grace["30s · Kubernetes hard-kill boundary"]
 ```
 
 ::: danger Critical

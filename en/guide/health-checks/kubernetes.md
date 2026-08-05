@@ -122,16 +122,7 @@ spec:
 
 ## Shutdown Timeline
 
-```
-0s    SIGTERM received (Kubernetes sends SIGTERM)
-0s    'stopping' event -> healthcheckManager.update(NOT_SERVING)
-0-5s  Kubernetes removes pod from service endpoints
-5s    In-flight requests drain
-25s   Shutdown timeout (forceCloseOnTimeout: true)
-25s   Shutdown hooks execute
-25s   'stop' event
-30s   Kubernetes terminationGracePeriodSeconds (hard kill)
-```
+At shutdown, mark the service `NOT_SERVING` before Kubernetes removes the pod from endpoints, then leave enough grace time for request draining and hooks. See the canonical [graceful shutdown timeline](/en/guide/server/graceful-shutdown#shutdown-timeline) for the complete sequence and timing boundaries.
 
 ::: danger Critical
 Always set `shutdown.timeout` to a value **less than** Kubernetes `terminationGracePeriodSeconds`. Otherwise, Kubernetes may SIGKILL the process before your shutdown hooks complete.
