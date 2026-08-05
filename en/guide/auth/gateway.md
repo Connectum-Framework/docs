@@ -24,12 +24,11 @@ const gatewayAuth = createGatewayAuthInterceptor({
 });
 ```
 
-### Options
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `headerMapping` | `object` | Yes | Maps `AuthContext` fields to request header names |
-| `trustSource` | `object` | No | Verifies the request came from a trusted gateway |
+`headerMapping` describes how trusted gateway headers become an `AuthContext`.
+`trustSource` proves that the caller is the gateway rather than a client spoofing
+identity headers. See
+[`GatewayAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/GatewayAuthInterceptorOptions)
+for the exact nested fields.
 
 ### headerMapping
 

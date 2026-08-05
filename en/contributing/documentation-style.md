@@ -1,143 +1,200 @@
 ---
 title: Documentation Style Guide
+description: Content types, ownership, navigation, and review rules for Connectum documentation.
+docType: contributor-guide
 ---
 
 # Documentation Style Guide
 
-This guide defines how Connectum documentation is written and structured so that
-every package README, every example, and every page on the documentation site
-reads consistently and stays accurate against the published source.
+Connectum documentation serves two readers at once: someone completing a task
+for the first time and someone looking up one exact interface or option. Pages
+stay useful when each has one reader outcome, one content type, and one canonical
+owner.
 
-It has three parts:
+The source code is the technical oracle. Verify public symbols and defaults
+against `packages/<package>/src`, exports, and `package.json`. Generated TypeDoc
+is the canonical exact API reference; hand-written pages teach, explain, and
+route readers to it.
 
-1. [Package README template](#package-readme-template) — the canonical structure
-   for the 15 `@connectum/*` package READMEs.
-2. [Documentation site pages](#documentation-site-pages) — VitePress conventions
-   for `docs/en/**`.
-3. [Content accuracy rules](#content-accuracy-rules) — the non-negotiable rules
-   that keep docs true to the code.
+## Content types
 
-The over-arching principle: **the source code is the oracle.** Documentation
-describes what the published 1.1.0 packages actually do — verified against
-`src/index.ts`, real signatures, and `package.json` — never against assumptions,
-older drafts, or test fixtures.
+Choose one type before drafting a page. Do not combine a tutorial, an exhaustive
+reference, and architecture history on one URL.
 
-## Package README template
+| Type | Reader outcome | Required content | Exclude | Location |
+|---|---|---|---|---|
+| Tutorial | Complete a bounded learning path | Prerequisites, goal, sequential steps, verification, next steps | Optional production hardening, exhaustive options | `en/guide/**` |
+| How-to | Accomplish one real task | Problem, prerequisites, focused steps, verification, failure path | Product pitch, unrelated alternatives, full API tables | `en/guide/**` |
+| Concept | Understand a mental model or decision | Context, model, boundaries, links to tasks | Step-by-step setup, exhaustive symbols | `en/guide/**` |
+| Package hub | Decide whether and how to use one module | Purpose, install variants, minimal example when applicable, load-bearing entry points, Learn / Configure / API links | Exhaustive option/type catalog, copied guide chapters | `en/packages/<name>.md` |
+| Reference | Look up exact signatures, fields, defaults, or compatibility | Generated symbols or a deliberately maintained matrix | Narrative tutorials, duplicated rationale | `en/api/**` or a named canonical matrix |
+| Migration | Determine whether an upgrade requires action | Affected versions, required action, before/after, verification | Complete release history and unrelated features | `en/migration/**` |
+| ADR | Understand why an architectural decision was made | Status, context, decision, consequences, alternatives | Current task instructions that belong in guides | `en/contributing/adr/**` |
 
-Every published package README follows the same skeleton. Reshape the container
-to this order; keep the verified technical prose.
+Contributor workflow pages are a separate audience. They describe how to work on
+Connectum itself and use the repository's supported Node.js and pnpm toolchain,
+not consumer-facing runtime or package-manager choices.
 
-### Canonical section order
+## Page templates
 
-```
-# @connectum/<name>
+### Tutorial
 
-<one-line summary>
-
-**@connectum/<name>** is <bold description paragraph>.
-
-## Features
-## Installation
-## Quick Start
-## API Reference          ← always this exact heading (not "API" / "Main Exports")
-## How It Works           (optional)
-## Configuration / Types  (optional)
-## Examples               (optional)
-## Dependencies
-## Requirements
-## Documentation
-## License
-
+```md
+---
+title: <Outcome>
+description: <What the reader will have working>
+docType: tutorial
 ---
 
-**Part of [@connectum](../../README.md)** — Universal framework for production-ready gRPC/ConnectRPC microservices
+# <Outcome>
+
+<One paragraph: goal, expected result, and approximate scope.>
+
+## Prerequisites
+## 1. <First step>
+## 2. <Next step>
+## Verify the result
+## Troubleshooting
+## Next steps
 ```
 
-Package-specific sections (for example `Interceptor Chain Order`, `External AMQP
-Contract`, `Performance Characteristics`) are welcome — place them after
-`Quick Start` and before `Dependencies`.
+Keep the mandatory path linear. Production options belong in Next steps unless
+the tutorial cannot succeed safely without them.
 
-### Mandatory elements
+### How-to
 
-Every **published** package README must have:
+```md
+---
+title: <Verb + task>
+description: <Specific result>
+docType: how-to
+---
 
-- Title `# @connectum/<name>`, a one-line summary, and a bold description intro.
-- An **Installation** snippet (`pnpm add @connectum/<name>`; dev tools use
-  `pnpm add -D`).
-- A **Quick Start** with a runnable snippet.
-- An **API Reference** section (named exactly that).
-- **Dependencies**, **Requirements**, and **License** sections.
-- The **`Part of [@connectum]`** footer (see below).
+# <Verb + task>
 
-Internal/private helper packages (for example `@connectum/test-fixtures`) may use
-a reduced template, but should still carry the License line and footer.
+## Before you begin
+## Configure <task>
+## Verify
+## Troubleshooting
+## Learn / Configure / API reference
+```
 
-### Formatting conventions
+### Concept
 
-- **No image badges.** None of the packages use shields; keep it that way for
-  uniformity. Metadata (Layer / Node.js / License) may be a plain bold line under
-  the title.
-- **Footer uses an em-dash, not a single hyphen.** The repository writes
-  em-dashes two ways and both are accepted in footers: the ASCII ` -- ` form used
-  throughout the prose, or a real ` — ` (`—`). Pick one and avoid ` - `:
-  `**Part of [@connectum](../../README.md)** -- Universal framework ...`.
-- **License is `Apache-2.0`** everywhere (see [Content accuracy rules](#content-accuracy-rules)).
-- Prefer **pointing to the [API Reference](/en/api/)** for the full export list
-  over hand-enumerating every export — exhaustive tables drift the moment the
-  surface changes. List the load-bearing symbols; link the rest.
+```md
+---
+title: <Concept>
+description: <Decision or model this page clarifies>
+docType: concept
+---
 
-`@connectum/events-kafka` is the cleanest exemplar of this template for adapter
-packages; `@connectum/core` for foundational packages.
+# <Concept>
 
-## Documentation site pages
+## Why it exists
+## Mental model
+## Boundaries and trade-offs
+## Apply the concept
+```
 
-The site is [VitePress](https://vitepress.dev). Pages live under `docs/en/**`.
-The `docs/en/api/**` tree is **auto-generated by TypeDoc** (`pnpm docs:api`) — never
-hand-edit it.
+### Package hub
 
-### Page conventions
+```md
+---
+title: @connectum/<name>
+description: <One-sentence module purpose>
+docType: package-hub
+---
 
-- **Frontmatter.** Each page starts with a `title:`. The home page uses
-  `layout: home`.
-- **Internal links are absolute, root-relative, and start with `/en/`:**
-  `[Quick Start](/en/guide/quickstart)`. Do not link `.md` files relatively and do
-  not include the `.md` extension. Verify every link resolves to a real page.
-- **Code groups** for multi-file / multi-runtime examples:
+# @connectum/<name>
 
-  ````md
-  ::: code-group
-  ```typescript [server.ts]
-  // ...
-  ```
-  ```bash [cli]
-  # ...
-  ```
-  :::
-  ````
+<Who needs it and when.>
 
-- **Admonitions** for callouts: `::: tip`, `::: warning`, `::: danger`, `::: info`.
-- **Runtime blocks** for content that differs between Node.js and Bun, and
-  **package-manager blocks** for commands that differ between npm, pnpm and bun — see
-  [Runtime-specific content](#runtime-specific-content) and
-  [Package-manager commands](#package-manager-commands).
-- **Heading levels.** One `#` H1 per page (or the `title:` frontmatter); use `##`
-  / `###` for structure. Keep heading text in sync with the sidebar label.
-- **Package layer** statements must match the [architecture map](/en/guide/about)
-  (Layer 0 / 1 / 2). Do not state a different layer on a package page than the
-  canonical map.
+## Install
+## Start here
+## Key entry points
+## Learn / Configure / API reference
+## Related modules
+```
 
-### Runtime-specific content
+List only entry points a reader needs to orient themselves. Link every exact
+interface or function to generated TypeDoc. Architecture layer may appear as
+metadata, but it does not determine reader navigation.
 
-The site switches runtime-specific content with tabs on the block itself -- there is no
-navigation-bar control, so both switchers work the same way. The state lives in
-`data-runtime` on `<html>`, is persisted in `localStorage`, syncs every block on every
-page, and can be shared through a `?runtime=bun` query parameter.
+### Migration
 
-Use `::: runtime` only for content that differs because of **what executes the code** —
-the test runner, the watch flag, native type stripping. A command that differs only in
-which tool installs a package belongs in [`::: pm`](#package-manager-commands): the
-runtime and the package manager are independent, and a Bun-runtime project can be
-installed with npm.
+```md
+---
+title: <Version or capability migration>
+description: <Who must act>
+docType: migration
+---
+
+# <Migration>
+
+## Does this apply to you?
+## Required changes
+## Before and after
+## Verify the upgrade
+## Related release notes
+```
+
+### ADR
+
+Use Status, Context, Decision, Consequences, Alternatives, and References. An ADR
+records rationale; link to current guides rather than turning the ADR into a
+second operational manual.
+
+## Canonical ownership
+
+When information could appear in several places, these locations win:
+
+| Information | Canonical owner | Other pages may contain |
+|---|---|---|
+| Function signatures, option fields, exported types, defaults | Generated API reference | A task-essential subset plus a direct API link |
+| Node.js/Bun support and known runtime limitations | [Runtime Compatibility](/en/guide/runtime-compatibility) | A one-line prerequisite and canonical link |
+| Request/response versus events choice | [Choosing a Communication Mechanism](/en/guide/service-communication/choosing-a-mechanism) | A contextual recommendation and link |
+| Broker comparison | [Event Adapters](/en/guide/events/adapters) | Adapter-specific setup only |
+| Package installation and orientation | Package hub | A command required by the current task |
+| Required upgrade actions | [Migration](/en/migration/) | A release-note link to the migration |
+| Architectural rationale | ADR | Current behavior and an ADR link |
+
+If two pages contain the same complete table or explanation, keep the better
+canonical version and replace the other with task context plus a link.
+
+## Learn / Configure / API reference pattern
+
+End module and task pages with routes that match the reader's next intent:
+
+```md
+## Learn / Configure / API reference
+
+- **Learn:** [How authentication fits the request lifecycle](/en/guide/auth)
+- **Configure:** [Configure JWT authentication](/en/guide/auth/jwt)
+- **API reference:** [`JwtAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/JwtAuthInterceptorOptions)
+```
+
+A guide may omit one route if it is genuinely irrelevant. A package hub should
+normally include all three. Link to the exact TypeDoc symbol when the text names
+one; link to the package API index only when several symbols are equally relevant.
+
+## Page and navigation conventions
+
+- Add `title`, `description`, and `docType` frontmatter to hand-written pages.
+- Use one H1. Keep headings descriptive and preserve established anchors during
+  rewrites; add explicit `{#legacy-anchor}` headings when compatibility requires it.
+- Use root-relative internal links beginning with `/en/`, without `.md`.
+- Put every user-facing page in a logical sidebar group, unless it is a documented
+  compatibility page intentionally excluded from navigation.
+- Use task language in navigation. Package dependency layers belong in
+  architecture content, not as the primary package taxonomy.
+- Use `::: tip`, `::: info`, `::: warning`, and `::: danger` for meaningful
+  callouts. Do not use a callout as decoration.
+- Generated files under `en/api/**` are never edited manually.
+
+## Runtime variants
+
+Use `::: runtime` only when execution differs between Node.js and Bun. Runtime is
+independent from the tool used to install dependencies.
 
 ````md
 ::: runtime
@@ -152,140 +209,122 @@ bun test tests/
 :::
 ````
 
-A block with a single runtime is written as `::: runtime bun` (or `::: runtime node`).
-It has no tab strip, so it is **always visible**, rendered as a callout labelled with the
-runtime — hiding it would leave no control to bring it back. Use it for a caveat that has
-no counterpart on the other runtime. Wrap a block that contains another container in four
-colons (`:::: runtime` … `::::`).
-
 Rules:
 
-- **No headings inside a runtime block.** Both variants are rendered into the page, so a
-  heading would appear twice in the outline and the second one would get a suffixed
-  anchor (`#install-1`). Keep the heading above the block and put only the body inside.
-  The build fails if a heading is found inside a block.
-- **Keep both variants in step.** Every grouped block must carry both `== node` and
-  `== bun`; if the runtimes really do the same thing, use a normal code block instead of
-  a runtime block.
-- **Only for consumer-facing pages.** Contributor documentation (`docs/en/contributing/**`)
-  always uses pnpm and Node.js — the framework itself is developed on that stack, and a
-  runtime switch there would be a lie.
-- **Keep single-runtime blocks short.** They are always on screen, so a long one is noise
-  for readers on the other runtime. A caveat, not an alternative version of the section.
-- **Bun content must be verified**, exactly like every other statement in these docs — a
-  command that was never run under Bun does not go into a `== bun` section. See
-  [Runtime Compatibility](/en/guide/runtime-compatibility) for the support level.
+- A grouped block contains both `== node` and `== bun` with equivalent outcomes.
+- Do not put headings inside variant blocks; duplicate headings create unstable
+  outline anchors.
+- Use a normal block when the commands are identical.
+- A single-runtime block such as `::: runtime bun` is a short, always-visible
+  compatibility note.
+- Verify Bun commands before publishing them.
+- Contributor pages do not use consumer runtime variants.
 
-### Package-manager commands
+## Package-manager variants
 
-Commands that differ only in which tool installs a package or runs a script go in a
-`::: pm` block. It carries **npm, pnpm and bun**, is persisted in `localStorage` under a
-key of its own, syncs every block on every page, and can be shared through `?pm=npm`.
-pnpm is the fallback, so that is what crawlers and readers without JavaScript see.
+Use `::: pm` for installation or script commands that differ among npm, pnpm,
+and bun. Each group must contain all three tools and perform the same operation.
 
 ````md
 ::: pm
 == npm
 ```bash
-npm install -D @connectum/cli
+npm install @connectum/core
 ```
 == pnpm
 ```bash
-pnpm add -D @connectum/cli
+pnpm add @connectum/core
 ```
 == bun
 ```bash
-bun add -d @connectum/cli
+bun add @connectum/core
 ```
 :::
 ````
 
-`bun` appears in both switchers and means different things: the runtime that executes
-your TypeScript, and the tool that installs dependencies. They are chosen independently.
+Hoist commands that do not vary. Do not nest package-manager blocks inside code
+groups. Build-time validation checks completeness, the command tool, and semantic
+parity between tabs.
 
-Three checks run at build time, because "every tab is present" is not the same as "every
-tab is right". Each one fails the build with the file and line:
+## Source accuracy
 
-1. **Every package manager must be filled in.** A reader who picked npm and finds an
-   empty tab has no command at all, which is worse than no switcher.
-2. **Each tab must run its own tool** — the `npm` tab starts with `npm` or `npx`, and so
-   on. This catches a snippet copied from a neighbouring tab and left unedited.
-3. **The tabs must operate on the same arguments.** Tool names, subcommands and flags may
-   differ (`npm install -D` / `pnpm add -D` / `bun add -d`); package and script names may
-   not. This catches a package added to one tab and forgotten in the others.
+Documentation contract failures are user-facing defects.
 
-Rules:
+1. Verify every named symbol, option, field, default, and export against current
+   package source and metadata. Do not document removed APIs.
+2. Check code blocks, imports, `.env` examples, and diagrams as carefully as prose.
+3. The license is Apache-2.0.
+4. Published packages support Node.js `>=22.13.0`. Consumer projects that execute
+   TypeScript source directly follow the higher development/runtime prerequisite
+   stated by the current Quickstart and Runtime Compatibility page.
+5. The default interceptor order and enabled defaults must agree with current
+   source and [ADR-024](/en/contributing/adr/024-auth-authz-strategy).
+6. Consumer examples use the generated import extension configured by their
+   `buf.gen.yaml`; current TypeScript-direct examples use `.ts`.
+7. Never infer a claim from a test fixture when production source provides the
+   contract.
 
-- **No headings inside the block**, for the same reason as runtime blocks.
-- **Hoist whatever does not vary.** If a step also runs a command that is identical
-  everywhere (`mkdir …`, `npx connectum …`, which runs under Node.js whatever installed
-  it), put it in a plain code block outside — check 2 will reject it inside, and the page
-  reads better with the shared part stated once.
-- **Contributor documentation stays on pnpm** with no block: the framework is developed
-  on pnpm, and offering a choice there would be a lie.
-- **Do not nest it inside `::: code-group`.** Two tab strips would fight. Where a page
-  tabs by something else, decide which axis earns the tabs: on the events getting-started
-  page the adapters became a table (they differ only by package name) so the tabs could
-  carry the package manager, while the adapter *code* further down keeps its code-group
-  because the snippets genuinely differ.
+## Redirect and retirement rules
 
-Implementation: `.vitepress/plugins/runtimeContainer.ts` (markdown container),
-`.vitepress/theme/RuntimeSwitch.vue` (navbar control), `.vitepress/theme/custom.css`
-(visibility rules). Every variant is server-rendered and only hidden with CSS, so the
-local search index, `llms.txt` and crawlers always see both.
+The site is currently a static GitHub Pages deployment. A moved route therefore
+keeps a compatibility page unless the hosting layer gains real HTTP redirects.
+Before changing a URL:
 
-### Where things go
+1. Record the old route, target, inbound links, and anchors in the migration matrix.
+2. Update internal links to the canonical target.
+3. Keep a compatibility page with a canonical URL and `noindex, follow`.
+4. Exclude the compatibility page from primary navigation, local search, and LLM
+   navigation outputs.
+5. Preserve fragments where the destination still has an equivalent section.
 
-| Content | Location |
-|---------|----------|
-| Conceptual guides | `docs/en/guide/**` |
-| Per-package overview | `docs/en/packages/<name>.md` |
-| Architecture decisions | `docs/en/contributing/adr/**` |
-| Migration notes | `docs/en/migration/**` |
-| Auto-generated API reference | `docs/en/api/**` (generated — do not edit) |
+Do not describe a client-side compatibility page as a permanent HTTP redirect.
 
-When you add a page, register it in the sidebar in
-`docs/.vitepress/config/en.ts`.
+## Review checklist
 
-## Content accuracy rules
+### Reader and structure
 
-These rules are non-negotiable — a documentation contract break is a production
-defect for the consumer who follows the docs instead of the code.
+- [ ] The page promises and delivers one reader outcome.
+- [ ] `docType` matches the content and location.
+- [ ] Beginner steps precede optional production or expert detail.
+- [ ] Navigation label, title, H1, and contextual links agree.
 
-1. **Verify every symbol against source.** Every function, option, field, default,
-   and enum value named in the docs must exist with that shape in
-   `connectum/packages/<pkg>/src` (and `package.json`). No phantom options, no
-   removed APIs (`ServiceRoute`, `Runner()`, service-routing `fallback` were
-   removed — see [ADR-028](/en/contributing/adr/028-service-catalog)).
-2. **Check code-example blocks, not just prose and tables.** Drift hides in the
-   `.env` blocks and code snippets, not only in description tables. Diff every
-   snippet's imports, signatures, and defaults against source.
-3. **License is `Apache-2.0`.** The repository LICENSE and all 15 `package.json`
-   files use `Apache-2.0`. Never write `MIT`.
-4. **Node.js floors.** The published consumer floor is `>=22.13.0`. Examples that
-   run TypeScript sources directly (`node src/index.ts`, native type stripping)
-   require `>=25.2.0` — state the higher floor only where it is actually needed and
-   say why.
-5. **Interceptor chain order follows [ADR-024](/en/contributing/adr/024-auth-authz-strategy).**
-   The fixed default chain is `errorHandler → timeout → bulkhead → circuitBreaker →
-   retry → fallback → validation → serializer`; only `errorHandler` and `validation`
-   are enabled by default, resilience is opt-in. Auth/authz interceptors go
-   **immediately after `errorHandler`, before resilience and validation.** Code
-   samples and chain diagrams must agree with each other and with ADR-024.
-6. **Generated-code import extensions.** `#gen/*` import extensions follow the
-   project's `buf.gen.yaml` `import_extension`. Connectum **example/consumer
-   projects run TypeScript directly**, so they generate and import `.ts`
-   (`import_extension=.ts` + `allowImportingTsExtensions: true`); compiled packages
-   use `.js`. Show `.ts` in consumer-facing examples to match the flagship examples
-   (`getting-started`, `hris`, `car-sharing`).
-7. **Prefer the generated API Reference over exhaustive hand-written export
-   tables.** Document the load-bearing surface and link to
-   [`/en/api/`](/en/api/) for the complete list.
-8. **When the docs disagree with the source, the source wins** — fix the docs. When
-   two docs disagree and no source settles it, escalate rather than pick a favorite.
+### Accuracy and duplication
 
-## See also
+- [ ] Public symbols, options, defaults, imports, and versions were checked against source.
+- [ ] Exact API detail links to TypeDoc instead of being copied.
+- [ ] Runtime, broker, migration, and architecture facts defer to their canonical owners.
+- [ ] Existing complete explanations were consolidated rather than repeated.
 
-- [CLI Commands](/en/contributing/cli-commands)
-- [Development Setup](/en/contributing/development-setup)
-- [ADR Index](/en/contributing/adr/index)
+### Variants and accessibility
+
+- [ ] Runtime and package-manager variants are complete and semantically equivalent.
+- [ ] Heading order is logical and established anchors remain valid.
+- [ ] Images have useful alt text or are explicitly decorative.
+- [ ] Links and controls have visible keyboard focus and meaningful labels.
+- [ ] Mobile layouts have usable touch targets and no horizontal overflow.
+- [ ] Motion is non-essential and respects reduced-motion preferences.
+
+### Delivery
+
+- [ ] Internal links, target anchors, and compatibility routes validate.
+- [ ] Local search finds both task phrases and exact symbols.
+- [ ] Sitemap and LLM outputs contain canonical pages and exclude compatibility noise.
+- [ ] The production build succeeds in light/dark desktop/mobile review.
+
+## Documented version and release checklist
+
+`.vitepress/data/site.json` is the single maintained source for the documented
+Connectum release line and supported Node.js floors. The documentation maintainer
+updates it in the release documentation change; components must not hard-code a
+second version string.
+
+For every release:
+
+1. Update the documented release line after package versions are finalized.
+2. Regenerate TypeDoc from the released framework source; do not hand-edit output.
+3. Add focused migration instructions for required user action.
+4. Review Quickstart, Runtime Compatibility, package hubs, and representative
+   interface links against the released source.
+5. Run route/link/module/variant checks and the production build.
+6. Verify search, sitemap, LLM outputs, and representative user journeys.
+7. Review desktop/mobile light/dark screenshots before deployment.

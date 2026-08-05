@@ -1,31 +1,34 @@
 ---
+title: Choose an Event Adapter
+description: Compare Connectum event brokers, choose one for the workload, and reach its exact configuration API.
+docType: concept
 outline: deep
 ---
 
-# Adapters
+# Choose an Event Adapter
 
-The EventBus uses pluggable adapters to communicate with different message brokers. Each adapter implements the `EventAdapter` interface, handling connection management, serialization at the wire level, and subscription lifecycle. Broker-specific configuration is isolated in the adapter constructor.
+Every Connectum EventBus uses the same `EventAdapter` contract. Choose a broker
+from workload and operational requirements, then keep broker-specific tuning in
+that adapter's generated API reference.
 
-## Adapter Comparison
+## Broker Selection Matrix {#adapter-comparison}
 
-| Feature | Memory | NATS JetStream | Kafka | Redis Streams | AMQP / RabbitMQ |
-|---------|--------|---------------|-------|---------------|-----------------|
-| **Package** | `@connectum/events` | `@connectum/events-nats` | `@connectum/events-kafka` | `@connectum/events-redis` | `@connectum/events-amqp` |
-| **Broker** | None (in-process) | NATS 2.x+ | Apache Kafka | Redis 5+ | RabbitMQ 3.x+ |
-| **Compatible with** | -- | -- | Redpanda | Valkey | LavinMQ |
-| **Client library** | -- | `@nats-io/transport-node` | KafkaJS | ioredis | amqplib |
-| **Persistence** | No | Yes (JetStream) | Yes (log-based) | Yes (AOF/RDB) | Yes (durable queues) |
-| **Consumer groups** | No | Yes (durable consumers) | Yes (native) | Yes (XREADGROUP) | Yes (competing consumers) |
-| **Ordering** | Per-publish | Per-subject | Per-partition | Per-stream | Per-queue |
-| **Wildcard topics** | Yes (`*`, `>`) | Yes (NATS native) | No | No | Yes (`*`, `#`) |
-| **Delivery guarantee** | At-most-once | At-least-once | At-least-once | At-least-once | At-least-once |
-| **Ideal for** | Unit tests, dev | Low-latency, cloud-native | High-throughput, event sourcing | Existing Redis stack | Complex routing, enterprise integration |
+| Adapter | Persistence | Consumer coordination | Ordering scope | Best starting fit |
+|---|---|---|---|---|
+| Memory | No | None | Publish call | Unit tests and local prototypes |
+| NATS JetStream | Yes | Durable consumers | Subject | Lightweight, low-latency service events |
+| Kafka / Redpanda | Yes | Native consumer groups | Partition | High-throughput streams and retained logs |
+| Redis Streams / Valkey | Configurable by Redis | Consumer groups | Stream | Teams already operating Redis-compatible infrastructure |
+| AMQP / RabbitMQ / LavinMQ | Durable queues/exchanges when configured | Competing consumers | Queue | Routing topologies and external AMQP contracts |
 
-## Memory Adapter
+All production adapters implement at-least-once delivery semantics. Handlers must
+be idempotent and acknowledge only after their side effects are complete. Broker
+configuration determines actual durability and retention.
 
-Built into `@connectum/events`. Delivers events synchronously in-process with no external dependencies. Supports wildcard patterns (`*` and `>`).
+## Memory {#memory-adapter}
 
-**Use case**: Unit testing, local development, prototyping.
+`MemoryAdapter()` ships with `@connectum/events`. It has no external dependency,
+persistence, or consumer groups and is intended for tests and local development.
 
 ```typescript
 import { MemoryAdapter } from '@connectum/events';
@@ -33,397 +36,86 @@ import { MemoryAdapter } from '@connectum/events';
 const adapter = MemoryAdapter();
 ```
 
-No configuration options. Connect and disconnect are no-ops (they only toggle an internal `connected` flag).
+## NATS JetStream {#nats-jetstream-adapter}
 
-::: warning Not for Production
-MemoryAdapter provides no persistence, no consumer groups, and at-most-once delivery. Events are lost on process restart. Use it only for testing.
-:::
-
-## NATS JetStream Adapter
-
-Provides persistent at-least-once delivery through NATS JetStream with durable consumers, wildcard routing, and metadata propagation via NATS headers.
-
-::: pm
-== npm
-```bash
-npm install @connectum/events-nats
-```
-== pnpm
-```bash
-pnpm add @connectum/events-nats
-```
-== bun
-```bash
-bun add @connectum/events-nats
-```
-:::
+Choose NATS for durable subjects, wildcard routing, and a compact operational
+footprint.
 
 ```typescript
 import { NatsAdapter } from '@connectum/events-nats';
 
-const adapter = NatsAdapter({
-  servers: 'nats://localhost:4222',
-  stream: 'orders',
-  consumerOptions: {
-    deliverPolicy: 'new',
-    ackWait: 30_000,
-    maxDeliver: 5,
-  },
-});
+const adapter = NatsAdapter({ servers: 'nats://localhost:4222' });
 ```
 
-### NatsAdapterOptions
+- [Module hub](/en/packages/events-nats)
+- [`NatsAdapterOptions`](/en/api/@connectum/events-nats/types/interfaces/NatsAdapterOptions)
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `servers` | `string \| string[]` | *required* | NATS server URL(s) |
-| `stream` | `string` | `"events"` | JetStream stream name. Subjects are prefixed with `{stream}.` |
-| `connectionOptions` | `Partial<NodeConnectionOptions>` | `undefined` | Advanced NATS connection config |
-| `consumerOptions` | `NatsConsumerOptions` | `undefined` | JetStream consumer tuning |
+## Kafka or Redpanda {#kafka-adapter}
 
-### NatsConsumerOptions
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `deliverPolicy` | `"new" \| "all" \| "last"` | `"new"` | Where new consumers start reading |
-| `ackWait` | `number` | `30000` | Ack timeout in ms before redelivery |
-| `maxDeliver` | `number` | `5` | Max delivery attempts before server-side discard |
-
-### When to Use NATS
-
-- **Cloud-native** microservices needing lightweight, low-latency messaging
-- **Wildcard routing** for flexible topic hierarchies
-- **Cluster-native** with built-in clustering and no external dependencies (like ZooKeeper)
-- **JetStream** provides persistence, replay, and exactly-once semantics
-
-## Kafka Adapter
-
-KafkaJS-based adapter for Apache Kafka and Kafka-compatible brokers like **Redpanda**.
-
-::: pm
-== npm
-```bash
-npm install @connectum/events-kafka
-```
-== pnpm
-```bash
-pnpm add @connectum/events-kafka
-```
-== bun
-```bash
-bun add @connectum/events-kafka
-```
-:::
+Choose Kafka-compatible infrastructure for partitioned ordering, retained logs,
+and high-throughput stream processing.
 
 ```typescript
 import { KafkaAdapter } from '@connectum/events-kafka';
 
 const adapter = KafkaAdapter({
   brokers: ['localhost:9092'],
-  clientId: 'order-service',
-  consumerOptions: {
-    sessionTimeout: 30_000,
-    fromBeginning: false,
-  },
+  clientId: 'orders-service',
 });
 ```
 
-### KafkaAdapterOptions
+- [Module hub](/en/packages/events-kafka)
+- [`KafkaAdapterOptions`](/en/api/@connectum/events-kafka/types/interfaces/KafkaAdapterOptions)
+- [Redpanda example](https://github.com/Connectum-Framework/examples/tree/main/with-events-redpanda)
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `brokers` | `string[]` | *required* | Kafka broker addresses |
-| `clientId` | `string` | `"connectum"` | Client identifier for the producer/consumer |
-| `kafkaConfig` | `Omit<Partial<KafkaConfig>, "brokers" \| "clientId">` | `undefined` | Additional KafkaJS configuration overrides |
-| `producerOptions.compression` | `CompressionTypes` | `undefined` | Message compression type |
-| `consumerOptions.sessionTimeout` | `number` | `30000` | Session timeout in ms |
-| `consumerOptions.fromBeginning` | `boolean` | `false` | Start consuming from beginning of topics |
-| `consumerOptions.allowAutoTopicCreation` | `boolean` | `false` | Allow automatic topic creation when subscribing |
+## Redis Streams or Valkey {#redis-streams-adapter}
 
-### Redpanda Compatibility
-
-[Redpanda](https://redpanda.com/) implements the Kafka wire protocol. The `@connectum/events-kafka` adapter works with Redpanda out of the box -- no configuration changes needed:
-
-```typescript
-const adapter = KafkaAdapter({
-  brokers: (process.env.REDPANDA_BROKERS ?? 'localhost:9092').split(','),
-  clientId: 'my-service',
-});
-```
-
-See the [with-events-redpanda](https://github.com/Connectum-Framework/examples/tree/main/with-events-redpanda) example for a full saga pattern with Redpanda and Redpanda Console.
-
-### When to Use Kafka
-
-- **High-throughput** event streaming with millions of events/second
-- **Event sourcing** with persistent log-based storage
-- **Existing Kafka infrastructure** or need for the Kafka ecosystem (Connect, Streams, ksqlDB)
-- **Redpanda** deployments for Kafka-compatible, ZooKeeper-free operation
-
-## Redis Streams Adapter
-
-Uses Redis Streams (`XADD` / `XREADGROUP` / `XACK`) for durable, ordered event delivery with consumer groups.
-
-::: pm
-== npm
-```bash
-npm install @connectum/events-redis
-```
-== pnpm
-```bash
-pnpm add @connectum/events-redis
-```
-== bun
-```bash
-bun add @connectum/events-redis
-```
-:::
+Choose Redis Streams when the team already operates Redis-compatible
+infrastructure and needs stream consumer groups without a separate broker stack.
 
 ```typescript
 import { RedisAdapter } from '@connectum/events-redis';
 
-const adapter = RedisAdapter({
-  url: 'redis://localhost:6379',
-  brokerOptions: {
-    maxLen: 100_000,
-    blockMs: 5_000,
-    count: 10,
-  },
-});
+const adapter = RedisAdapter({ url: 'redis://localhost:6379' });
 ```
 
-### RedisAdapterOptions
+- [Module hub](/en/packages/events-redis)
+- [`RedisAdapterOptions`](/en/api/@connectum/events-redis/types/interfaces/RedisAdapterOptions)
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `url` | `string` | `undefined` | Redis connection URL (e.g., `redis://localhost:6379`) |
-| `redisOptions` | `RedisOptions` | `undefined` | ioredis connection options (alternative to `url`) |
-| `brokerOptions` | `RedisBrokerOptions` | `undefined` | Redis Streams tuning |
+## AMQP or RabbitMQ {#amqp--rabbitmq-adapter}
 
-### RedisBrokerOptions
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `maxLen` | `number` | `undefined` | Maximum stream length (MAXLEN approximate for XADD) |
-| `blockMs` | `number` | `5000` | Block timeout in ms for XREADGROUP |
-| `count` | `number` | `10` | Messages per XREADGROUP call |
-
-### Valkey Compatibility
-
-[Valkey](https://valkey.io/) is an open-source Redis fork that implements the same Streams API. The `@connectum/events-redis` adapter works with Valkey without modification:
-
-```typescript
-const adapter = RedisAdapter({
-  url: 'redis://valkey-host:6379',
-});
-```
-
-### When to Use Redis Streams
-
-- **Existing Redis/Valkey infrastructure** you want to reuse for messaging
-- **Simple streaming** without the complexity of a dedicated broker
-- **Ordered delivery** within a single stream
-- **Moderate throughput** with low operational overhead
-
-## AMQP / RabbitMQ Adapter
-
-Uses the AMQP 0-9-1 protocol via [amqplib](https://amqp-node.github.io/amqplib/) for durable messaging with topic exchanges, competing consumers, and native dead letter exchange (DLX) support. Provides per-message publisher confirms, automatic connection recovery (enabled by default), explicit external topology (`topology` / `topologyMode` / `queueOverrides`), and serialization control for external AMQP contracts -- see [@connectum/events-amqp](/en/packages/events-amqp) for the full reference.
-
-::: pm
-== npm
-```bash
-npm install @connectum/events-amqp
-```
-== pnpm
-```bash
-pnpm add @connectum/events-amqp
-```
-== bun
-```bash
-bun add @connectum/events-amqp
-```
-:::
+Choose AMQP for exchange/queue topology, competing consumers, or integration
+with an externally governed AMQP contract.
 
 ```typescript
 import { AmqpAdapter } from '@connectum/events-amqp';
 
 const adapter = AmqpAdapter({
-  url: 'amqp://guest:guest@localhost:5672',
-  exchange: 'orders.events',
-  queueOptions: {
-    durable: true,
-    deadLetterExchange: 'orders.dlx',
-  },
-  consumerOptions: {
-    prefetch: 50,
-  },
+  url: 'amqp://localhost:5672',
+  exchange: 'events',
+  exchangeType: 'topic',
 });
 ```
 
-### AmqpAdapterOptions
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `url` | `string` | *required* | AMQP connection URL |
-| `socketOptions` | `Record<string, unknown>` | `undefined` | Socket options for TLS and advanced config |
-| `exchange` | `string` | `"connectum.events"` | Exchange name (auto-created on connect) |
-| `exchangeType` | `"topic" \| "direct" \| "fanout" \| "headers"` | `"topic"` | Exchange type |
-| `exchangeOptions` | `AmqpExchangeOptions` | `undefined` | Exchange declaration options |
-| `queueOptions` | `AmqpQueueOptions` | `undefined` | Queue declaration options (durable, TTL, max length, DLX) |
-| `consumerOptions` | `AmqpConsumerOptions` | `undefined` | Consumer tuning (prefetch, exclusive) |
-| `publisherOptions` | `AmqpPublisherOptions` | `undefined` | Publisher options (persistent, mandatory, return correlation) |
-| `serialization` | `AmqpSerializationOptions` | `undefined` | `contentType` label and optional wire transcoding |
-| `topology` | `AmqpTopology` | `undefined` | Explicit topology: exchanges, queues with raw arguments, bindings |
-| `topologyMode` | `"assert" \| "check" \| "skip"` | `"assert"` | How topology is established (declare / verify existence / none) |
-| `queueOverrides` | `Record<string, AmqpQueueOverride>` | `undefined` | Map a consumer group to an externally named queue |
-| `recovery` | `boolean \| AmqpRecoveryOptions` | `true` | Automatic connection recovery; `false` disables |
-| `lifecycle` | `AmqpLifecycleCallbacks` | `undefined` | Connection lifecycle callbacks |
-| `publishTimeoutMs` | `number` | `30000` | Per-publish broker-outcome deadline |
-
-Every `publish()` resolves on its own broker acknowledgement (per-message confirms) and rejects with a typed error (`AmqpUnroutableError`, `AmqpPublishNackError`, `AmqpPublishTimeoutError`, `AmqpConnectionError`). See the [package page](/en/packages/events-amqp) for the error taxonomy, recovery semantics, and an external-contract recipe.
-
-### LavinMQ Compatibility
-
-[LavinMQ](https://lavinmq.com/) is a lightweight, high-performance AMQP 0-9-1 broker compatible with RabbitMQ. The `AmqpAdapter` works with LavinMQ without modification:
-
-```typescript
-const adapter = AmqpAdapter({
-  url: 'amqp://guest:guest@lavinmq-host:5672',
-});
-```
-
-### When to Use AMQP / RabbitMQ
-
-- **Complex routing** with topic exchanges, headers-based routing, or multi-exchange topologies
-- **Enterprise integration** patterns (DLX, TTL, priority queues, message deduplication)
-- **Existing RabbitMQ infrastructure** or AMQP-compatible brokers (LavinMQ)
-- **Wildcard routing** with per-queue ordering and competing consumers
-- **Mature ecosystem** with management UI, federation, and shovel plugins
-
-## Choosing an Adapter
-
-### Decision Tree
-
-```mermaid
-flowchart TD
-    A["Need event-driven communication?"] --> B{"Environment?"}
-    B -->|"Unit tests"| M["MemoryAdapter"]
-    B -->|"Production"| C{"Existing infrastructure?"}
-    C -->|"Kafka / Redpanda"| K["KafkaAdapter"]
-    C -->|"Redis / Valkey"| R["RedisAdapter"]
-    C -->|"NATS"| N["NatsAdapter"]
-    C -->|"RabbitMQ / AMQP"| AQ["AmqpAdapter"]
-    C -->|"Greenfield"| D{"Priority?"}
-    D -->|"Low latency, simplicity"| N
-    D -->|"High throughput, event sourcing"| K
-    D -->|"Minimal ops, existing cache"| R
-    D -->|"Complex routing, enterprise"| AQ
-```
-
-### Quick Reference
-
-| Scenario | Recommended Adapter |
-|----------|-------------------|
-| Unit / integration tests | `MemoryAdapter` |
-| Cloud-native, Kubernetes-first | `NatsAdapter` |
-| High-throughput event streaming | `KafkaAdapter` |
-| Redpanda deployment | `KafkaAdapter` |
-| Already running Redis/Valkey | `RedisAdapter` |
-| Already running RabbitMQ/LavinMQ | `AmqpAdapter` |
-| Wildcard topic routing needed | `NatsAdapter`, `AmqpAdapter`, or `MemoryAdapter` |
-| Complex routing, enterprise integration | `AmqpAdapter` |
-| Event sourcing / audit log | `KafkaAdapter` |
-| Minimal infrastructure | `NatsAdapter` (single binary) |
+- [Module hub](/en/packages/events-amqp)
+- [`AmqpAdapterOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpAdapterOptions)
+- [AMQP example](https://github.com/Connectum-Framework/examples/tree/main/with-events-amqp)
 
 ## Automatic Client Identification
 
-When the EventBus starts, it derives a service name from registered proto service descriptors and passes it to the adapter via `AdapterContext`. Adapters use this for broker-level client identification, which improves observability in broker dashboards and monitoring tools.
+When an adapter-specific client or connection name is not supplied, the EventBus
+derives a service identifier from registered proto service names and the host.
+An explicit adapter option always wins. Use explicit names when broker ACLs,
+dashboards, or support procedures depend on stable identifiers.
 
-The derived name follows the format `{packageNames}@{hostname}`:
+## Custom Adapters {#eventadapter-interface}
 
-| Registered Services | Derived Name |
-|---------------------|--------------|
-| `order.v1.OrderEventService` | `order.v1@pod-abc123` |
-| `order.v1.OrderEventService` + `payment.v1.PaymentEventService` | `order.v1/payment.v1@pod-abc123` |
+Implement the generated [`EventAdapter`](/en/api/@connectum/events/types/interfaces/EventAdapter)
+contract when a broker is not covered. Keep serialization, connection lifecycle,
+subscription cancellation, acknowledgement behavior, and error semantics explicit.
 
-Each adapter maps this to the appropriate broker concept:
+## Next Steps
 
-| Adapter | Broker Concept | Config Override |
-|---------|---------------|-----------------|
-| Kafka | `clientId` | `KafkaAdapterOptions.clientId` |
-| NATS | Connection `name` (visible in `/connz`) | `connectionOptions.name` |
-| Redis | `CLIENT SETNAME` | `redisOptions.connectionName` |
-| AMQP | Connection name (`clientProperties.connection_name`, visible in Management UI) | `socketOptions` |
-| Memory | Not used | -- |
-
-Explicit adapter options always take priority over the derived name. If you set `clientId`, `connectionOptions.name`, or `redisOptions.connectionName` directly, the adapter uses your value.
-
-## EventAdapter Interface
-
-All adapters implement this interface:
-
-```typescript
-interface EventAdapter {
-  /** Adapter name (e.g., "nats", "kafka", "redis", "amqp", "memory") */
-  readonly name: string;
-
-  /** Connect to the message broker */
-  connect(context?: AdapterContext): Promise<void>;
-
-  /** Disconnect from the message broker */
-  disconnect(): Promise<void>;
-
-  /** Publish a serialized event to a topic */
-  publish(eventType: string, payload: Uint8Array, options?: PublishOptions): Promise<void>;
-
-  /** Subscribe to event patterns with a raw handler */
-  subscribe(
-    patterns: string[],
-    handler: RawEventHandler,
-    options?: RawSubscribeOptions,
-  ): Promise<EventSubscription>;
-}
-```
-
-### Implementing a Custom Adapter
-
-To integrate with a broker not covered by the built-in adapters, implement the `EventAdapter` interface:
-
-```typescript
-import type { EventAdapter, EventSubscription, PublishOptions, RawEventHandler, RawSubscribeOptions } from '@connectum/events';
-
-export function MyBrokerAdapter(options: MyOptions): EventAdapter {
-  return {
-    name: 'my-broker',
-
-    async connect() {
-      // Establish connection to broker
-    },
-
-    async disconnect() {
-      // Clean up connections and subscriptions
-    },
-
-    async publish(eventType, payload, publishOptions) {
-      // Serialize and send to broker
-    },
-
-    async subscribe(patterns, handler, subscribeOptions): Promise<EventSubscription> {
-      // Set up subscription, deliver events to handler
-      return {
-        async unsubscribe() {
-          // Clean up this subscription
-        },
-      };
-    },
-  };
-}
-```
-
-## Related
-
-- [Events Overview](/en/guide/events) -- architecture and core concepts
-- [Getting Started](/en/guide/events/getting-started) -- step-by-step setup
-- [Custom Topics](/en/guide/events/custom-topics) -- topic naming and wildcards
-- [Middleware](/en/guide/events/middleware) -- retry, DLQ, custom middleware
-- [@connectum/events](/en/packages/events) -- Package Guide
+- [Publish and Subscribe](/en/guide/events/getting-started)
+- [Event Middleware](/en/guide/events/middleware)
+- [`@connectum/events`](/en/packages/events)

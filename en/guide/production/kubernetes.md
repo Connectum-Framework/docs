@@ -91,37 +91,9 @@ Minimal ServiceAccount for the service. The manifest creates a dedicated Service
 
 See [rbac.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/rbac.yaml) for the full manifest.
 
-## Graceful Shutdown Deep Dive
+## Shutdown and Probe Alignment
 
-Connectum's graceful shutdown integrates with Kubernetes' pod termination lifecycle. Understanding the sequence is critical for zero-downtime deployments.
-
-### Pod Termination Sequence
-
-```mermaid
-sequenceDiagram
-    participant K8s as Kubernetes
-    participant Pod as Pod
-    participant CT as Connectum Server
-    participant EP as Endpoints Controller
-
-    K8s->>Pod: 1. Mark pod as Terminating
-    K8s->>EP: 2. Remove pod from Service endpoints
-    K8s->>Pod: 3. Execute preStop hook (sleep 5)
-    Note over Pod: 5s delay for endpoint de-registration to propagate
-    K8s->>CT: 4. Send SIGTERM
-    CT->>CT: 5. autoShutdown catches SIGTERM
-    CT->>CT: 6. Emit "stopping" event
-    CT->>CT: 7. healthcheckManager → NOT_SERVING
-    CT->>CT: 8. Run shutdown hooks (dependency order)
-    CT->>CT: 9. Close HTTP/2 server
-    CT->>CT: 10. Wait for in-flight requests (up to timeout)
-    CT->>CT: 11. Emit "stop" event
-    Note over K8s,CT: If timeout exceeded → SIGKILL after terminationGracePeriodSeconds
-```
-
-### Configuration alignment
-
-It is essential to align timeouts:
+The canonical shutdown sequence and hook ordering live in [Graceful shutdown](/en/guide/server/graceful-shutdown); probe semantics and status transitions live in [Kubernetes health checks](/en/guide/health-checks/kubernetes). At deployment level, preserve this deadline invariant:
 
 ```
 preStop sleep          : 5s
@@ -133,71 +105,7 @@ terminationGracePeriod : 35s (Kubernetes, must be >= preStop + shutdown.timeout)
 If `terminationGracePeriodSeconds` is shorter than the sum of `preStop` delay and `shutdown.timeout`, Kubernetes will SIGKILL the pod before Connectum finishes graceful shutdown, causing dropped requests.
 :::
 
-### Connectum Server Configuration
-
-```typescript
-import { createServer } from '@connectum/core';
-import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
-import { Reflection } from '@connectum/reflection';
-import { shutdownProvider } from '@connectum/otel';
-
-const server = createServer({
-  services: [routes],
-  port: 5000,
-  protocols: [
-    Healthcheck({ httpEnabled: true }),
-    Reflection(),
-  ],
-  shutdown: {
-    autoShutdown: true,        // Catch SIGTERM and SIGINT
-    timeout: 30000,            // 30s to drain connections
-    signals: ['SIGTERM', 'SIGINT'],
-    forceCloseOnTimeout: true, // Force-close after timeout
-  },
-});
-
-// Register shutdown hooks with dependency ordering
-server.onShutdown('database', async () => {
-  await db.close();
-});
-
-// OTel depends on database (database shuts down first)
-server.onShutdown('otel', ['database'], async () => {
-  await shutdownProvider();
-});
-
-server.on('ready', () => {
-  healthcheckManager.update(ServingStatus.SERVING);
-});
-
-server.on('stopping', () => {
-  // Kubernetes readiness probe will start failing
-  // because healthcheckManager transitions to NOT_SERVING
-  console.log('Server is shutting down...');
-});
-
-await server.start();
-```
-
-## Probes: Choosing the Right Path
-
-Connectum's `@connectum/healthcheck` package exposes three HTTP paths by default (when `httpEnabled: true`):
-
-| Path | Purpose | Kubernetes Probe | Response |
-|---|---|---|---|
-| `/healthz` | Is the process alive? | `livenessProbe` | 200 if serving, 503 if not |
-| `/readyz` | Ready for traffic? | `readinessProbe` | 200 if serving, 503 if not |
-| `/health` | General health (alias) | Any | Same as above |
-
-All three paths check the same `healthcheckManager` status. You can differentiate behavior by registering per-service health statuses:
-
-```typescript
-// Report individual service health
-healthcheckManager.update(ServingStatus.SERVING, 'mycompany.orders.v1.OrderService');
-
-// Check via HTTP
-// GET /healthz?service=mycompany.orders.v1.OrderService
-```
+The deployment manifest should use `/healthz` for liveness and `/readyz` for readiness, enable the HTTP health handler, and let the application move readiness to `NOT_SERVING` before drain. Do not maintain a second status or shutdown timeline in Kubernetes manifests.
 
 ## Complete Deployment Script
 

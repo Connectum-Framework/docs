@@ -1,10 +1,15 @@
 ---
+title: Operate Server Reflection
+description: Enable schema discovery for tools and control its production exposure.
+docType: how-to
 outline: deep
 ---
 
 # Server Reflection
 
 Server Reflection allows clients to discover services, methods, and message types at runtime without access to `.proto` files. Connectum implements the [gRPC Server Reflection Protocol](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) (v1 and v1alpha) through the `@connectum/reflection` package.
+
+This page owns operational enablement and client-tool usage. Implementing a new server extension belongs to [Custom protocols](/en/guide/protocols/custom).
 
 ## Why Use Reflection?
 

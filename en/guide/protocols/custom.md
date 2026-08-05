@@ -1,10 +1,15 @@
 ---
+title: Create a Custom Protocol
+description: Extend the Connectum server with an advanced gRPC registration or HTTP fallback handler.
+docType: how-to
 outline: deep
 ---
 
 # Creating Custom Protocol Plugins
 
 Connectum uses a protocol plugin system to extend the server with additional gRPC services and HTTP endpoints. Built-in protocols include `Healthcheck` and `Reflection`, but you can create your own.
+
+This is an advanced framework extension point. To expose the standard reflection service, follow [Server reflection](/en/guide/protocols/reflection) rather than reimplementing it.
 
 ## The ProtocolRegistration Interface
 

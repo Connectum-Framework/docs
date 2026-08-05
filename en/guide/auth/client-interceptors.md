@@ -46,11 +46,9 @@ const bearerAuth = createClientBearerInterceptor({
 });
 ```
 
-### Options
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `token` | `string \| () => Promise<string>` | Yes | Static token or async factory called before each request |
+`token` accepts either a static credential or an async factory. See
+[`ClientBearerInterceptorOptions`](/en/api/@connectum/auth/interfaces/ClientBearerInterceptorOptions)
+for the exact contract.
 
 ## Gateway (Service-to-Service)
 
@@ -72,13 +70,10 @@ const transport = createConnectTransport({
 });
 ```
 
-### Options
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `secret` | `string` | Yes | Shared secret matching the server's `trustSource.expectedValues` |
-| `subject` | `string` | Yes | Service identity (appears as `AuthContext.subject` on the server) |
-| `roles` | `string[]` | No | Roles to propagate (JSON-encoded in `x-auth-roles` header) |
+Provide a secret that matches the server trust source and a stable service subject;
+roles are optional. See
+[`ClientGatewayInterceptorOptions`](/en/api/@connectum/auth/interfaces/ClientGatewayInterceptorOptions)
+for exact fields.
 
 ### Header mapping
 

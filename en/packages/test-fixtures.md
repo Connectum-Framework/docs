@@ -1,75 +1,65 @@
 ---
 title: '@connectum/test-fixtures'
-description: Transport-free mock factories, assertion helpers, and protobuf descriptor fixtures
+description: Low-level mock requests, descriptors, streams, next functions, and assertions for framework and tooling tests.
+docType: package-hub
 ---
 
 # @connectum/test-fixtures
 
-Lightweight mock factories, assertion helpers, and protobuf descriptor fixtures
-shared across the `@connectum/*` test suites.
+Low-level mock requests, descriptors, streams, next functions, and assertions for framework and tooling tests.
 
-**Layer**: 2 (Testing Utilities)
-
-This package is **transport-free** — it does not depend on `@connectum/core`,
-`@connectum/interceptors`, or any other Connectum package. That keeps the
-workspace dependency graph acyclic and lets every Connectum package depend on it
-without build cycles.
-
-::: tip Related
-- [@connectum/testing](/en/packages/testing) -- higher-level test server, in-process transport, OTel collectors, parity driver (re-exports everything here)
-- [Testing](/en/guide/testing) -- testing strategies and tools
-:::
-
-::: tip Full API Reference
-Complete TypeScript API documentation: [API Reference](/en/api/@connectum/test-fixtures/)
-:::
-
-## Installation
+## Install {#installation}
 
 ::: pm
 == npm
-```bash
+~~~bash
 npm install -D @connectum/test-fixtures
-```
+~~~
 == pnpm
-```bash
+~~~bash
 pnpm add -D @connectum/test-fixtures
-```
+~~~
 == bun
-```bash
+~~~bash
 bun add -d @connectum/test-fixtures
-```
+~~~
 :::
 
-**Requires**: Node.js 22.13+
+## Start Here {#quick-start}
 
-**Peer dependencies**: `@connectrpc/connect`, `@bufbuild/protobuf`
+~~~typescript
+import { createMockNext, createMockRequest } from '@connectum/test-fixtures';
 
-Most consumers do not install this directly — [@connectum/testing](/en/packages/testing)
-re-exports every symbol from it, so importing from `@connectum/testing` continues
-to work unchanged.
+const request = createMockRequest();
+const next = createMockNext({ message: { ok: true } });
+~~~
 
-## What lives here
+For a complete, source-verified workflow, continue with the focused guide below.
 
-| Export | Purpose |
-|--------|---------|
-| `assertConnectError` | Assertion helper for thrown `ConnectError` values (code + message). |
-| `createMockFn` | Portable, `node:test`-free spy factory (works under Bun/esbuild). |
-| `createMockRequest` | Fake unary ConnectRPC request. |
-| `createMockNext`, `createMockNextError`, `createMockNextSlow` | Fake `next` handlers for interceptor tests. |
-| `createMockStream` | Async iterable for streaming tests. |
-| `createMockDescMessage`, `createMockDescField`, `createMockDescMethod` | Protobuf descriptor mocks. |
-| `createFakeService`, `createFakeMethod` | Generic `DescService` / `DescMethod` fixtures. |
+## Key Entry Points
 
-## Example
+| Entry point | Use it to |
+|---|---|
+| `createMockRequest` | Build a ConnectRPC request fixture. |
+| `createFakeService` | Build descriptor-compatible fake services. |
+| `createMockStream` | Create deterministic streaming inputs. |
 
-```ts
-import { assertConnectError, createMockRequest } from "@connectum/test-fixtures";
-import { Code, ConnectError } from "@connectrpc/connect";
+Architecture-layer and dependency details remain in the [Architecture Overview](/en/guide/production/architecture).
 
-assertConnectError(
-    new ConnectError("not found", Code.NotFound),
-    Code.NotFound,
-    "not found",
-);
-```
+## Learn / Configure / API Reference {#api-reference}
+
+- **Learn:** [Focused guide](/en/guide/testing)
+- **Configure:** [Task and configuration guidance](/en/guide/interceptors/custom)
+- **API reference:** [Exact options and symbols](/en/api/@connectum/test-fixtures/types/interfaces/MockRequestOptions)
+- **Package API index:** [Generated TypeDoc](/en/api/@connectum/test-fixtures/)
+- **Source:** [@connectum/test-fixtures on GitHub](https://github.com/Connectum-Framework/connectum/tree/main/packages/test-fixtures)
+
+## Related Modules {#related-packages}
+
+[Compare all Connectum packages](/en/packages/) by capability.
+
+<!-- Compatibility anchors retained from the former exhaustive package page. -->
+<div class="legacy-anchors" aria-hidden="true">
+<span id="what-lives-here"></span>
+<span id="example"></span>
+</div>

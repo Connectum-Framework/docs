@@ -1,4 +1,7 @@
 ---
+title: Generate OpenAPI with Authz
+description: Generate an OpenAPI contract from proto and overlay the same Connectum authorization rules used at runtime.
+docType: how-to
 outline: deep
 ---
 
@@ -7,6 +10,8 @@ outline: deep
 Connectum services speak gRPC/Connect, but their contract often has to reach audiences that do not: REST/HTTP clients, API gateways, Swagger UI, SDK generators, and API catalogs. The common denominator for those is an **OpenAPI** document.
 
 Connectum's authorization lives in `.proto` options ([Proto-Based Authz](/en/guide/auth/proto-authz)). The pattern on this page generates an OpenAPI v3.1 contract that **reflects that authz** -- the same options the `createProtoAuthzInterceptor` enforces at runtime also drive the published spec, so the two cannot drift.
+
+**Outcome:** a reproducible OpenAPI artifact whose operation security is resolved through [`resolveMethodAuth`](/en/api/@connectum/auth/functions/resolveMethodAuth), not a second hand-maintained policy table.
 
 ::: tip Reference implementation
 The [`car-sharing`](https://github.com/Connectum-Framework/examples/tree/main/car-sharing) example ships this end-to-end (`buf.gen.openapi.yaml`, `scripts/openapi-authz.ts`, committed `openapi/*.yaml`). The rationale is recorded in [ADR-030](/en/contributing/adr/030-openapi-authz-generation).

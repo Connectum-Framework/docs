@@ -1,43 +1,29 @@
 ---
+title: Transport Security
+description: Choose TLS or mutual TLS and keep certificate policy at the deployment boundary.
+docType: concept
 outline: deep
 ---
 
-# Security
+# Transport Security
 
-Built-in TLS and mTLS for secure gRPC/ConnectRPC communication over HTTP/2.
+TLS encrypts the connection and authenticates the server. Mutual TLS additionally authenticates the client certificate. Neither replaces application-level identity and authorization when a request crosses a user or gateway trust boundary.
 
-## Quick Start
+## Choose the task
+
+| Need | Canonical guide |
+|---|---|
+| Load a server key/certificate, use environment paths, or test TLS locally | [TLS configuration](/en/guide/security/tls) |
+| Require and validate client certificates for service-to-service traffic | [Mutual TLS](/en/guide/security/mtls) |
+| Decide between HTTP/1.1, h2c, and TLS/ALPN transports | [Transport matrix](/en/guide/production/transport-matrix) |
+| Add JWT, session, gateway, or per-method policy | [Auth and authz](/en/guide/auth) |
+| Find exact server TLS fields | [`CreateServerOptions`](/en/api/@connectum/core/types/interfaces/CreateServerOptions) |
 
 ```typescript
-import { createServer } from '@connectum/core';
-import routes from '#gen/routes.js';
-
 const server = createServer({
   services: [routes],
-  port: 5000,
-  tls: {
-    dirPath: './keys',  // Looks for server.key + server.crt
-  },
+  tls: { dirPath: './keys' },
 });
-
-await server.start();
 ```
 
-When TLS is configured, Connectum creates an HTTP/2 secure server (`http2.createSecureServer`) with ALPN negotiation. Without TLS, the default server is **plaintext HTTP/1.1** (`http.createServer`, since `allowHTTP1` defaults to `true`); set `allowHTTP1: false` to get a plaintext HTTP/2 (h2c) server instead. See the [transport matrix](/en/guide/production/transport-matrix) for which RPC types each transport supports.
-
-## Key Concepts
-
-| Concept | Description |
-|---------|-------------|
-| **TLS Options** | `keyPath` + `certPath` for explicit paths, or `dirPath` for directory-based config |
-| **Environment Variables** | `TLS_DIR_PATH`, `TLS_KEY_PATH`, `TLS_CERT_PATH` for deployment flexibility |
-| **mTLS** | Mutual TLS via `http2Options`: `requestCert`, `rejectUnauthorized`, `ca` |
-| **Transports** | Without TLS: HTTP/1.1 by default, h2c with `allowHTTP1: false`; with TLS: ALPN (HTTP/2 + HTTP/1.1). See the [transport matrix](/en/guide/production/transport-matrix) |
-| **Utility Functions** | `readTLSCertificates()`, `getTLSPath()` from `@connectum/core` |
-
-## Learn More
-
-- [TLS Configuration](/en/guide/security/tls) -- TLS options, utility functions, self-signed certs, testing
-- [Mutual TLS (mTLS)](/en/guide/security/mtls) -- mTLS setup, production best practices, Kubernetes secrets
-- [@connectum/core](/en/packages/core) -- Package Guide
-- [@connectum/core API](/en/api/@connectum/core/) -- Full API Reference
+Production certificates should be issued and rotated by the platform rather than baked into an image. Keep private keys out of source control, validate the full chain, and do not disable peer verification as a production workaround. The mTLS page owns client-certificate policy; the TLS page owns certificate loading and server transport setup.

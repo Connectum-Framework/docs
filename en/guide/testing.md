@@ -1,48 +1,30 @@
 ---
+title: Testing
+description: Choose the smallest Connectum testing layer that proves the behavior you changed.
+docType: concept
 outline: deep
 ---
 
 # Testing
 
-Scenario-based API testing with YAML runbooks -- validate gRPC and ConnectRPC services end-to-end.
+Connectum supports two complementary testing layers. Use TypeScript tests for fast handler and transport feedback, then scenario tests for the deployed protocol boundary.
 
-## Quick Start
+## Choose a layer
 
-Install [runn](https://github.com/k1LoW/runn) and create `tests/grpc-greeter.yml`:
+| Question | Recommended surface |
+|---|---|
+| Does a handler or interceptor return the expected value/error? | [`@connectum/testing`](/en/packages/testing) with an in-process server/client |
+| Do service-catalog calls resolve without a network listener? | [In-process transport](/en/guide/production/in-process-transport) |
+| Does a running service expose correct gRPC, Connect, health, auth, TLS, or streaming behavior? | [runn](/en/guide/testing/runn) |
+| Do you need Go plugins or JUnit-oriented scenario output? | [scenarigo](/en/guide/testing/scenarigo) |
 
-```yaml
-desc: Greeter service -- gRPC
-runners:
-  greq: grpc://localhost:5000
-steps:
-  say_hello:
-    greq:
-      greeter.v1.GreeterService/SayHello:
-        message:
-          name: Alice
-    test: |
-      current.res.status == 0 &&
-      current.res.message.message == 'Hello, Alice!'
-```
+## Recommended path
 
-```bash
-runn run tests/grpc-greeter.yml
-```
+1. Test handler and middleware decisions in process.
+2. Start the real service with its generated proto contract.
+3. Exercise one successful call and the important failure paths through `runn`.
+4. Add deployment-specific probe or TLS scenarios only where that boundary matters.
 
-::: info Working Example
-See [examples/runn](https://github.com/Connectum-Framework/examples/tree/main/runn) for a complete Docker-based E2E test suite with 9 runbooks covering healthcheck, reflection, auth, interceptors, timeout, and multi-service scenarios.
-:::
+Scenario tests catch serialization, validation, interceptor-order, reflection, and health-endpoint integration that isolated unit tests cannot. They should not repeat every business-rule case already covered in TypeScript.
 
-## Key Concepts
-
-| Tool | Strengths |
-|------|-----------|
-| **runn** (recommended) | gRPC reflection support, HTTP testing, expr-lang assertions, single binary, Docker image |
-| **scenarigo** | Go plugin system, JUnit XML reports, template-based assertions |
-
-Both tools use YAML to define multi-step test scenarios. Scenario-based testing catches integration issues that unit tests miss: serialization, validation, interceptor chains, and health check endpoints.
-
-## Learn More
-
-- [runn](/en/guide/testing/runn) -- gRPC/HTTP testing, streaming, TLS, CI/CD integration
-- [scenarigo](/en/guide/testing/scenarigo) -- alternative tool with Go plugins and JUnit reports
+See the complete [runn example suite](https://github.com/Connectum-Framework/examples/tree/main/runn) for the executable end-to-end shape. Exact testing helpers remain in the [`@connectum/testing` API](/en/api/@connectum/testing/); shared low-level fixtures are separated in [`@connectum/test-fixtures`](/en/packages/test-fixtures).

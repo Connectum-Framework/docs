@@ -1,46 +1,31 @@
 ---
+title: Protocol Extensions
+description: Distinguish built-in operational protocols from custom server extensions.
+docType: concept
 outline: deep
 ---
 
-# Protocols
+# Protocol Extensions
 
-Protocol plugin system for extending Connectum servers with custom gRPC services and HTTP endpoints.
-
-## Quick Start
+The `protocols` array registers capabilities that share the server transport but are not application service routes. Connectum ships operational protocols for health and reflection; advanced consumers can implement the same registration contract for a custom gRPC service or HTTP fallback handler.
 
 ```typescript
-import { createServer } from '@connectum/core';
-import { Healthcheck } from '@connectum/healthcheck';
-import { Reflection } from '@connectum/reflection';
-import routes from '#gen/routes.js';
-
 const server = createServer({
   services: [routes],
-  port: 5000,
   protocols: [
     Healthcheck({ httpEnabled: true }),
     Reflection(),
   ],
 });
-
-await server.start();
 ```
 
-## Key Concepts
+## Operational protocols
 
-| Concept | Description |
-|---------|-------------|
-| **ProtocolRegistration** | Interface with `name`, `register()`, and optional `httpHandler` |
-| **Healthcheck** | Built-in protocol -- gRPC Health Check + HTTP endpoints (`/healthz`, `/health`, `/readyz`) |
-| **Reflection** | Built-in protocol -- gRPC Server Reflection for runtime service discovery |
-| **Custom Protocols** | Implement `ProtocolRegistration` to add gRPC services or HTTP endpoints |
-| **addProtocol()** | Add protocols dynamically before `server.start()` |
+- [Health checks](/en/guide/health-checks) own readiness/liveness state and platform probes.
+- [Server reflection](/en/guide/protocols/reflection) owns schema discovery, tool usage, and the production exposure warning.
 
-Every protocol's `register()` receives a `ConnectRouter` and a `ProtocolContext` with all registered service file descriptors.
+## Advanced extension point
 
-## Learn More
+[Creating a custom protocol](/en/guide/protocols/custom) owns `ProtocolRegistration`, `ProtocolContext`, HTTP handler behavior, registration timing, and examples. Add protocols before `server.start()`; this is an explicit server extension boundary, not general request middleware.
 
-- [Server Reflection](/en/guide/protocols/reflection) -- runtime service discovery, grpcurl, buf curl, Postman
-- [Custom Protocols](/en/guide/protocols/custom) -- ProtocolRegistration interface, HTTP handlers, examples
-- [@connectum/healthcheck](/en/packages/healthcheck) -- Health Check Package Guide
-- [@connectum/reflection](/en/packages/reflection) -- Reflection Package Guide
+Exact core types remain in [`ProtocolRegistration`](/en/api/@connectum/core/types/interfaces/ProtocolRegistration) and the generated [core API](/en/api/@connectum/core/). Package setup belongs to the [`@connectum/healthcheck`](/en/packages/healthcheck) and [`@connectum/reflection`](/en/packages/reflection) module hubs.

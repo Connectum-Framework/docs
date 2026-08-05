@@ -1,123 +1,81 @@
 ---
+title: What Is Connectum?
+description: A concise mental model for the Connectum framework and where to begin.
+docType: concept
 outline: deep
 ---
 
-# Connectum Framework
+# What Is Connectum?
 
-## What is Connectum?
+Connectum is a modular framework for gRPC and ConnectRPC microservices on
+Node.js. It standardizes the service runtime—registration, lifecycle,
+middleware, protocols, and shutdown—while keeping security, communication,
+observability, and broker integrations explicit.
 
-**Connectum** is a production-ready framework for building gRPC/ConnectRPC microservices on Node.js 22+. It eliminates boilerplate by bundling health checks, observability, resilience, authentication, and graceful shutdown into a single `createServer()` call.
+The framework is for teams that want consistent production behavior across
+services without adopting an application platform that hides transport and
+middleware decisions.
 
-Engineering teams with enterprise requirements -- observability, mTLS, RBAC, circuit breakers -- need a unified, well-designed framework instead of gluing together dozens of libraries. Connectum provides that foundation with a pluggable architecture where every capability is an explicit, optional package.
+## Mental Model
 
-## The Problem
+Every service begins with three things:
 
-Building production-ready gRPC/ConnectRPC microservices on Node.js requires:
+1. **A proto contract** defines messages and RPC methods.
+2. **A service implementation** connects generated descriptors to typed handlers.
+3. **`createServer()`** composes services, protocols, interceptors, and lifecycle policy.
 
-- A lot of boilerplate code for every new service
-- Manual observability setup (tracing, metrics, logging)
-- Integration of health checks and graceful shutdown
-- TLS, validation, and reflection configuration
-- Understanding multiple libraries and their interactions
+Capabilities are modules around that core:
 
-Existing solutions (NestJS, tRPC) are either too heavy or lack native gRPC support.
+- Interceptors protect the request path with error handling, validation, and
+  explicitly enabled resilience.
+- Auth modules establish identity and authorization context.
+- The service catalog and EventBus connect services synchronously or asynchronously.
+- Health, reflection, and OpenTelemetry make services inspectable and operable.
 
-## What Connectum Provides
+## What Connectum Owns
 
-| Feature | Description |
-|---------|-------------|
-| gRPC/ConnectRPC Server | HTTP/2 server with gRPC, ConnectRPC, and gRPC-Web support |
-| TLS Support | Built-in TLS, mTLS, auto-reload certificates |
-| Health Checks | gRPC Health protocol + HTTP `/healthz`, `/readyz` endpoints |
-| Graceful Shutdown | Drain connections, configurable timeout, ordered shutdown hooks |
-| Interceptors Chain | Resilience interceptors with fixed execution order |
-| OpenTelemetry | Distributed tracing, RPC metrics, structured logging |
-| Server Reflection | gRPC Server Reflection for grpcurl and similar tools |
-| Auth & Authz | JWT, gateway, session auth; declarative RBAC; proto-based authorization |
-| Input Validation | protovalidate integration for automatic request validation |
-| Event-Driven Communication | Proto-first pub/sub with pluggable broker adapters (NATS, Kafka, Redis, AMQP) |
-| CLI Tools | Code generation and project scaffolding |
+| Concern | Connectum responsibility |
+|---|---|
+| Service runtime | Server creation, registration, lifecycle events, shutdown, TLS |
+| Request pipeline | Ordered ConnectRPC interceptors and method filtering |
+| Contracts | Proto-first validation and generated service/catalog types |
+| Communication | Typed service catalog calls and pluggable event brokers |
+| Security | Authentication, authorization, context propagation, TLS/mTLS |
+| Operations | Health/readiness, reflection, traces, metrics, and logs |
+| Tooling | Scaffolding, service generation, contract sync, and test utilities |
 
-## Core Principles
+Connectum does not provide an ORM, frontend framework, or CommonJS build. Public
+packages ship compiled ESM for Node.js `>=22.13.0`; direct TypeScript execution
+requirements are documented in [Runtime Compatibility](/en/guide/runtime-compatibility).
 
-These principles guide every design decision in Connectum. Each links to its Architecture Decision Record for full rationale.
+## Choose Your Path {#choose-your-path}
 
-1. **Native TypeScript** -- write TypeScript natively on Node.js 25+; packages compile to JS + type declarations for consumers on Node.js 22+. [ADR-001](/en/contributing/adr/001-native-typescript-migration)
+- New service: [Build Your First Connectum Service](/en/guide/quickstart)
+- Server behavior: [Server](/en/guide/server)
+- Validation and middleware: [Interceptors](/en/guide/interceptors)
+- Service-to-service design: [Choosing a Communication Mechanism](/en/guide/service-communication/choosing-a-mechanism)
+- Authentication and authorization: [Auth and Authz](/en/guide/auth)
+- Production signals: [Observability](/en/guide/observability)
+- Deployment: [Docker](/en/guide/production/docker) or [Kubernetes](/en/guide/production/kubernetes)
+- Exact interfaces: [API and Reference](/en/reference/)
 
-2. **Modular Architecture** -- thirteen packages organized in dependency layers where each layer can only depend on lower layers. [ADR-003](/en/contributing/adr/003-package-decomposition)
+## Architecture and Boundaries {#architecture-overview}
 
-3. **Pluggable Protocols** -- health checks and server reflection are separate packages registered via the `protocols` array; custom protocols implement the same interface. [ADR-022](/en/contributing/adr/022-protocol-extraction)
-
-4. **Opt-in Resilience** -- a fixed-order interceptor chain (errorHandler, timeout, bulkhead, circuitBreaker, retry, fallback, validation, serializer) where only `errorHandler` and `validation` are enabled by default; the resilience patterns (timeout, bulkhead, circuitBreaker, retry, fallback) are opt-in per-interceptor with no hidden behavioral logic. [ADR-006](/en/contributing/adr/006-resilience-pattern-implementation)
-
-5. **Proto-First Validation** -- request validation uses protovalidate constraints defined directly in `.proto` files and enforced automatically by the validation interceptor. [ADR-005](/en/contributing/adr/005-input-validation-strategy)
-
-6. **Explicit Lifecycle** -- `createServer()` is the single entry point with no hidden defaults; interceptors and protocols are explicit parameters. [ADR-023](/en/contributing/adr/023-uniform-registration-api)
-
-7. **Observable by Design** -- OpenTelemetry instrumentation is a first-class package providing distributed tracing, RPC metrics, and structured logging out of the box.
-
-8. **Production-Ready** -- TLS/mTLS, graceful shutdown with dependency-ordered hooks, JWT/RBAC auth, and Kubernetes-compatible health probes are built-in capabilities.
-
-## Architecture Overview
-
-```mermaid
-graph BT
-  subgraph L0["Layer 0 — Foundation"]
-    CORE["@connectum/core"]
-  end
-
-  subgraph L1["Layer 1 — Extensions"]
-    AUTH["@connectum/auth"]
-    HC["@connectum/healthcheck"]
-    REF["@connectum/reflection"]
-    INT["@connectum/interceptors"]
-    EVT["@connectum/events"]
-  end
-
-  subgraph L2["Layer 2 — Tools"]
-    CLI["@connectum/cli"]
-    OTEL["@connectum/otel"]
-    TEST["@connectum/testing"]
-    ENATS["@connectum/events-nats"]
-    EKAFKA["@connectum/events-kafka"]
-    EREDIS["@connectum/events-redis"]
-    EAMQP["@connectum/events-amqp"]
-  end
-
-  AUTH --> CORE
-  HC --> CORE
-  REF --> CORE
-  INT --> CORE
-  EVT --> CORE
-  ENATS --> EVT
-  EKAFKA --> EVT
-  EREDIS --> EVT
-  EAMQP --> EVT
-```
-
-**Layer 0 (Foundation):** `@connectum/core` -- server factory with lifecycle control, zero internal dependencies.
-
-**Layer 1 (Extensions):** Authentication, interceptors, health checks, reflection -- depends on Layer 0 or external packages only.
-
-**Layer 2 (Tools):** OpenTelemetry, CLI, testing utilities -- may depend on all lower layers.
+Package dependency layers prevent capability modules from becoming an implicit
+monolith. They are an implementation constraint, not the primary way readers
+choose packages. See the [Architecture Overview](/en/guide/production/architecture)
+for the complete graph and the [ADR index](/en/contributing/adr/) for rationale.
 
 ## Non-Goals
 
-- **Not an ORM** -- Connectum does not manage databases
-- **Not a full-stack framework** -- gRPC/ConnectRPC server-side only
-- **Not CommonJS** -- ESM only
-- **Not legacy Node.js** -- requires Node.js 22+ (development requires Node.js 25+)
-
-## Next Steps
-
-- [Quickstart](/en/guide/quickstart) -- create your first service
-- [Server](/en/guide/server) -- understand server lifecycle
-- [Interceptors](/en/guide/interceptors) -- the interceptor chain
-- [Architecture Overview](#architecture-overview) -- package layers and dependency rules
+- Managing application databases or domain models
+- Replacing deployment platforms or service meshes
+- Hiding transport, auth, or resilience policy behind implicit defaults
+- Supporting CommonJS or legacy Node.js runtimes
 
 ## External Resources
 
-- [ConnectRPC Documentation](https://connectrpc.com/docs)
-- [OpenTelemetry Node.js](https://opentelemetry.io/docs/instrumentation/js/)
-- [gRPC Health Checking Protocol](https://github.com/grpc/grpc/blob/master/doc/health-checking.md)
-- [protovalidate](https://github.com/bufbuild/protovalidate)
+- [ConnectRPC documentation](https://connectrpc.com/docs)
+- [OpenTelemetry for JavaScript](https://opentelemetry.io/docs/languages/js/)
+- [gRPC health checking protocol](https://github.com/grpc/grpc/blob/master/doc/health-checking.md)
+- [Protovalidate](https://github.com/bufbuild/protovalidate)

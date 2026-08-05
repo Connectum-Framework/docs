@@ -1,12 +1,26 @@
 ---
-title: Quickstart
-description: Build and run a gRPC/ConnectRPC microservice with Connectum in 5 minutes.
+title: Build Your First Connectum Service
+description: Create a typed service, generate its proto contract, run it, and verify a successful RPC.
+docType: tutorial
 outline: deep
 ---
 
-# Quickstart
+# Build Your First Connectum Service
 
-Build a fully functional gRPC/ConnectRPC microservice with health checks, server reflection, and production-ready interceptors.
+Build your first service from a new project to one successful RPC. You will define a proto
+contract, generate TypeScript, implement a handler, start a Connectum server, and
+verify both the happy path and request validation.
+
+**Outcome:** a runnable Greeter service with health checks, reflection, graceful
+shutdown, error handling, and proto validation. Production capabilities such as
+TLS, authentication, observability, and resilience are focused next steps rather
+than prerequisites for your first call.
+
+::: tip Prefer a scaffold?
+`connectum init` downloads the version-pinned official `getting-started` base and
+can add selected modules. Follow [Scaffolding a Service](/en/guide/scaffolding)
+for that route. Continue here when you want to understand each file yourself.
+:::
 
 ## Prerequisites
 
@@ -366,13 +380,10 @@ curl http://localhost:5000/healthz
 | **Reflection** | Runtime service discovery |
 | **Graceful shutdown** | SIGTERM/SIGINT with connection draining |
 
-Resilience interceptors (timeout, bulkhead, circuit breaker, retry) are **opt-in** — enable them explicitly via `createDefaultInterceptors()` options. See [Step 12](#_12-built-in-interceptors).
+Resilience interceptors (timeout, bulkhead, circuit breaker, retry) are **opt-in**.
+Add them after the first call works by following the [built-in interceptor guide](/en/guide/interceptors/built-in).
 
----
-
-The following steps show how to extend your base service with additional framework features.
-
-## 7. Test Validation
+## 7. Verify Validation {#7-test-validation}
 
 The `min_len = 1` rule from Step 2 is enforced automatically by the validation interceptor:
 
@@ -382,230 +393,39 @@ grpcurl -plaintext -d '{"name": ""}' localhost:5000 greeter.v1.GreeterService/Sa
 # Message: validation error: name: value length must be at least 1 characters [string.min_len]
 ```
 
-No application code required -- proto constraints are validated before your handler runs. See [Validation](/en/guide/validation) for the full constraint catalog.
-
-## 8. Add TLS
-
-Generate a self-signed certificate and add `tls` to `createServer`:
-
-```bash
-mkdir -p keys
-openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 \
-  -keyout keys/server.key -out keys/server.crt \
-  -days 365 -nodes -subj '/CN=localhost'
-```
-
-```typescript
-const server = createServer({
-  // ...same options as Step 5, plus:
-  tls: { dirPath: './keys' }, // looks for server.key and server.crt
-});
-```
-
-```bash
-grpcurl -insecure localhost:5000 list          # gRPC over TLS
-curl -k https://localhost:5000/healthz          # HTTP over TLS
-```
-
-See [Security (TLS)](/en/guide/security) for `keyPath`/`certPath`, mTLS, and production recommendations.
-
-## 9. Add Authentication & Authorization
-
-::: pm
-== npm
-```bash
-npm install @connectum/auth
-```
-== pnpm
-```bash
-pnpm add @connectum/auth
-```
-== bun
-```bash
-bun add @connectum/auth
-```
-:::
-
-```typescript
-import { createJwtAuthInterceptor, createAuthzInterceptor } from '@connectum/auth';
-
-const jwtAuth = createJwtAuthInterceptor({
-  jwksUri: 'https://auth.example.com/.well-known/jwks.json',
-  issuer: 'https://auth.example.com/',
-  audience: 'my-api',
-  skipMethods: ['grpc.health.v1.Health/*', 'grpc.reflection.v1.ServerReflection/*'],
-});
-
-const authz = createAuthzInterceptor({
-  defaultPolicy: 'deny',
-  rules: [
-    { name: 'public', methods: ['greeter.v1.GreeterService/*'], effect: 'allow' },
-  ],
-});
-
-// Add before default interceptors
-interceptors: [jwtAuth, authz, ...createDefaultInterceptors()],
-```
-
-The auth interceptor extracts `Authorization: Bearer <token>`, verifies the JWT against JWKS, and populates `AuthContext` -- accessible in handlers via `getAuthContext()`. The authz interceptor evaluates declarative rules against that context.
-
-See [Auth & Authorization](/en/guide/auth) for HMAC secrets, gateway auth, session-based auth, and RBAC with roles/scopes.
-
-## 10. Add Observability
-
-::: pm
-== npm
-```bash
-npm install @connectum/otel
-```
-== pnpm
-```bash
-pnpm add @connectum/otel
-```
-== bun
-```bash
-bun add @connectum/otel
-```
-
-Instrument manually, as shown below: OpenTelemetry auto-instrumentation
-(`@opentelemetry/auto-instrumentations-node`) does not load under Bun. See
-[Runtime Compatibility](/en/guide/runtime-compatibility#otel).
-:::
-
-```typescript
-import { createOtelInterceptor } from '@connectum/otel';
-
-// Add as first interceptor (before auth and defaults)
-interceptors: [
-  createOtelInterceptor({ serverPort: 5000 }),
-  ...createDefaultInterceptors(),
-],
-```
-
-```bash
-OTEL_SERVICE_NAME=greeter-service
-OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
-```
-
-Every RPC now produces traces and metrics following [OTel semantic conventions](https://opentelemetry.io/docs/specs/semconv/rpc/connect-rpc/). See [Observability](/en/guide/observability) for correlated logging, deep tracing, and Grafana dashboards.
-
-## 11. Graceful Shutdown Hooks
-
-The `shutdown: { autoShutdown: true }` option from Step 5 handles SIGTERM/SIGINT. Register hooks for resource cleanup:
-
-```typescript
-server.onShutdown('database', async () => { await db.close(); });
-server.onShutdown('cache', ['database'], async () => { await redis.quit(); });
-```
-
-Hooks execute in dependency order -- `cache` waits for `database` to complete. Use `server.shutdownSignal` to cancel long-running operations. Override defaults:
-
-```typescript
-shutdown: { autoShutdown: true, timeout: 15_000, signals: ['SIGTERM', 'SIGINT'] },
-```
-
-See [Graceful Shutdown](/en/guide/server/graceful-shutdown) for dependency graphs and Kubernetes integration.
-
-## 12. Built-in Interceptors
-
-`createDefaultInterceptors()` assembles up to 8 interceptors in a fixed order. Only errorHandler and validation are enabled by default — resilience interceptors are opt-in (no hidden behavioral logic):
-
-| # | Interceptor | Default | Purpose |
-|---|-------------|---------|---------|
-| 1 | **errorHandler** | on | Normalize errors to gRPC status codes |
-| 2 | **timeout** | opt-in (30s when enabled) | Enforce per-request deadline |
-| 3 | **bulkhead** | opt-in (10/10 when enabled) | Limit concurrent requests + queue |
-| 4 | **circuitBreaker** | opt-in (5 failures when enabled) | Prevent cascading failures (outbound pattern) |
-| 5 | **retry** | opt-in (3 retries when enabled) | Exponential backoff for transients |
-| 6 | **fallback** | off | Graceful degradation (requires handler) |
-| 7 | **validation** | on | Proto constraint validation |
-| 8 | **serializer** | off | JSON serialization (opt-in for Connect protocol) |
-
-```typescript
-// Enable resilience interceptors explicitly (true or an options object)
-const interceptors = createDefaultInterceptors({
-  timeout: { duration: 10_000 },
-  bulkhead: { capacity: 20, queueSize: 50 },
-});
-```
-
-See [Interceptors](/en/guide/interceptors) for the full options reference and custom interceptors.
-
-## 13. Sync Contracts with CLI
-
-When Reflection is enabled, clients can sync proto types without `.proto` files:
-
-::: pm
-== npm
-```bash
-npm install -D @connectum/cli
-```
-== pnpm
-```bash
-pnpm add -D @connectum/cli
-```
-== bun
-```bash
-bun add -d @connectum/cli
-```
-:::
-
-Then, whichever package manager you used -- the CLI reaches the server through the
-Node.js gRPC transport and is exercised on Node.js only, so run it with `npx` even in a
-Bun project:
-
-```bash
-npx connectum proto sync --from localhost:5000 --out ./gen --dry-run  # discover
-npx connectum proto sync --from localhost:5000 --out ./gen            # generate
-```
-
-The generated code has no such restriction.
-
-## 14. Call Another Service
-
-Microservices communicate via gRPC clients. Create a transport with `createClient` and add observability with `createOtelClientInterceptor`:
-
-```typescript
-import { createClient } from '@connectrpc/connect';
-import { createGrpcTransport } from '@connectrpc/connect-node';
-import { createOtelClientInterceptor } from '@connectum/otel';
-import { InventoryService } from '#gen/inventory_pb.ts';
-
-const inventoryTransport = createGrpcTransport({
-  baseUrl: `http://${process.env.INVENTORY_HOST}:${process.env.INVENTORY_PORT}`,
-  httpVersion: '2',
-  interceptors: [
-    createOtelClientInterceptor({
-      serverAddress: process.env.INVENTORY_HOST!,
-      serverPort: Number(process.env.INVENTORY_PORT),
-    }),
-  ],
-});
-
-const inventoryClient = createClient(InventoryService, inventoryTransport);
-
-// Use in any service handler
-const stock = await inventoryClient.checkStock({ sku: 'ABC-123' });
-```
-
-When the target service is part of your [service catalog](/en/guide/service-communication/service-catalog), prefer `ctx.call(...)` inside a handler over building a transport by hand: it auto-routes local vs remote and you skip the explicit `createClient`/transport wiring.
-
-Trace context propagates automatically -- the client span links to the server span in the downstream service. See [Service Communication](/en/guide/service-communication) for patterns, resilience, and service discovery.
+No application code is required: proto constraints are validated before your
+handler runs. See [Validation](/en/guide/validation) for constraint setup and
+failure handling.
 
 ## Next Steps
 
-You've built a microservice with validation, TLS, auth, observability, and resilience. Dive deeper:
+Your first service is complete. Choose the next task; none is required to finish
+this tutorial.
 
-- [About Connectum](/en/guide/about) -- framework design decisions and philosophy
-- [Server](/en/guide/server) -- lifecycle, configuration, graceful shutdown
-- [Interceptors](/en/guide/interceptors) -- built-in chain, custom interceptors, method filtering
-- [Service Communication](/en/guide/service-communication) -- inter-service calls, patterns, client interceptors
-- [Auth & Authorization](/en/guide/auth) -- JWT, gateway, session, RBAC, proto-based authz
-- [Observability](/en/guide/observability) -- tracing, metrics, correlated logging
-- [Health Checks](/en/guide/health-checks) -- gRPC/HTTP protocol, Kubernetes probes
-- [Security (TLS)](/en/guide/security) -- TLS, mTLS, certificate management
-- [Protocols](/en/guide/protocols) -- server reflection, custom protocol plugins
-- [Validation](/en/guide/validation) -- proto constraint catalog
-- [TypeScript](/en/guide/typescript) -- native runtime support, erasable syntax patterns
-- [Testing](/en/guide/testing) -- integration testing strategies
-- [Production](/en/guide/production/architecture) -- Docker, Kubernetes, Envoy Gateway
+<span id="8-add-tls"></span>
+<span id="9-add-authentication--authorization"></span>
+<span id="10-add-observability"></span>
+<span id="11-graceful-shutdown-hooks"></span>
+<span id="12-built-in-interceptors"></span>
+<span id="13-sync-contracts-with-cli"></span>
+<span id="14-call-another-service"></span>
+
+| Goal | Continue with |
+|---|---|
+| Protect traffic | [TLS and mTLS](/en/guide/security), then [authentication and authorization](/en/guide/auth) |
+| Observe the service | [Tracing, metrics, and logging](/en/guide/observability) |
+| Tune lifecycle behavior | [Graceful Shutdown](/en/guide/server/graceful-shutdown) |
+| Add resilience deliberately | [Built-in Interceptor Chain](/en/guide/interceptors/built-in) |
+| Sync reflected contracts | [Server Reflection](/en/guide/protocols/reflection) and [`@connectum/cli`](/en/packages/cli) |
+| Call another service | [Choosing a Communication Mechanism](/en/guide/service-communication/choosing-a-mechanism) |
+| Test the service | [Testing](/en/guide/testing) |
+| Deploy it | [Docker](/en/guide/production/docker) and [Kubernetes](/en/guide/production/kubernetes) |
+
+## Troubleshooting
+
+- Generation fails: review the `buf.yaml`, `buf.gen.yaml`, and import extension,
+  then see [TypeScript and proto generation](/en/guide/typescript).
+- The server starts but calls fail: confirm port, plaintext/TLS mode, and the
+  fully-qualified service name with [Server Reflection](/en/guide/protocols/reflection).
+- Node.js or Bun behaves differently: use the canonical
+  [Runtime Compatibility](/en/guide/runtime-compatibility) matrix.

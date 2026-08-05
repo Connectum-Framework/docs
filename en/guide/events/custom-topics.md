@@ -1,10 +1,15 @@
 ---
+title: Configure Event Topics
+description: Override the default proto message topic only where a stable broker-facing name is required.
+docType: how-to
 outline: deep
 ---
 
 # Custom Topics
 
 By default, the EventBus routes events using the protobuf message's `typeName` (e.g., `orders.v1.OrderCreated`). You can override this with a custom topic name using proto options or publish-time overrides.
+
+**Outcome:** choose one canonical topic source and verify publishers and handlers resolve the same name. Delivery and broker semantics remain in [Events](/en/guide/events) and [Adapter selection](/en/guide/events/adapters).
 
 ## Default Topic Naming
 

@@ -1,462 +1,89 @@
 ---
 title: '@connectum/core'
-description: Main server factory with protocol plugin system for Connectum
+description: Server foundation for registration, lifecycle, transport, configuration, TLS, and typed service calls.
+docType: package-hub
 ---
 
 # @connectum/core
 
-The central package of the Connectum framework. Provides `createServer()` -- a factory function that creates a production-ready gRPC/ConnectRPC server with explicit lifecycle control, protocol plugin system, graceful shutdown, and TLS support.
+Server foundation for registration, lifecycle, transport, configuration, TLS, and typed service calls.
 
-**Layer**: 0 (Server Foundation) -- zero internal dependencies
-
-::: tip Related Guides
-- [Server Overview](/en/guide/server) -- lifecycle, events, `createServer()` API
-- [Lifecycle & Events](/en/guide/server/lifecycle) -- server states and event handlers
-- [Configuration](/en/guide/server/configuration) -- environment variables and 12-Factor App
-- [Graceful Shutdown](/en/guide/server/graceful-shutdown) -- shutdown hooks, Kubernetes integration
-- [Security (TLS)](/en/guide/security) -- TLS and mTLS configuration
-:::
-
-::: tip Full API Reference
-Complete TypeScript API documentation: [API Reference](/en/api/@connectum/core/)
-:::
-
-## Installation
+## Install {#installation}
 
 ::: pm
 == npm
-```bash
+~~~bash
 npm install @connectum/core
-```
+~~~
 == pnpm
-```bash
+~~~bash
 pnpm add @connectum/core
-```
+~~~
 == bun
-```bash
+~~~bash
 bun add @connectum/core
-```
+~~~
 :::
 
-**Requires**: Node.js >= 22.13.0 (packages ship compiled `.js` + `.d.ts` + source maps)
+## Start Here {#quick-start}
 
-## Quick Start
-
-```typescript
+~~~typescript
 import { createServer } from '@connectum/core';
-import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
-import { Reflection } from '@connectum/reflection';
-import routes from '#gen/routes.js';
 
 const server = createServer({
-  services: [routes],
+  services: [greeterService],
   port: 5000,
-  protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
   shutdown: { autoShutdown: true },
 });
 
-server.on('ready', () => {
-  healthcheckManager.update(ServingStatus.SERVING);
-  console.log(`Server ready on port ${server.address?.port}`);
-});
-
-server.on('error', (err) => console.error(err));
-
 await server.start();
-```
-
-## API Reference
-
-### `createServer(options)`
-
-Factory function that creates an unstarted `Server` instance.
-
-```typescript
-function createServer(options: CreateServerOptions): Server;
-```
-
-The server is created in `CREATED` state. Call `server.start()` to begin accepting connections.
-
-### `CreateServerOptions`
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `services` | `ServiceDefinition[]` | **(required)** | Service definitions to register on the server (created with `defineService` / `defineLazyService`) |
-| `port` | `number` | `5000` | Server port |
-| `host` | `string` | `"0.0.0.0"` | Server host to bind |
-| `tls` | `TLSOptions` | `undefined` | TLS configuration for secure connections |
-| `protocols` | `ProtocolRegistration[]` | `[]` | Protocol plugins (healthcheck, reflection, custom) |
-| `shutdown` | `ShutdownOptions` | `{}` | Graceful shutdown configuration |
-| `interceptors` | `Interceptor[]` | `[]` | ConnectRPC interceptors. When omitted or `[]`, no interceptors are applied. Use `createDefaultInterceptors()` from `@connectum/interceptors` for the production-ready chain. |
-| `allowHTTP1` | `boolean` | `true` | Allow HTTP/1.1 connections. Without TLS the default server is plaintext HTTP/1.1; set `false` for h2c. See the [transport matrix](/en/guide/production/transport-matrix) |
-| `handshakeTimeout` | `number` | `30000` | Handshake timeout in milliseconds |
-| `eventBus` | `EventBusLike` | `undefined` | Event bus for lifecycle management |
-| `http2Options` | `SecureServerOptions` | `undefined` | Additional HTTP/2 server options |
-| `jsonOptions` | `Partial<JsonReadOptions & JsonWriteOptions>` | `undefined` | Connect JSON serialization options applied server-wide. See [JSON serialization](#json-serialization). |
-| `transportValidation` | `"error" \| "warn" \| "off"` | `"error"` | Startup validation: bidi-streaming methods on a plaintext HTTP/1.1 transport fail fast with `CONNECTUM_UNSUPPORTED_STREAMING_TRANSPORT` instead of hanging at runtime. See the [transport matrix](/en/guide/production/transport-matrix) |
-| `catalog` | `ServiceCatalog` | `undefined` | Full service registry (`typeName → DescService`, typically the generated `serviceCatalog`). Drives startup validation and remote routing. A pure local monolith needs none of the catalog options. See [Service Catalog](/en/guide/service-communication/service-catalog). |
-| `enabledServices` | `readonly string[]` | `undefined` | Proto `typeName`s to mount **locally** from `services`; any service not listed is treated as remote (resolved via `remoteResolver`). `undefined` mounts every provided service locally. |
-| `remoteResolver` | `RemoteResolver` | `undefined` | Resolves a non-local service to a `Transport` for `server.client()` / `ctx.call`. Synchronous, no network I/O. See [Resolvers](/en/guide/service-communication/resolvers). |
-| `outgoingInterceptors` | `Interceptor[]` | `undefined` | Client-side interceptors applied to every outgoing `server.client()` / `ctx.call`. |
-| `propagateHeaders` | `readonly string[]` | `[]` | Inbound header names copied onto every outgoing `ctx.call` / `ctx.stream`. Empty by default; use `defaultPropagateHeaders` (W3C trace-context) as a base, e.g. `[...defaultPropagateHeaders, "x-tenant-id"]`. |
-
-### JSON serialization
-
-By default, Connect omits fields with implicit presence from JSON responses
-(proto3 scalar `0`, empty string, empty list, enum default). Set `jsonOptions`
-to change this server-wide -- it is passed to the underlying `connectNodeAdapter`,
-so it also applies to framework-registered protocol services (healthcheck,
-reflection).
-
-```typescript
-const server = createServer({
-  services: [routes],
-  // Include zero/default fields in JSON responses instead of omitting them.
-  jsonOptions: { alwaysEmitImplicit: true },
-});
-```
-
-::: tip protobuf-es v2 field name
-The relevant `JsonWriteOptions` field is `alwaysEmitImplicit` (it was named
-`emitDefaultValues` in protobuf-es v1, which does not apply to Connectum).
-:::
-
-### `Server` Interface
-
-Extends `EventEmitter`. Provides explicit lifecycle control.
-
-#### Lifecycle Methods
-
-```typescript
-interface Server extends EventEmitter {
-  /** Start the server. Throws if not in CREATED state. */
-  start(): Promise<void>;
-
-  /** Stop the server gracefully. Throws if not in RUNNING state. */
-  stop(): Promise<void>;
-}
-```
-
-#### State Properties
-
-```typescript
-interface Server {
-  /** Current server address (null until started) */
-  readonly address: AddressInfo | null;
-
-  /** Whether server is currently running */
-  readonly isRunning: boolean;
-
-  /** Current server state */
-  readonly state: ServerState;
-
-  /** Underlying HTTP server (HTTP/1.1 or HTTP/2 depending on TLS / allowHTTP1 config; null until started) */
-  readonly transport: Http2SecureServer | Http2Server | HttpServer | null;
-
-  /** Registered service definitions */
-  readonly routes: ReadonlyArray<ServiceDefinition>;
-
-  /** Registered interceptors */
-  readonly interceptors: ReadonlyArray<Interceptor>;
-
-  /** Registered protocols */
-  readonly protocols: ReadonlyArray<ProtocolRegistration>;
-
-  /** Event bus instance (null if not configured) */
-  readonly eventBus: EventBusLike | null;
-}
-```
-
-#### Runtime Operations (before `start()`)
-
-```typescript
-interface Server {
-  /** Add a service definition. Throws if the server is already started, or if routes have already been materialized via local-transport access (e.g. a prior `server.localClient()`, `server.client()`, or `server.hasService()` call). Add services/interceptors/protocols before any local-transport access. */
-  addService(service: ServiceDefinition): void;
-
-  /** Add an interceptor. Throws if the server is already started, or if routes have already been materialized via local-transport access (e.g. a prior `server.localClient()`, `server.client()`, or `server.hasService()` call). Add services/interceptors/protocols before any local-transport access. */
-  addInterceptor(interceptor: Interceptor): void;
-
-  /** Add a protocol. Throws if the server is already started, or if routes have already been materialized via local-transport access (e.g. a prior `server.localClient()`, `server.client()`, or `server.hasService()` call). Add services/interceptors/protocols before any local-transport access. */
-  addProtocol(protocol: ProtocolRegistration): void;
-}
-```
-
-#### Shutdown Hooks
-
-```typescript
-interface Server {
-  /** Register an anonymous shutdown hook */
-  onShutdown(handler: ShutdownHook): void;
-
-  /** Register a named shutdown hook */
-  onShutdown(name: string, handler: ShutdownHook): void;
-
-  /** Register a named shutdown hook with dependencies */
-  onShutdown(name: string, dependencies: string[], handler: ShutdownHook): void;
-
-  /** AbortSignal that is aborted when server begins shutdown */
-  readonly shutdownSignal: AbortSignal;
-}
-```
-
-### In-Process Transport
-
-`@connectum/core` ships a built-in **in-process transport** that lets you call locally registered services as direct function invocations — no HTTP/2, TLS, sockets, or wire serialization — while preserving 1-to-1 behavioural parity with the HTTP path (interceptors, validation, authorization, error mapping, streaming semantics, OpenTelemetry spans and metrics).
-
-```typescript
-import { createServer, createLocalTransport, defineService } from '@connectum/core';
-import { GreeterService } from './gen/greeter_pb.js';
-
-const greeterService = defineService(GreeterService, {
-  async sayHello(req, ctx) {
-    return { message: `Hello, ${req.name}!` };
-  },
-});
-
-const server = createServer({ services: [greeterService] });
-
-// Auto-routing client: in-process if `GreeterService` is registered on
-// this server, else via the configured `remoteResolver`, else throws
-// `CatalogConfigError` at construction.
-const greeter = server.client(GreeterService);
-await greeter.sayHello({ name: 'world' }); // no server.start() needed
-
-// Low-level helpers:
-const localOnly = server.localClient(GreeterService);
-const transport = createLocalTransport(server, { interceptors: [/* client-side */] });
-const isRegistered = server.hasService(GreeterService);
-```
-
-| API | Description |
-|-----|-------------|
-| `server.client(service, options?)` | Auto-routing factory: local if registered, else via the configured `remoteResolver`; if neither, fail-fast `CatalogConfigError` at construction. A resolver returning `null` also fails at construction with `ConnectError(Code.Unavailable)` — the resolver runs inside `server.client()`, before any RPC is invoked. |
-| `server.localClient(service)` | Low-level helper that always returns an in-process client. |
-| `server.hasService(desc)` | Synchronous registry lookup by `desc.typeName`. |
-| `createLocalTransport(server, options?)` | Returns a ConnectRPC `Transport` bound to the server's router; supports client-side interceptors. |
-
-The in-process transport is available immediately after `createServer({...})` — `server.start()` is **not** required. A single `Server` instance can serve HTTP and in-process clients concurrently.
-
-::: tip See the dedicated guide
-[In-Process Transport](/en/guide/production/in-process-transport) — motivation, polyglot deployment pattern, observability parity, limitations.
-:::
-
-### `createCatalogClient(options)`
-
-_Available since 1.1.0._
-
-A standalone, catalog-typed client that exposes the **same** typed `call` (unary) and `stream` (server/client/bidi) surface as the in-handler `ctx.call` / `ctx.stream`, but usable **outside** a `Server` — in a Temporal worker, a scheduler, or a CLI — without constructing a server.
-
-```typescript
-function createCatalogClient(options: CreateCatalogClientOptions): CatalogClient;
-```
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `catalog` | `ServiceCatalog` | **(required)** | The service catalog backing typed dispatch — the same object passed to `createServer({ catalog })`. |
-| `resolver` | `RemoteResolver` | **(required)** | Resolves every target's transport (`singleTransportResolver` / `mapResolver` / `dnsResolver` / `perServiceEnvResolver`). |
-
-Returns a `CatalogClient` — `{ call, stream }`, keyed off the generated `ConnectumCallMap` / `ConnectumStreamMap`, so calls are statically checked exactly as on the handler `ctx`.
-
-```typescript
-import { createCatalogClient, mapResolver } from '@connectum/core';
-import { createGrpcTransport } from '@connectrpc/connect-node';
-import { serviceCatalog } from '#gen/catalog.js'; // from @connectum/protoc-gen-catalog
-
-const client = createCatalogClient({
-  catalog: serviceCatalog,
-  resolver: mapResolver({
-    'trip.v1.TripService': createGrpcTransport({ baseUrl: process.env.TRIP_ADDR ?? 'http://localhost:8080' }),
-  }),
-});
-
-// Fully typed off the generated catalog — same surface as ctx.call:
-const trip = await client.call('trip.v1.TripService/StartTrip', { vehicleId: 'veh-42' });
-```
-
-Every target is routed through the supplied `RemoteResolver`, and the resolved transport is cached per `(typeName, endpoint)`. There is **no** in-process/local path: a service the resolver cannot resolve fails with `Code.Unavailable`. The rest of the error model mirrors `ctx.call` — an unknown service/method (or wrong method kind) fails with `Code.Unimplemented`, and a resolver that throws surfaces as `Code.Internal` (cause preserved).
-
-::: warning No inbound request to cascade from
-Unlike `ctx.call`, there is no inbound request, so `CallOptions` are applied **verbatim**: the `signal` / `timeoutMs` are **not** cascaded or clamped, no inbound headers are propagated, and no `ContextValues` are forwarded.
-:::
-
-See [Service Catalog](/en/guide/service-communication/service-catalog) for the catalog model and resolver wiring.
-
-### `ServerState`
-
-```typescript
-const ServerState = {
-  CREATED: 'created',
-  STARTING: 'starting',
-  RUNNING: 'running',
-  STOPPING: 'stopping',
-  STOPPED: 'stopped',
-} as const;
-```
-
-### `LifecycleEvent`
-
-```typescript
-const LifecycleEvent = {
-  START: 'start',     // Emitted when server starts (before ready)
-  READY: 'ready',     // Emitted when server is ready to accept connections
-  STOPPING: 'stopping', // Emitted when server begins graceful shutdown
-  STOP: 'stop',       // Emitted when server stops
-  ERROR: 'error',     // Emitted on error
-} as const;
-```
-
-### `ShutdownOptions`
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `timeout` | `number` | `30000` | Timeout in ms for graceful shutdown |
-| `signals` | `NodeJS.Signals[]` | `["SIGTERM", "SIGINT"]` | Signals to listen for |
-| `autoShutdown` | `boolean` | `false` | Enable automatic graceful shutdown on signals |
-| `forceCloseOnTimeout` | `boolean` | `true` | Force close HTTP/2 sessions when timeout exceeded |
-
-### Protocol Plugin System
-
-Protocols implement the `ProtocolRegistration` interface to register themselves on the server.
-
-```typescript
-interface ProtocolRegistration {
-  readonly name: string;
-  register(router: ConnectRouter, context: ProtocolContext): void;
-  httpHandler?: HttpHandler;
-}
-
-interface ProtocolContext {
-  readonly registry: ReadonlyArray<DescFile>;
-}
-```
-
-### TLS Configuration
-
-```typescript
-interface TLSOptions {
-  keyPath?: string;   // Path to TLS key file
-  certPath?: string;  // Path to TLS certificate file
-  dirPath?: string;   // Directory with server.key and server.crt
-}
-```
-
-Utility functions:
-
-```typescript
-function getTLSPath(): string;
-function readTLSCertificates(options?: TLSOptions): { key: Buffer; cert: Buffer };
-```
-
-### Environment Configuration (`@connectum/core/config`)
-
-Type-safe environment configuration using Zod schemas (12-Factor App).
-
-```typescript
-import { parseEnvConfig, safeParseEnvConfig } from '@connectum/core/config';
-
-const config = parseEnvConfig(); // throws on invalid config
-const result = safeParseEnvConfig(); // returns { success, data/error }
-```
-
-| Environment Variable | Type | Default | Description |
-|---------------------|------|---------|-------------|
-| `PORT` | `number` | `5000` | Server port |
-| `LISTEN` | `string` | `"0.0.0.0"` | Listen address |
-| `LOG_LEVEL` | `"debug" \| "info" \| "warn" \| "error"` | `"info"` | Log level |
-| `LOG_FORMAT` | `"json" \| "pretty"` | `"json"` | Log format |
-| `LOG_BACKEND` | `"otel" \| "pino" \| "console"` | `"otel"` | Logger backend |
-| `NODE_ENV` | `"development" \| "production" \| "test"` | `"development"` | Node environment |
-| `HTTP_HEALTH_ENABLED` | `boolean` | `false` | Enable HTTP health endpoints |
-| `HTTP_HEALTH_PATH` | `string` | `"/healthz"` | HTTP health endpoint path |
-| `OTEL_SERVICE_NAME` | `string` | -- | OpenTelemetry service name |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | `string (URL)` | -- | OTLP exporter endpoint |
-| `GRACEFUL_SHUTDOWN_ENABLED` | `boolean` | `true` | Enable graceful shutdown |
-| `GRACEFUL_SHUTDOWN_TIMEOUT_MS` | `number` | `30000` | Shutdown timeout in ms |
-
-## Server Lifecycle
-
-```
-CREATED ──start()──> STARTING ──> RUNNING ──stop()──> STOPPING ──> STOPPED
-                         │                                │
-                         └──(error)──> STOPPED            └──(error)──> STOPPED
-```
-
-Events are emitted in this order: `start` -> `ready` (success) or `error` (failure), then `stopping` -> `stop` (or `error`).
-
-## Error Protocol
-
-### `SanitizableError` (interface)
-
-Interface for errors that carry rich server-side details while exposing only a safe message to clients. The `ErrorHandler` interceptor from `@connectum/interceptors` recognizes this interface and sanitizes errors automatically.
-
-```typescript
-interface SanitizableError {
-  readonly clientMessage: string;
-  readonly serverDetails: Readonly<Record<string, unknown>>;
-}
-```
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `clientMessage` | `string` | Safe message returned to the client |
-| `serverDetails` | `Readonly<Record<string, unknown>>` | Structured details for server-side logging |
-
-### `isSanitizableError(err)`
-
-Type guard that checks whether a value implements the `SanitizableError` protocol. Returns `true` only if the value is an `Error` instance with a `clientMessage` string, a non-null `serverDetails` object, and a numeric `code` property.
-
-```typescript
-function isSanitizableError(err: unknown): err is Error & SanitizableError & { code: number };
-```
-
-```typescript
-import { isSanitizableError } from '@connectum/core';
-
-if (isSanitizableError(err)) {
-  // err.clientMessage -- safe for the client
-  // err.serverDetails -- rich details for logging
-  // err.code          -- numeric gRPC status code
-}
-```
-
-## Published Package Format
-
-All `@connectum/*` packages are built with [tsup](https://tsup.egoist.dev/) and ship:
-
-- **Compiled `.js` files** (ESM) -- ready to run on any ES module-capable runtime (Node.js 22+, Bun, tsx)
-- **TypeScript declarations** (`.d.ts`) -- full type information for IDE support and type checking
-- **Source maps** (`.js.map`) -- accurate stack traces pointing to the original TypeScript source
-
-No special loader or register hook is needed. All runtimes can import `@connectum/*` packages directly.
-
-See [Runtime Support: Node.js vs Bun vs tsx](/en/guide/typescript/runtime-support) for details.
-
-## Exports Summary
-
-| Export | Subpath | Description |
-|--------|---------|-------------|
-| `createServer` | `.` | Server factory function |
-| `createCatalogClient` | `.` | Standalone catalog-typed `call` / `stream` client usable outside a `Server` (since 1.1.0) |
-| `createLocalTransport` | `.` | In-process transport factory ([guide](/en/guide/production/in-process-transport)) |
-| `defineService`, `defineLazyService` | `.` | Service registration (descriptor + handlers); the `services` entries |
-| `defineCatalog`, `mergeCatalogs` | `.` | Service catalog construction ([guide](/en/guide/service-communication/service-catalog)) |
-| `singleTransportResolver`, `mapResolver`, `dnsResolver`, `perServiceEnvResolver` | `.` | Remote resolver helpers ([guide](/en/guide/service-communication/resolvers)) |
-| `parseServicesEnv`, `matchServicesPattern`, `mergeEnabledServices` | `.` | `enabledServices` activation helpers |
-| `defaultPropagateHeaders` | `.` | W3C trace-context header allow-list for `propagateHeaders` |
-| `CatalogConfigError` | `.` | Catalog/resolver misconfiguration error (fail-loud) |
-| `ServerState` | `.` | Server state constants |
-| `LifecycleEvent` | `.` | Lifecycle event name constants |
-| `isSanitizableError` | `.` | Type guard for `SanitizableError` protocol |
-| `getTLSPath`, `readTLSCertificates`, `tlsPath` | `.` | TLS utilities |
-| `EventBusLike` | `.` | Event bus lifecycle interface |
-| `CatalogClient`, `CreateCatalogClientOptions` (since 1.1.0), `SanitizableError`, `Server`, `CreateServerOptions`, `ShutdownOptions`, `ServiceDefinition`, `ServiceOptions`, `Context`, `CallOptions`, `ServiceCatalog`, `RemoteResolver`, etc. | `.` | TypeScript types |
-| `parseEnvConfig`, `safeParseEnvConfig`, schemas | `./config` | Env configuration |
-
-## Related Packages
-
-- **[@connectum/interceptors](./interceptors.md)** -- Resilience interceptor chain (Layer 1, optional)
-- **[@connectum/healthcheck](./healthcheck.md)** -- Healthcheck protocol plugin (Layer 1, optional)
-- **[@connectum/reflection](./reflection.md)** -- Server Reflection protocol plugin (Layer 1, optional)
-- **[@connectum/events](./events.md)** -- Event-driven communication (Layer 1, optional)
-- **[@connectum/otel](./otel.md)** -- OpenTelemetry instrumentation (Layer 2, optional)
+~~~
+
+For a complete, source-verified workflow, continue with the focused guide below.
+
+## Key Entry Points
+
+| Entry point | Use it to |
+|---|---|
+| `createServer` | Compose services, protocols, interceptors, and shutdown policy. |
+| `defineService` | Bind a generated service descriptor to typed handlers. |
+| `createCatalogClient` | Call catalog services outside a server handler. |
+
+Architecture-layer and dependency details remain in the [Architecture Overview](/en/guide/production/architecture).
+
+## Learn / Configure / API Reference {#api-reference}
+
+- **Learn:** [Focused guide](/en/guide/server)
+- **Configure:** [Task and configuration guidance](/en/guide/server/configuration)
+- **API reference:** [Exact options and symbols](/en/api/@connectum/core/types/interfaces/CreateServerOptions)
+- **Package API index:** [Generated TypeDoc](/en/api/@connectum/core/)
+- **Source:** [@connectum/core on GitHub](https://github.com/Connectum-Framework/connectum/tree/main/packages/core)
+
+## Related Modules {#related-packages}
+
+[Compare all Connectum packages](/en/packages/) by capability.
+
+<!-- Compatibility anchors retained from the former exhaustive package page. -->
+<div class="legacy-anchors" aria-hidden="true">
+<span id="createserveroptions"></span>
+<span id="json-serialization"></span>
+<span id="server-interface"></span>
+<span id="lifecycle-methods"></span>
+<span id="state-properties"></span>
+<span id="runtime-operations-before-start"></span>
+<span id="shutdown-hooks"></span>
+<span id="in-process-transport"></span>
+<span id="createcatalogclientoptions"></span>
+<span id="serverstate"></span>
+<span id="lifecycleevent"></span>
+<span id="shutdownoptions"></span>
+<span id="protocol-plugin-system"></span>
+<span id="tls-configuration"></span>
+<span id="environment-configuration-connectumcoreconfig"></span>
+<span id="server-lifecycle"></span>
+<span id="error-protocol"></span>
+<span id="sanitizableerror-interface"></span>
+<span id="issanitizableerrorerr"></span>
+<span id="published-package-format"></span>
+<span id="exports-summary"></span>
+</div>

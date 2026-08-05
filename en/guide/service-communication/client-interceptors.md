@@ -113,7 +113,7 @@ const internal = createGrpcTransport({
 - `createClientBearerInterceptor` sets `Authorization: Bearer <token>`; the token may be a static string or an async factory invoked before each request (useful for refresh flows).
 - `createClientGatewayInterceptor` sets `x-gateway-secret`, `x-auth-subject`, and optionally `x-auth-roles` so the receiving service can reconstruct the `AuthContext` via [`createGatewayAuthInterceptor`](/en/guide/auth/gateway) without re-authenticating.
 
-Full reference: [@connectum/auth -- Client-Side Interceptors](/en/packages/auth#client-side-interceptors).
+Full guidance: [Client-Side Auth Interceptors](/en/guide/auth/client-interceptors).
 
 ## Resilience for Clients
 
@@ -239,6 +239,6 @@ This ensures accurate duration measurement for long-lived streams.
 - [Distributed Tracing](/en/guide/observability/tracing) -- server/client interceptors, deep tracing
 - [Interceptors](/en/guide/interceptors) -- server-side interceptor chain
 - [Gateway Authentication](/en/guide/auth/gateway) -- server side of `createClientGatewayInterceptor`
-- [@connectum/auth](/en/packages/auth#client-side-interceptors) -- Client-side auth interceptor reference
+- [Client-Side Auth Interceptors](/en/guide/auth/client-interceptors) -- bearer and gateway credentials
 - [@connectum/otel](/en/packages/otel) -- Package Guide
 - [@connectum/otel API](/en/api/@connectum/otel/) -- Full API Reference

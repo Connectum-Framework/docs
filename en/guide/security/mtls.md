@@ -1,10 +1,15 @@
 ---
+title: Configure Mutual TLS
+description: Require and verify client certificates for service-to-service Connectum traffic.
+docType: how-to
 outline: deep
 ---
 
 # Mutual TLS (mTLS)
 
 Mutual TLS enables both client and server to authenticate each other, providing strong identity verification for service-to-service communication.
+
+**Outcome:** the server rejects callers without a certificate issued by the configured CA. Certificate loading and basic server TLS are owned by [TLS configuration](/en/guide/security/tls); this page owns client-certificate policy and deployment safety.
 
 ## mTLS Configuration
 

@@ -25,18 +25,11 @@ const jwtAuth = createJwtAuthInterceptor({
 });
 ```
 
-### Options
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `jwksUri` | `string` | Yes (if no `publicKey`/`secret`) | URL to the JWKS endpoint |
-| `issuer` | `string` | No | Expected `iss` claim |
-| `audience` | `string` | No | Expected `aud` claim |
-| `maxTokenAge` | `string \| number` | No | Maximum acceptable token age (e.g. `'1h'`, `'30m'`, or seconds) |
-| `algorithms` | `string[]` | No | Allowed signature algorithms (e.g. `['RS256']`) |
-| `claimsMapping` | `object` | No | Map JWT claims to `AuthContext` fields |
-| `skipMethods` | `string[]` | No | Methods to skip authentication for (e.g. `'Service/Method'`, `'Service/*'`) |
-| `propagateHeaders` | `boolean` | No | Forward auth context as `x-auth-*` headers to downstream services (default `false`) |
+Choose exactly one key source (`jwksUri`, `publicKey`, or `secret`), then constrain the
+expected issuer, audience, age, and algorithms for your identity provider. Use
+`claimsMapping` only for the claims that become application identity. See
+[`JwtAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/JwtAuthInterceptorOptions)
+for the complete field contract and defaults.
 
 ## HMAC Secret
 

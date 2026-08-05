@@ -5,6 +5,7 @@ import { useRoute } from 'vitepress'
 import mediumZoom from 'medium-zoom'
 import { isPackageManager, PACKAGE_MANAGER_STORAGE_KEY, setPackageManager } from './packageManager.ts'
 import { isRuntime, RUNTIME_STORAGE_KEY, setRuntime } from './runtime.ts'
+import PageContext from './components/PageContext.vue'
 
 const route = useRoute()
 
@@ -120,5 +121,9 @@ watch(() => route.path, () => nextTick(initImageZoom))
 </script>
 
 <template>
-    <DefaultTheme.Layout />
+    <DefaultTheme.Layout>
+        <template #doc-before>
+            <PageContext />
+        </template>
+    </DefaultTheme.Layout>
 </template>

@@ -1,4 +1,7 @@
 ---
+title: Configure Tracing
+description: Trace server, client, and application work while preserving propagation and data-safety boundaries.
+docType: how-to
 outline: deep
 ---
 
@@ -21,20 +24,11 @@ const interceptor = createOtelInterceptor({
 });
 ```
 
-### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `filter` | `OtelFilter` | -- | Skip specific requests from tracing |
-| `serverAddress` | `string` | `os.hostname()` | Override server address attribute |
-| `serverPort` | `number` | -- | Add server port attribute |
-| `recordMessages` | `boolean` | `false` | Include request/response bodies in spans |
-| `trustRemote` | `boolean` | `false` | Use remote context as parent span |
-| `withoutTracing` | `boolean` | `false` | Disable tracing (metrics only) |
-| `withoutMetrics` | `boolean` | `false` | Disable metrics (tracing only) |
-| `attributeFilter` | `OtelAttributeFilter` | -- | Exclude specific span attributes |
-
-All server interceptor options are optional; `createOtelInterceptor()` can be called with no arguments.
+All server interceptor options are optional. Configure only the filtering, endpoint
+attributes, signal toggles, or data recording that the service requires; use
+[`OtelInterceptorOptions`](/en/api/@connectum/otel/interfaces/OtelInterceptorOptions)
+for the exact fields. Keep message recording disabled unless its privacy and volume
+impact has been reviewed.
 
 ## Client Interceptor
 

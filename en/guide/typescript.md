@@ -1,4 +1,7 @@
 ---
+title: TypeScript
+description: Understand Connectum's compiled packages and the application syntax used for direct TypeScript execution.
+docType: concept
 outline: deep
 ---
 
@@ -26,14 +29,15 @@ No loaders, no compilation step, no `tsc` required to run your code. TypeScript 
 | **No `namespace`** | Only type-only namespaces allowed |
 | **No parameter properties** | Use explicit property declarations |
 | **Explicit `import type`** | `verbatimModuleSyntax: true` |
-| **`.ts` extensions** | Relative imports use `.ts`; generated code uses `.js` |
+| **Import extensions** | Relative source imports use `.ts`; generated imports match `buf.gen.yaml` |
 | **`node:` prefix** | Required for Node.js built-in modules |
 
 These constraints come from `erasableSyntaxOnly: true` -- TypeScript syntax must be removable by stripping types, leaving valid JavaScript.
 
 ## Learn More
 
-- [Runtime Support](/en/guide/typescript/runtime-support) -- Node.js 25+, Bun, tsx, Docker, comparison table
+- [Execution Models](/en/guide/typescript/runtime-support) -- native Node.js, Bun, and tsx workflows
+- [Runtime Compatibility](/en/guide/runtime-compatibility) -- canonical supported-version and limitation matrix
 - [Erasable Syntax](/en/guide/typescript/erasable-syntax) -- constraints, import rules, tsconfig.json
 - [Proto Enums](/en/guide/typescript/proto-enums) -- two-step generation workaround for proto enums
 - [Patterns & Workflow](/en/guide/typescript/patterns) -- named parameters, branded types, development workflow

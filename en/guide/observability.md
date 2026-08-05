@@ -1,73 +1,38 @@
 ---
+title: Observability
+description: Route tracing, metrics, logging, and exporter configuration to their canonical Connectum guides.
+docType: concept
 outline: deep
 ---
 
 # Observability
 
-First-class OpenTelemetry support via `@connectum/otel` -- distributed tracing, metrics, and structured logging for your Connectum services.
+`@connectum/otel` connects RPC telemetry and application instrumentation to OpenTelemetry. Instrumentation decides what signals to create; provider/exporter configuration decides where those signals go.
 
-## Quick Start
+## Minimal RPC instrumentation
 
 ```typescript
-import { createServer } from '@connectum/core';
 import { createOtelInterceptor } from '@connectum/otel';
-import routes from '#gen/routes.js';
 
 const server = createServer({
   services: [routes],
-  port: 5000,
   interceptors: [
     createOtelInterceptor({
       filter: ({ service }) => !service.includes('grpc.health'),
     }),
   ],
 });
-
-await server.start();
 ```
 
-```bash
-# .env
-OTEL_SERVICE_NAME=my-service
-OTEL_TRACES_EXPORTER=otlp
-OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
-```
+## Choose the signal
 
-## Installation
+| Need | Canonical guide |
+|---|---|
+| Server/client RPC spans, propagation, `traced()` or `traceAll()` | [Tracing](/en/guide/observability/tracing) |
+| Automatic RPC instruments and application meters | [Metrics](/en/guide/observability/metrics) |
+| Structured records and trace correlation | [Logging](/en/guide/observability/logging) |
+| OTLP endpoints, exporters, resource metadata, provider lifecycle | [Backends and configuration](/en/guide/observability/backends) |
 
-::: pm
-== npm
-```bash
-npm install @connectum/otel
-```
-== pnpm
-```bash
-pnpm add @connectum/otel
-```
-== bun
-```bash
-bun add @connectum/otel
-```
-:::
+Focused guides explain task behavior. Exact option fields belong to generated interfaces such as [`OtelInterceptorOptions`](/en/api/@connectum/otel/interfaces/OtelInterceptorOptions) and [`ProviderOptions`](/en/api/@connectum/otel/provider/interfaces/ProviderOptions).
 
-Peer dependencies (installed automatically): `@opentelemetry/api`, `@opentelemetry/sdk-node`.
-
-## Key Concepts
-
-| Concept | Description |
-|---------|-------------|
-| **Server Interceptor** | `createOtelInterceptor()` -- traces all incoming RPC calls |
-| **Client Interceptor** | `createOtelClientInterceptor()` -- propagates trace context to outgoing calls |
-| **Deep Tracing** | `traced()` and `traceAll()` -- instrument business logic functions |
-| **Metrics** | `getMeter()` -- counters, histograms, gauges via OpenTelemetry |
-| **Logging** | `getLogger()` -- structured logging with trace correlation |
-| **Backends** | Configure via environment variables -- Jaeger, Grafana, any OTLP collector |
-
-## Learn More
-
-- [Tracing](/en/guide/observability/tracing) -- server/client interceptors, deep tracing, distributed traces
-- [Metrics](/en/guide/observability/metrics) -- counters, histograms, automatic RPC metrics
-- [Logging](/en/guide/observability/logging) -- structured logging with trace correlation
-- [Backends & Configuration](/en/guide/observability/backends) -- environment variables, provider management, Jaeger/Grafana setup
-- [@connectum/otel](/en/packages/otel) -- Package Guide
-- [@connectum/otel API](/en/api/@connectum/otel/) -- Full API Reference
+Use the [`@connectum/otel` module hub](/en/packages/otel) for installation, key entry points, source, and API routes. Avoid copying exporter tables into tracing or metrics pages; backend configuration is their canonical owner.

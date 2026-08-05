@@ -3,6 +3,9 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "docs:inventory": "node scripts/docs-inventory.mjs",
+        "docs:validate": "node scripts/docs-validate.mjs",
+        "docs:validate:built": "node scripts/docs-validate.mjs --built",
         "docs:dev": "vitepress dev",
         "docs:build": "vitepress build",
         "docs:preview": "vitepress preview"
