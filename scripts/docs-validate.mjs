@@ -7,6 +7,10 @@ import { publicModules } from '../.vitepress/data/modules.ts';
 
 const projectRoot = resolve(import.meta.dirname, '..');
 const workspaceRoot = resolve(projectRoot, '..');
+const configuredFrameworkRoot = process.env.CONNECTUM_FRAMEWORK_ROOT;
+const frameworkRoot = configuredFrameworkRoot
+    ? resolve(configuredFrameworkRoot)
+    : resolve(workspaceRoot, 'connectum');
 const contentRoot = resolve(projectRoot, 'en');
 const buildRoot = resolve(projectRoot, '.vitepress/dist');
 const site = JSON.parse(readFileSync(resolve(projectRoot, '.vitepress/data/site.json'), 'utf8'));
@@ -113,17 +117,24 @@ for (const redirect of site.redirects) {
     if (redirect.from === redirect.to) errors.push(`redirect points to itself: ${redirect.from}`);
 }
 
-const packageRoot = resolve(workspaceRoot, 'connectum/packages');
-const publicPackages = readdirSync(packageRoot, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => JSON.parse(readFileSync(resolve(packageRoot, entry.name, 'package.json'), 'utf8')))
-    .filter((pkg) => pkg.private !== true)
-    .map((pkg) => pkg.name)
-    .sort();
 const registryNames = publicModules.map((module) => module.name).sort();
+const packageRoot = resolve(frameworkRoot, 'packages');
+let frameworkPackagesChecked = false;
 
-if (JSON.stringify(publicPackages) !== JSON.stringify(registryNames)) {
-    errors.push(`module registry mismatch:\n  packages: ${publicPackages.join(', ')}\n  registry: ${registryNames.join(', ')}`);
+if (existsSync(packageRoot)) {
+    const publicPackages = readdirSync(packageRoot, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory() && existsSync(resolve(packageRoot, entry.name, 'package.json')))
+        .map((entry) => JSON.parse(readFileSync(resolve(packageRoot, entry.name, 'package.json'), 'utf8')))
+        .filter((pkg) => pkg.private !== true)
+        .map((pkg) => pkg.name)
+        .sort();
+    frameworkPackagesChecked = true;
+
+    if (JSON.stringify(publicPackages) !== JSON.stringify(registryNames)) {
+        errors.push(`module registry mismatch:\n  packages: ${publicPackages.join(', ')}\n  registry: ${registryNames.join(', ')}`);
+    }
+} else if (configuredFrameworkRoot) {
+    errors.push(`CONNECTUM_FRAMEWORK_ROOT does not contain packages/: ${frameworkRoot}`);
 }
 
 const seenSlugs = new Set();
@@ -185,5 +196,5 @@ if (errors.length > 0) {
 }
 
 process.stdout.write(
-    `Documentation validation passed: ${markdownFiles.length} pages, ${publicModules.length} public modules${checkBuiltOutputs ? ', built outputs checked' : ''}.\n`,
+    `Documentation validation passed: ${markdownFiles.length} pages, ${publicModules.length} public modules${frameworkPackagesChecked ? ', framework sources checked' : ', standalone registry checks'}${checkBuiltOutputs ? ', built outputs checked' : ''}.\n`,
 );
