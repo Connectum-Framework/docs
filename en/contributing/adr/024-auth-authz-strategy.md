@@ -207,17 +207,21 @@ export function createProtoAuthzInterceptor(options?: ProtoAuthzInterceptorOptio
 
 **9-step authorization decision flow:**
 
-```
-1. resolveMethodAuth(req.method)  -- read proto options (WeakMap-cached)
-2. public = true                  --> skip (allow without authn)
-3. Get auth context               -- lazy: don't throw yet
-4. requires defined, no context   --> throw Unauthenticated
-4b. requires defined, has context --> satisfiesRequirements? allow : deny
-5. policy = "allow"              --> allow
-6. policy = "deny"               --> deny
-7. Evaluate programmatic rules   -- unconditional rules work without context
-8. Fallback: authorize callback  --> requires auth context
-9. Apply defaultPolicy           --> deny without context = Unauthenticated
+```mermaid
+flowchart TD
+    Resolve["1 · Resolve proto options"] --> Public{"2 · public?"}
+    Public -->|yes| Allow[Allow without authn]
+    Public -->|no| Context["3 · Read auth context lazily"]
+    Context --> Requires{"4 · requires?"}
+    Requires -->|yes, no context| Unauthenticated[Throw Unauthenticated]
+    Requires -->|yes, context| Check[Check roles and scopes]
+    Requires -->|no| Policy{"5–6 · policy?"}
+    Check --> Policy
+    Policy -->|allow| Allow
+    Policy -->|deny| Deny[Deny]
+    Policy -->|unset| Rules["7 · Evaluate programmatic rules"]
+    Rules --> Callback["8 · authorize callback"]
+    Callback --> Default["9 · Apply defaultPolicy"]
 ```
 
 **Proto reader utilities** (also from `@connectum/auth/proto`):
@@ -275,8 +279,17 @@ export function parseAuthHeaders(headers: Headers): AuthContext | undefined;
 
 Auth/authz interceptors are positioned **immediately after errorHandler** and **before all other interceptors**:
 
-```
-errorHandler → AUTH → AUTHZ → timeout → bulkhead → circuitBreaker → retry → fallback → validation → serializer
+```mermaid
+flowchart LR
+    Error[errorHandler] --> Authn[AUTH]
+    Authn --> Authz[AUTHZ]
+    Authz --> Timeout[timeout]
+    Timeout --> Bulkhead[bulkhead]
+    Bulkhead --> Breaker[circuitBreaker]
+    Breaker --> Retry[retry]
+    Retry --> Fallback[fallback]
+    Fallback --> Validation[validation]
+    Validation --> Serializer[serializer]
 ```
 
 **Rationale:**

@@ -114,11 +114,7 @@ const adapter = MemoryAdapter();
 
 ### Middleware Pipeline
 
-Middleware wraps event handlers in an onion model. Built-in middleware provides retry with configurable backoff and dead letter queue routing:
-
-```
-Custom → DLQ → Retry → Handler
-```
+Middleware wraps event handlers in an onion model. Built-in middleware provides retry with configurable backoff and dead letter queue routing. See the [middleware pipeline diagram](/en/guide/events/middleware#pipeline-order) for execution and error flow.
 
 Each middleware receives the raw event, the event context, and a `next()` function to call the inner handler.
 

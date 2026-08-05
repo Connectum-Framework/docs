@@ -1,10 +1,17 @@
 ---
 layout: page
+head:
+  - - meta
+    - http-equiv: refresh
+      content: "0; url=/en/"
+  - - link
+    - rel: canonical
+      href: https://connectum.dev/en/
 ---
 
 <script setup>
 if (typeof window !== 'undefined') {
-  window.location.href = '/en/';
+  window.location.replace('/en/');
 }
 </script>
 

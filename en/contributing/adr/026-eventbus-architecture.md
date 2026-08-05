@@ -119,8 +119,11 @@ The `resolveTopicName()` function checks for the custom option first, falling ba
 
 Composable middleware using an onion model (Express/Koa style), applied via `composeMiddleware()` with dispatch:
 
-```
-custom (outermost) → DLQ → retry (innermost) → handler
+```mermaid
+flowchart LR
+    Custom[custom · outermost] --> DLQ
+    DLQ --> Retry[retry · innermost]
+    Retry --> Handler
 ```
 
 Built-in middleware:

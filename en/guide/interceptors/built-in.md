@@ -8,8 +8,15 @@ Connectum provides 8 production-ready interceptors via `createDefaultInterceptor
 
 ## The Default Chain
 
-```
-errorHandler -> timeout -> bulkhead -> circuitBreaker -> retry -> fallback -> validation -> serializer
+```mermaid
+flowchart LR
+    Error[errorHandler] --> Timeout[timeout]
+    Timeout --> Bulkhead[bulkhead]
+    Bulkhead --> Breaker[circuitBreaker]
+    Breaker --> Retry[retry]
+    Retry --> Fallback[fallback]
+    Fallback --> Validation[validation]
+    Validation --> Serializer[serializer]
 ```
 
 | # | Interceptor | Purpose | Default |
@@ -175,9 +182,22 @@ For detailed documentation on each interceptor, see the [@connectum/interceptors
 
 Interceptors execute in the order they are defined. Each interceptor wraps the next one:
 
-```
-Request  -> interceptor1 -> interceptor2 -> interceptor3 -> handler
-Response <- interceptor1 <- interceptor2 <- interceptor3 <- handler
+```mermaid
+sequenceDiagram
+    participant Client
+    participant I1 as interceptor1
+    participant I2 as interceptor2
+    participant I3 as interceptor3
+    participant Handler
+
+    Client->>I1: Request
+    I1->>I2: Request
+    I2->>I3: Request
+    I3->>Handler: Request
+    Handler-->>I3: Response
+    I3-->>I2: Response
+    I2-->>I1: Response
+    I1-->>Client: Response
 ```
 
 This means:

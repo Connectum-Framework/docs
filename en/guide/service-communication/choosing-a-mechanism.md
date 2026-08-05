@@ -117,9 +117,19 @@ the saga from a durable orchestrator. The examples use [Temporal](https://tempor
 - The compensations are **idempotent**, so an unwind after a partially-applied
   step is safe.
 
-```
-createEmployee ─▶ setupPayroll ─▶ grantTimeOff ─▶ provisionAccess ─▶ activate   ✓ COMPLETED
-   on any failure ──▶ compensations run in reverse: revoke… ▶ teardown… ▶ offboard…   ✗ FAILED
+```mermaid
+flowchart LR
+    Employee[createEmployee] --> Payroll[setupPayroll]
+    Payroll --> TimeOff[grantTimeOff]
+    TimeOff --> Access[provisionAccess]
+    Access --> Activate[activate]
+    Activate --> Complete[COMPLETED]
+
+    Failure[Any activity fails] -.-> Reverse[Compensations run in reverse]
+    Reverse --> Revoke[revoke access]
+    Revoke --> Teardown[teardown payroll]
+    Teardown --> Offboard[offboard employee]
+    Offboard --> Failed[FAILED]
 ```
 
 A thin **gateway** RPC starts the workflow and exposes its status, so callers see

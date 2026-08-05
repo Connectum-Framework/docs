@@ -225,11 +225,12 @@ const server = createServer()
 - **SRP**: `Server.ts` is responsible only for lifecycle (start/stop/state/events). Knowledge of concrete interceptors is moved to `@connectum/interceptors`.
 
 - **Uniform API**: Services, interceptors, and protocols follow the same pattern:
-  ```
-  options.X     -> configuration at creation
-  server.addX() -> runtime registration (before start)
-  server.X      -> readonly getter
-  ```
+
+  | Surface | Responsibility |
+  |---|---|
+  | `options.X` | Configuration at creation |
+  | `server.addX()` | Runtime registration before start |
+  | `server.X` | Readonly getter |
 
 - **Zero coupling**: `@connectum/core` has no dependency on `@connectum/interceptors`. Users explicitly import and pass interceptors.
 

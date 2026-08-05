@@ -47,8 +47,10 @@ The interceptor:
 
 When both server and client interceptors are configured, trace context flows automatically across service boundaries:
 
-```
-Service A (server span) → Service A (client span) → Service B (server span)
+```mermaid
+flowchart LR
+    AServer["Service A · server span"] --> AClient["Service A · client span"]
+    AClient -->|Injected trace context| BServer["Service B · server span"]
 ```
 
 ```typescript

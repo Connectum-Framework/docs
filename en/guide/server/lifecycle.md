@@ -8,8 +8,14 @@ Connectum servers follow a deterministic state machine. Understanding the lifecy
 
 ## Server States
 
-```
-created ──> starting ──> running ──> stopping ──> stopped
+```mermaid
+stateDiagram-v2
+    [*] --> created
+    created --> starting: server.start() / start
+    starting --> running: ready
+    running --> stopping: server.stop() or signal / stopping
+    stopping --> stopped: stop
+    stopped --> [*]
 ```
 
 | State | What happens |
@@ -62,11 +68,7 @@ server.on('error', (err) => {
 
 ### Event Ordering
 
-Events always fire in a fixed order:
-
-```
-start → ready → ... (server is running) ... → stopping → stop
-```
+Events always fire in the transition order shown in the state diagram: `start`, `ready`, `stopping`, then `stop`.
 
 `error` may fire at any point. If an error occurs during startup, the sequence is `start → error`. If it occurs during shutdown, it is `stopping → error → stop`.
 

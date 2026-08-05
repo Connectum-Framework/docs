@@ -16,8 +16,15 @@
 
 Connectum interceptors form a flat chain applied to **all** RPC methods uniformly. The current interceptor chain in `createServer()` (see [ADR-006](./006-resilience-pattern-implementation.md)):
 
-```
-Error Handler -> Validation -> Serializer -> Logger -> Tracing -> Redact -> [Custom Interceptors] -> Handler
+```mermaid
+flowchart LR
+    Error[Error Handler] --> Validation
+    Validation --> Serializer
+    Serializer --> Logger
+    Logger --> Tracing
+    Tracing --> Redact
+    Redact --> Custom[Custom Interceptors]
+    Custom --> Handler
 ```
 
 **Limitation:**
@@ -140,14 +147,13 @@ function createMethodFilterInterceptor(
 
 All matching patterns execute **sequentially** (from general to specific):
 
-```
-Request: user.v1.UserService/GetUser
-
-1. "*": [logRequest]              -- global (always runs)
-2. "user.v1.UserService/*": []    -- service-level (if defined)
-3. "user.v1.UserService/GetUser": [checkAuth, enrichUser]  -- exact match
-
-Total chain: logRequest -> checkAuth -> enrichUser -> next(req)
+```mermaid
+flowchart TD
+    Request["user.v1.UserService/GetUser"]
+    Request --> Global["* → logRequest"]
+    Global --> Service["user.v1.UserService/* → service interceptors, if defined"]
+    Service --> Exact["user.v1.UserService/GetUser → checkAuth, enrichUser"]
+    Exact --> Next["next(req)"]
 ```
 
 This follows the ConnectRPC interceptor chain model -- each interceptor calls `next(req)`, forming a nested chain.
