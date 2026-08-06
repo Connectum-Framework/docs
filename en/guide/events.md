@@ -35,16 +35,15 @@ graph LR
     end
 
     PA -->|"publish(Schema, data)"| AD
-    AD --> T1
-    AD --> T2
-    T1 --> AD
-    T2 --> AD
-    AD --> MW
+    PB -->|"publish(Schema, data)"| AD
+
+    AD <-->|"produce / consume"| T1
+    AD <-->|"produce / consume"| T2
+
+    AD -->|"inbound event"| MW
     MW --> R
     R --> HA
-
-    PB -->|"publish(Schema, data)"| AD
-    AD --> HB
+    R --> HB
 ```
 
 The EventBus sits between your service handlers and the message broker. It handles:

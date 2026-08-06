@@ -246,12 +246,7 @@ graph TB
     Redis -- "peerDependency" --> Events
     Amqp -- "peerDependency" --> Events
 
-    style Core fill:#4a90d9,color:#fff
-    style Events fill:#7fb069,color:#fff
-    style Nats fill:#e0a458,color:#fff
-    style Kafka fill:#e0a458,color:#fff
-    style Redis fill:#e0a458,color:#fff
-    style Amqp fill:#e0a458,color:#fff
+    class Core accent
 ```
 
 ## Consequences

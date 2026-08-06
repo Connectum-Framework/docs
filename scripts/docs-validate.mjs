@@ -108,6 +108,72 @@ for (const [sourceRoute, page] of pages) {
     }
 }
 
+/**
+ * Mermaid presentation governance.
+ *
+ * Diagrams get their colors from the shared theme in `.vitepress/config/mermaid.ts`. A
+ * literal color in the source bypasses it: mermaid writes `style`/`classDef` values into
+ * an inline `style` attribute, which outranks the embedded stylesheet, so the node keeps
+ * a light-mode color after the reader switches to dark.
+ *
+ * The check is an allow-list on the *value* rather than a ban on the property, so an
+ * approved token reference stays writable.
+ */
+const PRESENTATION_DIRECTIVE = /^\s*(?:style|linkStyle|classDef)\b/;
+/* A value runs to the next comma or semicolon, except inside parentheses -- `rgb(1,2,3)`
+   and `var(--x, #fff)` are single values and must be reported whole. */
+const COLOR_DECLARATION = /\b(fill|stroke|color|background|background-color)\s*:\s*((?:[^,;()]|\([^)]*\))+)/gi;
+const ALLOWED_COLOR_VALUE = /^(?:none|transparent|inherit|currentColor|var\(--connectum-diagram-[a-z-]+\))$/i;
+const INIT_DIRECTIVE = /%%\{[^}]*\btheme(?:Variables|CSS)?\b/i;
+
+function mermaidPresentationIssues(source) {
+    const issues = [];
+    const lines = source.split(/\r?\n/);
+    let inFence = false;
+    for (const [index, line] of lines.entries()) {
+        if (/^\s*```\s*mermaid\s*$/.test(line)) {
+            inFence = true;
+            continue;
+        }
+        if (inFence && /^\s*```/.test(line)) {
+            inFence = false;
+            continue;
+        }
+        if (!inFence) continue;
+
+        if (INIT_DIRECTIVE.test(line)) {
+            issues.push({
+                line: index + 1,
+                text: line.trim(),
+                reason: 'per-diagram theme directive',
+                fix: 'the shared theme in .vitepress/config/mermaid.ts owns fonts and colors for every diagram',
+            });
+            continue;
+        }
+        if (!PRESENTATION_DIRECTIVE.test(line)) continue;
+        for (const [, property, rawValue] of line.matchAll(COLOR_DECLARATION)) {
+            const value = rawValue.trim();
+            if (ALLOWED_COLOR_VALUE.test(value)) continue;
+            issues.push({
+                line: index + 1,
+                text: `${property}:${value}`,
+                reason: 'literal color',
+                fix: 'drop the directive to use the shared defaults, or apply a semantic variant (accent, positive, warning, critical, muted)',
+            });
+        }
+    }
+    return issues;
+}
+
+for (const [route, page] of pages) {
+    if (route.startsWith('/en/api/')) continue;
+    for (const issue of mermaidPresentationIssues(page.source)) {
+        errors.push(
+            `${relative(projectRoot, page.file)}:${issue.line}: Mermaid ${issue.reason} \`${issue.text}\` -- ${issue.fix}; see en/contributing/documentation-style.md#diagrams-and-process-flows`,
+        );
+    }
+}
+
 const redirectsBySource = new Map();
 for (const redirect of site.redirects) {
     if (redirectsBySource.has(redirect.from)) errors.push(`duplicate redirect source ${redirect.from}`);

@@ -42,8 +42,8 @@ graph TB
     end
 
     subgraph "Layer 2: Tools"
-        Otel["@connectum/otel"]
-        CLI["@connectum/cli"]
+        Otel["@connectum/otel<br/>(no @connectum deps)"]
+        CLI["@connectum/cli<br/>(devDeps only)"]
         EventsNats["@connectum/events-nats"]
         EventsKafka["@connectum/events-kafka"]
         EventsRedis["@connectum/events-redis"]
@@ -60,21 +60,8 @@ graph TB
     EventsKafka -- "dependency" --> Events
     EventsRedis -- "dependency" --> Events
 
-    Otel -.- |"zero @connectum deps"| Otel
-    CLI -.- |"devDeps only"| CLI
-
-    style Core fill:#4a90d9,color:#fff
-    style Interceptors fill:#4a90d9,color:#fff
-    style Healthcheck fill:#4a90d9,color:#fff
-    style Reflection fill:#4a90d9,color:#fff
-    style Auth fill:#7fb069,color:#fff
-    style Events fill:#7fb069,color:#fff
-    style Otel fill:#7fb069,color:#fff
-    style CLI fill:#7fb069,color:#fff
-    style EventsNats fill:#7fb069,color:#fff
-    style EventsKafka fill:#7fb069,color:#fff
-    style EventsRedis fill:#7fb069,color:#fff
-    style Testing fill:#999,color:#fff
+    class Core accent
+    class Testing muted
 ```
 
 ### The Problem
@@ -211,8 +198,8 @@ graph LR
         EN["@connectum/events-nats<br/>v1.0.0"]
         EK["@connectum/events-kafka<br/>v1.0.0"]
         ER["@connectum/events-redis<br/>v1.0.0"]
-        O["@connectum/otel<br/>v1.0.3"]
-        CLI["@connectum/cli<br/>v1.3.0"]
+        O["@connectum/otel<br/>v1.0.3<br/>(no @connectum deps)"]
+        CLI["@connectum/cli<br/>v1.3.0<br/>(devDeps only)"]
     end
 
     C -.->|"same version<br/>always"| I
@@ -224,20 +211,8 @@ graph LR
     EN -->|"dep: events ^1.0.0"| E
     EK -->|"dep: events ^1.0.0"| E
     ER -->|"dep: events ^1.0.0"| E
-    O -.-|"no @connectum deps"| O
-    CLI -.-|"devDeps only"| CLI
 
-    style C fill:#4a90d9,color:#fff
-    style I fill:#4a90d9,color:#fff
-    style H fill:#4a90d9,color:#fff
-    style R fill:#4a90d9,color:#fff
-    style A fill:#7fb069,color:#fff
-    style E fill:#7fb069,color:#fff
-    style EN fill:#7fb069,color:#fff
-    style EK fill:#7fb069,color:#fff
-    style ER fill:#7fb069,color:#fff
-    style O fill:#7fb069,color:#fff
-    style CLI fill:#7fb069,color:#fff
+    class C,I,H,R accent
 ```
 
 #### CI/CD Changes (`release.yml`)
