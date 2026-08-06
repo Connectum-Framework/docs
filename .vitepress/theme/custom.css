@@ -516,10 +516,35 @@
     text-transform: uppercase;
 }
 
+/* One component, two very different boxes: the home page gives it the full 1180px
+   section, while /en/packages/ and /en/reference/ put it inside the 688px documentation
+   column. A viewport media query cannot tell those apart -- on a wide window both asked
+   for three columns and the documentation copy got 200px cards, wrapping package names
+   mid-word -- so the grid answers to its own container instead. The thresholds are the
+   container widths the old viewport breakpoints worked out to, so the home page keeps
+   the layout it had: 612px is the width its old 640px breakpoint worked out to once the
+   section gutters are taken off, and 900px sits in the gap between the 852px and 976px
+   the section measures on either side of the old 960px one. */
+.module-groups {
+    container-type: inline-size;
+}
+
 .module-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 12px;
+}
+
+@container (min-width: 612px) {
+    .module-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@container (min-width: 900px) {
+    .module-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 }
 
 .module-card {
@@ -778,8 +803,7 @@
         margin-top: 34px;
     }
 
-    .home-goal-grid,
-    .module-grid {
+    .home-goal-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -828,7 +852,6 @@
 
     .home-section__heading--split,
     .home-goal-grid,
-    .module-grid,
     .home-resources,
     .home-resources nav,
     .reference-routes {
