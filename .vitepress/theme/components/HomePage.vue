@@ -187,8 +187,8 @@ const lifecycle = [
                     <a href="/en/contributing/"><span>Contributing</span><span aria-hidden="true">→</span></a>
                 </div>
                 <div class="home-resources__column" aria-label="External project links">
-                    <a class="no-icon" href="https://github.com/Connectum-Framework/examples" target="_blank" rel="noreferrer"><span>Examples</span><span aria-hidden="true">↗</span></a>
-                    <a class="no-icon" href="https://github.com/Connectum-Framework/connectum" target="_blank" rel="noreferrer"><span>GitHub</span><span aria-hidden="true">↗</span></a>
+                    <a class="no-icon" href="https://github.com/Connectum-Framework/examples" target="_blank" rel="noreferrer"><span>Examples</span><span class="home-resources__external-arrow" aria-hidden="true">→</span></a>
+                    <a class="no-icon" href="https://github.com/Connectum-Framework/connectum" target="_blank" rel="noreferrer"><span>GitHub</span><span class="home-resources__external-arrow" aria-hidden="true">→</span></a>
                 </div>
             </nav>
         </section>
