@@ -628,6 +628,13 @@
     display: none !important;
 }
 
+.home-resources__external-arrow {
+    display: inline-block;
+    flex: 0 0 auto;
+    line-height: 1;
+    transform: rotate(-45deg);
+}
+
 .home-resources nav a:hover,
 .home-resources nav a:focus-visible {
     border-color: var(--vp-c-brand-1);
