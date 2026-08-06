@@ -11,7 +11,7 @@ const route = useRoute()
 
 // --- Medium Zoom for images ---
 let zoom: ReturnType<typeof mediumZoom>
-let mermaidObserver: MutationObserver | undefined
+let diagramObserver: MutationObserver | undefined
 
 const initImageZoom = () => {
     if (!zoom) {
@@ -23,7 +23,7 @@ const initImageZoom = () => {
     })
 }
 
-// --- Fullscreen overlay for mermaid diagrams ---
+// --- Fullscreen overlay for Mermaid and project-authored SVG diagrams ---
 const openOverlay = (container: HTMLElement) => {
     const svgEl = container.querySelector('svg')
     if (!svgEl) return
@@ -38,9 +38,10 @@ const openOverlay = (container: HTMLElement) => {
 
     const clone = svgEl.cloneNode(true) as SVGElement
     clone.removeAttribute('width')
-    clone.style.maxWidth = '95vw'
-    clone.style.maxHeight = '90vh'
-    clone.style.height = 'auto'
+    clone.removeAttribute('height')
+    clone.style.width = '95vw'
+    clone.style.height = '90vh'
+    clone.setAttribute('preserveAspectRatio', 'xMidYMid meet')
 
     const closeButton = document.createElement('button')
     closeButton.className = 'mermaid-zoom-overlay__close'
@@ -67,9 +68,9 @@ const openOverlay = (container: HTMLElement) => {
     overlay.focus()
 }
 
-const setupMermaidZoom = () => {
+const setupDiagramZoom = () => {
     const enhanceDiagrams = () => {
-        document.querySelectorAll('.mermaid:not([data-zoom])').forEach((el) => {
+        document.querySelectorAll('.mermaid:not([data-zoom]), .technical-diagram__art:not([data-zoom])').forEach((el) => {
             if (!el.querySelector('svg')) return
             el.setAttribute('data-zoom', '')
             el.setAttribute('role', 'button')
@@ -85,8 +86,8 @@ const setupMermaidZoom = () => {
     }
 
     enhanceDiagrams()
-    mermaidObserver = new MutationObserver(enhanceDiagrams)
-    mermaidObserver.observe(document.body, { childList: true, subtree: true })
+    diagramObserver = new MutationObserver(enhanceDiagrams)
+    diagramObserver.observe(document.body, { childList: true, subtree: true })
 }
 
 // --- Variant switchers (runtime, package manager) ---
@@ -131,13 +132,13 @@ const onStorage = (event: StorageEvent) => {
 
 onMounted(() => {
     initImageZoom()
-    setupMermaidZoom()
+    setupDiagramZoom()
     document.addEventListener('click', onTabClick)
     window.addEventListener('storage', onStorage)
 })
 
 onBeforeUnmount(() => {
-    mermaidObserver?.disconnect()
+    diagramObserver?.disconnect()
     document.removeEventListener('click', onTabClick)
     window.removeEventListener('storage', onStorage)
 })

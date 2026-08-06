@@ -881,7 +881,8 @@
     .home-goal-card,
     .module-card,
     .reference-routes > a,
-    .mermaid[data-zoom] {
+    .mermaid[data-zoom],
+    .technical-diagram__art[data-zoom] {
         transition: none !important;
     }
 
@@ -907,22 +908,25 @@
     }
 }
 
-/* Mermaid diagrams — click-to-fullscreen cursor */
-.mermaid[data-zoom] {
+/* Diagrams — click-to-fullscreen cursor */
+.mermaid[data-zoom],
+.technical-diagram__art[data-zoom] {
     cursor: zoom-in;
     transition: opacity 0.2s;
 }
 
-.mermaid[data-zoom]:hover {
+.mermaid[data-zoom]:hover,
+.technical-diagram__art[data-zoom]:hover {
     opacity: 0.85;
 }
 
-.mermaid[data-zoom]:focus-visible {
+.mermaid[data-zoom]:focus-visible,
+.technical-diagram__art[data-zoom]:focus-visible {
     outline: 3px solid var(--vp-c-brand-1);
     outline-offset: 4px;
 }
 
-/* Mermaid fullscreen overlay */
+/* Shared fullscreen diagram overlay. */
 .mermaid-zoom-overlay {
     position: fixed;
     inset: 0;
