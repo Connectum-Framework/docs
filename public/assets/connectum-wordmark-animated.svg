@@ -1,0 +1,69 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="144 72 712 128"
+    preserveAspectRatio="xMidYMid meet"
+    role="img"
+    aria-labelledby="connectum-wordmark-title connectum-wordmark-desc"
+>
+    <title id="connectum-wordmark-title">Connectum</title>
+    <desc id="connectum-wordmark-desc">Connectum wordmark with a slowly shifting blue and violet gradient.</desc>
+    <defs>
+        <style>
+            .connectum-wordmark__text {
+                font-family: Montserrat, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                font-size: 86px;
+                font-weight: 800;
+                letter-spacing: 0.08em;
+            }
+
+            @keyframes connectum-wordmark-gradient-0 {
+                0%, 100% { stop-color: #635bff; }
+                25% { stop-color: #3a92ff; }
+                50% { stop-color: #38c2ff; }
+                75% { stop-color: #7952f5; }
+            }
+
+            @keyframes connectum-wordmark-gradient-1 {
+                0%, 100% { stop-color: #3a92ff; }
+                25% { stop-color: #38c2ff; }
+                50% { stop-color: #7952f5; }
+                75% { stop-color: #635bff; }
+            }
+
+            @keyframes connectum-wordmark-gradient-2 {
+                0%, 100% { stop-color: #38c2ff; }
+                25% { stop-color: #7952f5; }
+                50% { stop-color: #635bff; }
+                75% { stop-color: #3a92ff; }
+            }
+
+            @keyframes connectum-wordmark-gradient-3 {
+                0%, 100% { stop-color: #7952f5; }
+                25% { stop-color: #635bff; }
+                50% { stop-color: #3a92ff; }
+                75% { stop-color: #38c2ff; }
+            }
+
+            .connectum-wordmark__stop-0 { animation: connectum-wordmark-gradient-0 8s ease-in-out infinite alternate; }
+            .connectum-wordmark__stop-1 { animation: connectum-wordmark-gradient-1 8s ease-in-out infinite alternate; }
+            .connectum-wordmark__stop-2 { animation: connectum-wordmark-gradient-2 8s ease-in-out infinite alternate; }
+            .connectum-wordmark__stop-3 { animation: connectum-wordmark-gradient-3 8s ease-in-out infinite alternate; }
+
+            @media (prefers-reduced-motion: reduce) {
+                .connectum-wordmark__stop-0,
+                .connectum-wordmark__stop-1,
+                .connectum-wordmark__stop-2,
+                .connectum-wordmark__stop-3 {
+                    animation: none;
+                }
+            }
+        </style>
+        <linearGradient id="connectum-wordmark-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop class="connectum-wordmark__stop-0" offset="0%" stop-color="#635bff" />
+            <stop class="connectum-wordmark__stop-1" offset="33%" stop-color="#3a92ff" />
+            <stop class="connectum-wordmark__stop-2" offset="66%" stop-color="#38c2ff" />
+            <stop class="connectum-wordmark__stop-3" offset="100%" stop-color="#7952f5" />
+        </linearGradient>
+    </defs>
+    <text class="connectum-wordmark__text" x="500" y="166" text-anchor="middle" fill="url(#connectum-wordmark-gradient)">CONNECTUM</text>
+</svg>

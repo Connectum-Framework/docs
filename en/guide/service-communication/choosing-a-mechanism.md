@@ -183,4 +183,4 @@ Two end-to-end examples put these mechanisms to work — clone, read, and run th
 - [Service Catalog](/en/guide/service-communication/service-catalog) — how `ctx.call` / `ctx.stream` are typed
 - [Remote Resolvers](/en/guide/service-communication/resolvers) — routing a call to a remote process
 - [Events](/en/guide/events) — the EventBus, topics, middleware, and adapters
-- [Architecture Overview](/en/guide/production/architecture) — deployment-level patterns
+- [Connectum Runtime Architecture](/en/guide/production/architecture) — process boundaries and local/remote routing

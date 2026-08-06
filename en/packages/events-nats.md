@@ -44,7 +44,7 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `NatsAdapter` | Connect EventBus to NATS JetStream. |
 | `NatsAdapterOptions` | Configure servers, stream, connection, and consumer behavior. |
 
-Architecture-layer and dependency details remain in the [Architecture Overview](/en/guide/production/architecture).
+Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

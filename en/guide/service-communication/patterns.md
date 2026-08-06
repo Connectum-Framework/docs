@@ -165,5 +165,5 @@ When forwarding errors from a downstream service, translate status codes to matc
 
 - [Service Communication](/en/guide/service-communication) -- overview, transport configuration, service discovery
 - [Client Interceptors](./client-interceptors) -- OTel, resilience, circuit breaker configuration
-- [Architecture Patterns](/en/guide/production/architecture) -- full production architecture reference
+- [Connectum Runtime Architecture](/en/guide/production/architecture) -- process boundaries and local/remote routing
 - [Interceptors](/en/guide/interceptors) -- server-side interceptor chain

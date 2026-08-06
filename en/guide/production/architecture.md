@@ -1,416 +1,131 @@
 ---
-title: Microservice Architecture Patterns
-description: Scalable architecture patterns for production gRPC/ConnectRPC microservices with Connectum framework.
+title: Connectum Runtime Architecture
+description: Understand the Connectum service-process boundary, shared RPC path, extension seams, and local or remote catalog routing.
+docType: concept
+outline: deep
 ---
 
-# Microservice Architecture Patterns
-
-This guide covers proven architecture patterns for building production-grade gRPC/ConnectRPC microservices with Connectum. It addresses service communication, proto-first design workflows, service discovery, and repository strategies.
-
-## High-Level Production Architecture
-
-A typical Connectum production deployment consists of multiple gRPC services behind an API gateway, with centralized observability and service discovery.
-
-```mermaid
-graph TB
-    subgraph External["External Clients"]
-        REST["REST / Web Clients"]
-        GRPC_EXT["gRPC Clients"]
-    end
-
-    subgraph Gateway["API Gateway Layer"]
-        ENVOY["Envoy Gateway<br/>gRPC-JSON Transcoding"]
-    end
-
-    subgraph Mesh["Service Mesh (Istio)"]
-        subgraph Services["Connectum Services"]
-            SVC_A["Service A<br/>:5000"]
-            SVC_B["Service B<br/>:5001"]
-            SVC_C["Service C<br/>:5002"]
-        end
-        subgraph Sidecar["Envoy Sidecars"]
-            PROXY_A["Sidecar A"]
-            PROXY_B["Sidecar B"]
-            PROXY_C["Sidecar C"]
-        end
-    end
-
-    subgraph Observability["Observability Stack"]
-        OTEL_COL["OTel Collector"]
-        JAEGER["Jaeger / Tempo"]
-        PROM["Prometheus"]
-        GRAFANA["Grafana"]
-    end
-
-    subgraph Infrastructure["Infrastructure"]
-        K8S["Kubernetes"]
-        REGISTRY["Container Registry"]
-        PROTO_REPO["Proto Registry (BSR)"]
-    end
-
-    REST --> ENVOY
-    GRPC_EXT --> ENVOY
-    ENVOY --> PROXY_A
-    ENVOY --> PROXY_B
-    SVC_A <--> PROXY_A
-    SVC_B <--> PROXY_B
-    SVC_C <--> PROXY_C
-    PROXY_A <--> PROXY_B
-    PROXY_B <--> PROXY_C
-    SVC_A --> OTEL_COL
-    SVC_B --> OTEL_COL
-    SVC_C --> OTEL_COL
-    OTEL_COL --> JAEGER
-    OTEL_COL --> PROM
-    PROM --> GRAFANA
-    JAEGER --> GRAFANA
-```
-
-## Proto-First Design Workflow
-
-Connectum follows a **proto-first** approach: you define your API contract in Protocol Buffers before writing any service code. This guarantees type safety, backward compatibility checks, and automatic documentation generation.
-
-### Workflow
-
-```mermaid
-sequenceDiagram
-    participant Dev as Developer
-    participant Proto as Proto Files
-    participant Buf as buf CLI
-    participant Gen as Code Generation
-    participant Svc as Connectum Service
-
-    Dev->>Proto: 1. Define .proto schema
-    Dev->>Buf: 2. buf lint
-    Buf-->>Dev: Lint results
-    Dev->>Buf: 3. buf breaking --against main
-    Buf-->>Dev: Breaking change report
-    Dev->>Gen: 4. buf generate (protoc-gen-es)
-    Gen-->>Svc: Generated TypeScript stubs
-    Dev->>Svc: 5. Implement service handlers
-    Svc-->>Dev: Type-safe gRPC service
-```
-
-### Proto file structure
-
-Organize proto files in a dedicated directory with clear versioning:
-
-```
-proto/
-├── buf.yaml                # Buf module configuration
-├── buf.gen.yaml            # Code generation configuration
-└── mycompany/
-    └── myservice/
-        └── v1/
-            ├── myservice.proto    # Service definition
-            └── types.proto        # Shared message types
-```
-
-### Example proto definition
-
-```protobuf
-syntax = "proto3";
-
-package mycompany.orders.v1;
-
-import "google/api/annotations.proto";
-import "buf/validate/validate.proto";
-
-service OrderService {
-  // Create a new order
-  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse) {
-    option (google.api.http) = {
-      post: "/v1/orders"
-      body: "*"
-    };
-  }
-
-  // Get order by ID
-  rpc GetOrder(GetOrderRequest) returns (Order) {
-    option (google.api.http) = {
-      get: "/v1/orders/{order_id}"
-    };
-  }
-}
+# Connectum Runtime Architecture
 
-message CreateOrderRequest {
-  string customer_id = 1 [(buf.validate.field).string.min_len = 1];
-  repeated OrderItem items = 2 [(buf.validate.field).repeated.min_items = 1];
-}
-```
+Connectum is a modular service runtime, not a deployment platform. Its central
+composition boundary is `createServer()`: it registers routes, protocols, and
+interceptors; selects the network transport; and coordinates startup, drain, and
+shutdown for one service process.
+
+This page explains the runtime relationships that matter when extending or
+operating that process. Exact configuration fields remain in the
+[generated core API](/en/api/@connectum/core/), while deployment products and
+platforms remain in their focused guides.
 
-::: tip
-Common proto definitions such as `google.api.http`, `google.api.annotations`, `google.protobuf.*`, `buf.validate`, and `openapiv3` schemas are available through buf BSR deps. Add them to your `buf.yaml` as dependencies and import them directly without vendoring.
-:::
-
-::: tip Guide-Level Documentation
-For a quick introduction to inter-service calls, see [Service Communication](/en/guide/service-communication).
-:::
+## Boundary and ownership
+
+The framework owns the behavior inside a Connectum service process:
 
-## Service Communication Patterns
+- transport selection and server lifecycle;
+- registration of typed services and protocol plugins;
+- the ordered server-interceptor chain;
+- the `Context` supplied to typed handlers;
+- local or remote service-call dispatch when a catalog is configured;
+- lifecycle integration for an explicitly supplied EventBus.
 
-### Synchronous: Unary gRPC
+Connectum does not own a gateway, service mesh, scheduler, message broker, or
+telemetry backend. Those systems connect through documented seams and can be
+selected independently.
 
-The most common pattern. One service calls another and waits for a response.
+## Runtime composition
 
-```typescript
-import { createClient } from '@connectrpc/connect';
-import { createGrpcTransport } from '@connectrpc/connect-node';
-import { OrderService } from '#gen/mycompany/orders/v1/orders_pb.js';
+Every inbound network request follows one shared execution path.
+`TransportManager` owns the selected Node transport, `buildRoutes()` composes
+services and protocol registrations, the configured server interceptors run in
+order, and the matched route invokes a typed handler with a Connectum `Context`.
 
-const transport = createGrpcTransport({
-  baseUrl: 'http://order-service:5000',
-  httpVersion: '2',
-});
+Protocol modules such as Health Check and Reflection register additional routes
+through the same router contract. EventBus and OpenTelemetry are opt-in
+capabilities: the server coordinates the supplied EventBus lifecycle, while OTel
+instrumentation attaches through server/client interceptors and its provider.
 
-const client = createClient(OrderService, transport);
-const order = await client.getOrder({ orderId: '123' });
-```
+<RuntimeCompositionDiagram />
 
-### Synchronous: Server Streaming
+### Network and in-process parity
 
-For real-time data feeds -- the server sends a stream of messages in response to a single request.
+An in-process client does not open a socket. `createLocalTransport()` calls
+`createRouterTransport(routes)` and supplies the same `serverInterceptors`
+before reaching the handler. Client-side interceptors may additionally wrap the
+in-memory call.
 
-```typescript
-for await (const update of client.watchOrderStatus({ orderId: '123' })) {
-  console.log(`Order status: ${update.status}`);
-}
-```
+This shared route and interceptor boundary is the parity invariant: application
+behavior should not depend on whether a locally mounted service was reached over
+HTTP or through the in-process transport. See
+[In-Process Transport](/en/guide/production/in-process-transport) for the exact
+guarantee, limitations, and test utilities.
 
-### Service-to-Service Communication
+## Catalog call routing
 
-When Service A needs data from Service B, create a gRPC client within Service A's handler:
+Handlers use the generated service catalog through `ctx.call` and `ctx.stream`.
+The per-server catalog dispatcher resolves the typed method and builds the
+outgoing call frame from the current handler context.
 
-```typescript
-import { defineService } from '@connectum/core';
-import { createClient } from '@connectrpc/connect';
-import { createGrpcTransport } from '@connectrpc/connect-node';
-import { InventoryService } from '#gen/inventory/v1/inventory_pb.js';
+Routing then depends on where the target service is mounted:
 
-// Create client to downstream service
-const inventoryTransport = createGrpcTransport({
-  baseUrl: `http://${process.env.INVENTORY_SERVICE_HOST}:${process.env.INVENTORY_SERVICE_PORT}`,
-  httpVersion: '2',
-});
-const inventoryClient = createClient(InventoryService, inventoryTransport);
-
-// Define the service; pass it to createServer({ services: [orderService] }).
-const orderService = defineService(OrderService, {
-  async createOrder(req, ctx) {
-    // Call downstream service
-    const stock = await inventoryClient.checkStock({ sku: req.sku });
-    if (!stock.available) {
-      throw new ConnectError('Out of stock', Code.FailedPrecondition);
-    }
-    // ... create order
-  },
-});
-```
-
-### In-Process Transport (Co-Located Services)
-
-When the caller and callee live in the same Node.js process — modular monoliths, BFFs, or test harnesses — Connectum offers an **in-process transport** that dispatches client calls directly to the registered handler. No HTTP/2 socket, no TLS handshake, no wire serialization, while the full server-side interceptor chain (validation, authorization, OpenTelemetry) still runs. The client API is identical to the remote one (`createClient(Service, transport)`), so the same call site works for both topologies via `server.client(Service)` auto-routing. Remote routing is configured once on the server with a `remoteResolver`.
-
-```typescript
-import { createServer, singleTransportResolver } from '@connectum/core';
-
-const server = createServer({
-  services: [inventoryService, orderService],
-  // Services not mounted locally are reached through this resolver.
-  remoteResolver: singleTransportResolver(remoteTransport),
-});
-
-// Local if registered on this server, remote via the resolver otherwise.
-const inventory = server.client(InventoryService);
-```
-
-See [In-Process Transport](/en/guide/production/in-process-transport) for the polyglot deployment pattern, observability parity, and limitations.
-
-## Service Discovery
-
-### gRPC Server Reflection
-
-Every Connectum service can expose its API contract at runtime via gRPC Server Reflection. This allows tools like `grpcurl`, `grpcui`, and service meshes to discover available methods without proto files.
-
-```typescript
-import { createServer } from '@connectum/core';
-import { Reflection } from '@connectum/reflection';
-
-const server = createServer({
-  services: [routes],
-  protocols: [Reflection()],
-  port: 5000,
-});
-```
-
-### Kubernetes DNS-Based Discovery
-
-In Kubernetes, services are discoverable via DNS. A Connectum service deployed as `order-service` in namespace `production` is reachable at:
-
-```
-order-service.production.svc.cluster.local:5000
-```
-
-No external service registry is needed -- Kubernetes DNS handles resolution automatically.
-
-### Proto Registry with Buf Schema Registry (BSR)
-
-For large organizations, use [Buf Schema Registry](https://buf.build/product/bsr) to centralize proto management:
-
-1. **Push** proto files to BSR on merge to main
-2. **Pull** specific service protos when generating client code
-3. **Check** backward compatibility automatically in CI
-
-```yaml
-# buf.yaml
-version: v2
-modules:
-  - path: proto
-    name: buf.build/mycompany/services
-deps:
-  - buf.build/googleapis/googleapis
-  - buf.build/bufbuild/protovalidate
-```
-
-## Repository Strategies
-
-### Monorepo (Recommended for Small-Medium Teams)
-
-All services share a single repository. Proto files, shared libraries, and deployment configs live together.
-
-```
-my-platform/
-├── proto/                    # All proto definitions
-│   ├── buf.yaml
-│   └── mycompany/
-│       ├── orders/v1/
-│       ├── inventory/v1/
-│       └── payments/v1/
-├── packages/
-│   ├── shared/               # Shared utilities
-│   ├── order-service/        # Connectum service
-│   ├── inventory-service/    # Connectum service
-│   └── payment-service/      # Connectum service
-├── pnpm-workspace.yaml
-└── turbo.json
-```
-
-**Advantages:**
-- Atomic changes across services and protos
-- Single CI/CD pipeline
-- Easy code sharing via workspace dependencies
-- `pnpm` + Turborepo for efficient builds
-
-**Disadvantages:**
-- CI time grows with repo size
-- Deployment coupling (mitigated by Turborepo's `--filter`)
-
-### Polyrepo (Recommended for Large Organizations)
-
-Each service is an independent repository. Proto files live in a dedicated proto registry repository.
-
-```
-github.com/mycompany/
-├── proto-registry/           # Proto definitions (BSR-synced)
-├── order-service/            # Independent Connectum service
-├── inventory-service/        # Independent Connectum service
-└── shared-libs/              # Shared npm packages
-```
-
-**Advantages:**
-- Independent deployment cycles
-- Clear ownership boundaries
-- Per-repo access control
-
-**Disadvantages:**
-- Cross-service changes require multiple PRs
-- Proto versioning complexity
-- Dependency management overhead
-
-## Inter-Service Communication Patterns
-
-Connectum services call each other with typed `ctx.call` / `ctx.stream` over the
-generated service catalog. The request-response chain, fan-out / fan-in, and
-streaming patterns are documented in full — with runnable code — under
-[Service Communication → Patterns](/en/guide/service-communication/patterns). This
-section covers only the deployment-level resilience concern.
-
-### Circuit Breaker at Application Level
-
-Connectum provides a circuit breaker interceptor (opt-in — it is not enabled by default). It is an outbound/client-side pattern: enable it per-client for inter-service calls; for server inbound protection prefer explicit `timeout` + `bulkhead`:
-
-```typescript
-import { createDefaultInterceptors } from '@connectum/interceptors';
-
-const transport = createGrpcTransport({
-  baseUrl: 'http://inventory-service:5000',
-  httpVersion: '2',
-  interceptors: createDefaultInterceptors({
-    circuitBreaker: { threshold: 5 },
-    timeout: { duration: 5000 },
-    retry: { maxRetries: 2 },
-    // Disable server-side-only interceptors
-    bulkhead: false,
-    errorHandler: false,
-    serializer: false,
-    validation: false,
-  }),
-});
-```
-
-## Scaling Considerations
-
-### Horizontal Scaling
-
-Connectum services are stateless by design. Scale horizontally by increasing replica count:
-
-| Load Profile | Replicas | CPU Request | Memory Request |
-|---|---|---|---|
-| Low (< 100 RPS) | 2 | 100m | 128Mi |
-| Medium (100-1000 RPS) | 3-5 | 250m | 256Mi |
-| High (> 1000 RPS) | 5-20 | 500m | 512Mi |
-
-### Connection Management
-
-gRPC uses HTTP/2 with persistent connections. Behind a load balancer, use **client-side load balancing** or an L7 proxy (Envoy) to distribute requests across pods -- a single HTTP/2 connection to a Kubernetes Service will pin to one pod.
-
-::: warning
-Kubernetes `ClusterIP` services perform L4 (connection-level) load balancing. For gRPC, this means all requests on a single HTTP/2 connection go to the same pod. Use a service mesh (Istio/Linkerd) or Envoy for proper L7 (request-level) load balancing.
-:::
-
-### Health-Based Routing
-
-Connectum's health check system integrates with Kubernetes and service meshes:
-
-- **Liveness**: `GET /healthz` -- is the process alive?
-- **Readiness**: `GET /readyz` -- is the service ready to accept traffic?
-- **gRPC Health**: `grpc.health.v1.Health/Check` -- standard gRPC health protocol
-
-Configure your service to report `SERVING` only after all dependencies are initialized:
-
-```typescript
-import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
-
-const server = createServer({
-  services: [routes],
-  protocols: [Healthcheck({ httpEnabled: true })],
-  port: 5000,
-  shutdown: { autoShutdown: true, timeout: 30000 },
-});
-
-server.on('ready', async () => {
-  // Initialize downstream connections, caches, etc.
-  await initializeDependencies();
-  // Only then report as serving
-  healthcheckManager.update(ServingStatus.SERVING);
-});
-
-await server.start();
-```
-
-## What's Next
-
-- [Docker Containerization](./docker.md) -- Package your Connectum service as a container
-- [Kubernetes Deployment](./kubernetes.md) -- Deploy to Kubernetes with proper probes and scaling
-- [Envoy Gateway](./envoy-gateway.md) -- Expose gRPC services as REST APIs
-- [Service Mesh with Istio](./service-mesh.md) -- Advanced traffic management and mTLS
+1. A locally mounted `typeName` uses the in-process transport and re-enters the
+   same process's `routes`, server interceptors, and typed handler chain. One
+   `createServer()` instance may register several service `typeName` values.
+2. A service not mounted locally is passed to `remoteResolver`, which supplies
+   the ConnectRPC `Transport` used for the remote call. The request then crosses
+   the process boundary and enters the remote server through its resolver-supplied
+   `Transport` and `connectNodeAdapter({ routes, interceptors })`.
+
+The incoming cancellation signal and remaining deadline cascade to catalog
+calls unless the caller supplies a stricter override. Inbound headers are not
+forwarded implicitly; only configured allow-listed headers and explicit call
+headers are propagated.
+
+<CatalogRoutingDiagram />
+
+The catalog is optional. A service process that hosts everything locally and
+makes no typed cross-service calls does not need one. Configuration and error
+semantics are owned by the [Service Catalog guide](/en/guide/service-communication/service-catalog),
+with resolver construction covered by [Remote Resolvers](/en/guide/service-communication/resolvers).
+
+## Extension seams
+
+| Capability | Runtime attachment | External dependency |
+|---|---|---|
+| Server interceptors | Ordered ConnectRPC request chain | Optional identity, policy, or application services |
+| Protocol plugins | Register RPC routes and optional HTTP fallbacks | Protocol-specific clients and tooling |
+| Service catalog | Adds typed `ctx.call` / `ctx.stream` dispatch | Resolver-supplied remote transports |
+| EventBus | Supplied to `createServer()` and started/stopped with it | None for Memory; NATS, Kafka, Redis, or AMQP broker otherwise |
+| OpenTelemetry | Server/client interceptors plus provider | OTLP collector or console exporter |
+
+These are explicit capabilities rather than hidden runtime defaults. Install and
+compose only the modules required by the service.
+
+## Deployment boundary
+
+Gateways, service meshes, Kubernetes, registries, and telemetry backends surround
+the process but are not framework prerequisites. Their placement depends on the
+deployment topology rather than on `createServer()` internals:
+
+- [Docker](/en/guide/production/docker) packages the process;
+- [Kubernetes](/en/guide/production/kubernetes) schedules it and drives probes;
+- [Envoy Gateway](/en/guide/production/envoy-gateway) provides an optional edge and REST transcoding path;
+- [Service Mesh](/en/guide/production/service-mesh) provides optional traffic policy and workload mTLS;
+- [Observability](/en/guide/observability) selects telemetry signals and backends.
+
+## Build-time inputs
+
+Proto schemas, generated service descriptors, and the optional generated service
+catalog are build-time inputs to this runtime. They are deliberately outside the
+process diagrams: they define and generate the contracts consumed by route and
+catalog registration, but they do not execute in the request path.
+
+Start with [Scaffolding](/en/guide/scaffolding) for generation workflow and
+[Service Communication](/en/guide/service-communication) for choosing between
+synchronous catalog calls and asynchronous events.
+
+## Related
+
+- [Server](/en/guide/server) — composition and lifecycle entry point
+- [Transport Matrix](/en/guide/production/transport-matrix) — HTTP/1.1, h2c, TLS/ALPN, and RPC-kind support
+- [Choosing a Communication Mechanism](/en/guide/service-communication/choosing-a-mechanism) — synchronous calls, events, and durable workflows
+- [Package decomposition ADR](/en/contributing/adr/003-package-decomposition) — package-boundary rationale

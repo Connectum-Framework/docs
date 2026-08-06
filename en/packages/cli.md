@@ -44,7 +44,7 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `connectum generate service` | Add a service contract and implementation. |
 | `connectum proto sync` | Discover and generate types from server reflection. |
 
-Architecture-layer and dependency details remain in the [Architecture Overview](/en/guide/production/architecture).
+Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

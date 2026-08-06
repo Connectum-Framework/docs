@@ -49,7 +49,7 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `MemoryAdapter` | Run deterministic in-memory event tests. |
 | `createBroadcastSubscribers` | Create explicit one-to-many reactor subscribers. |
 
-Architecture-layer and dependency details remain in the [Architecture Overview](/en/guide/production/architecture).
+Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

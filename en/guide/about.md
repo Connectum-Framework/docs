@@ -63,8 +63,9 @@ requirements are documented in [Runtime Compatibility](/en/guide/runtime-compati
 
 Package dependency layers prevent capability modules from becoming an implicit
 monolith. They are an implementation constraint, not the primary way readers
-choose packages. See the [Architecture Overview](/en/guide/production/architecture)
-for the complete graph and the [ADR index](/en/contributing/adr/) for rationale.
+choose packages. See [Connectum Runtime Architecture](/en/guide/production/architecture)
+for the process boundary and extension seams, and the [ADR index](/en/contributing/adr/)
+for package-decomposition rationale.
 
 ## Non-Goals
 
