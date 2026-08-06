@@ -338,6 +338,11 @@ const themeCSS = `
 export const mermaidConfig: MermaidConfig = {
     fontFamily: DIAGRAM_FONT,
     fontSize: 15,
+    /* Mermaid's default today, pinned because the theme depends on it: with HTML labels
+       every piece of diagram text is a `<span>`/`<p>` inside a `foreignObject`, and that
+       is what the selectors above style. Turning it off would swap the whole label layer
+       for `text`/`tspan` elements and silently drop the text coverage. */
+    htmlLabels: true,
     themeCSS,
     themeVariables: {
         fontFamily: DIAGRAM_FONT,

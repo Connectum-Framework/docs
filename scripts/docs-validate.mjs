@@ -124,7 +124,10 @@ const PRESENTATION_DIRECTIVE = /^\s*(?:style|linkStyle|classDef)\b/;
    and `var(--x, #fff)` are single values and must be reported whole. */
 const COLOR_DECLARATION = /\b(fill|stroke|color|background|background-color)\s*:\s*((?:[^,;()]|\([^)]*\))+)/gi;
 const ALLOWED_COLOR_VALUE = /^(?:none|transparent|inherit|currentColor|var\(--connectum-diagram-[a-z-]+\))$/i;
-const INIT_DIRECTIVE = /%%\{[^}]*\btheme(?:Variables|CSS)?\b/i;
+/* An `%%{init}%%` directive can override the shared configuration as well as its colors
+   -- `htmlLabels: false`, for instance, swaps the whole label layer and drops the theme's
+   text coverage -- so the whole construct is rejected rather than only its theme keys. */
+const INIT_DIRECTIVE = /%%\{\s*init\s*:/i;
 
 function mermaidPresentationIssues(source) {
     const issues = [];
@@ -145,8 +148,8 @@ function mermaidPresentationIssues(source) {
             issues.push({
                 line: index + 1,
                 text: line.trim(),
-                reason: 'per-diagram theme directive',
-                fix: 'the shared theme in .vitepress/config/mermaid.ts owns fonts and colors for every diagram',
+                reason: 'per-diagram init directive',
+                fix: '.vitepress/config/mermaid.ts owns diagram configuration -- typography, spacing, label rendering and colors -- for every page',
             });
             continue;
         }

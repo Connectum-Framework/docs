@@ -23,6 +23,22 @@ const initImageZoom = () => {
     })
 }
 
+// --- Mermaid: re-measure once the diagram font is actually available ---
+// Mermaid sizes every node from the label text it measures the moment a diagram mounts.
+// On a cold cache the web font has not arrived yet, so it measures with the fallback
+// stack and paints with Inter -- labels then sit wrong inside boxes computed for the
+// wrong metrics. The plugin already re-renders every diagram when an attribute on <html>
+// changes (that is how it follows the dark-mode class), so one attribute set after the
+// fonts settle is enough. The check keeps it to the load that needs it: once the font is
+// there, every later diagram measures correctly on the first try.
+const DIAGRAM_FONT_PROBE = '15px Inter'
+
+const remeasureDiagramsWhenFontsArrive = async () => {
+    if (!document.fonts || document.fonts.check(DIAGRAM_FONT_PROBE)) return
+    await document.fonts.ready
+    document.documentElement.dataset.diagramFonts = 'ready'
+}
+
 // --- Fullscreen overlay for Mermaid and project-authored SVG diagrams ---
 const openOverlay = (container: HTMLElement) => {
     const svgEl = container.querySelector('svg')
@@ -133,6 +149,7 @@ const onStorage = (event: StorageEvent) => {
 onMounted(() => {
     initImageZoom()
     setupDiagramZoom()
+    void remeasureDiagramsWhenFontsArrive()
     document.addEventListener('click', onTabClick)
     window.addEventListener('storage', onStorage)
 })
