@@ -72,7 +72,7 @@ const lifecycle = [
         <section class="home-hero" aria-labelledby="home-title">
             <div class="home-hero__copy">
                 <p class="home-eyebrow">gRPC + ConnectRPC for Node.js</p>
-                <h1 id="home-title">A clear path from your first RPC to production.</h1>
+                <h1 id="home-title">A clear path from your first RPC to production</h1>
                 <p class="home-hero__lead">
                     Connectum gives TypeScript teams a consistent service runtime for contracts,
                     middleware, security, observability, and operations—without hiding the controls.

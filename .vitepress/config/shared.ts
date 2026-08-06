@@ -42,7 +42,16 @@ export const sharedConfig = defineConfig({
     title: 'Connectum',
     description: 'Production-ready gRPC/ConnectRPC framework for Node.js',
     head: [
-        ['link', { rel: 'icon', type: 'image/png', href: '/assets/splash.png' }],
+        /* Favicons, generated from public/assets/favicon.svg by scripts/generate-favicons.mjs.
+           The SVG is listed first for browsers that take it; the 32px PNG is the fallback,
+           and /favicon.ico answers the unprompted request every browser still makes. */
+        ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+        ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' }],
+        ['link', { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' }],
+        ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }],
+        ['link', { rel: 'manifest', href: '/site.webmanifest' }],
+        ['meta', { name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)' }],
+        ['meta', { name: 'theme-color', content: '#1b1b1f', media: '(prefers-color-scheme: dark)' }],
         ['meta', { property: 'og:type', content: 'website' }],
         ['meta', { property: 'og:title', content: 'Connectum' }],
         ['meta', { property: 'og:description', content: 'Production-ready gRPC/ConnectRPC framework for Node.js' }],
