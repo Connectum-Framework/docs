@@ -77,8 +77,8 @@ graph TB
     resilience --> errorHandler
     errorHandler --> client
 
-    style validation fill:#ff6b6b,stroke:#c92a2a,stroke-width:3px
-    style handler fill:#90ee90,stroke:#2b8a3e
+    class validation accent
+    class handler positive
 ```
 
 ### Proto Schema with Validation Constraints

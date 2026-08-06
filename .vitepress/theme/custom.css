@@ -906,6 +906,79 @@
     .ecosystem-list[aria-hidden='true'] {
         display: none;
     }
+
+    .mermaid-zoom-overlay {
+        animation: none;
+    }
+}
+
+/* ==========================================================================
+   Mermaid diagrams: shared presentation tokens
+
+   Color lives here; geometry lives in .vitepress/config/mermaid.ts. Mermaid
+   embeds its `themeCSS` inside every generated SVG, and those rules reference
+   these custom properties, so one declaration serves both themes and both
+   views: the fullscreen clone is appended to <body> and therefore inherits
+   from :root only -- scoping the tokens to `.mermaid` would strip the clone.
+
+   The palette is the one the project-authored technical SVGs already use
+   (.vitepress/theme/assets/diagrams/), so a generated diagram and a hand-drawn
+   figure read as one system on the same page. Where a value coincides exactly
+   with a VitePress token it references that token instead of repeating the hex.
+   ========================================================================== */
+
+:root {
+    --connectum-diagram-node: var(--vp-c-bg);
+    --connectum-diagram-surface: var(--vp-c-bg-soft);
+    --connectum-diagram-surface-accent: #eef1ff;
+    --connectum-diagram-border: #d8dae2;
+    --connectum-diagram-border-strong: #aeb4c5;
+    --connectum-diagram-text: var(--vp-c-text-1);
+    --connectum-diagram-muted: #67676c;
+    --connectum-diagram-accent: var(--vp-c-brand-1);
+    --connectum-diagram-secondary: var(--vp-c-purple-1);
+    --connectum-diagram-line: #69748a;
+
+    /* Semantic variants: a border hue plus a restrained surface each. The hues are
+       VitePress's own semantic palette, so they stay tuned per theme. */
+    --connectum-diagram-positive: var(--vp-c-green-1);
+    --connectum-diagram-positive-surface: #e8f4ee;
+    --connectum-diagram-warning: var(--vp-c-yellow-1);
+    --connectum-diagram-warning-surface: #fbf1e3;
+    --connectum-diagram-critical: var(--vp-c-red-1);
+    --connectum-diagram-critical-surface: #fceceb;
+    --connectum-diagram-muted-surface: #f1f2f5;
+}
+
+.dark {
+    --connectum-diagram-surface-accent: #292d48;
+    --connectum-diagram-border: #3c3f44;
+    --connectum-diagram-border-strong: #5a6070;
+    --connectum-diagram-muted: #a4a4ab;
+    --connectum-diagram-line: #aab2c8;
+
+    --connectum-diagram-positive-surface: #17291f;
+    --connectum-diagram-warning-surface: #2b2318;
+    --connectum-diagram-critical-surface: #2c1b1d;
+    --connectum-diagram-muted-surface: #232326;
+}
+
+/* Outer frame only. Everything inside the SVG is styled by `themeCSS`, which
+   travels with the markup into the fullscreen clone. Mermaid renders with
+   `useMaxWidth`, so a wide diagram scales down inside the column instead of
+   pushing a scrollbar onto the page; `overflow-x` is the safety net for a
+   foreignObject label that refuses to shrink. */
+.vp-doc .mermaid {
+    margin: 24px 0 32px;
+    overflow-x: auto;
+    text-align: center;
+}
+
+.vp-doc .mermaid svg {
+    display: block;
+    height: auto;
+    margin-inline: auto;
+    background: transparent;
 }
 
 /* Diagrams — click-to-fullscreen cursor */

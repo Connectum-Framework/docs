@@ -259,6 +259,60 @@ Use a fenced text block only for literal command output or a file tree. Use a ge
 image only when the subject cannot be expressed clearly in Mermaid; include useful alt
 text, preserve the editable source, and verify both themes.
 
+#### The shared diagram theme
+
+Every diagram is painted by one theme, configured centrally. Write the diagram; do not
+write its appearance. Typography, node surfaces and borders, subgraph framing, edge
+routing, arrowheads, edge labels, and the sequence and state primitives all arrive from
+the shared configuration, in both light and dark mode and in the fullscreen view.
+
+Never put a literal color in a diagram. A `fill:#4a90d9` or `stroke:red` becomes an
+inline attribute on the rendered node, which outranks the theme -- the node then keeps
+its light-mode color when the reader switches to dark. A per-diagram `%%{init: ...}%%`
+theme directive is rejected for the same reason. Build validation fails on both.
+
+When a node genuinely needs to stand apart, use one of the five shared variants:
+
+| Variant | Use for |
+| --- | --- |
+| `accent` | the subject of the page, or the foundation everything else builds on |
+| `positive` | a success destination or a healthy terminal state |
+| `warning` | a degraded, deferred, or rejected-but-expected path |
+| `critical` | a failure path or an unrecoverable state |
+| `muted` | a de-emphasised element: private, deprecated, or out of scope |
+
+Apply one with `class` or `:::`, and never let color be the only carrier of the meaning:
+
+```mermaid
+flowchart LR
+    Request([Request]) --> Validate{Schema valid?}
+    Validate -->|valid| Handler[Service handler]
+    Validate -->|invalid| Reject[Reject: INVALID_ARGUMENT]
+
+    class Validate accent
+    class Handler positive
+    class Reject warning
+```
+
+A reader who cannot distinguish the colors must still get the same answer from the node
+text, the edge labels, or the subgraph titles. If the distinction is already carried by
+structure -- a subgraph named `Layer 0: Foundation`, for instance -- leave the nodes
+unstyled rather than repeating it in color.
+
+#### Styling is not layout
+
+The shared theme controls how a diagram looks, never where anything sits. Crossing
+edges, a label crammed against an arrowhead, a route that implies the wrong order, or a
+node colliding with an unrelated edge are all defects in the diagram source. Fix them by
+reordering nodes, reversing an edge, changing the direction, splitting the diagram, or
+shortening a label. Do not add page-local CSS, and do not move anything after render.
+
+Give arrows room to be seen. A connection needs a visible line segment and an
+arrowhead that touches neither node; the shared spacing provides this, so a collapsed
+arrow means the diagram is packing too much into one rank. Prefer `TD` for anything
+deeper than about five stages -- a long `LR` chain scales down to unreadable inside the
+documentation column, even though the fullscreen view can recover it.
+
 Documentation contract failures are user-facing defects.
 
 1. Verify every named symbol, option, field, default, and export against current
@@ -312,6 +366,8 @@ Do not describe a client-side compatibility page as a permanent HTTP redirect.
 - [ ] Heading order is logical and established anchors remain valid.
 - [ ] Images have useful alt text or are explicitly decorative.
 - [ ] Process, state, sequence, and architecture diagrams use Mermaid instead of aligned text.
+- [ ] Diagrams carry no literal colors; any semantic variant is also readable without color.
+- [ ] Diagram labels, arrows, and routes were checked in both themes; collisions were fixed in the source.
 - [ ] Links and controls have visible keyboard focus and meaningful labels.
 - [ ] Mobile layouts have usable touch targets and no horizontal overflow.
 - [ ] Motion is non-essential and respects reduced-motion preferences.

@@ -144,30 +144,22 @@ graph TB
         Types["types.ts<br/>(interfaces)"]
     end
 
+    subgraph "Layer 1: protocol packages"
+        HC["@connectum/healthcheck<br/>Healthcheck()"]
+        Ref["@connectum/reflection<br/>Reflection()"]
+    end
+
     subgraph "Layer 1: @connectum/interceptors"
         Defaults["defaults.ts<br/>createDefaultInterceptors()"]
         Factories["errorHandler, timeout,<br/>bulkhead, circuitBreaker,<br/>retry, validation, serializer"]
     end
 
-    subgraph "Layer 1: @connectum/healthcheck"
-        HC["Healthcheck()"]
-    end
-
-    subgraph "Layer 1: @connectum/reflection"
-        Ref["Reflection()"]
-    end
-
-    Defaults --> Factories
     Server -->|"defines interface<br/>ProtocolRegistration"| Types
     HC -->|"implements"| Types
     Ref -->|"implements"| Types
+    Defaults --> Factories
 
-    style Server fill:#4a9eff,color:#fff
-    style Defaults fill:#90ee90
-    style Factories fill:#90ee90
-    style HC fill:#90ee90
-    style Ref fill:#90ee90
-    style Types fill:#4a9eff,color:#fff
+    class Server,Types accent
 ```
 
 > **Note:** There is no arrow from `core` to `interceptors`. Core has zero internal dependencies. Users compose interceptors and protocols in their application code.

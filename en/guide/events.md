@@ -19,9 +19,9 @@ graph LR
     end
 
     subgraph EventBus
+        AD["EventAdapter"]
         R["EventRouter"]
         MW["Middleware Pipeline"]
-        AD["EventAdapter"]
     end
 
     subgraph Broker["Message Broker"]
@@ -35,16 +35,15 @@ graph LR
     end
 
     PA -->|"publish(Schema, data)"| AD
-    AD --> T1
-    AD --> T2
-    T1 --> AD
-    T2 --> AD
-    AD --> MW
-    MW --> R
-    R --> HA
-
     PB -->|"publish(Schema, data)"| AD
-    AD --> HB
+
+    AD <-->|"produce / consume"| T1
+    AD <-->|"produce / consume"| T2
+
+    AD -->|"inbound event"| R
+    R -->|"topic to handler"| MW
+    MW --> HA
+    MW --> HB
 ```
 
 The EventBus sits between your service handlers and the message broker. It handles:
