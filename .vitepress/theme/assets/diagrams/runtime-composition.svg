@@ -1,0 +1,224 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="-16 0 976 680"
+    role="img"
+    aria-labelledby="runtime-composition-title runtime-composition-desc"
+    class="runtime-composition"
+>
+    <title id="runtime-composition-title">Connectum service process composition</title>
+    <desc id="runtime-composition-desc">
+        RPC clients enter the createServer runtime through the network transport, shared ConnectRPC route tree,
+        server interceptor chain, and typed handlers. Protocol plugins register with the route tree. Optional
+        EventBus and OpenTelemetry capabilities remain explicit; their broker and telemetry sinks stay outside
+        the Connectum service process.
+    </desc>
+
+    <defs>
+        <style>
+            .runtime-composition {
+                --runtime-composition-surface: #f7f8fa;
+                --runtime-composition-surface-focus: #eef1ff;
+                --runtime-composition-node: #ffffff;
+                --runtime-composition-border: #d8dae2;
+                --runtime-composition-border-strong: #aeb4c5;
+                --runtime-composition-text: #3c3c43;
+                --runtime-composition-muted: #67676c;
+                --runtime-composition-accent: #3451b2;
+                --runtime-composition-secondary: #6f42c1;
+                --runtime-composition-line: #69748a;
+                color: var(--runtime-composition-text);
+                font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            }
+
+            @media (prefers-color-scheme: dark) {
+                .runtime-composition:not([data-theme="light"]) {
+                    --runtime-composition-surface: #202127;
+                    --runtime-composition-surface-focus: #292d48;
+                    --runtime-composition-node: #1b1b1f;
+                    --runtime-composition-border: #3c3f44;
+                    --runtime-composition-border-strong: #5a6070;
+                    --runtime-composition-text: #dfdfd6;
+                    --runtime-composition-muted: #a4a4ab;
+                    --runtime-composition-accent: #a8b1ff;
+                    --runtime-composition-secondary: #c8abfa;
+                    --runtime-composition-line: #aab2c8;
+                }
+            }
+
+            html:not(.dark) .runtime-composition:not([data-theme="dark"]),
+            .runtime-composition[data-theme="light"] {
+                --runtime-composition-surface: #f7f8fa;
+                --runtime-composition-surface-focus: #eef1ff;
+                --runtime-composition-node: #ffffff;
+                --runtime-composition-border: #d8dae2;
+                --runtime-composition-border-strong: #aeb4c5;
+                --runtime-composition-text: #3c3c43;
+                --runtime-composition-muted: #67676c;
+                --runtime-composition-accent: #3451b2;
+                --runtime-composition-secondary: #6f42c1;
+                --runtime-composition-line: #69748a;
+            }
+
+            .dark .runtime-composition,
+            .runtime-composition[data-theme="dark"] {
+                --runtime-composition-surface: #202127;
+                --runtime-composition-surface-focus: #292d48;
+                --runtime-composition-node: #1b1b1f;
+                --runtime-composition-border: #3c3f44;
+                --runtime-composition-border-strong: #5a6070;
+                --runtime-composition-text: #dfdfd6;
+                --runtime-composition-muted: #a4a4ab;
+                --runtime-composition-accent: #a8b1ff;
+                --runtime-composition-secondary: #c8abfa;
+                --runtime-composition-line: #aab2c8;
+            }
+
+            .runtime-composition__process,
+            .runtime-composition__zone {
+                fill: var(--runtime-composition-surface);
+                stroke: var(--runtime-composition-border);
+                stroke-width: 1.5;
+            }
+            .runtime-composition__zone--focus {
+                fill: var(--runtime-composition-surface-focus);
+                stroke: var(--runtime-composition-accent);
+            }
+            .runtime-composition__node {
+                fill: var(--runtime-composition-node);
+                stroke: var(--runtime-composition-border-strong);
+                stroke-width: 1.5;
+            }
+            .runtime-composition__node--accent { stroke: var(--runtime-composition-accent); }
+            .runtime-composition__node--secondary { stroke: var(--runtime-composition-secondary); }
+            .runtime-composition__section {
+                fill: var(--runtime-composition-muted);
+                font-size: 13px;
+                font-weight: 720;
+                letter-spacing: 0.08em;
+            }
+            .runtime-composition__process-title {
+                fill: var(--runtime-composition-text);
+                font-size: 18px;
+                font-weight: 720;
+            }
+            .runtime-composition__label {
+                fill: var(--runtime-composition-text);
+                font-size: 15px;
+                font-weight: 680;
+            }
+            .runtime-composition__meta {
+                fill: var(--runtime-composition-muted);
+                font-size: 13px;
+            }
+            .runtime-composition__connector {
+                fill: none;
+                stroke: var(--runtime-composition-line);
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            .runtime-composition__connector--primary { stroke: var(--runtime-composition-accent); }
+            .runtime-composition__connector--secondary { stroke: var(--runtime-composition-secondary); }
+            .runtime-composition__connector--optional {
+                stroke-dasharray: 6 6;
+                stroke-width: 1.5;
+            }
+            .runtime-composition__route-label-bg { fill: var(--runtime-composition-node); }
+            .runtime-composition__route-label {
+                fill: var(--runtime-composition-muted);
+                font-size: 12px;
+                font-weight: 620;
+            }
+        </style>
+
+        <marker id="runtime-composition-arrow-primary" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0 0 10 5 0 10Z" fill="var(--runtime-composition-accent)" />
+        </marker>
+        <marker id="runtime-composition-arrow-secondary" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0 0 10 5 0 10Z" fill="var(--runtime-composition-secondary)" />
+        </marker>
+        <marker id="runtime-composition-arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0 0 10 5 0 10Z" fill="var(--runtime-composition-line)" />
+        </marker>
+    </defs>
+
+    <g id="runtime-composition-zones">
+        <rect class="runtime-composition__process" x="160" y="20" width="780" height="516" rx="20" />
+        <text class="runtime-composition__process-title" x="184" y="52">Connectum service process</text>
+        <text class="runtime-composition__meta" x="184" y="73">createServer() owns registration, startup, drain, and shutdown</text>
+
+        <rect class="runtime-composition__zone runtime-composition__zone--focus" x="168" y="96" width="764" height="172" rx="16" />
+        <text class="runtime-composition__section" x="192" y="124">SHARED RPC EXECUTION PATH</text>
+        <text class="runtime-composition__section" x="184" y="320">EXPLICIT CAPABILITIES · OPT-IN</text>
+    </g>
+
+    <g id="runtime-composition-connectors">
+        <path class="runtime-composition__connector runtime-composition__connector--primary" d="M136 188H184" marker-end="url(#runtime-composition-arrow-primary)" />
+        <path class="runtime-composition__connector runtime-composition__connector--primary" d="M356 188H372" marker-end="url(#runtime-composition-arrow-primary)" />
+        <path class="runtime-composition__connector runtime-composition__connector--primary" d="M532 188H552" marker-end="url(#runtime-composition-arrow-primary)" />
+        <path class="runtime-composition__connector runtime-composition__connector--primary" d="M736 188H760" marker-end="url(#runtime-composition-arrow-primary)" />
+
+        <path class="runtime-composition__connector runtime-composition__connector--optional" d="M294 348V288H452V232" marker-end="url(#runtime-composition-arrow-muted)" />
+        <path class="runtime-composition__connector runtime-composition__connector--optional" d="M794 348V288H644V232" marker-end="url(#runtime-composition-arrow-muted)" />
+
+        <path class="runtime-composition__connector runtime-composition__connector--secondary" d="M538 460V584" marker-end="url(#runtime-composition-arrow-secondary)" />
+        <path class="runtime-composition__connector runtime-composition__connector--primary" d="M794 460V584" marker-end="url(#runtime-composition-arrow-primary)" />
+    </g>
+
+    <g id="runtime-composition-main-nodes">
+        <rect class="runtime-composition__node" x="4" y="144" width="132" height="88" rx="12" />
+        <text class="runtime-composition__label" x="70" y="181" text-anchor="middle">RPC clients</text>
+        <text class="runtime-composition__meta" x="70" y="207" text-anchor="middle">Connect · gRPC</text>
+
+        <rect class="runtime-composition__node runtime-composition__node--accent" x="184" y="144" width="172" height="88" rx="12" />
+        <text class="runtime-composition__label" x="270" y="181" text-anchor="middle">TransportManager</text>
+        <text class="runtime-composition__meta" x="270" y="207" text-anchor="middle">HTTP/1.1 · h2c · TLS</text>
+
+        <rect class="runtime-composition__node runtime-composition__node--accent" x="372" y="144" width="160" height="88" rx="12" />
+        <text class="runtime-composition__label" x="452" y="181" text-anchor="middle">buildRoutes()</text>
+        <text class="runtime-composition__meta" x="452" y="207" text-anchor="middle">services + protocols</text>
+
+        <rect class="runtime-composition__node runtime-composition__node--accent" x="552" y="144" width="184" height="88" rx="12" />
+        <text class="runtime-composition__label" x="644" y="181" text-anchor="middle">serverInterceptors</text>
+        <text class="runtime-composition__meta" x="644" y="207" text-anchor="middle">auth · validation · OTel</text>
+
+        <rect class="runtime-composition__node runtime-composition__node--accent" x="760" y="144" width="156" height="88" rx="12" />
+        <text class="runtime-composition__label" x="838" y="181" text-anchor="middle">Typed handlers</text>
+        <text class="runtime-composition__meta" x="838" y="207" text-anchor="middle">Connectum Context</text>
+    </g>
+
+    <g id="runtime-composition-capability-nodes">
+        <rect class="runtime-composition__node" x="184" y="348" width="220" height="112" rx="12" />
+        <text class="runtime-composition__label" x="294" y="384" text-anchor="middle">ProtocolRegistration[]</text>
+        <text class="runtime-composition__meta" x="294" y="410" text-anchor="middle">Health · Reflection</text>
+        <text class="runtime-composition__meta" x="294" y="431" text-anchor="middle">custom registrations</text>
+
+        <rect class="runtime-composition__node runtime-composition__node--secondary" x="428" y="348" width="220" height="112" rx="12" />
+        <text class="runtime-composition__label" x="538" y="384" text-anchor="middle">EventBus</text>
+        <text class="runtime-composition__meta" x="538" y="410" text-anchor="middle">routing · middleware · adapter</text>
+        <text class="runtime-composition__meta" x="538" y="431" text-anchor="middle">server-managed lifecycle</text>
+
+        <rect class="runtime-composition__node runtime-composition__node--accent" x="672" y="348" width="244" height="112" rx="12" />
+        <text class="runtime-composition__label" x="794" y="384" text-anchor="middle">OpenTelemetry</text>
+        <text class="runtime-composition__meta" x="794" y="410" text-anchor="middle">server + client interceptors</text>
+        <text class="runtime-composition__meta" x="794" y="431" text-anchor="middle">provider · traces · metrics · logs</text>
+    </g>
+
+    <g id="runtime-composition-external-labels">
+        <rect class="runtime-composition__route-label-bg" x="501" y="510" width="74" height="24" rx="8" />
+        <text class="runtime-composition__route-label" x="538" y="526" text-anchor="middle">adapter I/O</text>
+
+        <rect class="runtime-composition__route-label-bg" x="766" y="510" width="56" height="24" rx="8" />
+        <text class="runtime-composition__route-label" x="794" y="526" text-anchor="middle">export</text>
+    </g>
+
+    <g id="runtime-composition-external-nodes">
+        <rect class="runtime-composition__node runtime-composition__node--secondary" x="428" y="584" width="220" height="76" rx="12" />
+        <text class="runtime-composition__label" x="538" y="615" text-anchor="middle">Broker or memory</text>
+        <text class="runtime-composition__meta" x="538" y="639" text-anchor="middle">NATS · Kafka · Redis · AMQP</text>
+
+        <rect class="runtime-composition__node runtime-composition__node--accent" x="672" y="584" width="244" height="76" rx="12" />
+        <text class="runtime-composition__label" x="794" y="615" text-anchor="middle">Telemetry sink</text>
+        <text class="runtime-composition__meta" x="794" y="639" text-anchor="middle">OTLP collector · console</text>
+    </g>
+</svg>

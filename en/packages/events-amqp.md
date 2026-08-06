@@ -47,7 +47,7 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `AmqpAdapterOptions` | Configure connection, topology, publishing, and recovery. |
 | `isAutoRetriablePublishError` | Classify adapter failures for retry policy. |
 
-Architecture-layer and dependency details remain in the [Architecture Overview](/en/guide/production/architecture).
+Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

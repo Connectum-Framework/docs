@@ -1,0 +1,230 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 1100 600"
+    role="img"
+    aria-labelledby="catalog-routing-title catalog-routing-desc"
+    class="catalog-routing"
+>
+    <title id="catalog-routing-title">Local and remote Connectum service catalog routing</title>
+    <desc id="catalog-routing-desc">
+        A handler calls ctx.call or ctx.stream. CatalogDispatcher resolves a local target through createLocalTransport
+        and createRouterTransport over routes with serverInterceptors. For a non-local typeName, remoteResolver
+        supplies a ConnectRPC Transport that crosses to another createServer instance, where connectNodeAdapter
+        applies routes and server interceptors before invoking the target handler.
+    </desc>
+
+    <defs>
+        <style>
+            .catalog-routing {
+                --catalog-routing-surface: #f7f8fa;
+                --catalog-routing-surface-focus: #eef1ff;
+                --catalog-routing-node: #ffffff;
+                --catalog-routing-border: #d8dae2;
+                --catalog-routing-border-strong: #aeb4c5;
+                --catalog-routing-text: #3c3c43;
+                --catalog-routing-muted: #67676c;
+                --catalog-routing-accent: #3451b2;
+                --catalog-routing-secondary: #6f42c1;
+                --catalog-routing-line: #69748a;
+                color: var(--catalog-routing-text);
+                font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            }
+
+            @media (prefers-color-scheme: dark) {
+                .catalog-routing:not([data-theme="light"]) {
+                    --catalog-routing-surface: #202127;
+                    --catalog-routing-surface-focus: #292d48;
+                    --catalog-routing-node: #1b1b1f;
+                    --catalog-routing-border: #3c3f44;
+                    --catalog-routing-border-strong: #5a6070;
+                    --catalog-routing-text: #dfdfd6;
+                    --catalog-routing-muted: #a4a4ab;
+                    --catalog-routing-accent: #a8b1ff;
+                    --catalog-routing-secondary: #c8abfa;
+                    --catalog-routing-line: #aab2c8;
+                }
+            }
+
+            html:not(.dark) .catalog-routing:not([data-theme="dark"]),
+            .catalog-routing[data-theme="light"] {
+                --catalog-routing-surface: #f7f8fa;
+                --catalog-routing-surface-focus: #eef1ff;
+                --catalog-routing-node: #ffffff;
+                --catalog-routing-border: #d8dae2;
+                --catalog-routing-border-strong: #aeb4c5;
+                --catalog-routing-text: #3c3c43;
+                --catalog-routing-muted: #67676c;
+                --catalog-routing-accent: #3451b2;
+                --catalog-routing-secondary: #6f42c1;
+                --catalog-routing-line: #69748a;
+            }
+
+            .dark .catalog-routing,
+            .catalog-routing[data-theme="dark"] {
+                --catalog-routing-surface: #202127;
+                --catalog-routing-surface-focus: #292d48;
+                --catalog-routing-node: #1b1b1f;
+                --catalog-routing-border: #3c3f44;
+                --catalog-routing-border-strong: #5a6070;
+                --catalog-routing-text: #dfdfd6;
+                --catalog-routing-muted: #a4a4ab;
+                --catalog-routing-accent: #a8b1ff;
+                --catalog-routing-secondary: #c8abfa;
+                --catalog-routing-line: #aab2c8;
+            }
+
+            .catalog-routing__process {
+                fill: var(--catalog-routing-surface);
+                stroke: var(--catalog-routing-border);
+                stroke-width: 1.5;
+            }
+            .catalog-routing__process--caller {
+                fill: var(--catalog-routing-surface-focus);
+                stroke: var(--catalog-routing-accent);
+            }
+            .catalog-routing__rack {
+                fill: none;
+                stroke: var(--catalog-routing-border);
+                stroke-width: 1.5;
+            }
+            .catalog-routing__stack-layer {
+                fill: var(--catalog-routing-node);
+                stroke: var(--catalog-routing-border);
+                stroke-width: 1.5;
+            }
+            .catalog-routing__node {
+                fill: var(--catalog-routing-node);
+                stroke: var(--catalog-routing-border-strong);
+                stroke-width: 1.5;
+            }
+            .catalog-routing__node--accent { stroke: var(--catalog-routing-accent); }
+            .catalog-routing__node--secondary { stroke: var(--catalog-routing-secondary); }
+            .catalog-routing__process-title {
+                fill: var(--catalog-routing-text);
+                font-size: 17px;
+                font-weight: 720;
+            }
+            .catalog-routing__section {
+                fill: var(--catalog-routing-muted);
+                font-size: 13px;
+                font-weight: 720;
+                letter-spacing: 0.07em;
+            }
+            .catalog-routing__label {
+                fill: var(--catalog-routing-text);
+                font-size: 16px;
+                font-weight: 680;
+            }
+            .catalog-routing__label--compact { font-size: 14px; }
+            .catalog-routing__meta {
+                fill: var(--catalog-routing-muted);
+                font-size: 13px;
+            }
+            .catalog-routing__route-label {
+                fill: var(--catalog-routing-muted);
+                font-size: 12px;
+                font-weight: 640;
+            }
+            .catalog-routing__route-label-bg { fill: var(--catalog-routing-node); }
+            .catalog-routing__connector {
+                fill: none;
+                stroke: var(--catalog-routing-line);
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            .catalog-routing__connector--primary { stroke: var(--catalog-routing-accent); }
+            .catalog-routing__connector--secondary { stroke: var(--catalog-routing-secondary); }
+        </style>
+
+        <marker id="catalog-routing-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0 0 10 5 0 10Z" fill="var(--catalog-routing-line)" />
+        </marker>
+        <marker id="catalog-routing-arrow-primary" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0 0 10 5 0 10Z" fill="var(--catalog-routing-accent)" />
+        </marker>
+        <marker id="catalog-routing-arrow-secondary" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0 0 10 5 0 10Z" fill="var(--catalog-routing-secondary)" />
+        </marker>
+    </defs>
+
+    <g id="catalog-routing-processes">
+        <rect class="catalog-routing__process catalog-routing__process--caller" x="20" y="24" width="680" height="552" rx="20" />
+        <text class="catalog-routing__process-title" x="48" y="58">createServer() · caller and local services</text>
+        <text class="catalog-routing__meta" x="48" y="80">services filtered by enabledServices and registered in routes</text>
+
+        <rect class="catalog-routing__process" x="820" y="24" width="260" height="552" rx="20" />
+        <text class="catalog-routing__process-title" x="844" y="58">remote createServer()</text>
+        <text class="catalog-routing__meta" x="844" y="80">separate service process</text>
+
+        <text class="catalog-routing__section" x="270" y="552" text-anchor="middle">registeredServiceTypeNames</text>
+        <text class="catalog-routing__section" x="950" y="552" text-anchor="middle">registeredServiceTypeNames</text>
+    </g>
+
+    <g id="catalog-routing-connectors">
+        <path class="catalog-routing__connector" d="M224 156H248" marker-end="url(#catalog-routing-arrow)" />
+
+        <path class="catalog-routing__connector catalog-routing__connector--primary" d="M340 200V288" marker-end="url(#catalog-routing-arrow-primary)" />
+        <path class="catalog-routing__connector catalog-routing__connector--primary" d="M432 340H464" marker-end="url(#catalog-routing-arrow-primary)" />
+        <path class="catalog-routing__connector catalog-routing__connector--primary" d="M572 392V472H420" marker-end="url(#catalog-routing-arrow-primary)" />
+
+        <path class="catalog-routing__connector catalog-routing__connector--secondary" d="M432 156H464" marker-end="url(#catalog-routing-arrow-secondary)" />
+        <path class="catalog-routing__connector catalog-routing__connector--secondary" d="M624 156H844" marker-end="url(#catalog-routing-arrow-secondary)" />
+
+        <path class="catalog-routing__connector catalog-routing__connector--primary" d="M950 196V260" marker-end="url(#catalog-routing-arrow-primary)" />
+        <path class="catalog-routing__connector catalog-routing__connector--primary" d="M950 340V408" marker-end="url(#catalog-routing-arrow-primary)" />
+    </g>
+
+    <g id="catalog-routing-route-labels">
+        <rect class="catalog-routing__route-label-bg" x="309" y="232" width="62" height="24" rx="8" />
+        <text class="catalog-routing__route-label" x="340" y="248" text-anchor="middle">isLocal</text>
+
+        <rect class="catalog-routing__route-label-bg" x="702" y="144" width="64" height="24" rx="8" />
+        <text class="catalog-routing__route-label" x="734" y="160" text-anchor="middle">network</text>
+    </g>
+
+    <g id="catalog-routing-process-a-nodes">
+        <rect class="catalog-routing__node" x="48" y="112" width="176" height="88" rx="12" />
+        <text class="catalog-routing__label" x="136" y="149" text-anchor="middle">handler Context</text>
+        <text class="catalog-routing__meta" x="136" y="176" text-anchor="middle">ctx.call · ctx.stream</text>
+
+        <rect class="catalog-routing__node catalog-routing__node--accent" x="248" y="112" width="184" height="88" rx="12" />
+        <text class="catalog-routing__label" x="340" y="149" text-anchor="middle">CatalogDispatcher</text>
+        <text class="catalog-routing__meta" x="340" y="176" text-anchor="middle">_resolveTransport()</text>
+
+        <rect class="catalog-routing__node catalog-routing__node--secondary" x="464" y="112" width="160" height="88" rx="12" />
+        <text class="catalog-routing__label" x="544" y="149" text-anchor="middle">remoteResolver</text>
+        <text class="catalog-routing__meta" x="544" y="176" text-anchor="middle">Transport | null</text>
+
+        <rect class="catalog-routing__node catalog-routing__node--accent" x="248" y="288" width="184" height="104" rx="12" />
+        <text class="catalog-routing__label catalog-routing__label--compact" x="340" y="328" text-anchor="middle">createLocalTransport</text>
+        <text class="catalog-routing__meta" x="340" y="356" text-anchor="middle">in-process · no socket</text>
+
+        <rect class="catalog-routing__node catalog-routing__node--accent" x="464" y="288" width="216" height="104" rx="12" />
+        <text class="catalog-routing__label catalog-routing__label--compact" x="572" y="322" text-anchor="middle">createRouterTransport</text>
+        <text class="catalog-routing__meta" x="572" y="348" text-anchor="middle">routes</text>
+        <text class="catalog-routing__meta" x="572" y="370" text-anchor="middle">serverInterceptors</text>
+
+        <rect class="catalog-routing__stack-layer" x="96" y="408" width="300" height="80" rx="12" />
+        <rect class="catalog-routing__stack-layer" x="108" y="420" width="300" height="80" rx="12" />
+        <rect class="catalog-routing__node catalog-routing__node--accent" x="120" y="432" width="300" height="80" rx="12" />
+        <text class="catalog-routing__label" x="270" y="464" text-anchor="middle">local target handler</text>
+        <text class="catalog-routing__meta" x="270" y="490" text-anchor="middle">matched typeName · other services behind</text>
+    </g>
+
+    <g id="catalog-routing-process-b-nodes">
+        <rect class="catalog-routing__node catalog-routing__node--secondary" x="844" y="116" width="212" height="80" rx="12" />
+        <text class="catalog-routing__label" x="950" y="148" text-anchor="middle">Transport</text>
+        <text class="catalog-routing__meta" x="950" y="174" text-anchor="middle">unary() · stream()</text>
+
+        <rect class="catalog-routing__node catalog-routing__node--accent" x="844" y="260" width="212" height="80" rx="12" />
+        <text class="catalog-routing__label" x="950" y="292" text-anchor="middle">connectNodeAdapter()</text>
+        <text class="catalog-routing__meta" x="950" y="318" text-anchor="middle">routes + server interceptors</text>
+
+        <rect class="catalog-routing__stack-layer" x="874" y="432" width="184" height="80" rx="12" />
+        <rect class="catalog-routing__stack-layer" x="866" y="420" width="184" height="80" rx="12" />
+        <rect class="catalog-routing__node catalog-routing__node--accent" x="858" y="408" width="184" height="80" rx="12" />
+        <text class="catalog-routing__label catalog-routing__label--compact" x="950" y="440" text-anchor="middle">remote target handler</text>
+        <text class="catalog-routing__meta" x="950" y="466" text-anchor="middle">matched typeName</text>
+    </g>
+</svg>

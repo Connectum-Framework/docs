@@ -44,6 +44,12 @@
     box-sizing: border-box;
 }
 
+/* The animated wordmark is the single global home affordance. */
+.VPNavBarTitle .logo {
+    width: auto;
+    opacity: 0.9;
+}
+
 .home-hero,
 .home-section {
     width: min(1180px, calc(100% - 48px));
@@ -109,7 +115,7 @@
     padding: 0 20px;
     font-weight: 650;
     text-decoration: none !important;
-    transition: border-color 0.2s, background-color 0.2s, box-shadow 0.25s;
+    transition: border-color 0.2s, background-color 0.2s;
 }
 
 .home-button--primary {
@@ -119,7 +125,16 @@
 
 .home-button--primary:hover {
     background: var(--vp-c-brand-2);
-    box-shadow: 0 0 24px color-mix(in srgb, var(--vp-c-brand-1) 22%, transparent);
+}
+
+.dark .home-button--primary {
+    border-color: color-mix(in srgb, #6f8cff 42%, transparent);
+    background: #3451b2;
+}
+
+.dark .home-button--primary:hover {
+    border-color: color-mix(in srgb, #8ca2ff 58%, transparent);
+    background: #3f5fc4;
 }
 
 .home-button--secondary {
@@ -130,7 +145,6 @@
 
 .home-button--secondary:hover {
     border-color: var(--vp-c-brand-1);
-    box-shadow: 0 0 22px color-mix(in srgb, var(--vp-c-brand-1) 14%, transparent);
 }
 
 .home-support {
@@ -353,7 +367,7 @@
     animation-play-state: paused;
 }
 
-.ecosystem-list {
+.vp-doc .ecosystem-list {
     display: flex;
     gap: 12px;
     margin: 0;
@@ -391,6 +405,14 @@
     flex: 0 0 24px;
     object-fit: contain;
     opacity: 0.72;
+}
+
+.dark .ecosystem-list img {
+    opacity: 0.86;
+}
+
+.dark .ecosystem-list img.ecosystem-icon--dark-invert {
+    filter: invert(1);
 }
 
 @keyframes ecosystem-scroll {
@@ -463,20 +485,19 @@
     display: none;
 }
 
+.home-code__highlight {
+    --vp-code-font-size: 14px;
+    --vp-code-line-height: 1.55;
+}
+
 .home-code__highlight pre {
     max-height: none;
     padding: 16px 0;
     overflow-y: hidden;
 }
 
-.home-code__highlight code,
 .home-code__highlight .line-numbers-wrapper {
-    font-size: 14px;
-    line-height: 1.55;
-}
-
-.home-code__highlight .line-numbers-wrapper {
-    padding-top: 16px;
+    padding-top: 20px;
 }
 
 .module-groups {
@@ -600,7 +621,7 @@
 .home-resources nav a {
     position: relative;
     width: 100%;
-    transition: border-color 0.2s, color 0.2s, text-shadow 0.25s;
+    transition: border-color 0.2s, color 0.2s;
 }
 
 .home-resources nav a::after {
@@ -611,7 +632,6 @@
 .home-resources nav a:focus-visible {
     border-color: var(--vp-c-brand-1);
     color: var(--vp-c-brand-1);
-    text-shadow: 0 0 18px color-mix(in srgb, var(--vp-c-brand-1) 24%, transparent);
 }
 
 .page-context {
@@ -711,7 +731,6 @@
 .home-resources nav a:hover::before,
 .home-resources nav a:focus-visible::before {
     opacity: 0.9;
-    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--vp-c-brand-1) 58%, transparent));
 }
 
 @keyframes connectum-border-orbit {
@@ -835,10 +854,8 @@
         padding: 14px 0;
     }
 
-    .home-code__highlight code,
-    .home-code__highlight .line-numbers-wrapper {
-        font-size: 12px;
-        line-height: 1.55;
+    .home-code__highlight {
+        --vp-code-font-size: 12px;
     }
 
     .home-code__highlight .line-numbers-wrapper {
@@ -955,6 +972,30 @@
 
 .medium-zoom-image--opened {
     z-index: 999;
+}
+
+/* Project-authored technical SVGs keep their caption and document-scale framing. */
+.vp-doc .technical-diagram {
+    margin: 24px 0 40px;
+}
+
+.vp-doc .technical-diagram__art {
+    width: 100%;
+    margin: 0;
+    overflow-x: auto;
+}
+
+.vp-doc .technical-diagram__art svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.vp-doc .technical-diagram figcaption {
+    margin-top: 10px;
+    color: var(--vp-c-text-2);
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 /* ==========================================================================
