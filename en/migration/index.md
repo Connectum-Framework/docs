@@ -43,7 +43,7 @@ action below rather than assuming a direct upgrade to the documented line.
 
 | Installed version | Required action |
 |---|---|
-| 1.2.x | Review the 1.3 release notes for each installed package and run your existing tests |
+| 1.2.x | Review the 1.3 release notes for each installed package and run your existing tests; if you implement your own `ProtocolRegistration`, follow [Custom protocols: setup/register split](/en/migration/protocol-setup) |
 | 1.1.x | Review the 1.2 and 1.3 release notes for each installed package and run your existing tests |
 | 1.0.x | Review package release notes; 1.1 capabilities are additive |
 | RC or alpha | Follow [Migrating to 1.0](/en/migration/1.0), then review the [Service Catalog migration](/en/migration/service-catalog) |
@@ -54,6 +54,9 @@ action below rather than assuming a direct upgrade to the documented line.
   streaming transport validation, and removed EventBus `sync` option.
 - [Migrating to the Service Catalog](/en/migration/service-catalog) — replace
   legacy service registration and manual client routing.
+- [Custom protocols: setup/register split](/en/migration/protocol-setup) — move
+  one-time work of your own `ProtocolRegistration` into `setup(context)` (1.3;
+  applications using only built-in protocols need no changes).
 
 ## Release History
 
