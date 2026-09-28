@@ -47,7 +47,7 @@ interface ShutdownOptions {
   /** Auto-handle signals (default: false) */
   autoShutdown?: boolean;
 
-  /** Force close HTTP/2 sessions on timeout (default: true) */
+  /** Force close every client connection on timeout (default: true) */
   forceCloseOnTimeout?: boolean;
 }
 ```
@@ -57,7 +57,7 @@ interface ShutdownOptions {
 | `timeout` | `30000` | Maximum time (ms) to wait for in-flight requests |
 | `signals` | `['SIGTERM', 'SIGINT']` | OS signals that trigger shutdown |
 | `autoShutdown` | `false` | Automatically install signal handlers |
-| `forceCloseOnTimeout` | `true` | Destroy HTTP/2 sessions if timeout exceeded |
+| `forceCloseOnTimeout` | `true` | Destroy every remaining client connection (HTTP/1.1, h2c, TLS) if the timeout is exceeded |
 
 ## Shutdown Sequence
 
@@ -66,9 +66,9 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 ```
 1. STOPPING event     -- Notify listeners (update health check to NOT_SERVING)
 2. Abort signal       -- Signal streaming RPCs and long-running operations
-3. Transport close    -- Send GOAWAY, stop accepting new connections
+3. Transport close    -- Stop accepting new connections, send GOAWAY to every HTTP/2 session
 4. Timeout race       -- Wait for in-flight requests OR timeout
-5. Force close        -- If timeout + forceCloseOnTimeout: destroy all HTTP/2 sessions
+5. Force close        -- If timeout + forceCloseOnTimeout: destroy every remaining connection
 6. Shutdown hooks     -- Execute registered hooks in dependency order
 7. Dispose            -- Clean up internal state
 8. STOP event         -- Server is fully stopped
@@ -291,7 +291,7 @@ Always set `shutdown.timeout` to a value **less than** Kubernetes `terminationGr
 
 ### With forceCloseOnTimeout: true (default)
 
-When the timeout is exceeded, all active HTTP/2 sessions are destroyed:
+Until the timeout, nothing is cut: in-flight requests and streams keep running, and HTTP/2 clients have been sent GOAWAY so they can finish and disconnect. When the timeout is exceeded, every connection that is still open is destroyed, on every transport — plaintext HTTP/1.1 (the default), h2c, and TLS, including connections that never finished a request or a TLS handshake. Requests still in flight at that moment are aborted.
 
 ```typescript
 shutdown: {
@@ -300,11 +300,11 @@ shutdown: {
 }
 ```
 
-This ensures the server stops within the timeout, even if clients hold connections open.
+This ensures `stop()` completes within the timeout even if a client holds its connection open (ignores GOAWAY, idles, or stalls mid-request), so no connection accepted by the server keeps the process alive afterwards. Connectum never calls `process.exit()`; anything your own code keeps open (timers, handlers that ignore the abort signal, other sockets) can still keep the process running.
 
 ### With forceCloseOnTimeout: false
 
-The server waits indefinitely for all in-flight requests to complete. Shutdown hooks still execute after the timeout:
+No connection is destroyed. `stop()` still resolves once the timeout is exceeded and shutdown hooks run, but connections that clients keep open stay open — and keep the process alive — until those clients close them:
 
 ```typescript
 shutdown: {
@@ -314,7 +314,7 @@ shutdown: {
 ```
 
 ::: warning
-With `forceCloseOnTimeout: false`, the server may hang if a client holds a connection open indefinitely. Use only when you control all clients and can guarantee they will close connections.
+With `forceCloseOnTimeout: false`, the process may not exit if a client holds a connection open indefinitely. Use only when you control all clients and can guarantee they will close connections.
 :::
 
 ## Complete Production Example
