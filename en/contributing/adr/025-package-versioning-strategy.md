@@ -184,7 +184,6 @@ Key changes from Phase 1:
 ```mermaid
 graph LR
     subgraph "Core Group (Fixed Versioning)"
-        direction TB
         C["@connectum/core<br/>v1.2.0"]
         I["@connectum/interceptors<br/>v1.2.0"]
         H["@connectum/healthcheck<br/>v1.2.0"]
@@ -192,7 +191,6 @@ graph LR
     end
 
     subgraph "Independent Versioning"
-        direction TB
         A["@connectum/auth<br/>v1.1.0"]
         E["@connectum/events<br/>v1.0.1"]
         EN["@connectum/events-nats<br/>v1.0.0"]
