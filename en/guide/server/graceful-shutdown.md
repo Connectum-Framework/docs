@@ -74,6 +74,8 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 8. STOP event         -- Server is fully stopped
 ```
 
+Steps 6 and 7 run even if closing the transport fails, so your hooks always get to release their resources; `stop()` then rejects with the close error.
+
 ## Shutdown Hooks
 
 Shutdown hooks allow you to run cleanup logic during shutdown with dependency ordering. Register them via `server.onShutdown()`.
@@ -291,7 +293,7 @@ Always set `shutdown.timeout` to a value **less than** Kubernetes `terminationGr
 
 ### With forceCloseOnTimeout: true (default)
 
-Until the timeout, nothing is cut: in-flight requests and streams keep running, and HTTP/2 clients have been sent GOAWAY so they can finish and disconnect. When the timeout is exceeded, every connection that is still open is destroyed, on every transport — plaintext HTTP/1.1 (the default), h2c, and TLS, including connections that never finished a request or a TLS handshake. Requests still in flight at that moment are aborted.
+Until the timeout, the server does not force-close any connection: HTTP/2 clients have been sent GOAWAY so they can finish and disconnect, and in-flight requests are allowed to complete. Handlers that observe the abort signal (step 2 above) — typically long-running streaming RPCs — are asked to stop at the start of shutdown and may end earlier than the timeout. When the timeout is exceeded, every connection that is still open is destroyed, on every transport — plaintext HTTP/1.1 (the default), h2c, and TLS, including connections that never finished a request or a TLS handshake. Requests still in flight at that moment are aborted.
 
 ```typescript
 shutdown: {
@@ -300,7 +302,7 @@ shutdown: {
 }
 ```
 
-This ensures `stop()` completes within the timeout even if a client holds its connection open (ignores GOAWAY, idles, or stalls mid-request), so no connection accepted by the server keeps the process alive afterwards. Connectum never calls `process.exit()`; anything your own code keeps open (timers, handlers that ignore the abort signal, other sockets) can still keep the process running.
+This bounds the connection drain by the timeout even if a client holds its connection open (ignores GOAWAY, idles, or stalls mid-request), so no connection accepted by the server keeps the process alive afterwards. `stop()` then runs the shutdown hooks, so it completes once the timeout has elapsed **and** your hooks have finished — keep hooks fast. Connectum never calls `process.exit()`; anything your own code keeps open (timers, handlers that ignore the abort signal, other sockets) can still keep the process running.
 
 ### With forceCloseOnTimeout: false
 
