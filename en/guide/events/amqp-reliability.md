@@ -159,7 +159,7 @@ stateDiagram-v2
     Connected --> Recovering: connection lost (disconnected)
     Recovering --> Connected: reconnect + setup succeeded (connected, reconnected true)
     Recovering --> Recovering: attempt failed (reconnecting)
-    Recovering --> GaveUp: maxRetries exhausted or fatal topology drift (reconnect-failed)
+    Recovering --> GaveUp: maxRetries exhausted, fatal topology drift or failed backoff hook (reconnect-failed)
     GaveUp --> Connecting: connect() again, without old subscriptions
     Connected --> [*]: disconnect()
 ```
@@ -188,31 +188,37 @@ const adapter = AmqpAdapter({
 });
 ```
 
-With `initialConnectMaxRetries` set to a finite number, the adapter runs the startup
-attempts itself:
+With `initialConnectMaxRetries` set to a finite number, amqplib runs the startup
+attempts on the recovering connection the adapter keeps (its `initialMaxRetries`
+option). Every attempt includes the full topology setup, so a success leaves exactly
+one adapter connection open on the broker and exhaustion leaves none:
 
-- each attempt connects and applies the topology on a short-lived connection; after the first successful attempt the real recovering
-  connection is opened;
 - each failed attempt except the last reports `reconnecting { attempt, delay }`, and
   a topology failure also reports `setup-failed { initial: true, attempt }`;
 - when the budget is spent, the adapter reports `reconnect-failed` and `connect()`
-  rejects with `AmqpConnectionError` whose `cause` is the last failure;
+  rejects with `AmqpConnectionError("Initial connect failed after N attempt(s)
+  (initialConnectMaxRetries: M)")` whose `cause` is the last failure;
 - `failFastOnInitialSetupError: true` still rejects on the first topology error,
   whatever the budget;
-- `disconnect()` during the backoff stops the loop and `connect()` rejects with
-  `AmqpConnectionError`.
+- `disconnect()` during the backoff cancels the pending retry at once and
+  `connect()` rejects with `AmqpConnectionError`;
+- `publish()` and `subscribe()` reject with the typed "not connected" error until
+  the first attempt succeeds.
 
-A negative value is treated as `0` (a single attempt); a non-finite value is the same
-as leaving the option unset. Without it, amqplib's own startup loop runs under the
-shared `maxRetries`, and its per-attempt events are not reported. If that loop gives
-up (finite `maxRetries`), `connect()` rejects with `AmqpConnectionError` and the
-original error (for example `ECONNREFUSED`) as `cause`. With `recovery: false` the
-original error is thrown unchanged.
+A negative value is treated as `0` (a single attempt), a fraction is rounded down,
+and a non-finite value is the same as leaving the option unset. Without it,
+amqplib's own startup loop runs under the shared `maxRetries`, and its per-attempt
+events are not reported. If that loop gives up (finite `maxRetries`), `connect()`
+rejects with `AmqpConnectionError` and the original error (for example
+`ECONNREFUSED`) as `cause`; when a [`backoff` hook](#custom-backoff-hook) ended the
+loop, the message cannot name the last connection error and says "none observed".
+With `recovery: false` the original error is thrown unchanged.
 
 ### When recovery gives up {#recovery-gives-up}
 
-Recovery ends for good in two cases: a finite `maxRetries` is exhausted, or
-[`treatTopologyErrorAsFatal`](#topology-drift) stopped it. Before reporting the
+Recovery ends for good in three cases: a finite `maxRetries` is exhausted,
+[`treatTopologyErrorAsFatal`](#topology-drift) stopped it, or a
+[`backoff` hook](#custom-backoff-hook) failed. Before reporting the
 terminal `reconnect-failed` event, the adapter drops the dead connection, its publish
 channel, and all subscription records. After that:
 
@@ -301,9 +307,9 @@ delay = round(uniform(base × (1 − jitter), base × (1 + jitter)))
 Because the base is capped at `maxDelay / (1 + jitter)`, the largest jitter offset
 lands exactly on `maxDelay`, so a delay never exceeds it. With the defaults
 (`initialDelay: 100`, `factor: 2`, `jitter: 0.2`, `maxDelay: 30000`) a saturated
-delay is between 20 000 and 30 000 ms. The adapter's own waits, the
-[startup attempts](#retry-budget) and [`publishRetry`](#publish-retry), use the same
-formula and the same option names.
+delay is between 20 000 and 30 000 ms. The [startup attempts](#retry-budget) use the
+same schedule, and [`publishRetry`](#publish-retry) uses the same formula and the
+same option names.
 
 For full jitter with a hard cap — a delay uniform in `[0, min(I × factor^(n − 1), C)]`
 — set `jitter: 1`, `initialDelay: I / 2`, and `maxDelay: C`:
@@ -315,8 +321,56 @@ const adapter = AmqpAdapter({
 });
 ```
 
-amqplib 2.2 also has `initialMaxRetries` and a `calculateDelay` hook; the adapter
-passes neither to amqplib. Use `initialConnectMaxRetries` to bound startup.
+### Set your own reconnect delay {#custom-backoff-hook}
+
+Since 1.3.0, `recovery.backoff` replaces the built-in schedule with your own
+function. It receives the attempt number and returns the delay in milliseconds
+before that attempt; the adapter forwards it to amqplib's `calculateDelay`:
+
+```typescript
+const adapter = AmqpAdapter({
+  url: process.env.AMQP_URL ?? 'amqp://localhost:5672',
+  recovery: {
+    // full jitter over an exponential schedule, capped at 30 s
+    backoff: (n) => Math.random() * Math.min(30_000, 100 * 2 ** (n - 1)),
+  },
+});
+```
+
+- **`attempt`** is 1-based and restarts at 1 after every successful connect.
+- **Coverage.** The hook sets the delay of every reconnect attempt: steady-state
+  recovery and the retries of the initial connect, with or without
+  `initialConnectMaxRetries`. It does **not** cover `publishRetry`, which keeps its
+  own numeric backoff.
+- **Return value.** A finite number greater than or equal to 0, rounded to whole
+  milliseconds and applied as is. It is **not** clamped to `maxDelay`, so put the cap
+  into the function. `0` retries at once. The `reconnecting` event reports the
+  applied delay; the adapter never calls the hook a second time to fill it.
+- **Budgets.** The hook only sets intervals. `maxRetries` and
+  `initialConnectMaxRetries` still bound the number of attempts.
+- **Not combinable with the delay knobs.** `initialDelay`, `maxDelay`, `factor` and
+  `jitter` have no effect once a hook is set, so combining any of them with `backoff`
+  throws a `TypeError` when the adapter is constructed.
+- **State across calls.** A schedule that depends on the previous delay, such as
+  decorrelated jitter, keeps that state in a closure; the hook receives only the
+  attempt number.
+
+::: warning A failing hook ends recovery for good
+The hook must be synchronous. If it throws, returns anything but a finite number
+greater than or equal to 0 (`NaN`, `Infinity`, a negative number, a numeric string),
+or returns a Promise (an `async` function), recovery gives up. There is no fallback
+to the built-in schedule.
+
+- During the initial connect, `connect()` rejects.
+- In steady state, the terminal `reconnect-failed` fires once and the adapter drops
+  the dead connection and its subscriptions, as after an exhausted `maxRetries`.
+
+Either way the error is an `AmqpConnectionError`. Its `cause` is the hook's error:
+the thrown error, or an error stating the invalid return or that the hook must be
+synchronous. Its message names the last connection error, or says "none observed"
+when the hook failed during an initial connect without `initialConnectMaxRetries`,
+a window the adapter cannot observe.
+:::
 
 ## Adapter lifecycle {#adapter-lifecycle}
 
@@ -356,7 +410,7 @@ const adapter = AmqpAdapter({
 | `connected` | `reconnected` | Once per successful connect; `reconnected` is `false` for the first connect and `true` after recovery. |
 | `disconnected` | `error` | Once per connection loss. Not reported for your own `disconnect()`. With `recovery: false`, `error` is the broker's own close error when there is one (`code` carries the reply code, for example `320` for a forced close). |
 | `reconnecting` | `attempt`, `delay`, `error` | Once per scheduled reconnect, and per startup attempt with `initialConnectMaxRetries`. |
-| `reconnect-failed` | `error` | Terminal: retry budget exhausted, fatal topology drift, or startup budget exhausted. See [When recovery gives up](#recovery-gives-up). |
+| `reconnect-failed` | `error` | Terminal: retry budget exhausted, fatal topology drift, startup budget exhausted, or a failed `backoff` hook. See [When recovery gives up](#recovery-gives-up). |
 | `setup-failed` | `initial`, `attempt`, `error` | Topology setup failed: at startup (`initial: true`) or on a reconnect (`initial: false`, `attempt` ≥ 1). Reported for `AmqpTopologyError` failures only. |
 | `blocked` | `reason` | The broker applied flow control (RabbitMQ `connection.blocked`, for example under a memory or disk alarm). |
 | `unblocked` | — | Flow control lifted. |
@@ -476,6 +530,13 @@ behavior, run integration tests against a broker.
 
 - **`connect()` never returns.** The broker is unreachable and `maxRetries` is
   `Infinity`. Set `initialConnectMaxRetries` to bound startup.
+- **`TypeError: AmqpAdapter: recovery.backoff cannot be combined with recovery.<knob>`
+  at construction.** `backoff` was set together with `initialDelay`, `maxDelay`,
+  `factor` or `jitter`. Remove the knob and compute the delay, including its cap,
+  inside the hook.
+- **`AmqpConnectionError: Recovery gave up: recovery.backoff failed at attempt N`.**
+  The hook threw, returned an invalid value, or is `async`. Read `error.cause`, make
+  the hook synchronous and return a finite number greater than or equal to 0.
 - **`AmqpConnectionError: AmqpAdapter: already connected`.** `connect()` was called on
   an adapter that is connected or still recovering. Call `disconnect()` first.
 - **Events stopped arriving after an outage.** Check for a `reconnect-failed` event:
