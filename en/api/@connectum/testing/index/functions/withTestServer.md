@@ -8,7 +8,7 @@ Defined in: [testing/src/test-server.ts:93](https://github.com/Connectum-Framewo
 
 Run a test function with an auto-managed test server.
 
-Creates a test server, passes it to [testFn](#withtestserver), and guarantees
+Creates a test server, passes it to testFn, and guarantees
 cleanup via `finally` — even if the test throws.
 
 ## Type Parameters
