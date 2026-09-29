@@ -46,13 +46,14 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `AmqpAdapter` | Connect EventBus to an AMQP broker. |
 | `AmqpAdapterOptions` | Configure connection, topology, publishing, and recovery. |
 | `isAutoRetriablePublishError` | Classify adapter failures for retry policy. |
+| `AmqpRecoveryOptions` | Bound the initial connect (`initialConnectMaxRetries`) and set the reconnect delay schedule, including a custom `backoff` hook (since 1.4.0). See [Configure AMQP Connection Recovery](/en/guide/events/amqp-recovery). |
 
 Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 
 - **Learn:** [Focused guide](/en/guide/events/adapters)
-- **Configure:** [Task and configuration guidance](/en/guide/events/adapters)
+- **Configure:** [Task and configuration guidance](/en/guide/events/adapters), [Connection recovery](/en/guide/events/amqp-recovery)
 - **API reference:** [Exact options and symbols](/en/api/@connectum/events-amqp/types/interfaces/AmqpAdapterOptions)
 - **Package API index:** [Generated TypeDoc](/en/api/@connectum/events-amqp/)
 - **Source:** [@connectum/events-amqp on GitHub](https://github.com/Connectum-Framework/connectum/tree/main/packages/events-amqp)
