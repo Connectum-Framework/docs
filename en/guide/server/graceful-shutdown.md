@@ -74,7 +74,7 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 8. STOP event         -- Server is fully stopped
 ```
 
-Steps 6 and 7 run even if closing the transport fails, so your hooks always get to release their resources, and step 7 also runs if a hook fails. `stop()` then rejects with the error that occurred — or with an `AggregateError` carrying both when the transport close and a hook both failed.
+Steps 6 and 7 run even if closing the transport fails before the timeout, so your hooks always get to release their resources, and step 7 also runs if a hook fails. On this failure path the server emits `error` instead of `stop`, and `stop()` rejects with the error that occurred — or with an `AggregateError` carrying both when the transport close and a hook both failed. A close failure that only arrives after the timeout has already won is logged, not thrown: if the hooks succeed, `stop()` resolves normally.
 
 ## Shutdown Hooks
 
