@@ -166,7 +166,9 @@
 
         <path class="catalog-routing__connector catalog-routing__connector--primary" d="M340 200V288" marker-end="url(#catalog-routing-arrow-primary)" />
         <path class="catalog-routing__connector catalog-routing__connector--primary" d="M432 340H464" marker-end="url(#catalog-routing-arrow-primary)" />
-        <path class="catalog-routing__connector catalog-routing__connector--primary" d="M572 392V472H420" marker-end="url(#catalog-routing-arrow-primary)" />
+        <!-- Same corner rounding as the generated diagrams: control point on the corner,
+             curve starting 7.07 units before it. -->
+        <path class="catalog-routing__connector catalog-routing__connector--primary" d="M572 392 L572 464.93 Q572 472 564.93 472 L420 472" marker-end="url(#catalog-routing-arrow-primary)" />
 
         <path class="catalog-routing__connector catalog-routing__connector--secondary" d="M432 156H464" marker-end="url(#catalog-routing-arrow-secondary)" />
         <path class="catalog-routing__connector catalog-routing__connector--secondary" d="M624 156H844" marker-end="url(#catalog-routing-arrow-secondary)" />
