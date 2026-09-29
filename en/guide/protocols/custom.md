@@ -56,6 +56,13 @@ Protocols are passed to `createServer()` via the `protocols` array. A server bui
 - **`setup(context)`** runs **exactly once per server**, immediately before the protocol's first `register()` — on `server.start()`, or earlier if an in-process client is created first. Put everything that reads the registry or has side effects here.
 - **`register(router)`** runs **once per router** and must only add routes. It must not change state that other routers or the application can observe — otherwise the first in-process call would change what HTTP clients see.
 
+A registration object belongs to **one server**. Whatever `setup` stores in it — the service list in the example below, the descriptor set of `Reflection()` — is that server's state. Passing the same object to a second server lets the second server's `setup` overwrite it, and the first server's later routers then serve the second server's data. Call the protocol factory once per server:
+
+```typescript
+const serverA = createServer({ services: [routesA], protocols: [Reflection()] });
+const serverB = createServer({ services: [routesB], protocols: [Reflection()] });
+```
+
 Protocols are processed in array order. The `context.registry` a protocol receives in `setup` holds every mounted application service plus the services of the protocols listed **before** it, as a frozen snapshot. That is why `Healthcheck()` does not track its own `grpc.health.v1.Health` service, while a `Reflection()` listed after it does list it:
 
 ```typescript

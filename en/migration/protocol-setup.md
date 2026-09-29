@@ -8,10 +8,17 @@ docType: migration
 
 > Applies to 1.3.0.
 
-**Who needs to act:** only authors of their own `ProtocolRegistration` implementations
-(see [Creating a custom protocol](/en/guide/protocols/custom)). Applications that use the
-built-in `Healthcheck()` and `Reflection()` need **no changes** — the upgrade only fixes
-their behavior.
+**Who needs to act:**
+
+- authors of their own `ProtocolRegistration` implementations (see
+  [Creating a custom protocol](/en/guide/protocols/custom)) — follow [How to migrate](#how-to-migrate);
+- applications whose `defineLazyService` factory relies on being called for every
+  transport, or on HTTP and in-process calls getting separate instances — review those
+  services against [Related fix: `defineLazyService`](#related-fix-definelazyservice).
+
+Applications that use only the built-in `Healthcheck()` and `Reflection()` and whose lazy
+services do not depend on per-transport instances need **no changes** — the upgrade only
+fixes their behavior.
 
 ## Why it changed
 
