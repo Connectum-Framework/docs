@@ -306,7 +306,7 @@ This bounds the connection drain by the timeout even if a client holds its conne
 
 ### With forceCloseOnTimeout: false
 
-No connection is destroyed. `stop()` still resolves once the timeout is exceeded and shutdown hooks run, but connections that clients keep open stay open — and keep the process alive — until those clients close them:
+No connection is destroyed. Shutdown still moves on once the timeout is exceeded: `stop()` runs the shutdown hooks and completes when they have finished (or rejects if one fails), exactly as with the default. Connections that clients keep open stay open, though, and keep the process alive until those clients close them:
 
 ```typescript
 shutdown: {
