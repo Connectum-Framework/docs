@@ -150,6 +150,13 @@ By design, the in-process transport bypasses HTTP-wire concerns:
 - **Streaming back-pressure** is provided by `AsyncIterable` semantics and is best-effort rather than HTTP/2 flow control. For very high-throughput streaming, prefer HTTP/2.
 - **Payload objects are shared by reference** inside the same process (as in any function call). Do not mutate request/response payloads after handing them off. `Headers` are explicitly cloned at the boundary.
 
+## Security Considerations
+
+Two transport-specific values are visible to interceptors. Neither is a security signal:
+
+- **`req.url` is synthetic.** For an in-process call, interceptors see `req.url` as `https://in-memory/<service>/<method>` — for example `https://in-memory/greeter.v1.GreeterService/SayHello`. The origin is set by the ConnectRPC router transport, not by a network peer. Do not parse `req.url` (host, scheme, or path) for authorization or other policy decisions; use `req.service.typeName` and `req.method.name`, which are identical on both transports.
+- **The transport marker is telemetry-only.** The `connectum.transport` span attribute, the `transport` metric label, and the logger's [`includeTransport` tag](/en/guide/interceptors/built-in#request-logging) all come from a framework-internal request marker. The server strips a forged marker from inbound HTTP requests, but the marker is still not an authentication mechanism: do not rely on it to grant or deny access, or to skip checks for "local" callers. The in-process path already runs the full server-side interceptor chain, so authorization applies to it without special cases.
+
 ## Coexistence with HTTP
 
 A single `Server` instance can simultaneously serve HTTP clients (after `server.start()`) and in-process clients (available immediately after `createServer()`). Both paths go through the same router and the same interceptor chain, so an interceptor observes both kinds of calls uniformly.

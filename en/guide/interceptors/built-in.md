@@ -178,6 +178,40 @@ const interceptors = createDefaultInterceptors({
 
 For detailed documentation on each interceptor, see the [@connectum/interceptors README](https://github.com/Connectum-Framework/connectum/tree/main/packages/interceptors).
 
+## Request Logging
+
+`createLoggerInterceptor()` is not part of the default chain. Add it to `interceptors` when you want every RPC logged with its request, response, and duration:
+
+```typescript
+import { createServer } from '@connectum/core';
+import { createDefaultInterceptors, createLoggerInterceptor } from '@connectum/interceptors';
+
+const server = createServer({
+  services: [routes],
+  interceptors: [
+    ...createDefaultInterceptors(),
+    createLoggerInterceptor({
+      level: 'info',            // default: 'debug'
+      skipHealthCheck: true,    // default: true
+      includeTransport: true,   // default: false
+    }),
+  ],
+});
+```
+
+With `includeTransport: true`, every line of a call carries the transport right after the `RPC` / `STREAM` prefix — `[in-process]` for calls made through `server.localClient()` or `createLocalTransport()` (see [In-Process Transport](/en/guide/production/in-process-transport)), `[http]` for all other calls:
+
+```text
+RPC [in-process] /greeter.v1.GreeterService/SayHello request ...
+RPC [http] /greeter.v1.GreeterService/SayHello completed in 1.84ms
+```
+
+The option is off by default; without it the log lines are unchanged.
+
+::: warning Telemetry only
+The transport tag comes from a framework-internal request marker. Use it to read logs, never to authorize: base access decisions on `req.service.typeName` and `req.method.name`.
+:::
+
 ## Execution Order
 
 Interceptors execute in the order they are defined. Each interceptor wraps the next one:
