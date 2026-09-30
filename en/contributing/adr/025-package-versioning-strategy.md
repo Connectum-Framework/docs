@@ -122,7 +122,7 @@ Packages that are tightly coupled through `createServer()` and are almost always
 | Package | Reason for inclusion |
 |---------|---------------------|
 | `@connectum/core` | Server factory, lifecycle, plugin system |
-| `@connectum/interceptors` | `createDefaultInterceptors()`, direct dependency on core |
+| `@connectum/interceptors` | `createDefaultInterceptors()`, depends on core (a peer dependency since 1.3) |
 | `@connectum/healthcheck` | Protocol plugin for `createServer({ protocols: [...] })` |
 | `@connectum/reflection` | Protocol plugin for `createServer({ protocols: [...] })` |
 
