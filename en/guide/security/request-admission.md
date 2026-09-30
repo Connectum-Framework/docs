@@ -41,7 +41,10 @@ Return (or resolve) to admit the call. The gate may be `async`; the server await
 
 ### Throw client-safe errors only
 
-A gate runs **before** the server interceptor chain. Its error reaches the client exactly as thrown — code, message, metadata, and details — and `createErrorHandlerInterceptor()` never gets the chance to sanitise it. Throw a fixed, non-revealing message such as `unauthenticated` above. Do not rethrow errors from lower layers, and do not throw errors whose message names internal rules (for example an authorization error that includes the rule that denied the call).
+A gate runs **before** the server interceptor chain, so `createErrorHandlerInterceptor()` never gets the chance to sanitise what it throws.
+
+- A thrown `ConnectError` reaches the client exactly as thrown — code, message, metadata, and details. Give it a fixed, non-revealing message such as `unauthenticated` above. Do not throw a `ConnectError` whose message names internal rules (for example an authorization error that includes the rule that denied the call).
+- Anything else — a plain `Error`, a string, a rejected promise — is replaced by Connect with `internal` / `internal error` on every protocol and both transports; its message, stack, and cause never reach the client. Connectum's tests pin this. It is a safety net, not a way to reject: the client learns nothing useful, so convert expected failures to a `ConnectError` with the right code.
 
 ### Audit rejections yourself
 
@@ -93,7 +96,7 @@ const server = createServer({
 });
 ```
 
-A message exactly at the limit is accepted. The limit applies per message, so on a client-streaming or bidi call each message is checked separately. A value below 1 or above Connect's maximum is rejected with `ConnectError` code `internal` when the server builds its routes: at `server.start()`, or earlier at the first in-process access such as `server.localClient()`.
+A message exactly at the limit is accepted. The limit applies per message, so on a client-streaming or bidi call each message is checked separately. The value must be an integer from 1 to 4294967295 (Connect's maximum). `createServer()` throws a `RangeError` naming `readMaxBytes` for anything else — `0`, negatives, fractions, `NaN`, `Infinity` — and a `TypeError` for a non-number, so a misconfigured limit cannot silently turn into no limit.
 
 ## What the gate and the limit cover
 

@@ -20,10 +20,10 @@ can be regenerated from the parity test files at any time.
 | 5 | Error mapping (`ConnectError(NotFound)`, plain `Error` → `internal`, interceptor-thrown error) | `packages/testing/tests/parity/errors.parity.test.ts` | **3** |
 | 6 | HTTP / local coexistence (concurrent observation by one interceptor; `server.start()` not required for local invoke) | `packages/testing/tests/parity/coexistence.parity.test.ts` + `packages/core/tests/integration/localTransport.test.ts` | **2** |
 | 7a | OTEL tracing & metrics (unary spans, streaming events, error spans, metrics labels, trace-context propagation, instrument subset, `connectum.transport` attribute) | `packages/otel/tests/parity/otel.parity.test.ts` | **7** |
-| 8 | Request admission (rejecting `requestGate`, admitting `requestGate`, `readMaxBytes` over the limit, `readMaxBytes` at the limit) | `packages/testing/tests/parity/requestAdmission.parity.test.ts` | **4** |
-| **Total** | | | **40** |
+| 8 | Request admission (rejecting `requestGate`, `requestGate` throwing a plain `Error`, admitting `requestGate`, `readMaxBytes` over the limit, `readMaxBytes` at the limit) | `packages/testing/tests/parity/requestAdmission.parity.test.ts` | **5** |
+| **Total** | | | **41** |
 
-Of these, **29 scenarios** (groups 3, 3a, 3b, 4, 5, 8) go through the unified
+Of these, **30 scenarios** (groups 3, 3a, 3b, 4, 5, 8) go through the unified
 `transportParityTest()` driver in `@connectum/testing/parity` and produce a
 structural diff between HTTP and local. The 7 OTEL scenarios and 2 coexistence
 scenarios are written as paired `test()` cases that drive both transports
