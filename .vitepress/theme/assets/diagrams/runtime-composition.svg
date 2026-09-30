@@ -158,8 +158,11 @@
         <path class="runtime-composition__connector runtime-composition__connector--primary" d="M532 188H552" marker-end="url(#runtime-composition-arrow-primary)" />
         <path class="runtime-composition__connector runtime-composition__connector--primary" d="M736 188H760" marker-end="url(#runtime-composition-arrow-primary)" />
 
-        <path class="runtime-composition__connector runtime-composition__connector--optional" d="M294 348V288H452V232" marker-end="url(#runtime-composition-arrow-muted)" />
-        <path class="runtime-composition__connector runtime-composition__connector--optional" d="M794 348V288H644V232" marker-end="url(#runtime-composition-arrow-muted)" />
+        <!-- Corners follow the shared rounding: the quadratic control point sits on the
+             corner and the curve starts 7.07 units before it, which is what Mermaid draws
+             for a right angle at the shared radius. -->
+        <path class="runtime-composition__connector runtime-composition__connector--optional" d="M294 348 L294 295.07 Q294 288 301.07 288 L444.93 288 Q452 288 452 280.93 L452 232" marker-end="url(#runtime-composition-arrow-muted)" />
+        <path class="runtime-composition__connector runtime-composition__connector--optional" d="M794 348 L794 295.07 Q794 288 786.93 288 L651.07 288 Q644 288 644 280.93 L644 232" marker-end="url(#runtime-composition-arrow-muted)" />
 
         <path class="runtime-composition__connector runtime-composition__connector--secondary" d="M538 460V584" marker-end="url(#runtime-composition-arrow-secondary)" />
         <path class="runtime-composition__connector runtime-composition__connector--primary" d="M794 460V584" marker-end="url(#runtime-composition-arrow-primary)" />

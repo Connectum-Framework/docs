@@ -266,6 +266,14 @@ write its appearance. Typography, node surfaces and borders, subgraph framing, e
 routing, arrowheads, edge labels, and the sequence and state primitives all arrive from
 the shared configuration, in both light and dark mode and in the fullscreen view.
 
+Edges run on the horizontal and vertical axes and turn at rounded corners; converging
+edges may share a common trunk before separating into their own approaches. This is a
+property of the shared layout, not a per-diagram choice, and it is why generated
+diagrams read like the project-authored technical SVGs. A new hand-drawn connector
+follows the same construction: a quadratic curve whose control point is the corner
+itself, starting and ending 7.07 units away from it along each segment, reduced to half
+the segment when a leg is shorter than that.
+
 Never put a literal color in a diagram. A `fill:#4a90d9` or `stroke:red` becomes an
 inline attribute on the rendered node, which outranks the theme -- the node then keeps
 its light-mode color when the reader switches to dark. A per-diagram `%%{init: ...}%%`
@@ -312,6 +320,11 @@ arrowhead that touches neither node; the shared spacing provides this, so a coll
 arrow means the diagram is packing too much into one rank. Prefer `TD` for anything
 deeper than about five stages -- a long `LR` chain scales down to unreadable inside the
 documentation column, even though the fullscreen view can recover it.
+
+Width is what decides how large diagram text ends up: the documentation column is fixed,
+so a wide diagram is scaled down and its labels shrink with it. A diagram that has grown
+wide enough to be unreadable inline is a source problem -- split it, or turn it along the
+other axis -- not something to fix in configuration.
 
 Documentation contract failures are user-facing defects.
 
