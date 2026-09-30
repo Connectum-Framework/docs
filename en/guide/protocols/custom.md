@@ -20,19 +20,22 @@ interface ProtocolRegistration {
   /** Protocol name for identification (e.g. "healthcheck", "reflection") */
   readonly name: string;
 
-  /** Register protocol services on the router */
-  register(router: ConnectRouter, context: ProtocolContext): void;
+  /** One-time initialization, called exactly once per server */
+  setup?(context: ProtocolContext): void;
+
+  /** Register protocol services on the router, once per router */
+  register(router: ConnectRouter): void;
 
   /** Optional HTTP handler for fallback routing (e.g. /healthz endpoint) */
   httpHandler?: HttpHandler;
 }
 ```
 
-The `ProtocolContext` provides access to registered service file descriptors:
+The `ProtocolContext` passed to `setup` provides access to registered service file descriptors:
 
 ```typescript
 interface ProtocolContext {
-  /** Registered service file descriptors */
+  /** Service file descriptors registered before this protocol (frozen snapshot) */
   readonly registry: ReadonlyArray<DescFile>;
 }
 ```
@@ -48,7 +51,19 @@ type HttpHandler = (req: Http2ServerRequest, res: Http2ServerResponse) => boolea
 
 ## How Protocols Are Registered
 
-Protocols are passed to `createServer()` via the `protocols` array. During `server.start()`, each protocol's `register()` method is called with the ConnectRouter and a context containing all registered service file descriptors:
+Protocols are passed to `createServer()` via the `protocols` array. A server builds more than one `ConnectRouter` from the same registration: one for the HTTP adapter and one for each in-process transport (`server.localClient()`, the catalog transport behind `ctx.call`). The two methods split along that line:
+
+- **`setup(context)`** runs **exactly once per server**, immediately before the protocol's first `register()` — on `server.start()`, or earlier if an in-process client is created first. Put everything that reads the registry or has side effects here.
+- **`register(router)`** runs **once per router** and must only add routes. It must not change state that other routers or the application can observe — otherwise the first in-process call would change what HTTP clients see.
+
+A registration object belongs to **one server**. Whatever `setup` stores in it — the service list in the example below, the descriptor set of `Reflection()` — is that server's state. Passing the same object to a second server lets the second server's `setup` overwrite it, and the first server's later routers then serve the second server's data. Call the protocol factory once per server:
+
+```typescript
+const serverA = createServer({ services: [routesA], protocols: [Reflection()] });
+const serverB = createServer({ services: [routesB], protocols: [Reflection()] });
+```
+
+Protocols are processed in array order. The `context.registry` a protocol receives in `setup` holds every mounted application service plus the services of the protocols listed **before** it, as a frozen snapshot. That is why `Healthcheck()` does not track its own `grpc.health.v1.Health` service, while a `Reflection()` listed after it does list it:
 
 ```typescript
 import { createServer } from '@connectum/core';
@@ -90,15 +105,21 @@ import { InfoService } from '#gen/info_pb.js';
 
 function ServerInfo(): ProtocolRegistration {
   const startedAt = new Date().toISOString();
+  let serviceNames: string[] = [];
 
   return {
     name: 'server-info',
 
-    register(router: ConnectRouter, context: ProtocolContext): void {
-      const serviceNames = context.registry.flatMap(
+    // Once per server: read the registry and keep the result.
+    setup(context: ProtocolContext): void {
+      serviceNames = context.registry.flatMap(
         (file) => file.services.map((s) => s.typeName),
       );
+    },
 
+    // Once per router: only add routes, reusing what setup computed, so HTTP
+    // and in-process clients get identical answers.
+    register(router: ConnectRouter): void {
       router.service(InfoService, {
         getInfo: () => ({
           startedAt,
@@ -117,13 +138,13 @@ Add a raw HTTP endpoint alongside the gRPC service. The `httpHandler` function r
 
 ```typescript
 import type { Http2ServerRequest, Http2ServerResponse } from 'node:http2';
-import type { ProtocolRegistration, ProtocolContext } from '@connectum/core';
+import type { ProtocolRegistration } from '@connectum/core';
 
 function CustomHealthEndpoint(): ProtocolRegistration {
   const protocol: ProtocolRegistration = {
     name: 'custom-health',
 
-    register(_router, _context): void {
+    register(_router): void {
       // No gRPC service needed -- HTTP-only protocol
     },
 
@@ -198,10 +219,10 @@ const server = createServer({
 
 ## Using ProtocolContext
 
-The `context.registry` field contains an array of `DescFile` objects (from `@bufbuild/protobuf`) representing the proto file descriptors of all registered services. This is how the built-in Reflection protocol discovers available services:
+The `context.registry` field passed to `setup` contains an array of `DescFile` objects (from `@bufbuild/protobuf`) representing the proto file descriptors of the application services and of the protocols listed before yours. This is how the built-in Reflection protocol discovers available services:
 
 ```typescript
-register(router, context): void {
+setup(context): void {
   // List all registered service type names
   for (const file of context.registry) {
     for (const service of file.services) {
@@ -220,11 +241,17 @@ register(router, context): void {
 
 2. **Name your protocol** -- The `name` field is used for identification and logging. Choose a descriptive, lowercase name.
 
-3. **Keep register() synchronous** -- The `register` method signature is synchronous. If you need async setup, do it before creating the protocol or inside the service handlers.
+3. **One-time work in `setup()`, routes in `register()`** -- `register()` runs for every router the server builds, so anything with side effects there (initializing state, opening resources, reading the registry) would run again on the first in-process call. Compute once in `setup()`, capture the result in the closure, and let `register()` only call `router.service(...)`.
 
-4. **Return `false` from httpHandler for unmatched routes** -- This allows other protocols and the default 404 handler to process the request.
+4. **Keep setup() and register() synchronous** -- Both signatures are synchronous. If you need async setup, do it before creating the protocol or inside the service handlers.
 
-5. **Use ProtocolContext for service discovery** -- Do not hardcode service names. Use `context.registry` to discover what services are available.
+5. **Return `false` from httpHandler for unmatched routes** -- This allows other protocols and the default 404 handler to process the request.
+
+6. **Use ProtocolContext for service discovery** -- Do not hardcode service names. Use `context.registry` in `setup()` to discover what services are available.
+
+::: warning Upgrading from `register(router, context)`
+Earlier releases passed `context` to `register()`. See [Custom protocols: setup/register split](/en/migration/protocol-setup) for the migration.
+:::
 
 ## Related
 
