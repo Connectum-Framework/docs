@@ -244,6 +244,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Upgrade overview', link: '/en/migration/' },
                         { text: 'Migrating to 1.0', link: '/en/migration/1.0' },
                         { text: 'Service catalog', link: '/en/migration/service-catalog' },
+                        { text: 'Custom protocols: setup/register', link: '/en/migration/protocol-setup' },
                     ],
                 },
             ],

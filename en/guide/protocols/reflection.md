@@ -69,7 +69,7 @@ When you pass `Reflection()` to the `protocols` array, Connectum:
 3. Registers the `grpc.reflection.v1.ServerReflection` service on the ConnectRouter
 4. Clients can then query the reflection service to discover available services
 
-The reflection service is registered **after** your application services, so it has access to all registered service descriptors.
+Reflection is set up **after** your application services, so it has access to all of their descriptors. It also lists the services of protocols placed before it in the `protocols` array — with `[Healthcheck(), Reflection()]`, `grpc.health.v1.Health` is listed.
 
 ## Using grpcurl with Reflection
 
@@ -278,14 +278,17 @@ Under the hood, `Reflection()` returns a `ProtocolRegistration` object:
 ```typescript
 {
   name: 'reflection',
-  register(router, context) {
-    // context.registry contains all registered service DescFile[]
-    // Builds FileDescriptorSet and registers reflection service
+  setup(context) {
+    // Once per server: context.registry holds the application services and
+    // the protocols listed before Reflection; builds the FileDescriptorSet
+  },
+  register(router) {
+    // Once per router: mounts the reflection service with that same set
   },
 }
 ```
 
-The `context.registry` is populated by `@connectum/core` during server startup, containing file descriptors from all registered services.
+The `context.registry` is a snapshot taken by `@connectum/core` when the server first builds its routes. Because the descriptor set is built once and shared by every router, HTTP clients and in-process clients (`server.localClient()`, `ctx.call`) see the same listing.
 
 ## Related
 
