@@ -2,7 +2,7 @@
 
 # Interface: TimeoutOptions
 
-Defined in: [types.ts:179](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L179)
+Defined in: [types.ts:194](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L194)
 
 Timeout interceptor options
 
@@ -12,7 +12,7 @@ Timeout interceptor options
 
 > `optional` **duration?**: `number`
 
-Defined in: [types.ts:184](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L184)
+Defined in: [types.ts:199](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L199)
 
 Request timeout in milliseconds
 
@@ -28,7 +28,7 @@ Request timeout in milliseconds
 
 > `optional` **skipStreaming?**: `boolean`
 
-Defined in: [types.ts:190](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L190)
+Defined in: [types.ts:205](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L205)
 
 Skip timeout for streaming calls
 

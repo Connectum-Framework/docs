@@ -4,7 +4,7 @@
 
 > `const` **LifecycleEvent**: `object`
 
-Defined in: [packages/core/src/types.ts:166](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L166)
+Defined in: [packages/core/src/types.ts:201](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L201)
 
 Lifecycle event names
 

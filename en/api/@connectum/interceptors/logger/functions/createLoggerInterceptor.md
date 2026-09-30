@@ -4,7 +4,7 @@
 
 > **createLoggerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [logger.ts:86](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/logger.ts#L86)
+Defined in: [logger.ts:116](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/logger.ts#L116)
 
 Create logger interceptor
 
@@ -45,6 +45,14 @@ const server = createServer({
 });
 
 await server.start();
+```
+
+**Tag log lines with the transport (opt-in)**
+
+```typescript
+createLoggerInterceptor({ includeTransport: true });
+// RPC [in-process] /greeter.v1.GreeterService/SayHello request ...   (server.localClient)
+// RPC [http] /greeter.v1.GreeterService/SayHello request ...         (network client)
 ```
 
 **Client-side usage with transport**

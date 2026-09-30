@@ -8,6 +8,30 @@ Logger interceptor options
 
 ## Properties
 
+### includeTransport?
+
+> `optional` **includeTransport?**: `boolean`
+
+Defined in: [types.ts:77](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L77)
+
+Tag every log line with the transport that carried the call, right
+after the `RPC` / `STREAM` prefix: `[in-process]` for calls made through
+`server.localClient()` / `createLocalTransport()` of `@connectum/core`,
+`[http]` for every other call (gRPC, Connect or gRPC-Web over HTTP).
+
+The tag is for reading logs only. It comes from a framework-internal
+request marker, so it must not drive authorization or any other
+security decision; decide on `req.service.typeName` and
+`req.method.name` instead.
+
+#### Default
+
+```ts
+false
+```
+
+***
+
 ### level?
 
 > `optional` **level?**: `"error"` \| `"warn"` \| `"debug"` \| `"info"`
