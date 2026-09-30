@@ -49,12 +49,13 @@ A rejected call never reaches the server interceptors, so `@connectum/otel` reco
 
 ```typescript
 import type { HandlerContext } from '@connectrpc/connect';
-import { ConnectError } from '@connectrpc/connect';
+import { Code, ConnectError } from '@connectrpc/connect';
+import { createServer } from '@connectum/core';
 import { metrics } from '@opentelemetry/api';
 
-const rejections = metrics.getMeter('request-gate').createCounter('rpc.server.gate.rejections');
-
 type Gate = (context: HandlerContext) => void | Promise<void>;
+
+const rejections = metrics.getMeter('request-gate').createCounter('rpc.server.gate.rejections');
 
 function audited(gate: Gate): Gate {
   return async (context) => {
@@ -64,12 +65,19 @@ function audited(gate: Gate): Gate {
       rejections.add(1, {
         'rpc.service': context.service.typeName,
         'rpc.method': context.method.name,
-        'rpc.connect_rpc.error_code': ConnectError.from(err).code,
+        // Numeric Connect code, as @connectum/otel records it on spans.
+        'rpc.connect_rpc.status_code': ConnectError.from(err).code,
       });
       throw err;
     }
   };
 }
+
+const credentialGate: Gate = (context) => {
+  if (!context.requestHeader.get('authorization')) {
+    throw new ConnectError('unauthenticated', Code.Unauthenticated);
+  }
+};
 
 const server = createServer({ services: [routes], requestGate: audited(credentialGate) });
 ```

@@ -78,6 +78,12 @@ A small set of behaviours are explicitly transport-specific and are
   limit, metadata, details, and whether the handler ran are still compared
   as-is, and any other message difference still fails.
 
+- **Server shutdown.** `server.stop()` aborts the handler signal of RPCs
+  received over HTTP, not of in-process calls, which end by their deadline or
+  client cancellation. Client-side cancellation and deadlines propagate
+  identically on both transports; only the server's own shutdown signal is
+  HTTP-only.
+
 Request admission itself is **not** an exception: a server's `requestGate`
 and `readMaxBytes` apply identically on both transports, with no in-process
 exemption (see [Request admission](/en/guide/security/request-admission)).

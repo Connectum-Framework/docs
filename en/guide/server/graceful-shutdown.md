@@ -65,7 +65,8 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 
 ```
 1. STOPPING event     -- Notify listeners (update health check to NOT_SERVING)
-2. Abort signal       -- Signal streaming RPCs and long-running operations
+2. Abort signal       -- Signal RPCs received over HTTP and long-running operations
+                         (in-process calls are not aborted)
 3. Transport close    -- Stop accepting new connections, send GOAWAY to every HTTP/2 session
 4. Timeout race       -- Wait for in-flight requests OR timeout
 5. Force close        -- If timeout + forceCloseOnTimeout: destroy every remaining connection
