@@ -102,11 +102,34 @@ export const sharedConfig = defineConfig({
         plugins: [llmstxt({
             ignoreFiles: ['index.md', 'README.md'],
         })],
+        optimizeDeps: {
+            /* The theme registers the ELK layout engine on the Mermaid it imports, and
+               `vitepress-plugin-mermaid` renders through the Mermaid *it* imports. On a
+               cold dev cache those are two different modules -- the pre-bundled dependency
+               the theme gets, and the raw `mermaid.core.mjs` that the plugin's own `.ts`
+               entry pulls in before Mermaid has been pre-bundled -- so the registration
+               lands on the copy that never renders and diagrams fall back to dagre with
+               nothing in the console.
+
+               Declaring both up front means the dependency exists in one form from the
+               first request. `resolve.dedupe` does not help: these are not two versions
+               but two forms of one. Excluding them is not an option either -- Mermaid's
+               dependency tree contains CommonJS, which the browser cannot load unbundled,
+               and diagrams then fail to render at all. */
+            include: ['mermaid', '@mermaid-js/layout-elk'],
+        },
         build: {
             chunkSizeWarningLimit: 3000,
             rollupOptions: {
                 output: {
                     manualChunks(id) {
+                        /* ELK's layout engine is reached through a dynamic import inside the
+                           tiny descriptor `theme/index.ts` registers, so it can stay out of
+                           the chunk every page loads and arrive only when a diagram is first
+                           rendered. It has to be matched before the mermaid rule below --
+                           `@mermaid-js/layout-elk` contains "mermaid", and folding it in
+                           there costs every page roughly half a megabyte, diagrams or not. */
+                        if (id.includes('elkjs') || /layout-elk\/dist\/chunks\/.*\/render-/.test(id)) return 'mermaid-layout-elk';
                         if (id.includes('mermaid')) return 'mermaid';
                     },
                 },
