@@ -338,6 +338,28 @@ const themeCSS = `
 export const mermaidConfig: MermaidConfig = {
     fontFamily: DIAGRAM_FONT,
     fontSize: 15,
+    /* ELK plans orthogonal routes; dagre only ever produced points that a curve was
+       stroked through, so its edges ran diagonally between ranks whatever the curve was.
+       The engine itself lives in `@mermaid-js/layout-elk` and is registered in
+       `theme/index.ts` -- this key is inert until it is.
+
+       ELK also lays out nodes, not just edges, and that is what pays for the routing:
+       measured over the whole corpus it is 10% smaller in area than dagre, so diagrams
+       are scaled down less inside the documentation column and their text lands larger. */
+    layout: 'elk',
+    elk: {
+        /* Converging edges share a trunk. Two effects, both measured: the short diagonal
+           stubs where a route leaves a diamond's slanted face disappear entirely, and
+           routes carry fewer corners. Mermaid warns that merged paths can be harder to
+           read -- on the fan-ins here each edge keeps its own approach and its own label,
+           so only the trunk is common.
+
+           Node placement is deliberately left at the engine default. `NETWORK_SIMPLEX`
+           produces shorter edges but widens the two branch-heavy flowcharts by half at
+           unchanged height, and width is what decides how far `useMaxWidth` shrinks the
+           text. `SIMPLE` is far worse on every measure. */
+        mergeEdges: true,
+    },
     /* Mermaid's default today, pinned because the theme depends on it: with HTML labels
        every piece of diagram text is a `<span>`/`<p>` inside a `foreignObject`, and that
        is what the selectors above style. Turning it off would swap the whole label layer
@@ -349,8 +371,10 @@ export const mermaidConfig: MermaidConfig = {
         fontSize: '15px',
     },
     flowchart: {
-        /* Angular routing reads as a wiring diagram and keeps a line's rank visible;
-           mermaid's default `basis` curve bows edges into neighbouring nodes. */
+        /* Inert while `layout: 'elk'` is in force: the ELK renderer overrides every edge
+           to its own rounded curve. Kept so that removing the ELK settings rolls back to
+           what dagre drew here before, rather than to mermaid's default `basis` splines
+           bowing edges into neighbouring nodes. */
         curve: 'linear',
         /* `padding` is the gap between a label and its own shape; the two spacings are
            between nodes. Together they are what stops arrowheads from landing on a
