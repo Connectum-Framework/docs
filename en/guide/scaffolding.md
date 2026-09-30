@@ -131,6 +131,29 @@ The generated e2e test asserts both directions: the public rpc succeeds and the
 authenticated one is rejected without credentials. Remove the option from `SayHello` once
 you want every method to require a token.
 
+### Enums in generated code
+
+A Node.js project runs its TypeScript by stripping types and type-checks with
+`erasableSyntaxOnly`, and neither accepts a TypeScript `enum`. The generated
+`buf.gen.yaml` therefore passes `erasable_syntax=true` to `protoc-gen-es`, so each
+Protobuf enum in your protos is generated as an `as const` object plus a type of the
+same name:
+
+```typescript
+export const Color = { UNSPECIFIED: 0, RED: 1, GREEN: 2 } as const;
+export type Color = (typeof Color)[keyof typeof Color] | UnknownEnum;
+```
+
+- `Color.RED` works as a value, as with an `enum`.
+- There is no reverse mapping: `Color[1]` is `undefined` and a type error.
+- For the type of a single value, write `typeof Color.RED`.
+- An open (proto3) enum's type also admits `UnknownEnum`.
+
+The option needs `@bufbuild/protoc-gen-es` and `@bufbuild/protobuf` 2.13.0 or later.
+`init` declares both at `^2.16.0` — raising a lower range from the base, including a
+base fetched with `--ref` — and keeps a base range that is already higher. Details and
+the full comparison with TypeScript enums: [Proto Enums](/en/guide/typescript/proto-enums).
+
 ### Interceptor order
 
 When multiple interceptor-adding modules are selected, `init` emits a single, consistent
