@@ -27,10 +27,11 @@ changes below. Projects without enums need no changes.
 
 ## Required changes
 
-1. Raise `@bufbuild/protobuf` (dependencies) and `@bufbuild/protoc-gen-es`
-   (devDependencies) to `^2.16.0`. The option first ships in `protoc-gen-es` 2.13.0,
-   and the generated code imports `UnknownEnum` from `@bufbuild/protobuf` 2.13.0 or
-   later; `^2.16.0` is what the Connectum scaffold uses.
+1. Make sure `@bufbuild/protobuf` (dependencies) and `@bufbuild/protoc-gen-es`
+   (devDependencies) are at 2.13.0 or later. The option first ships in
+   `protoc-gen-es` 2.13.0, and the generated code imports `UnknownEnum` from
+   `@bufbuild/protobuf` 2.13.0 or later. The Connectum scaffold declares `^2.16.0`;
+   a project already on 2.13.x or later does not need to move.
 2. Add `erasable_syntax=true` to the `protoc-gen-es` options in `buf.gen.yaml` — not
    to other plugins; Connectum's catalog plugin rejects unknown options.
 3. Run `buf generate`, then fix the code the type checker flags:
@@ -50,8 +51,12 @@ const label = Status[msg.status];            // "ACTIVE"
 function isActive(s: Status.ACTIVE) {}
 
 // After: erasable_syntax=true
+// Generated in gen/<path>/<file>_pb.ts, together with the descriptor `StatusSchema`
+// (the file imports `UnknownEnum` from "@bufbuild/protobuf"):
 export const Status = { UNSPECIFIED: 0, ACTIVE: 1 } as const;
 export type Status = (typeof Status)[keyof typeof Status] | UnknownEnum;
+
+// Your code, importing `Status` and `StatusSchema` from that generated file:
 const label = StatusSchema.value[msg.status]?.localName; // "ACTIVE"
 function isActive(s: typeof Status.ACTIVE) {}
 ```
