@@ -302,11 +302,11 @@ shutdown: {
 }
 ```
 
-This bounds the connection drain by the timeout even if a client holds its connection open (ignores GOAWAY, idles, or stalls mid-request), so no connection accepted by the server keeps the process alive afterwards. `stop()` then runs the shutdown hooks, so it completes once the timeout has elapsed **and** your hooks have finished — keep hooks fast. Connectum never calls `process.exit()`; anything your own code keeps open (timers, handlers that ignore the abort signal, other sockets) can still keep the process running.
+This bounds the connection drain by the timeout even if a client holds its connection open (ignores GOAWAY, idles, or stalls mid-request), so no connection accepted by the server keeps the process alive afterwards. `stop()` runs the shutdown hooks as soon as every connection has closed or the timeout has won, whichever comes first, and completes when your hooks have finished — keep hooks fast. Connectum never calls `process.exit()`; anything your own code keeps open (timers, handlers that ignore the abort signal, other sockets) can still keep the process running.
 
 ### With forceCloseOnTimeout: false
 
-No connection is destroyed. Shutdown still moves on once the timeout is exceeded: `stop()` runs the shutdown hooks and completes when they have finished (or rejects if one fails), exactly as with the default. Connections that clients keep open stay open, though, and keep the process alive until those clients close them:
+No connection is destroyed. Shutdown still moves on when every connection has closed or the timeout has won, whichever comes first: `stop()` runs the shutdown hooks and completes when they have finished (or rejects if one fails), exactly as with the default. Connections that clients keep open stay open, though, and keep the process alive until those clients close them:
 
 ```typescript
 shutdown: {
