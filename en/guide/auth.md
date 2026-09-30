@@ -32,6 +32,8 @@ interceptors: [
 ]
 ```
 
+To turn away requests that carry no credential at all before their body is even read, add a server-wide [request gate](/en/guide/security/request-admission) in front of this chain; it runs before every interceptor, so its errors must already be client-safe.
+
 The security invariant is `error handling → authentication → authorization → remaining behavior`. Public-method discovery and exact factory fields are deliberately not duplicated here; use the focused guide and generated interfaces such as [`JwtAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/JwtAuthInterceptorOptions).
 
 ## Learn, configure, inspect

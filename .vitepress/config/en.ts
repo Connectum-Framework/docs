@@ -98,6 +98,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
                 items: [
                     { text: 'TLS', link: '/en/guide/security/tls' },
                     { text: 'Mutual TLS', link: '/en/guide/security/mtls' },
+                    { text: 'Request admission', link: '/en/guide/security/request-admission' },
                 ],
             },
         ],
