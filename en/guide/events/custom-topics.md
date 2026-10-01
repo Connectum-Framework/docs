@@ -73,6 +73,26 @@ extend google.protobuf.MethodOptions {
 The `options.proto` file is included in the `@connectum/events` package proto directory. Add it to your `buf.yaml` dependencies or copy it into your project's proto tree.
 :::
 
+Since 1.3.0, `@connectum/events` also exports the generated code of this proto at `@connectum/events/gen/connectum/events/v1/options_pb.js` — the module the EventBus itself uses to resolve topics. Import it instead of generating a local copy: run `protoc-gen-es` (2.15.0 or later) with `map_imports=connectum/events/v1/:@connectum/events/gen`, and if you copied the proto into your tree, keep it out of generation with `exclude_paths`:
+
+```yaml
+version: v2
+clean: true
+inputs:
+  - directory: proto
+    exclude_paths:
+      - proto/connectum/events/v1
+plugins:
+  - local: protoc-gen-es
+    out: gen
+    opt:
+      - target=ts
+      - import_extension=.ts
+      - map_imports=connectum/events/v1/:@connectum/events/gen
+```
+
+`connectum init --events` sets this up; see [Scaffolding](/en/guide/scaffolding#connectum-option-protos).
+
 ## Publishing to Custom Topics
 
 The EventBus resolves the publish topic automatically when the publisher process has the relevant service registered — either via `routes` (subscriber side) or via the `publishes` option (publisher-only side). In that case no `PublishOptions.topic` override is needed:
