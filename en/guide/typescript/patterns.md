@@ -158,7 +158,7 @@ Before running your Connectum service, verify:
 - [ ] `erasableSyntaxOnly: true` in `tsconfig.json`
 - [ ] No `enum` in application code (use `const` objects) -- type stripping cannot execute it
 - [ ] `.ts` extensions in relative imports
-- [ ] Proto enums handled via [two-step generation](/en/guide/typescript/proto-enums) (if applicable; not needed with tsx)
+- [ ] Proto enums generated with [`erasable_syntax=true`](/en/guide/typescript/proto-enums) in `buf.gen.yaml` (if applicable; `protoc-gen-es` and `@bufbuild/protobuf` >= 2.13.0)
 == bun
 - [ ] Bun installed (`bun --version`)
 - [ ] `.ts` extensions in relative imports (optional for Bun, but keeps the code portable to Node.js)
@@ -173,4 +173,4 @@ Keep to the erasable subset anyway if the same code has to run on Node.js.
 - [TypeScript Overview](/en/guide/typescript) -- back to overview
 - [Erasable Syntax](/en/guide/typescript/erasable-syntax) -- constraints and tsconfig.json
 - [Runtime Support](/en/guide/typescript/runtime-support) -- Node.js, Bun, tsx
-- [Proto Enums](/en/guide/typescript/proto-enums) -- proto enum workaround
+- [Proto Enums](/en/guide/typescript/proto-enums) -- erasable proto enum generation
