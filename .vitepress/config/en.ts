@@ -98,6 +98,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
                 items: [
                     { text: 'TLS', link: '/en/guide/security/tls' },
                     { text: 'Mutual TLS', link: '/en/guide/security/mtls' },
+                    { text: 'Request admission', link: '/en/guide/security/request-admission' },
                 ],
             },
         ],
@@ -245,6 +246,8 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Migrating to 1.0', link: '/en/migration/1.0' },
                         { text: 'Service catalog', link: '/en/migration/service-catalog' },
                         { text: 'Custom protocols: setup/register', link: '/en/migration/protocol-setup' },
+                        { text: 'Erasable proto enums', link: '/en/migration/erasable-enums' },
+                        { text: 'In-process calls on shutdown', link: '/en/migration/in-process-shutdown' },
                     ],
                 },
             ],
