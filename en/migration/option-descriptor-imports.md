@@ -77,8 +77,9 @@ and makes your generated files use the very descriptor objects that `@connectum/
          - target=ts
          - import_extension=.ts
    ```
-3. Run `buf generate` (with `clean: true` it removes the old `gen/connectum/` files),
-   then `typecheck`. If your own code imported from `#gen/connectum/auth/v1/options_pb.ts`
+3. Run `buf generate`, then `typecheck`. With `clean: true`, buf empties the whole `gen/`
+   output directory before generating — that is what removes the old `gen/connectum/`
+   files — so move anything you keep in `gen/` that these plugins do not regenerate. If your own code imported from `#gen/connectum/auth/v1/options_pb.ts`
    or `#gen/connectum/events/v1/options_pb.ts`, import the same names from
    `@connectum/auth/proto` (auth) or from the package subpaths above instead.
 
