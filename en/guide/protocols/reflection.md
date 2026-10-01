@@ -77,7 +77,7 @@ The answers follow the [reflection protocol](https://github.com/grpc/grpc-proto/
 
 | Request | Answer |
 |---------|--------|
-| `list_services` | The mounted services: application services and the protocols listed before `Reflection()`. Services declared only in imported files are not listed. |
+| `list_services` | The mounted services: application services and the protocols listed before `Reflection()`. Services that are declared but not mounted (in an imported file, or next to a mounted service in the same file) are not listed. |
 | `file_by_filename`, `file_containing_symbol`, `file_containing_extension` | The requested file first, then each transitive import (well-known types included) not yet sent on the same stream. |
 | `file_containing_symbol` | Resolves services, methods (`pkg.Service.Method`), messages, fields, oneofs, enums, enum values and extensions. Enum values are named in the scope that contains their enum (`pkg.LEVEL_HIGH`, not `pkg.Level.LEVEL_HIGH`). |
 | `all_extension_numbers_of_type` | `base_type_name` set to the requested type, numbers in ascending order. |
@@ -309,8 +309,9 @@ Under the hood, `Reflection()` returns a `ProtocolRegistration` object:
 {
   name: 'reflection',
   setup(context) {
-    // Once per server: context.registry holds the application services and
-    // the protocols listed before Reflection; indexes their descriptors
+    // Once per server: context.services and context.registry hold the
+    // mounted application services and the protocols listed before
+    // Reflection; indexes their descriptors
   },
   register(router) {
     // Once per router: mounts the v1 and v1alpha reflection services on that same index
@@ -318,7 +319,7 @@ Under the hood, `Reflection()` returns a `ProtocolRegistration` object:
 }
 ```
 
-The `context.registry` is a snapshot taken by `@connectum/core` when the server first builds its routes. Because the index is built once and shared by every router, HTTP clients and in-process clients (`server.localClient()`, `ctx.call`) see the same listing.
+The context is a snapshot taken by `@connectum/core` when the server first builds its routes. Because the index is built once and shared by every router, HTTP clients and in-process clients (`server.localClient()`, `ctx.call`) see the same listing.
 
 ## Related
 

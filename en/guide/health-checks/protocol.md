@@ -101,7 +101,7 @@ Behavior follows the gRPC specification:
 
 ### Health.List
 
-Lists all registered services with their statuses:
+Lists all tracked services with their statuses. Healthcheck tracks the services mounted before it in `protocols`; a service that is only declared — for example next to a mounted service in the same `.proto` file — is not tracked, and `Check` answers `NOT_FOUND` for it:
 
 ```bash
 grpcurl -plaintext localhost:5000 grpc.health.v1.Health/List
