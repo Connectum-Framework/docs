@@ -117,13 +117,6 @@ It is **skipped** when the loaded versions cannot be determined:
 In those setups the install-time behavior above is your only signal, so keep the pins in
 range.
 
-::: info One known exception to the single copy
-`@connectum/reflection` currently uses `@lambdalisue/connectrpc-grpcreflect`, which lists
-`@bufbuild/protobuf` and `@connectrpc/connect` as regular dependencies, so a package
-manager may give it a copy of its own. This goes away when Connectum ships its own gRPC
-Server Reflection.
-:::
-
 ## Required changes
 
 1. **Bring your pins into range, or drop them.** Raise `@bufbuild/protobuf` to `^2.16.0`
@@ -193,8 +186,7 @@ bun pm ls --all | grep -E '@bufbuild/protobuf@|@connectrpc/connect(-node)?@'
 `npm ls` exits non-zero and marks an entry `invalid` when a peer range is not met.
 `pnpm peers check` must not list `@bufbuild/protobuf`, `@connectrpc/connect` or
 `@connectrpc/connect-node`. With Bun, a second version of `@bufbuild/protobuf` nested under
-`@bufbuild/protoplugin` belongs to the code generator and is expected, and so is one under
-`@lambdalisue/connectrpc-grpcreflect` (the known exception above); any other second
+`@bufbuild/protoplugin` belongs to the code generator and is expected; any other second
 version is not. Then start the service: `createServer()` must not throw
 `PeerDependencyVersionError`. Finally, run your type-check and tests.
 
