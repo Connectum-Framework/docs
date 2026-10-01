@@ -34,9 +34,10 @@ What did not change: `stop()` still neither waits for in-process calls nor kills
 
 If work started through an in-process call must complete during shutdown:
 
-- finish it before calling `server.stop()`, or
-- run it in a [shutdown hook](/en/guide/server/graceful-shutdown#shutdown-hooks), or
-- stop passing `context.signal` to the operation that must not be interrupted.
+- await it before calling `server.stop()`, or
+- run it in a [shutdown hook](/en/guide/server/graceful-shutdown#shutdown-hooks) and await it there.
+
+Not passing `context.signal` to an operation only keeps it from being cancelled. It does not make `server.stop()` wait for the call, so use it only when some other owner already awaits that operation's completion.
 
 ## Before and after
 
@@ -50,6 +51,7 @@ await server.stop();
 // 1.2: `build` kept running; its context.signal stayed live.
 // 1.3: `build` sees context.signal aborted; if it rethrows,
 //      `pending` rejects with ConnectError code `canceled`.
+const outcome = await Promise.allSettled([pending]);
 ```
 
 ## Verify the upgrade

@@ -1,6 +1,6 @@
 ---
 title: In-Process Transport
-description: Call locally registered Connectum services in memory — no HTTP/2, TLS, or sockets — with full behavioural parity to the HTTP transport.
+description: Call locally registered Connectum services in memory — no HTTP/2, TLS, or sockets — with behavioural parity to the HTTP transport, apart from documented differences in diagnostic text.
 ---
 
 # In-Process Transport
