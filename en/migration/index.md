@@ -43,7 +43,7 @@ action below rather than assuming a direct upgrade to the documented line.
 
 | Installed version | Required action |
 |---|---|
-| 1.2.x | Review the 1.3 release notes for each installed package and run your existing tests |
+| 1.2.x | Review the 1.3 release notes for each installed package and run your existing tests; if you implement your own `ProtocolRegistration`, or a `defineLazyService` factory relies on separate instances per transport, follow [Custom protocols: setup/register split](/en/migration/protocol-setup); if in-process calls (`localClient`, `ctx.call`) watch `context.signal` and must finish during `server.stop()`, follow [In-process calls on shutdown](/en/migration/in-process-shutdown) |
 | 1.1.x | Review the 1.2 and 1.3 release notes for each installed package and run your existing tests |
 | 1.0.x | Review package release notes; 1.1 capabilities are additive |
 | RC or alpha | Follow [Migrating to 1.0](/en/migration/1.0), then review the [Service Catalog migration](/en/migration/service-catalog) |
@@ -54,6 +54,16 @@ action below rather than assuming a direct upgrade to the documented line.
   streaming transport validation, and removed EventBus `sync` option.
 - [Migrating to the Service Catalog](/en/migration/service-catalog) — replace
   legacy service registration and manual client routing.
+- [Custom protocols: setup/register split](/en/migration/protocol-setup) — move
+  one-time work of your own `ProtocolRegistration` into `setup(context)`, and review
+  `defineLazyService` factories that relied on one instance per transport (1.3;
+  other applications using only built-in protocols need no changes).
+- [Erasable proto enums](/en/migration/erasable-enums) — generate proto enums as
+  `as const` objects (`erasable_syntax=true`) and update code that used enum reverse
+  mapping; only for projects whose protos declare enums.
+- [In-process calls on shutdown](/en/migration/in-process-shutdown) — from 1.3,
+  `server.stop()` aborts `context.signal` of in-flight in-process calls exactly
+  like HTTP calls.
 
 ## Release History
 

@@ -1,11 +1,11 @@
 ---
 title: In-Process Transport
-description: Call locally registered Connectum services as plain function invocations — no HTTP/2, TLS, or wire serialization — with full behavioural parity to the HTTP transport.
+description: Call locally registered Connectum services in memory — no HTTP/2, TLS, or sockets — with behavioural parity to the HTTP transport, apart from documented differences in diagnostic text.
 ---
 
 # In-Process Transport
 
-The **in-process transport** lets you invoke services that are registered on the same `Server` instance as direct function calls — without HTTP/2, TLS, sockets, or wire serialization — while preserving 1-to-1 behavioural parity with the HTTP/Connect/gRPC transport (interceptors, validation, authorization, error mapping, streaming semantics, OpenTelemetry spans and metrics).
+The **in-process transport** lets you invoke services that are registered on the same `Server` instance in memory — without HTTP/2, TLS, or sockets — while preserving 1-to-1 behavioural parity with the HTTP/Connect/gRPC transport (interceptors, validation, authorization, request admission, error mapping, streaming semantics, OpenTelemetry spans and metrics). Messages still cross an in-memory Connect protocol boundary in binary protobuf form, so the handler receives its own decoded copy of each request, exactly as over the network.
 
 ::: tip Full API Reference
 TypeScript API documentation: [@connectum/core API Reference](/en/api/@connectum/core/).
@@ -145,10 +145,11 @@ Dashboards, alerts, and SLOs built over HTTP metrics continue to work after a se
 
 By design, the in-process transport bypasses HTTP-wire concerns:
 
-- **No HTTP-level middleware** — CORS, compression, HTTP/2 flow control, request body size limits, and similar features do not apply because no bytes leave the process.
+- **No HTTP-level middleware** — CORS, compression, HTTP/2 flow control, and similar wire features do not apply because no bytes leave the process. Connect-level admission does apply: a server's `requestGate` and `readMaxBytes` reject in-process requests exactly as they reject HTTP ones — see [Request admission](/en/guide/security/request-admission).
 - **No cross-process / IPC** — for cross-process communication (Unix sockets, separate hosts, worker_threads) use HTTP transports.
 - **Streaming back-pressure** is provided by `AsyncIterable` semantics and is best-effort rather than HTTP/2 flow control. For very high-throughput streaming, prefer HTTP/2.
-- **Payload objects are shared by reference** inside the same process (as in any function call). Do not mutate request/response payloads after handing them off. `Headers` are explicitly cloned at the boundary.
+- **Messages are serialized, not shared** — the transport encodes each message to binary protobuf and decodes it on the other side, so the handler and the caller never share a message object. You pay the encode/decode cost, but not the network. `Headers` are cloned at the boundary.
+- **Shutdown does not wait for in-process calls** — `server.stop()` aborts `context.signal` of in-flight in-process calls exactly as it does for HTTP calls (since 1.3.0), but the shutdown timeout and `forceCloseOnTimeout` act on connections, and an in-process call has none: `stop()` neither waits for it nor kills it. A handler that ignores the signal keeps running. See [Graceful shutdown](/en/guide/server/graceful-shutdown).
 
 ## Coexistence with HTTP
 

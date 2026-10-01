@@ -39,6 +39,6 @@ These constraints come from `erasableSyntaxOnly: true` -- TypeScript syntax must
 - [Execution Models](/en/guide/typescript/runtime-support) -- native Node.js, Bun, and tsx workflows
 - [Runtime Compatibility](/en/guide/runtime-compatibility) -- canonical supported-version and limitation matrix
 - [Erasable Syntax](/en/guide/typescript/erasable-syntax) -- constraints, import rules, tsconfig.json
-- [Proto Enums](/en/guide/typescript/proto-enums) -- two-step generation workaround for proto enums
+- [Proto Enums](/en/guide/typescript/proto-enums) -- generating proto enums as `as const` objects
 - [Patterns & Workflow](/en/guide/typescript/patterns) -- named parameters, branded types, development workflow
 - [@connectum/core](/en/packages/core) -- Package Guide

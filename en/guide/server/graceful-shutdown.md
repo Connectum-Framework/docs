@@ -65,7 +65,8 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 
 ```
 1. STOPPING event     -- Notify listeners (update health check to NOT_SERVING)
-2. Abort signal       -- Signal streaming RPCs and long-running operations
+2. Abort signal       -- Abort context.signal of every in-flight RPC, over HTTP and
+                         in-process (localClient, ctx.call), and long-running operations
 3. Transport close    -- Stop accepting new connections, send GOAWAY to every HTTP/2 session
 4. Timeout race       -- Wait for in-flight requests OR timeout
 5. Force close        -- If timeout + forceCloseOnTimeout: destroy every remaining connection
@@ -75,6 +76,12 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 ```
 
 Steps 6 and 7 run even if closing the transport fails before the timeout, so your hooks always get to release their resources, and step 7 also runs if a hook fails. On this failure path the server emits `error` instead of `stop`, and `stop()` rejects with the error that occurred — or with an `AggregateError` carrying both when the transport close and a hook both failed. A close failure that only arrives after the timeout has already won is logged, not thrown: if the hooks succeed, `stop()` resolves normally.
+
+### In-process calls
+
+Since 1.3.0, step 2 also aborts `context.signal` of calls made through `server.localClient()`, `server.client()` for a local service, `createLocalTransport()`, and `ctx.call` / `ctx.stream` to a local service — every hop of a local `ctx.call` chain sees it directly. A handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP.
+
+Steps 4 and 5 act on connections, and an in-process call has none: `stop()` neither waits for it nor destroys it, so a handler that ignores the signal keeps running and still completes its call. A local call made after `stop()` starts with an already-aborted signal. Upgrading from 1.2: see [In-process calls on shutdown](/en/migration/in-process-shutdown).
 
 ## Shutdown Hooks
 

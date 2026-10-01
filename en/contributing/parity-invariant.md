@@ -4,8 +4,9 @@ Connectum exposes two transports for ConnectRPC services:
 
 - the **HTTP/2 transport** — the production wire protocol;
 - the **in-process transport** — `createLocalTransport(server)` /
-  `Server.client(ServiceDesc)`, which delivers requests directly into the
-  registered route handlers without serialization or a socket.
+  `Server.client(ServiceDesc)`, which delivers requests into the registered
+  route handlers in memory, without a socket, over Connect's binary protocol
+  (messages are still encoded and decoded).
 
 The framework guarantees a **Behavioural Parity** invariant between them:
 
@@ -67,6 +68,22 @@ A small set of behaviours are explicitly transport-specific and are
   transport injects for interceptors that read `req.url`.
 - The `connectum.transport` span attribute and the `transport` metric label,
   which differ by design and are stripped before structural diff.
+- The diagnostic **text** of a `readMaxBytes` rejection. Connect includes the
+  observed message size only when it knows the total length up front: the
+  gRPC envelope over HTTP does, the in-process unary body does not. So one
+  transport may report `message size 70 is larger than configured
+  readMaxBytes 64` and the other `message size is larger than configured
+  readMaxBytes 64`. `defaultCompare` treats exactly this pair as equal when
+  both errors are `resource_exhausted` and name the same limit; the code, the
+  limit, metadata, details, and whether the handler ran are still compared
+  as-is, and any other message difference still fails.
+
+Server shutdown is **not** an exception either: `server.stop()` aborts the
+handler signal of in-flight calls on both transports (since 1.3.0).
+
+Request admission itself is **not** an exception: a server's `requestGate`
+and `readMaxBytes` apply identically on both transports, with no in-process
+exemption (see [Request admission](/en/guide/security/request-admission)).
 
 ## Pull request checklist
 
