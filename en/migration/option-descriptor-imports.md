@@ -79,9 +79,16 @@ and makes your generated files use the very descriptor objects that `@connectum/
    ```
 3. Run `buf generate`, then `typecheck`. With `clean: true`, buf empties the whole `gen/`
    output directory before generating — that is what removes the old `gen/connectum/`
-   files — so move anything you keep in `gen/` that these plugins do not regenerate. If your own code imported from `#gen/connectum/auth/v1/options_pb.ts`
-   or `#gen/connectum/events/v1/options_pb.ts`, import the same names from
-   `@connectum/auth/proto` (auth) or from the package subpaths above instead.
+   files — so move anything you keep in `gen/` that these plugins do not regenerate.
+
+   If your own code imported from `#gen/connectum/auth/v1/options_pb.ts` or
+   `#gen/connectum/events/v1/options_pb.ts`, import the same names from the package
+   subpaths above: `@connectum/auth/gen/connectum/auth/v1/options_pb.js` and
+   `@connectum/events/gen/connectum/events/v1/options_pb.js` export every generated name,
+   including the file descriptors `file_connectum_auth_v1_options` and
+   `file_connectum_events_v1_options`. `@connectum/auth/proto` re-exports only the auth
+   extensions and schemas (`method_auth`, `service_auth`, `*Schema`) next to the
+   authorization helpers.
 
 ## Verify
 
