@@ -95,6 +95,16 @@ Generated code and the framework must share one in-range copy of each library; a
 Fix: raise your pins to the required ranges (npm install @bufbuild/protobuf@"^2.16.0", or the pnpm / bun / yarn equivalent), or force one in-range version with "overrides" (npm, Bun), pnpm "overrides" or Yarn "resolutions", then reinstall.
 ```
 
+Lockstep is checked at startup too. `@connectrpc/connect-node` works only with the exact
+`@connectrpc/connect` version it declares, so the check also fails when the `connect`
+that connect-node loads is another version, or a different copy than the one
+`@connectum/core` loads — a pair Bun and Yarn install without complaint:
+
+```text
+  - @connectrpc/connect: loaded 2.2.0 (from /app/node_modules/@connectrpc/connect), @connectrpc/connect-node@2.1.2 requires 2.1.2
+@connectrpc/connect-node works only with the exact @connectrpc/connect version it declares: keep both on the same version, with a single copy.
+```
+
 The check has no switch to turn the failure into a warning: an out-of-range copy breaks
 generated types and Connect at runtime.
 
