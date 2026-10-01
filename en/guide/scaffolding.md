@@ -131,6 +131,67 @@ The generated e2e test asserts both directions: the public rpc succeeds and the
 authenticated one is rejected without credentials. Remove the option from `SayHello` once
 you want every method to require a token.
 
+### Connectum option protos
+
+With `--auth` or `--events`, your protos import Connectum's option protos
+(`connectum/auth/v1/options.proto`, `connectum/events/v1/options.proto`), but the project
+does not generate code for them. The generated code imports their descriptors from the
+packages instead — `@connectum/auth/gen/connectum/auth/v1/options_pb.js` and
+`@connectum/events/gen/connectum/events/v1/options_pb.js`, the same modules the packages
+use at runtime. The generated `buf.gen.yaml` does this with one `directory: proto` input
+(with events, `proto/connectum/events/v1` — where the CLI writes its copy of the events
+option proto — is excluded) and `map_imports` options on `protoc-gen-es`:
+
+```yaml
+inputs:
+  - directory: proto
+    exclude_paths:
+      - proto/connectum/events/v1
+plugins:
+  - local: protoc-gen-es
+    out: gen
+    opt:
+      - target=ts
+      - import_extension=.ts
+      - erasable_syntax=true
+      - map_imports=connectum/auth/v1/:@connectum/auth/gen
+      - map_imports=connectum/events/v1/:@connectum/events/gen
+```
+
+Those package exports first ship in 1.3.0, so `init` sets every `@connectum/*`
+dependency of such a project to one range — the highest `@connectum/*` requirement of the
+fetched base, or `^1.3.0` if that is higher, so no base entry is lowered (also with
+`--ref`). One range for the whole set matters: mixed
+`@connectum/*` versions can install two copies of `@bufbuild/protobuf`. A project without
+auth or events keeps the base's ranges. In a project scaffolded with `--events`,
+`generate service --with-events` writes the events option proto to the same excluded
+path, so a new event-handler service also imports the descriptor from
+`@connectum/events`. Projects scaffolded before 1.3.0 can adopt this by
+hand: [Option descriptors from the packages](/en/migration/option-descriptor-imports).
+
+### Enums in generated code
+
+A Node.js project runs its TypeScript by stripping types and type-checks with
+`erasableSyntaxOnly`, and neither accepts a TypeScript `enum`. The generated
+`buf.gen.yaml` therefore passes `erasable_syntax=true` to `protoc-gen-es`, so each
+Protobuf enum in your protos is generated as an `as const` object plus a type of the
+same name:
+
+```typescript
+export const Color = { UNSPECIFIED: 0, RED: 1, GREEN: 2 } as const;
+export type Color = (typeof Color)[keyof typeof Color] | UnknownEnum;
+```
+
+- `Color.RED` works as a value, as with an `enum`.
+- There is no reverse mapping: `Color[1]` is `undefined` and a type error.
+- For the type of a single value, write `typeof Color.RED`.
+- An open (proto3) enum's type also admits `UnknownEnum`.
+
+The option needs `@bufbuild/protoc-gen-es` and `@bufbuild/protobuf` 2.13.0 or later.
+`init` declares both at `^2.16.0` — raising a lower range from the base, including a
+base fetched with `--ref` — and keeps a base range that is already higher. Details and
+the full comparison with TypeScript enums: [Proto Enums](/en/guide/typescript/proto-enums).
+
 ### Interceptor order
 
 When multiple interceptor-adding modules are selected, `init` emits a single, consistent

@@ -117,6 +117,12 @@ bun add -d typescript @types/node @bufbuild/buf @bufbuild/protoc-gen-es
 ```
 :::
 
+The ConnectRPC runtime libraries are **peer dependencies** of Connectum: the copies you
+install here are the ones Connectum uses, so your generated code and the framework share
+one `@bufbuild/protobuf`. Keep them within `@bufbuild/protobuf` `^2.16.0` and
+`@connectrpc/connect` / `@connectrpc/connect-node` `^2.2.0` — see
+[Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies).
+
 Configure `package.json`:
 
 ::: runtime
@@ -248,9 +254,14 @@ plugins:
     opt:
       - target=ts
       - import_extension=.ts
+      - erasable_syntax=true
 inputs:
   - directory: proto
 ```
+
+`erasable_syntax=true` generates Protobuf enums as `as const` objects instead of
+TypeScript `enum`, which native type stripping and `erasableSyntaxOnly` reject. It
+needs `@bufbuild/protoc-gen-es` and `@bufbuild/protobuf` 2.13.0 or later.
 
 Run code generation:
 
@@ -271,8 +282,10 @@ bun run build:proto
 
 This produces `gen/greeter_pb.ts` containing message schemas, types, and the service definition.
 
-::: warning Proto enums and native TypeScript
-If your proto files use `enum`, the generated code contains non-erasable TypeScript. Use a [two-step generation process](/en/guide/typescript/proto-enums).
+::: tip Proto enums and native TypeScript
+With `erasable_syntax=true`, a proto `enum` is generated as an object: `Status.ACTIVE`
+works as usual, but there is no reverse mapping (`Status[1]`). See
+[Proto Enums](/en/guide/typescript/proto-enums).
 :::
 
 ## 4. Service Handler

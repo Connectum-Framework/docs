@@ -420,6 +420,15 @@ All Phase 2 tasks completed:
 
 ---
 
+## Update (2026-10-01): native reflection server and client
+
+`@lambdalisue/connectrpc-grpcreflect` is no longer used, on either side. It declared `@bufbuild/protobuf` and `@connectrpc/connect` as regular dependencies, so a package manager could install a private protobuf copy for it (observed with Bun on a cold cache), against Connectum's one-copy dependency contract.
+
+- **Server:** `@connectum/reflection` serves `grpc.reflection.v1` and `v1alpha` from code generated off the protos vendored verbatim from [grpc/grpc-proto](https://github.com/grpc/grpc-proto/tree/master/grpc/reflection). Answers now follow the protocol where the previous package did not: file answers carry the transitive import closure (without repeating files already sent on the stream), `file_containing_symbol` resolves methods, fields, oneofs, enum values and extensions (`grpcurl describe pkg.Service.Method` works), `all_extension_numbers_of_type` fills `base_type_name` and answers `NOT_FOUND` for an unknown type, and a request with no query gets `INVALID_ARGUMENT` with the stream kept open.
+- **Client:** `@connectum/cli` has its own reflection client with the same v1 → v1alpha fallback. `fetchReflectionData` and `fetchFileDescriptorSetBinary` keep their file order and descriptor-set bytes.
+
+The decisions above (binary `FileDescriptorSet` to `buf generate`, reflection as the sync source) are unchanged; only the implementation of the protocol moved in-house.
+
 ## References
 
 1. [gRPC Server Reflection Protocol](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) -- reflection protocol specification
@@ -444,3 +453,4 @@ All Phase 2 tasks completed:
 | 2026-02-11 | Tech Lead | Phase 1 DONE: Integration tests, documentation. Status updated to Accepted |
 | 2026-02-11 | Tech Lead | Phase 2 DONE: @connectum/cli package with proto sync command, integration tests, documentation |
 | 2026-02-12 | Tech Lead | Phase 0 revised: @connectum/proto removed, replaced by BSR deps approach. See ADR-003 update |
+| 2026-10-01 | Claude | `@lambdalisue/connectrpc-grpcreflect` replaced by native reflection server (`@connectum/reflection`) and client (`@connectum/cli`); see "Update (2026-10-01)" |

@@ -136,6 +136,8 @@ await server.start();
 
 **External dependencies**: `@connectrpc/connect`, `@lambdalisue/connectrpc-grpcreflect`
 
+> **Update (2026-10-01):** `@lambdalisue/connectrpc-grpcreflect` was replaced by an implementation inside the package, generated from the upstream `grpc.reflection.v1` / `v1alpha` protos. It declared `@bufbuild/protobuf` and `@connectrpc/connect` as regular dependencies, which let a package manager install a second protobuf copy. External dependencies are now `@connectrpc/connect` and `@bufbuild/protobuf`.
+
 ---
 
 ### Layer 2: Tools
@@ -323,3 +325,4 @@ packages/<name>/
 | 2026-02-17 | Claude | Added @connectum/cli (Layer 2): CLI tooling |
 | 2026-02-17 | Claude | Updated package count: 6 -> 8 |
 | 2026-03-07 | Claude | Added @connectum/events (Layer 1), @connectum/events-nats, @connectum/events-kafka, @connectum/events-redis (Layer 2): EventBus with pluggable broker adapters (ADR-026). Package count: 8 -> 12 |
+| 2026-10-01 | Claude | @connectum/reflection and @connectum/cli: `@lambdalisue/connectrpc-grpcreflect` replaced by an in-package implementation of the reflection protocol (see the note under @connectum/reflection) |

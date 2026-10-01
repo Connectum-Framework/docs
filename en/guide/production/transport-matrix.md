@@ -211,11 +211,11 @@ Stated so the table above is not read as broader than it is:
 
 ## Startup validation
 
-When a registered service defines bidi-streaming methods and the effective
+When a mounted application service defines bidi-streaming methods and the effective
 transport is plaintext HTTP/1.1, `server.start()` rejects with a
 `TransportValidationError` carrying the stable code
 `CONNECTUM_UNSUPPORTED_STREAMING_TRANSPORT`, the affected
-`service.method` list, and both fixes:
+`service.method` list, and both fixes. Only services passed to `createServer()` (and enabled) count: a bidi service that is merely declared in the same `.proto` file, or one contributed by a protocol such as Reflection, does not trip the check.
 
 ```typescript
 const server = createServer({

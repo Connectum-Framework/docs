@@ -25,6 +25,12 @@ bun add -d @connectum/cli
 ~~~
 :::
 
+The CLI keeps `@bufbuild/protobuf`, `@connectrpc/connect` and `@connectrpc/connect-node` as
+its own regular dependencies: it is an executable, so it is outside the single-copy
+guarantee that the runtime packages give through
+[peer dependencies](/en/migration/peer-dependencies). That includes the `FileRegistry`
+exposed by `@connectum/cli/utils/reflection`.
+
 ## Start Here {#quick-start}
 
 ~~~bash
