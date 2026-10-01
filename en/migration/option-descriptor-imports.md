@@ -62,8 +62,21 @@ and makes your generated files use the very descriptor objects that `@connectum/
    Keep a single input. With auth, `buf.yaml` still lists
    `node_modules/@connectum/auth/proto` as a module, so buf can compile the imports;
    pinning the input to `proto` stops it from generating that module. One input per
-   module would run each plugin once per module, and a later run would overwrite the
-   catalog plugin's `catalog.gen.ts`.
+   module would run each plugin once per module.
+
+   If you also generate the service catalog, keep `strategy: all` on
+   `protoc-gen-connectum-catalog`, as `connectum init` writes it. A single input does not
+   change buf's default `directory` strategy, which would run the plugin once per
+   directory, and every run writes the same `catalog.gen.ts`:
+
+   ```yaml
+     - local: protoc-gen-connectum-catalog
+       strategy: all
+       out: gen
+       opt:
+         - target=ts
+         - import_extension=.ts
+   ```
 3. Run `buf generate` (with `clean: true` it removes the old `gen/connectum/` files),
    then `typecheck`. If your own code imported from `#gen/connectum/auth/v1/options_pb.ts`
    or `#gen/connectum/events/v1/options_pb.ts`, import the same names from
