@@ -23,7 +23,7 @@ can be regenerated from the parity test files at any time.
 | 8 | gRPC Server Reflection (one bidi stream with every request kind: listing, import closure, per-stream "already sent" state, symbol and extension lookup, error answers) | `packages/testing/tests/parity/reflection.parity.test.ts` | **1** |
 | **Total** | | | **37** |
 
-Of these, **26 scenarios** (groups 3, 3a, 3b, 4, 5, 8) go through the unified
+Of these, **28 scenarios** (groups 3, 3a, 3b, 4, 5, 8) go through the unified
 `transportParityTest()` driver in `@connectum/testing/parity` and produce a
 structural diff between HTTP and local. The 7 OTEL scenarios and 2 coexistence
 scenarios are written as paired `test()` cases that drive both transports
