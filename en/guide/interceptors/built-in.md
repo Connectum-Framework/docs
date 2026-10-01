@@ -180,7 +180,7 @@ For detailed documentation on each interceptor, see the [@connectum/interceptors
 
 ## Request Logging
 
-`createLoggerInterceptor()` is not part of the default chain. Add it to `interceptors` when you want every RPC logged with its request, response, and duration:
+`createLoggerInterceptor()` is not part of the default chain. Add it to `interceptors` when you want every RPC except health checks (`skipHealthCheck` defaults to `true`) logged with its request, response, and duration:
 
 ```typescript
 import { createServer } from '@connectum/core';
