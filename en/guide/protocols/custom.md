@@ -20,7 +20,7 @@ interface ProtocolRegistration {
   /** Protocol name for identification (e.g. "healthcheck", "reflection") */
   readonly name: string;
 
-  /** One-time initialization, called exactly once per server */
+  /** Initialization, called before the protocol's first register (again if that attempt fails) */
   setup?(context: ProtocolContext): void;
 
   /** Register protocol services on the router, once per router */
@@ -55,7 +55,7 @@ type HttpHandler = (req: Http2ServerRequest, res: Http2ServerResponse) => boolea
 
 Protocols are passed to `createServer()` via the `protocols` array. A server builds more than one `ConnectRouter` from the same registration: one for the HTTP adapter and one for each in-process transport (`server.localClient()`, the catalog transport behind `ctx.call`). The two methods split along that line:
 
-- **`setup(context)`** runs **exactly once per server**, immediately before the protocol's first `register()` — on `server.start()`, or earlier if an in-process client is created first. Put everything that reads the registry or has side effects here.
+- **`setup(context)`** runs **once per server** when route materialization succeeds, immediately before the protocol's first `register()` — on `server.start()`, or earlier if an in-process client is created first. Routers built after that call `register()` again and reuse what `setup` prepared; they do not call `setup`. Put everything that reads the registry or has side effects here. If that initial materialization fails (a service or protocol throws), the next attempt calls `setup` once more and repeats its side effects, so keep them idempotent, or undo them when a later step of the same materialization fails. A failure on a router built later does not call `setup`.
 - **`register(router)`** runs **once per router** and must only add routes. It must not change state that other routers or the application can observe — otherwise the first in-process call would change what HTTP clients see.
 
 A registration object belongs to **one server**. Whatever `setup` stores in it — the service list in the example below, the descriptor set of `Reflection()` — is that server's state. Passing the same object to a second server lets the second server's `setup` overwrite it, and the first server's later routers then serve the second server's data. Call the protocol factory once per server:
@@ -112,7 +112,8 @@ function ServerInfo(): ProtocolRegistration {
   return {
     name: 'server-info',
 
-    // Once per server: read the mounted services and keep the result.
+    // Before the first register: read the mounted services and keep the
+    // result. Overwriting it makes a repeated call after a failed attempt safe.
     setup(context: ProtocolContext): void {
       serviceNames = context.services.map((s) => s.typeName);
     },
