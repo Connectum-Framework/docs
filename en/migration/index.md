@@ -58,6 +58,9 @@ action below rather than assuming a direct upgrade to the documented line.
   one-time work of your own `ProtocolRegistration` into `setup(context)`, and review
   `defineLazyService` factories that relied on one instance per transport (1.3;
   other applications using only built-in protocols need no changes).
+- [Erasable proto enums](/en/migration/erasable-enums) — generate proto enums as
+  `as const` objects (`erasable_syntax=true`) and update code that used enum reverse
+  mapping; only for projects whose protos declare enums.
 - [In-process calls on shutdown](/en/migration/in-process-shutdown) — from 1.3,
   `server.stop()` aborts `context.signal` of in-flight in-process calls exactly
   like HTTP calls.
