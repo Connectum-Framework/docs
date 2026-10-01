@@ -165,8 +165,11 @@ yarn add @connectum/core @bufbuild/protobuf @connectrpc/connect @connectrpc/conn
 
 ## Verify the upgrade
 
-Each library must appear **once**, and `connect` must equal the version `connect-node`
-requires:
+Each library must appear **once** across your application and the runtime `@connectum/*`
+packages, and `connect` must equal the version `connect-node` requires. Copies nested
+under `@connectum/cli` or `@connectum/protoc-gen-catalog` are expected: those are
+executables, and the code generator pins its own `@bufbuild/protobuf`. They do not count
+as violations:
 
 ::: code-group
 ```bash [npm]
