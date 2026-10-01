@@ -4,4 +4,4 @@
 
 > `const` **ATTR\_NETWORK\_PEER\_ADDRESS**: `"network.peer.address"` = `"network.peer.address"`
 
-Defined in: [packages/otel/src/attributes.ts:25](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L25)
+Defined in: [attributes.ts:25](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L25)

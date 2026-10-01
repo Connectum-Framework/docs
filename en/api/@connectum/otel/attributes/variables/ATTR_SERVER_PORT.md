@@ -4,4 +4,4 @@
 
 > `const` **ATTR\_SERVER\_PORT**: `"server.port"` = `"server.port"`
 
-Defined in: [packages/otel/src/attributes.ts:22](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L22)
+Defined in: [attributes.ts:22](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L22)

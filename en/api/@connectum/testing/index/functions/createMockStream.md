@@ -2,11 +2,11 @@
 
 # Function: createMockStream()
 
-> **createMockStream**\<`T`\>(`items`, `options?`): `AsyncIterable`\<`T`\>
+> **createMockStream**\<`T`\>(`items`, `options?`): [`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols)\<`T`\>
 
 Defined in: test-fixtures/dist/index.d.ts:370
 
-Create an AsyncIterable that yields `items` sequentially.
+Create an [AsyncIterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols) that yields `items` sequentially.
 
 Useful for testing ConnectRPC server-streaming or client-streaming
 interceptors and handlers without a real gRPC connection.
@@ -38,7 +38,7 @@ Optional stream behavior configuration.
 
 ## Returns
 
-`AsyncIterable`\<`T`\>
+[`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols)\<`T`\>
 
 An async iterable that yields each item from `items`.
 

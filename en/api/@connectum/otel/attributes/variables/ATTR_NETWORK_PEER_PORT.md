@@ -4,4 +4,4 @@
 
 > `const` **ATTR\_NETWORK\_PEER\_PORT**: `"network.peer.port"` = `"network.peer.port"`
 
-Defined in: [packages/otel/src/attributes.ts:26](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L26)
+Defined in: [attributes.ts:26](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L26)

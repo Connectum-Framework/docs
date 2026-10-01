@@ -2,7 +2,7 @@
 
 # Interface: HealthcheckOptions
 
-Defined in: [types.ts:27](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L27)
+Defined in: [types.ts:30](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L30)
 
 Healthcheck protocol options
 
@@ -12,7 +12,7 @@ Healthcheck protocol options
 
 > `optional` **httpEnabled?**: `boolean`
 
-Defined in: [types.ts:32](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L32)
+Defined in: [types.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L35)
 
 Enable HTTP health endpoints
 
@@ -28,7 +28,7 @@ false
 
 > `optional` **httpPaths?**: `string`[]
 
-Defined in: [types.ts:38](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L38)
+Defined in: [types.ts:41](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L41)
 
 HTTP health endpoint paths that all respond with health status.
 
@@ -44,7 +44,7 @@ HTTP health endpoint paths that all respond with health status.
 
 > `optional` **manager?**: [`HealthcheckManager`](../../classes/HealthcheckManager.md)
 
-Defined in: [types.ts:51](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L51)
+Defined in: [types.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L54)
 
 Custom HealthcheckManager instance.
 Useful for testing or running multiple servers in one process.
@@ -56,7 +56,7 @@ When not provided, uses the default module-level singleton.
 
 > `optional` **watchInterval?**: `number`
 
-Defined in: [types.ts:44](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L44)
+Defined in: [types.ts:47](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L47)
 
 Watch interval in milliseconds for streaming health updates
 

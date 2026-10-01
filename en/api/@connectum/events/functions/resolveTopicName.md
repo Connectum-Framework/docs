@@ -16,7 +16,7 @@ Priority:
 
 ### method
 
-`DescMethod`
+[`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 ## Returns
 

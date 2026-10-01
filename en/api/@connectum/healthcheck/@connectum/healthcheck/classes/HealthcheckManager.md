@@ -167,7 +167,7 @@ Component name (e.g. "process", "amqp")
 
 ##### initialStatus?
 
-`HealthCheckResponse_ServingStatus` = `ServingStatus.UNKNOWN`
+[`HealthCheckResponse_ServingStatus`](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto) = `ServingStatus.UNKNOWN`
 
 Initial status (default UNKNOWN)
 
@@ -203,7 +203,7 @@ Component name
 
 ##### status
 
-`HealthCheckResponse_ServingStatus`
+[`HealthCheckResponse_ServingStatus`](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto)
 
 New serving status
 
@@ -259,7 +259,7 @@ When called with an unknown service name, throws an error.
 
 ##### status
 
-`HealthCheckResponse_ServingStatus`
+[`HealthCheckResponse_ServingStatus`](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto)
 
 New serving status
 

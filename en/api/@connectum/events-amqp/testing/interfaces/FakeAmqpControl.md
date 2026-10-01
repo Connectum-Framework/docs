@@ -2,7 +2,7 @@
 
 # Interface: FakeAmqpControl
 
-Defined in: [packages/events-amqp/src/testing.ts:88](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L88)
+Defined in: [packages/events-amqp/src/testing.ts:89](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L89)
 
 Deterministic control surface of the fake.
 
@@ -12,7 +12,7 @@ Deterministic control surface of the fake.
 
 > `readonly` **published**: readonly [`FakePublishedRecord`](FakePublishedRecord.md)[]
 
-Defined in: [packages/events-amqp/src/testing.ts:130](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L130)
+Defined in: [packages/events-amqp/src/testing.ts:133](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L133)
 
 Successfully acked publishes, in order.
 
@@ -22,7 +22,7 @@ Successfully acked publishes, in order.
 
 > **block**(`reason?`): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:120](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L120)
+Defined in: [packages/events-amqp/src/testing.ts:123](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L123)
 
 Broker flow control: `blocked { reason }` / `unblocked` (union-only events).
 
@@ -42,7 +42,7 @@ Broker flow control: `blocked { reason }` / `unblocked` (union-only events).
 
 > **completeRecovery**(): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:111](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L111)
+Defined in: [packages/events-amqp/src/testing.ts:112](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L112)
 
 Advance a pending recovery: consumes a queued `failSetup` (reported per
 its gating, stays recovering) or, with nothing queued, completes with
@@ -58,7 +58,7 @@ its gating, stays recovering) or, with nothing queued, completes with
 
 > **deliver**(`eventType`, `payload`, `options?`): `Promise`\<[`FakeDeliveryResult`](FakeDeliveryResult.md)\>
 
-Defined in: [packages/events-amqp/src/testing.ts:140](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L140)
+Defined in: [packages/events-amqp/src/testing.ts:143](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L143)
 
 Deliver an event to matching subscriptions (NATS-style wildcard
 matching, one consumer per distinct group — competing-consumer parity;
@@ -98,7 +98,7 @@ settles; handler rejections are swallowed (counted in `failed`).
 
 > **dropConnection**(`error?`): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:105](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L105)
+Defined in: [packages/events-amqp/src/testing.ts:106](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L106)
 
 Sever the connection: dispatches `disconnected { error }` then
 `reconnecting { attempt: 1, delay: 0 }` and parks in the recovering
@@ -121,12 +121,14 @@ the real adapter's recovery window; new `subscribe()` calls PARK.
 
 > **exhaustRecovery**(`error?`): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:118](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L118)
+Defined in: [packages/events-amqp/src/testing.ts:121](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L121)
 
-Terminal outcome: `reconnect-failed { error }`. The dead adapter fails
-publishes fast, rejects parked subscribes typed, and deactivates all
-subscriptions (the cycle died — so did its consumers). Reconnect
-requires `disconnect()` first, like the real retries-exhausted state.
+Terminal outcome: `reconnect-failed { error }`. Like the real adapter,
+the dead cycle is forgotten BEFORE the event is dispatched: publishes and
+new subscribes fail fast with the real adapter's typed "not connected"
+error, all subscriptions are dropped (the cycle died — so did its
+consumers), and a later `connect()` starts clean without them. Parked
+subscribes reject with a typed `AmqpConnectionError`.
 
 #### Parameters
 
@@ -144,7 +146,7 @@ requires `disconnect()` first, like the real retries-exhausted state.
 
 > **failSetup**(`error?`, `object?`): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:98](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L98)
+Defined in: [packages/events-amqp/src/testing.ts:99](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L99)
 
 Queue a setup failure. An `AmqpTopologyError` (the default) follows the
 real gating: `setup-failed { initial: true, attempt: 0 }` at `connect()`
@@ -174,7 +176,7 @@ at `completeRecovery` it only schedules the next `reconnecting`.
 
 > **nextPublish**(...`outcomes`): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:128](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L128)
+Defined in: [packages/events-amqp/src/testing.ts:131](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L131)
 
 Queue FIFO outcomes for upcoming `publish()` calls. An empty queue means
 `"ack"`. Use the real error classes (`AmqpPublishNackError`,
@@ -197,7 +199,7 @@ outcome only this fake reproduces deterministically, …).
 
 > **unblock**(): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:121](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L121)
+Defined in: [packages/events-amqp/src/testing.ts:124](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L124)
 
 #### Returns
 

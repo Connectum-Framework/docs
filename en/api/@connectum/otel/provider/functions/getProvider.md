@@ -2,9 +2,9 @@
 
 # Function: getProvider()
 
-> **getProvider**(): `OtelProvider`
+> **getProvider**(): [`OtelProvider`](../interfaces/OtelProvider.md)
 
-Defined in: [packages/otel/src/provider.ts:371](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L371)
+Defined in: [provider.ts:393](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L393)
 
 Get the current OpenTelemetry provider.
 
@@ -13,6 +13,6 @@ If not yet initialized, lazily creates a provider with default
 
 ## Returns
 
-`OtelProvider`
+[`OtelProvider`](../interfaces/OtelProvider.md)
 
 The active OtelProvider instance

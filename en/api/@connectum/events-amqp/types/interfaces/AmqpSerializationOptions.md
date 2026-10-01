@@ -2,7 +2,7 @@
 
 # Interface: AmqpSerializationOptions
 
-Defined in: [packages/events-amqp/src/types.ts:272](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L272)
+Defined in: [packages/events-amqp/src/types.ts:282](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L282)
 
 Serialization metadata and optional wire transcoding.
 
@@ -12,7 +12,7 @@ Serialization metadata and optional wire transcoding.
 
 > `readonly` `optional` **contentType?**: `string`
 
-Defined in: [packages/events-amqp/src/types.ts:278](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L278)
+Defined in: [packages/events-amqp/src/types.ts:288](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L288)
 
 AMQP `contentType` message property.
 
@@ -28,7 +28,7 @@ AMQP `contentType` message property.
 
 > `readonly` `optional` **decode?**: (`content`) => `Uint8Array`
 
-Defined in: [packages/events-amqp/src/types.ts:291](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L291)
+Defined in: [packages/events-amqp/src/types.ts:301](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L301)
 
 Transform the incoming wire body before it reaches the event handler.
 Failures nack the message (requeue per consumer policy).
@@ -49,7 +49,7 @@ Failures nack the message (requeue per consumer policy).
 
 > `readonly` `optional` **encode?**: (`payload`) => `Uint8Array`
 
-Defined in: [packages/events-amqp/src/types.ts:285](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L285)
+Defined in: [packages/events-amqp/src/types.ts:295](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L295)
 
 Transform the outgoing wire body. Receives the payload bytes the
 EventBus (or the application) produced. Failures reject the publish

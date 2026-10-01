@@ -2,7 +2,7 @@
 
 # Interface: TLSOptions
 
-Defined in: [packages/core/src/types.ts:134](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L134)
+Defined in: [packages/core/src/types.ts:152](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L152)
 
 TLS configuration options
 
@@ -12,7 +12,7 @@ TLS configuration options
 
 > `optional` **certPath?**: `string`
 
-Defined in: [packages/core/src/types.ts:143](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L143)
+Defined in: [packages/core/src/types.ts:161](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L161)
 
 Path to TLS certificate file
 
@@ -22,7 +22,7 @@ Path to TLS certificate file
 
 > `optional` **dirPath?**: `string`
 
-Defined in: [packages/core/src/types.ts:149](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L149)
+Defined in: [packages/core/src/types.ts:167](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L167)
 
 TLS directory path (alternative to keyPath/certPath)
 Will look for server.key and server.crt in this directory
@@ -33,6 +33,6 @@ Will look for server.key and server.crt in this directory
 
 > `optional` **keyPath?**: `string`
 
-Defined in: [packages/core/src/types.ts:138](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L138)
+Defined in: [packages/core/src/types.ts:156](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L156)
 
 Path to TLS key file

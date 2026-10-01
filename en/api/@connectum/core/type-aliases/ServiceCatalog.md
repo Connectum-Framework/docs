@@ -2,7 +2,7 @@
 
 # Type Alias: ServiceCatalog
 
-> **ServiceCatalog** = `Readonly`\<`Record`\<`string`, `DescService`\>\>
+> **ServiceCatalog** = `Readonly`\<`Record`\<`string`, [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)\>\>
 
 Defined in: [packages/core/src/serviceCatalog.ts:20](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/serviceCatalog.ts#L20)
 

@@ -2,13 +2,13 @@
 
 # Function: getTracer()
 
-> **getTracer**(): [`Tracer`](../../interfaces/Tracer.md)
+> **getTracer**(): [`Tracer`](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.Tracer.html)
 
-Defined in: [packages/otel/src/tracer.ts:14](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/tracer.ts#L14)
+Defined in: [tracer.ts:14](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/tracer.ts#L14)
 
 Returns the global Tracer instance.
 Lazily initializes the OTel provider on first call.
 
 ## Returns
 
-[`Tracer`](../../interfaces/Tracer.md)
+[`Tracer`](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.Tracer.html)

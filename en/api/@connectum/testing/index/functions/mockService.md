@@ -13,7 +13,7 @@ with handlers typed against it.
 
 ### S
 
-`S` *extends* `DescService`
+`S` *extends* [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 ## Parameters
 

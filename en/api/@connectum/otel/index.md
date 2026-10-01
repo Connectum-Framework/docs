@@ -20,14 +20,12 @@
 
 - [BatchSpanProcessorOptions](interfaces/BatchSpanProcessorOptions.md)
 - [CollectorOptions](interfaces/CollectorOptions.md)
-- [Meter](interfaces/Meter.md)
 - [OtelBaseOptions](interfaces/OtelBaseOptions.md)
 - [OtelClientInterceptorOptions](interfaces/OtelClientInterceptorOptions.md)
 - [OtelInterceptorOptions](interfaces/OtelInterceptorOptions.md)
 - [OTLPSettings](interfaces/OTLPSettings.md)
 - [TraceAllOptions](interfaces/TraceAllOptions.md)
 - [TracedOptions](interfaces/TracedOptions.md)
-- [Tracer](interfaces/Tracer.md)
 
 ## Type Aliases
 
@@ -251,6 +249,12 @@ Re-exports [Logger](logger/interfaces/Logger.md)
 ### LoggerOptions
 
 Re-exports [LoggerOptions](logger/interfaces/LoggerOptions.md)
+
+***
+
+### OtelProvider
+
+Re-exports [OtelProvider](provider/interfaces/OtelProvider.md)
 
 ***
 

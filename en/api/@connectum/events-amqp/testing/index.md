@@ -15,8 +15,9 @@ broker and without importing `amqplib` at runtime:
   INCLUDING the deprecated flat-callback shim — events go through the real
   adapter's dispatch, so ordering, shim payloads, and exception isolation
   match the real adapter by construction;
-- the state machine: `connect()` on a live or recovering (or dead
-  retries-exhausted) adapter throws `already connected` like the real one;
+- the state machine: `connect()` on a live or recovering adapter throws
+  `already connected` like the real one, while an adapter whose recovery
+  gave up accepts a fresh `connect()` without its old subscriptions;
   a mid-recovery `subscribe()` PARKS and settles with the recovery outcome;
   the probe-then-recover `connect()` semantics gate on `AmqpTopologyError`
   exactly like the real probe.

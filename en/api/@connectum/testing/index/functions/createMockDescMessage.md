@@ -2,11 +2,11 @@
 
 # Function: createMockDescMessage()
 
-> **createMockDescMessage**(`typeName`, `options?`): `DescMessage`
+> **createMockDescMessage**(`typeName`, `options?`): [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 Defined in: test-fixtures/dist/index.d.ts:210
 
-Create a mock DescMessage descriptor with all required structural
+Create a mock [DescMessage](https://protobufes.com/reference/reflection/descriptors/#types) descriptor with all required structural
 properties.
 
 **Important**: the returned object always includes `members: []` which is
@@ -29,7 +29,7 @@ Optional field and oneof definitions.
 
 ## Returns
 
-`DescMessage`
+[`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 A mock `DescMessage` object.
 

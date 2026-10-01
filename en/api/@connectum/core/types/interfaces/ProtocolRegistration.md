@@ -2,7 +2,7 @@
 
 # Interface: ProtocolRegistration
 
-Defined in: [packages/core/src/types.ts:107](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L107)
+Defined in: [packages/core/src/types.ts:119](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L119)
 
 Protocol registration interface
 
@@ -28,7 +28,7 @@ function myProtocol(): ProtocolRegistration {
   return {
     name: "my-protocol",
     setup(context) {
-      serviceNames = context.registry.flatMap((file) => file.services.map((s) => s.typeName));
+      serviceNames = context.services.map((s) => s.typeName);
     },
     register(router) {
       router.service(MyService, { list: () => ({ services: serviceNames }) });
@@ -48,7 +48,7 @@ const server = createServer({
 
 > `optional` **httpHandler?**: [`HttpHandler`](../type-aliases/HttpHandler.md)
 
-Defined in: [packages/core/src/types.ts:128](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L128)
+Defined in: [packages/core/src/types.ts:146](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L146)
 
 Optional HTTP handler for fallback routing (e.g., /healthz endpoint)
 
@@ -58,7 +58,7 @@ Optional HTTP handler for fallback routing (e.g., /healthz endpoint)
 
 > `readonly` **name**: `string`
 
-Defined in: [packages/core/src/types.ts:109](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L109)
+Defined in: [packages/core/src/types.ts:121](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L121)
 
 Protocol name for identification (e.g., "healthcheck", "reflection")
 
@@ -68,7 +68,7 @@ Protocol name for identification (e.g., "healthcheck", "reflection")
 
 > **register**(`router`): `void`
 
-Defined in: [packages/core/src/types.ts:125](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L125)
+Defined in: [packages/core/src/types.ts:143](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L143)
 
 Register protocol services on the router. Called once for every router
 the server builds (HTTP adapter and each in-process transport), so it
@@ -90,13 +90,19 @@ must only add routes and must not change state observable elsewhere.
 
 > `optional` **setup**(`context`): `void`
 
-Defined in: [packages/core/src/types.ts:118](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L118)
+Defined in: [packages/core/src/types.ts:136](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L136)
 
-One-time initialization, called exactly once per server immediately
-before this protocol's first [ProtocolRegistration.register](#register).
-The place for anything that reads the registry or has side effects.
+Initialization: called while the server's routes are materialized,
+immediately before this protocol's first
+[ProtocolRegistration.register](#register). Routers built after that (one per
+in-process transport) call `register` again for their own routes and
+reuse whatever `setup` prepared; they do not call `setup`. The place for
+anything that reads the registry or has side effects.
 
-If route materialization fails, the next attempt calls `setup` again.
+If the initial route materialization fails, the next attempt calls
+`setup` again, so any side effects it has run again too. Keep them
+idempotent, or undo them when a later step of the same materialization
+fails. A failure on a router built after that does not call `setup`.
 
 #### Parameters
 

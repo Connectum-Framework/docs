@@ -11,7 +11,7 @@ exposing only "Access denied" to the client via SanitizableError protocol.
 
 ## Extends
 
-- `ConnectError`
+- [`ConnectError`](https://connectrpc.com/docs/web/errors)
 
 ## Implements
 
@@ -243,7 +243,7 @@ omitted from the list.
 
 ###### Desc
 
-`Desc` *extends* `DescMessage`
+`Desc` *extends* [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 ##### Parameters
 
@@ -382,7 +382,7 @@ a();
 
 ### from()
 
-> `static` **from**(`reason`, `code?`): `ConnectError`
+> `static` **from**(`reason`, `code?`): [`ConnectError`](https://connectrpc.com/docs/web/errors)
 
 Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:74
 
@@ -409,7 +409,7 @@ ConnectError.
 
 #### Returns
 
-`ConnectError`
+[`ConnectError`](https://connectrpc.com/docs/web/errors)
 
 #### Inherited from
 

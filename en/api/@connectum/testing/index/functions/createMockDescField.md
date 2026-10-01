@@ -2,11 +2,11 @@
 
 # Function: createMockDescField()
 
-> **createMockDescField**(`localName`, `options?`): `DescField`
+> **createMockDescField**(`localName`, `options?`): [`DescField`](https://protobufes.com/reference/reflection/descriptors/#field-descriptors)
 
 Defined in: test-fixtures/dist/index.d.ts:182
 
-Create a mock DescField descriptor.
+Create a mock [DescField](https://protobufes.com/reference/reflection/descriptors/#field-descriptors) descriptor.
 
 Produces a minimal object that satisfies the `DescField` shape expected by
 ConnectRPC interceptors and protobuf utilities.
@@ -27,7 +27,7 @@ Optional overrides for field number, scalar type, and sensitivity.
 
 ## Returns
 
-`DescField`
+[`DescField`](https://protobufes.com/reference/reflection/descriptors/#field-descriptors)
 
 A mock `DescField` object.
 

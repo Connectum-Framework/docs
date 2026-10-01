@@ -4,7 +4,7 @@
 
 Defined in: [testing/src/types.ts:38](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/types.ts#L38)
 
-Options for createTestServer.
+Options for [createTestServer](../../index/functions/createTestServer.md).
 
 ## Properties
 

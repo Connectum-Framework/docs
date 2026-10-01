@@ -18,7 +18,7 @@ used by `skipMethods` in auth interceptors.
 
 ### services
 
-readonly `DescService`[]
+readonly [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)[]
 
 Service descriptors to scan
 

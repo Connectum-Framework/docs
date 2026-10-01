@@ -2,7 +2,7 @@
 
 # Type Alias: ConnectumMethodImpl\<M\>
 
-> **ConnectumMethodImpl**\<`M`\> = `M` *extends* `DescMethodUnary`\<infer I, infer O\> ? (`request`, `context`) => `Promise`\<`MessageInitShape`\<`O`\>\> \| `MessageInitShape`\<`O`\> : `M` *extends* `DescMethodServerStreaming`\<infer I, infer O\> ? (`request`, `context`) => `AsyncIterable`\<`MessageInitShape`\<`O`\>\> : `M` *extends* `DescMethodClientStreaming`\<infer I, infer O\> ? (`requests`, `context`) => `Promise`\<`MessageInitShape`\<`O`\>\> : `M` *extends* `DescMethodBiDiStreaming`\<infer I, infer O\> ? (`requests`, `context`) => `AsyncIterable`\<`MessageInitShape`\<`O`\>\> : `never`
+> **ConnectumMethodImpl**\<`M`\> = `M` *extends* `DescMethodUnary`\<infer I, infer O\> ? (`request`, `context`) => `Promise`\<`MessageInitShape`\<`O`\>\> \| `MessageInitShape`\<`O`\> : `M` *extends* `DescMethodServerStreaming`\<infer I, infer O\> ? (`request`, `context`) => [`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols)\<`MessageInitShape`\<`O`\>\> : `M` *extends* `DescMethodClientStreaming`\<infer I, infer O\> ? (`requests`, `context`) => `Promise`\<`MessageInitShape`\<`O`\>\> : `M` *extends* `DescMethodBiDiStreaming`\<infer I, infer O\> ? (`requests`, `context`) => [`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols)\<`MessageInitShape`\<`O`\>\> : `never`
 
 Defined in: [packages/core/src/context.ts:164](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L164)
 
@@ -15,4 +15,4 @@ the raw `HandlerContext`, so `ctx.call` is visible inside handlers.
 
 ### M
 
-`M` *extends* `DescMethod`
+`M` *extends* [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)

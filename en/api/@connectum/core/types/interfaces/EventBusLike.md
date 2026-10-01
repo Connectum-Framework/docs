@@ -2,7 +2,7 @@
 
 # Interface: EventBusLike
 
-Defined in: [packages/core/src/types.ts:162](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L162)
+Defined in: [packages/core/src/types.ts:180](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L180)
 
 Minimal interface for event bus lifecycle integration with the server.
 
@@ -15,7 +15,7 @@ must satisfy this interface to be used with `createServer({ eventBus })`.
 
 > **start**(`options?`): `Promise`\<`void`\>
 
-Defined in: [packages/core/src/types.ts:169](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L169)
+Defined in: [packages/core/src/types.ts:187](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L187)
 
 Start the event bus (connect to broker, set up subscriptions).
 
@@ -41,7 +41,7 @@ Abort signal from server for graceful shutdown
 
 > **stop**(): `Promise`\<`void`\>
 
-Defined in: [packages/core/src/types.ts:171](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L171)
+Defined in: [packages/core/src/types.ts:189](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L189)
 
 Stop the event bus (drain subscriptions, disconnect)
 

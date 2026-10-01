@@ -2,7 +2,7 @@
 
 # Interface: CreateServerOptions
 
-Defined in: [packages/core/src/types.ts:262](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L262)
+Defined in: [packages/core/src/types.ts:280](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L280)
 
 Server configuration options for createServer()
 
@@ -12,7 +12,7 @@ Server configuration options for createServer()
 
 > `optional` **allowHTTP1?**: `boolean`
 
-Defined in: [packages/core/src/types.ts:346](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L346)
+Defined in: [packages/core/src/types.ts:364](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L364)
 
 Allow HTTP/1.1 connections.
 
@@ -30,9 +30,9 @@ true
 
 ### catalog?
 
-> `optional` **catalog?**: `Readonly`\<`Record`\<`string`, `DescService`\>\>
+> `optional` **catalog?**: `Readonly`\<`Record`\<`string`, [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)\>\>
 
-Defined in: [packages/core/src/types.ts:415](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L415)
+Defined in: [packages/core/src/types.ts:525](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L525)
 
 The full set of services known to the system, `typeName → DescService`
 (typically the generated `serviceCatalog`). Drives startup validation and
@@ -45,7 +45,7 @@ makes no cross-service calls needs no catalog.
 
 > `optional` **enabledServices?**: readonly `string`[]
 
-Defined in: [packages/core/src/types.ts:423](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L423)
+Defined in: [packages/core/src/types.ts:533](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L533)
 
 Proto `typeName`s to mount **locally** from `services`. A service in
 `services` whose `typeName` is not listed is treated as remote (resolved
@@ -58,7 +58,7 @@ provided service locally.
 
 > `optional` **eventBus?**: [`EventBusLike`](EventBusLike.md)
 
-Defined in: [packages/core/src/types.ts:335](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L335)
+Defined in: [packages/core/src/types.ts:353](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L353)
 
 Event bus instance for pub/sub messaging.
 
@@ -88,7 +88,7 @@ const server = createServer({
 
 > `optional` **handshakeTimeout?**: `number`
 
-Defined in: [packages/core/src/types.ts:374](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L374)
+Defined in: [packages/core/src/types.ts:392](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L392)
 
 Handshake timeout in milliseconds
 
@@ -104,7 +104,7 @@ Handshake timeout in milliseconds
 
 > `optional` **host?**: `string`
 
-Defined in: [packages/core/src/types.ts:278](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L278)
+Defined in: [packages/core/src/types.ts:296](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L296)
 
 Server host to bind
 
@@ -120,7 +120,7 @@ Server host to bind
 
 > `optional` **http2Options?**: `SecureServerOptions`\<*typeof* `IncomingMessage`, *typeof* `ServerResponse`, *typeof* `Http2ServerRequest`, *typeof* `Http2ServerResponse`\>
 
-Defined in: [packages/core/src/types.ts:379](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L379)
+Defined in: [packages/core/src/types.ts:397](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L397)
 
 Additional HTTP/2 server options
 
@@ -130,7 +130,7 @@ Additional HTTP/2 server options
 
 > `optional` **interceptors?**: `Interceptor`[]
 
-Defined in: [packages/core/src/types.ts:311](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L311)
+Defined in: [packages/core/src/types.ts:329](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L329)
 
 ConnectRPC interceptors.
 When omitted or `[]`, no interceptors are applied.
@@ -142,7 +142,7 @@ Use `createDefaultInterceptors()` from `@connectum/interceptors` to get the defa
 
 > `optional` **jsonOptions?**: `Partial`\<`JsonReadOptions` & `JsonWriteOptions`\>
 
-Defined in: [packages/core/src/types.ts:405](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L405)
+Defined in: [packages/core/src/types.ts:423](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L423)
 
 Connect JSON serialization options applied server-wide.
 
@@ -174,7 +174,7 @@ const server = createServer({
 
 > `optional` **outgoingInterceptors?**: readonly `Interceptor`[]
 
-Defined in: [packages/core/src/types.ts:437](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L437)
+Defined in: [packages/core/src/types.ts:547](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L547)
 
 Client-side interceptors applied to every outgoing `server.client()` /
 `ctx.call` call (cross-cutting concerns like auth or logging), so call
@@ -186,7 +186,7 @@ sites stay free of boilerplate.
 
 > `optional` **port?**: `number`
 
-Defined in: [packages/core/src/types.ts:272](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L272)
+Defined in: [packages/core/src/types.ts:290](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L290)
 
 Server port
 
@@ -202,7 +202,7 @@ Server port
 
 > `optional` **propagateHeaders?**: readonly `string`[]
 
-Defined in: [packages/core/src/types.ts:447](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L447)
+Defined in: [packages/core/src/types.ts:557](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L557)
 
 Inbound header names to copy onto every outgoing `ctx.call` / `ctx.stream`.
 Empty by default — no header is propagated implicitly. Explicit
@@ -217,7 +217,7 @@ and add your own, e.g. `[...defaultPropagateHeaders, "x-tenant-id"]`.
 
 > `optional` **protocols?**: [`ProtocolRegistration`](ProtocolRegistration.md)[]
 
-Defined in: [packages/core/src/types.ts:299](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L299)
+Defined in: [packages/core/src/types.ts:317](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L317)
 
 Protocol registrations (healthcheck, reflection, custom)
 
@@ -235,11 +235,47 @@ const server = createServer({
 
 ***
 
+### readMaxBytes?
+
+> `optional` **readMaxBytes?**: `number`
+
+Defined in: [packages/core/src/types.ts:515](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L515)
+
+Server-wide per-message read limit in bytes: Connect's `readMaxBytes`.
+Opt-in; when unset, Connect's default (about 4 GiB) applies.
+
+A request message larger than the limit ends the call with
+`Code.ResourceExhausted` before the handler runs; a message exactly at
+the limit is accepted. Applies identically on the HTTP and in-process
+transports (the in-process transport serializes messages in binary
+form). Only the diagnostic text of the error may differ between them:
+over HTTP it can include the observed size.
+
+This is a **default, not a ceiling**: a service that sets `readMaxBytes`
+in its `ServiceOptions` uses its own value, larger or smaller.
+
+Must be an integer from 1 to 4294967295 (Connect's maximum).
+`createServer()` throws a `RangeError` naming the option for anything
+else — `0`, negatives, fractions, `NaN`, `Infinity` — and a `TypeError`
+for a non-number. (Left to Connect, `NaN` would silently disable the
+limit.)
+
+#### Example
+
+```typescript
+const server = createServer({
+  services: [routes],
+  readMaxBytes: 1024 * 1024, // 1 MiB per request message
+});
+```
+
+***
+
 ### remoteResolver?
 
 > `optional` **remoteResolver?**: [`RemoteResolver`](../../type-aliases/RemoteResolver.md)
 
-Defined in: [packages/core/src/types.ts:430](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L430)
+Defined in: [packages/core/src/types.ts:540](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L540)
 
 Resolves a service that is not mounted locally to a `Transport`. Consulted
 by `server.client()` (and `ctx.call`) for remote services. Synchronous and
@@ -247,11 +283,89 @@ must not perform network I/O — see [RemoteResolver](../../type-aliases/RemoteR
 
 ***
 
+### requestGate?
+
+> `optional` **requestGate?**: (`context`) => `void` \| `Promise`\<`void`\>
+
+Defined in: [packages/core/src/types.ts:485](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L485)
+
+Server-wide request gate: Connect's `requestGate`, applied to every RPC
+on this server. Opt-in; unset by default.
+
+The gate receives the call's `HandlerContext` after the request headers
+are available and **before any request message is received,
+decompressed, or parsed**. Return to admit the call; throw a
+`ConnectError` to end it without reading the body. It is the cheap place
+to reject, for example, a request without credentials.
+
+Contract:
+- **Both transports, no exemption.** The gate runs identically for HTTP
+  calls and for in-process calls (`server.localClient()`,
+  `server.client()` of a local service, `createLocalTransport()`, and
+  `ctx.call` / `ctx.stream` to a local service). An internal `ctx.call`
+  carries only the headers you forward (`propagateHeaders`,
+  `outgoingInterceptors`), so a header-based gate rejects it unless the
+  credential is forwarded.
+- **Client-safe errors only.** A gate runs before the server
+  interceptor chain, so an `errorHandler` interceptor never sees its
+  error. A thrown `ConnectError` reaches the client exactly as thrown
+  (code, message, metadata, details) — throw a fixed, non-revealing
+  message. Anything else (a plain `Error`, a string, a rejected promise)
+  is replaced by Connect with `ConnectError("internal error",
+  Code.Internal)`; its text never reaches the client.
+- Must be a function; anything else throws a `TypeError` from
+  `createServer()`.
+- **Invisible to server interceptors.** A rejected call never runs
+  server-side interceptors: no server span, metric, or log entry from
+  `@connectum/otel` or the logger. To audit rejections, wrap your gate
+  (catch, record, rethrow). Client-side interceptors of the caller still
+  observe the failure.
+- **Coverage.** Every RPC on the router, including protocol RPCs such as
+  gRPC Health and Reflection. Plain HTTP endpoints served by protocol
+  HTTP handlers (for example the HTTP health endpoints) are not gated.
+- **Server default, service override.** A service that sets
+  `requestGate` in its `ServiceOptions` (the third argument of
+  `defineService` / `defineLazyService`) replaces this gate for that
+  service; the two are not composed. An own `requestGate: undefined`
+  key in the service options also removes it.
+- **Cooperative cancellation.** The server awaits the gate. Watch
+  `context.signal`: it aborts on the call's deadline, on client
+  cancellation, and when `server.stop()` begins — on both transports.
+- The parameter is Connect's `HandlerContext`, not the Connectum
+  `Context`: `ctx.call` / `ctx.stream` do not exist yet at gate time.
+
+#### Parameters
+
+##### context
+
+`HandlerContext`
+
+#### Returns
+
+`void` \| `Promise`\<`void`\>
+
+#### Example
+
+```typescript
+import { Code, ConnectError } from '@connectrpc/connect';
+
+const server = createServer({
+  services: [routes],
+  requestGate: (context) => {
+    if (!context.requestHeader.get('authorization')) {
+      throw new ConnectError('unauthenticated', Code.Unauthenticated);
+    }
+  },
+});
+```
+
+***
+
 ### services
 
 > **services**: readonly [`ServiceDefinition`](../../interfaces/ServiceDefinition.md)[]
 
-Defined in: [packages/core/src/types.ts:266](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L266)
+Defined in: [packages/core/src/types.ts:284](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L284)
 
 Service routes to register
 
@@ -261,7 +375,7 @@ Service routes to register
 
 > `optional` **shutdown?**: [`ShutdownOptions`](ShutdownOptions.md)
 
-Defined in: [packages/core/src/types.ts:304](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L304)
+Defined in: [packages/core/src/types.ts:322](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L322)
 
 Graceful shutdown configuration
 
@@ -271,7 +385,7 @@ Graceful shutdown configuration
 
 > `optional` **tls?**: [`TLSOptions`](TLSOptions.md)
 
-Defined in: [packages/core/src/types.ts:283](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L283)
+Defined in: [packages/core/src/types.ts:301](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L301)
 
 TLS configuration
 
@@ -281,7 +395,7 @@ TLS configuration
 
 > `optional` **transportValidation?**: `"error"` \| `"warn"` \| `"off"`
 
-Defined in: [packages/core/src/types.ts:368](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L368)
+Defined in: [packages/core/src/types.ts:386](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L386)
 
 Startup validation of streaming method kinds vs the effective transport.
 

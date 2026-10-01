@@ -2,19 +2,23 @@
 
 # Function: collectStreamingMethods()
 
-> **collectStreamingMethods**(`registry`): [`StreamingMethodInfo`](../interfaces/StreamingMethodInfo.md)[]
+> **collectStreamingMethods**(`source`): [`StreamingMethodInfo`](../interfaces/StreamingMethodInfo.md)[]
 
-Defined in: [packages/core/src/TransportValidation.ts:106](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L106)
+Defined in: [packages/core/src/TransportValidation.ts:110](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L110)
 
-Collect bidi-streaming methods from a DescFile registry (built during
-route registration). Client-streaming is NOT collected — the Connect
-protocol supports it over HTTP/1.1.
+Collect bidi-streaming methods. Client-streaming is NOT collected — the
+Connect protocol supports it over HTTP/1.1.
+
+Pass the mounted services (`DescService`) to check what a server actually
+serves; that is what `Server.start()` does. A file (`DescFile`) contributes
+every service it declares, including services that are not mounted, so a
+file-based check can report methods nobody can call.
 
 ## Parameters
 
-### registry
+### source
 
-readonly `DescFile`[]
+readonly ([`DescService`](https://protobufes.com/reference/reflection/descriptors/#types) \| `DescFile`)[]
 
 ## Returns
 

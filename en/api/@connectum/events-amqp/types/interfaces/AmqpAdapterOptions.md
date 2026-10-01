@@ -64,7 +64,7 @@ Exchange type.
 
 > `readonly` `optional` **failFastOnInitialSetupError?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:152](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L152)
+Defined in: [packages/events-amqp/src/types.ts:157](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L157)
 
 Fail fast on a DETERMINISTIC setup/topology error on the FIRST connect,
 instead of entering amqplib's infinite recovery loop.
@@ -103,7 +103,7 @@ false
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/types.ts:249](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L249)
+Defined in: [packages/events-amqp/src/types.ts:259](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L259)
 
 Connection lifecycle callbacks. Connection errors are surfaced here —
 not just logged.
@@ -124,7 +124,7 @@ Publisher options.
 
 > `readonly` `optional` **publishRetry?**: `boolean` \| [`AmqpPublishRetryOptions`](AmqpPublishRetryOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:243](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L243)
+Defined in: [packages/events-amqp/src/types.ts:253](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L253)
 
 Opt-in bounded publish retry for CONNECTION-CLASS outcomes (since 1.3.0).
 
@@ -169,9 +169,14 @@ Semantics — read before enabling:
   with the broker reply as `cause` — the connection stays up, recovery
   never recreates the channel, so retrying cannot heal.
 
-Backoff mirrors the recovery formula (same knob names and semantics,
-incl. cap-before-jitter), but the DEFAULT budget differs: `maxRetries`
-here defaults to **5** (bounded), not `Infinity`.
+- **No retry against a dead cycle**: once recovery has given up
+  (terminal `reconnect-failed`) or `recovery: false` lost its
+  connection, nothing can heal the publish, so it rejects at once
+  without spending the budget.
+
+Backoff mirrors the recovery formula (same knob names and semantics; a
+delay never exceeds `maxDelay`), but the DEFAULT budget differs:
+`maxRetries` here defaults to **5** (bounded), not `Infinity`.
 
 #### Default
 
@@ -185,7 +190,7 @@ undefined (disabled — behavior unchanged)
 
 > `readonly` `optional` **publishTimeoutMs?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:259](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L259)
+Defined in: [packages/events-amqp/src/types.ts:269](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L269)
 
 Per-publish broker-outcome deadline in milliseconds. A publish whose
 ack/nack/return/connection-loss outcome does not arrive in time
@@ -228,7 +233,7 @@ lets a subscription attach to a queue from an external contract
 
 > `readonly` `optional` **recovery?**: `boolean` \| [`AmqpRecoveryOptions`](AmqpRecoveryOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:122](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L122)
+Defined in: [packages/events-amqp/src/types.ts:127](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L127)
 
 Automatic connection recovery (delegated to amqplib's opt-in
 recovery). Enabled by default; pass `false` to restore
@@ -244,7 +249,12 @@ In-flight publishes at the moment of a connection loss reject with
 blocks until the broker is reachable rather than failing fast (see
 [AmqpAdapterOptions.failFastOnInitialSetupError](#failfastoninitialsetuperror) to fail fast on a
 deterministic startup misconfiguration). See [AmqpRecoveryOptions](AmqpRecoveryOptions.md)
-for the retry-budget scope and jitter/`maxDelay` overshoot.
+for the retry-budget scope and the delay bounds. With a finite
+`maxRetries`, a broker still unreachable when the initial connect has
+used its budget rejects `connect()` with a typed `AmqpConnectionError`
+whose `cause` is the last connection error. Once a finite budget is
+exhausted, recovery is over for good — see the terminal
+`reconnect-failed` in [AmqpLifecycleEvent](../type-aliases/AmqpLifecycleEvent.md).
 
 #### Default
 
@@ -324,7 +334,7 @@ How topology is established:
 
 > `readonly` `optional` **treatTopologyErrorAsFatal?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:191](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L191)
+Defined in: [packages/events-amqp/src/types.ts:196](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L196)
 
 Treat DETERMINISTIC topology drift during steady-state recovery as
 fatal: stop the reconnect cycle instead of retrying forever against a

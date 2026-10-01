@@ -2,7 +2,7 @@
 
 # Interface: FakeAmqpAdapterOptions
 
-Defined in: [packages/events-amqp/src/testing.ts:53](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L53)
+Defined in: [packages/events-amqp/src/testing.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L54)
 
 Options for [FakeAmqpAdapter](../functions/FakeAmqpAdapter.md).
 
@@ -12,7 +12,7 @@ Options for [FakeAmqpAdapter](../functions/FakeAmqpAdapter.md).
 
 > `readonly` `optional` **failFastOnInitialSetupError?**: `boolean`
 
-Defined in: [packages/events-amqp/src/testing.ts:60](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L60)
+Defined in: [packages/events-amqp/src/testing.ts:61](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L61)
 
 Mirror of the real option: a topology `failSetup(...)` queued before
 `connect()` rejects it with the typed error instead of report-and-proceed.
@@ -23,6 +23,6 @@ Mirror of the real option: a topology `failSetup(...)` queued before
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](../../types/interfaces/AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/testing.ts:55](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L55)
+Defined in: [packages/events-amqp/src/testing.ts:56](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L56)
 
 The same lifecycle surface as the real adapter (union + flat shim).

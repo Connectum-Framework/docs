@@ -20,7 +20,7 @@ Publish a typed event
 
 ##### Desc
 
-`Desc` *extends* `DescMessage`
+`Desc` *extends* [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 #### Parameters
 

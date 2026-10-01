@@ -4,4 +4,4 @@
 
 > `const` **ATTR\_NETWORK\_TRANSPORT**: `"network.transport"` = `"network.transport"`
 
-Defined in: [packages/otel/src/attributes.ts:24](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L24)
+Defined in: [attributes.ts:24](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L24)

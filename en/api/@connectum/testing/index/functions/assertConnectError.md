@@ -6,7 +6,7 @@
 
 Defined in: test-fixtures/dist/index.d.ts:44
 
-Assert that a thrown value is a ConnectError with the expected
+Assert that a thrown value is a [ConnectError](https://connectrpc.com/docs/web/errors) with the expected
 gRPC status code and, optionally, a message matching a pattern.
 
 This is a TypeScript

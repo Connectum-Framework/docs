@@ -39,7 +39,7 @@ A `"${typeName}/${Method}"` key of [ConnectumCallMap](ConnectumCallMap.md).
 
 ### method
 
-> `readonly` **method**: `DescMethod`
+> `readonly` **method**: [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:21
 
@@ -127,7 +127,7 @@ Outgoing response trailers.
 
 ### service
 
-> `readonly` **service**: `DescService`
+> `readonly` **service**: [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/implementation.d.ts:25
 

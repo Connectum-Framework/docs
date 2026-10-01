@@ -4,7 +4,7 @@
 
 > **AmqpLifecycleEvent** = \{ `reconnected`: `boolean`; `type`: `"connected"`; \} \| \{ `error`: `Error`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `delay`: `number`; `error`: `Error`; `type`: `"reconnecting"`; \} \| \{ `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `initial`: `boolean`; `type`: `"setup-failed"`; \} \| \{ `reason`: `string`; `type`: `"blocked"`; \} \| \{ `type`: `"unblocked"`; \}
 
-Defined in: [packages/events-amqp/src/types.ts:446](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L446)
+Defined in: [packages/events-amqp/src/types.ts:468](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L468)
 
 Discriminated connection lifecycle event, delivered to
 [AmqpLifecycleCallbacks.onLifecycle](../interfaces/AmqpLifecycleCallbacks.md#onlifecycle).
@@ -20,7 +20,11 @@ Exactly-once guarantees (pinned by integration tests):
   `reconnect-failed` is terminal and fires for any of its three triggers:
   the retry budget is exhausted (`maxRetries`), the fatal topology policy
   stopped the cycle (`treatTopologyErrorAsFatal`), or the initial connect
-  budget ran out (`initialConnectMaxRetries`).
+  budget ran out (`initialConnectMaxRetries`). Once it fires, the adapter
+  has already dropped the dead connection and its subscriptions:
+  `publish()` and `subscribe()` reject with `AmqpConnectionError`
+  ("not connected"), and a new `connect()` starts from a clean state —
+  re-subscribe explicitly.
 - `setup-failed` reports a topology/setup failure with `initial: true` for
   the startup window (`attempt: 0` on the probe; the 0-based attempt index
   in the bounded initial phase) or `initial: false` for a reconnect

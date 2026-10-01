@@ -2,11 +2,11 @@
 
 # Function: createFakeService()
 
-> **createFakeService**(`options?`): `DescService`
+> **createFakeService**(`options?`): [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 Defined in: test-fixtures/dist/index.d.ts:76
 
-Create a fake DescService descriptor for testing.
+Create a fake [DescService](https://protobufes.com/reference/reflection/descriptors/#types) descriptor for testing.
 
 The returned object has the same shape as a real `DescService` produced by
 the protobuf compiler, but contains only the fields commonly accessed in
@@ -23,7 +23,7 @@ Optional overrides for service name and typeName.
 
 ## Returns
 
-`DescService`
+[`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 A fake `DescService` suitable for unit/integration tests.
 

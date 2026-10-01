@@ -2,7 +2,7 @@
 
 # Type Alias: StreamReturn\<E\>
 
-> **StreamReturn**\<`E`\> = `E` *extends* `object` ? (`request`, `options?`) => `AsyncIterable`\<`Res`\> : `E` *extends* `object` ? (`options?`) => [`ClientStreamHandle`](../interfaces/ClientStreamHandle.md)\<`Req`, `Res`\> : `E` *extends* `object` ? (`options?`) => [`BidiStreamHandle`](../interfaces/BidiStreamHandle.md)\<`Req`, `Res`\> : `never`
+> **StreamReturn**\<`E`\> = `E` *extends* `object` ? (`request`, `options?`) => [`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols)\<`Res`\> : `E` *extends* `object` ? (`options?`) => [`ClientStreamHandle`](../interfaces/ClientStreamHandle.md)\<`Req`, `Res`\> : `E` *extends* `object` ? (`options?`) => [`BidiStreamHandle`](../interfaces/BidiStreamHandle.md)\<`Req`, `Res`\> : `never`
 
 Defined in: [packages/core/src/context.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L97)
 

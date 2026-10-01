@@ -9,6 +9,7 @@ Replaces the previous OTLPProvider singleton with explicit lifecycle control.
 
 ## Interfaces
 
+- [OtelProvider](interfaces/OtelProvider.md)
 - [ProviderOptions](interfaces/ProviderOptions.md)
 - [ResourceAttributeInputs](interfaces/ResourceAttributeInputs.md)
 

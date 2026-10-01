@@ -2,7 +2,7 @@
 
 # Interface: ServiceStatus
 
-Defined in: [types.ts:20](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L20)
+Defined in: [types.ts:23](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L23)
 
 Service health status
 
@@ -10,6 +10,6 @@ Service health status
 
 ### status
 
-> **status**: `HealthCheckResponse_ServingStatus`
+> **status**: [`HealthCheckResponse_ServingStatus`](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto)
 
-Defined in: [types.ts:21](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L21)
+Defined in: [types.ts:24](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L24)

@@ -4,7 +4,7 @@
 
 > **traced**\<`T`\>(`fn`, `options?`): `T`
 
-Defined in: [packages/otel/src/traced.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/traced.ts#L31)
+Defined in: [traced.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/traced.ts#L31)
 
 Wraps a function in an OpenTelemetry span.
 

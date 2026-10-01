@@ -2,11 +2,11 @@
 
 # Function: createFakeMethod()
 
-> **createFakeMethod**(`service`, `name`, `options?`): `DescMethod`
+> **createFakeMethod**(`service`, `name`, `options?`): [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 Defined in: test-fixtures/dist/index.d.ts:100
 
-Create a fake DescMethod descriptor attached to a service.
+Create a fake [DescMethod](https://protobufes.com/reference/reflection/descriptors/#types) descriptor attached to a service.
 
 When `options.register` is `true`, the method is pushed into
 `service.methods` and added to `service.method` (keyed by `localName`).
@@ -17,7 +17,7 @@ This is required for tests that iterate over service methods
 
 ### service
 
-`DescService`
+[`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 The parent `DescService` (typically from [createFakeService](createFakeService.md)).
 
@@ -35,7 +35,7 @@ Optional configuration for method kind and registration.
 
 ## Returns
 
-`DescMethod`
+[`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 A fake `DescMethod` suitable for unit/integration tests.
 
