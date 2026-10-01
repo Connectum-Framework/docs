@@ -20,9 +20,10 @@ can be regenerated from the parity test files at any time.
 | 5 | Error mapping (`ConnectError(NotFound)`, plain `Error` → `internal`, interceptor-thrown error) | `packages/testing/tests/parity/errors.parity.test.ts` | **3** |
 | 6 | HTTP / local coexistence (concurrent observation by one interceptor; `server.start()` not required for local invoke) | `packages/testing/tests/parity/coexistence.parity.test.ts` + `packages/core/tests/integration/localTransport.test.ts` | **2** |
 | 7a | OTEL tracing & metrics (unary spans, streaming events, error spans, metrics labels, trace-context propagation, instrument subset, `connectum.transport` attribute) | `packages/otel/tests/parity/otel.parity.test.ts` | **7** |
-| **Total** | | | **36** |
+| 8 | gRPC Server Reflection (one bidi stream with every request kind: listing, import closure, per-stream "already sent" state, symbol and extension lookup, error answers) | `packages/testing/tests/parity/reflection.parity.test.ts` | **1** |
+| **Total** | | | **37** |
 
-Of these, **25 scenarios** (groups 3, 3a, 3b, 4, 5) go through the unified
+Of these, **26 scenarios** (groups 3, 3a, 3b, 4, 5, 8) go through the unified
 `transportParityTest()` driver in `@connectum/testing/parity` and produce a
 structural diff between HTTP and local. The 7 OTEL scenarios and 2 coexistence
 scenarios are written as paired `test()` cases that drive both transports
@@ -53,6 +54,7 @@ coverage:
 | OTEL metrics (names, labels, values) | ✅ group 7a |
 | Coexistence (one server, two transports) | ✅ group 6 |
 | Server lifecycle (local before `start()`) | ✅ group 6.2 |
+| Protocol answers (gRPC Server Reflection) | ✅ group 8 |
 
 Behaviours **not** covered by parity (by design, see
 [`parity-invariant.md`](./parity-invariant.md#when-parity-does-not-apply)):
@@ -60,13 +62,13 @@ TLS, HTTP/2 framing, content-encoding negotiation, `:authority` /
 real-host `req.url`, gzip — these are wire-only and have no in-process
 analogue.
 
-**Coverage estimate:** of 16 distinct observable behaviour categories above,
-all 16 are exercised through the parity mechanism. The 4 explicitly
+**Coverage estimate:** of 17 distinct observable behaviour categories above,
+all 17 are exercised through the parity mechanism. The 4 explicitly
 out-of-scope categories (TLS, HTTP/2 framing, content-encoding, real
 `req.url` host) are wire-specific and excluded by spec.
 
-Observable coverage: **16 / 16 = 100 %** of in-scope behaviours;
-**16 / 20 = 80 %** if wire-only behaviours are counted as denominator.
+Observable coverage: **17 / 17 = 100 %** of in-scope behaviours;
+**17 / 21 = 81 %** if wire-only behaviours are counted as denominator.
 By the spec's "observable behaviour" definition (wire-only is excluded),
 coverage clears the 90 % target.
 

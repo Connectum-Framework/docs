@@ -180,3 +180,7 @@ const server = createServer({
 - ADR-003: Package Decomposition Strategy
 - gRPC Health Checking Protocol: https://github.com/grpc/grpc/blob/master/doc/health-checking.md
 - gRPC Server Reflection: https://grpc.io/docs/guides/reflection/
+
+## Update (2026-10-01)
+
+`@connectum/reflection` no longer depends on `@lambdalisue/connectrpc-grpcreflect`: it implements the gRPC Server Reflection Protocol itself, on code generated from the upstream `grpc.reflection` protos. The extraction rationale above stands; the reflection package's only external dependencies are now `@bufbuild/protobuf` and `@connectrpc/connect`.
