@@ -140,9 +140,8 @@ Server and service values are not composed. A service gate replaces the server g
 
 The server awaits a pending gate; it does not abandon it. A gate that waits on something slow should watch `context.signal` and throw when it aborts:
 
-- on both transports, the signal aborts when the call's deadline expires and when the client cancels;
-- on HTTP, it also aborts when `server.stop()` begins shutdown;
-- in-process calls are not aborted by `server.stop()` (as for any in-process handler), so a pending in-process gate is released by its deadline or by client cancellation.
+- the signal aborts when the call's deadline expires, when the client cancels, and when `server.stop()` begins shutdown;
+- all three apply identically over HTTP and in-process.
 
 ### The in-process marker cannot be forged
 

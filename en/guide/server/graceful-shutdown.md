@@ -65,8 +65,8 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 
 ```
 1. STOPPING event     -- Notify listeners (update health check to NOT_SERVING)
-2. Abort signal       -- Signal RPCs received over HTTP and long-running operations
-                         (in-process calls are not aborted)
+2. Abort signal       -- Abort context.signal of every in-flight RPC, over HTTP and
+                         in-process (localClient, ctx.call), and long-running operations
 3. Transport close    -- Stop accepting new connections, send GOAWAY to every HTTP/2 session
 4. Timeout race       -- Wait for in-flight requests OR timeout
 5. Force close        -- If timeout + forceCloseOnTimeout: destroy every remaining connection
@@ -74,6 +74,12 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 7. Dispose            -- Clean up internal state
 8. STOP event         -- Server is fully stopped
 ```
+
+### In-process calls
+
+Since 1.3.0, step 2 also aborts `context.signal` of calls made through `server.localClient()`, `server.client()` for a local service, `createLocalTransport()`, and `ctx.call` / `ctx.stream` to a local service — every hop of a local `ctx.call` chain sees it directly. A handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP.
+
+Steps 4 and 5 act on connections, and an in-process call has none: `stop()` neither waits for it nor destroys it, so a handler that ignores the signal keeps running and still completes its call. A local call made after `stop()` starts with an already-aborted signal. Upgrading from 1.2: see [In-process calls on shutdown](/en/migration/in-process-shutdown).
 
 ## Shutdown Hooks
 

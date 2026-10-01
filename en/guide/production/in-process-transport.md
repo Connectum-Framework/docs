@@ -149,7 +149,7 @@ By design, the in-process transport bypasses HTTP-wire concerns:
 - **No cross-process / IPC** — for cross-process communication (Unix sockets, separate hosts, worker_threads) use HTTP transports.
 - **Streaming back-pressure** is provided by `AsyncIterable` semantics and is best-effort rather than HTTP/2 flow control. For very high-throughput streaming, prefer HTTP/2.
 - **Messages are serialized, not shared** — the transport encodes each message to binary protobuf and decodes it on the other side, so the handler and the caller never share a message object. You pay the encode/decode cost, but not the network. `Headers` are cloned at the boundary.
-- **Server shutdown does not abort in-process calls** — `server.stop()` aborts the handler signal of in-flight HTTP calls, not of in-process ones; those end by their deadline or client cancellation.
+- **Shutdown does not wait for in-process calls** — `server.stop()` aborts `context.signal` of in-flight in-process calls exactly as it does for HTTP calls (since 1.3.0), but the shutdown timeout and `forceCloseOnTimeout` act on connections, and an in-process call has none: `stop()` neither waits for it nor kills it. A handler that ignores the signal keeps running. See [Graceful shutdown](/en/guide/server/graceful-shutdown).
 
 ## Coexistence with HTTP
 
