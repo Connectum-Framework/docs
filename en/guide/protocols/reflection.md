@@ -40,7 +40,9 @@ bun add @connectum/reflection
 ```
 :::
 
-Peer dependency: `@connectum/core`.
+Peer dependencies: `@connectum/core`, `@bufbuild/protobuf` `^2.16.0` and
+`@connectrpc/connect` `^2.2.0` (see
+[Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies)).
 
 ## Quick Setup
 

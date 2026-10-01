@@ -25,6 +25,11 @@ bun add -d @connectum/protoc-gen-catalog
 ~~~
 :::
 
+The plugin keeps `@bufbuild/protobuf` as its own regular dependency: it runs at
+code-generation time, and `@bufbuild/protoplugin` pins `@bufbuild/protobuf` exactly, so it
+is outside the single-copy guarantee that the runtime packages give through
+[peer dependencies](/en/migration/peer-dependencies).
+
 ## Start Here {#quick-start}
 
 ~~~yaml

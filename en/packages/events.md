@@ -25,6 +25,11 @@ bun add @connectum/events
 ~~~
 :::
 
+**Peer dependencies:** `@connectum/core`, `@bufbuild/protobuf` `^2.16.0` and
+`@connectrpc/connect` `^2.2.0`, shared with your application. npm 7+, pnpm and Bun install
+missing peers automatically; on Yarn, add them yourself — see
+[Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies).
+
 ## Start Here {#quick-start}
 
 ~~~typescript
