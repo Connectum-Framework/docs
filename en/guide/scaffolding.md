@@ -159,8 +159,9 @@ plugins:
 ```
 
 Those package exports first ship in 1.3.0, so `init` sets every `@connectum/*`
-dependency of such a project to one range of `^1.3.0` or higher, whatever the fetched
-base declares (also with `--ref`). One range for the whole set matters: mixed
+dependency of such a project to one range — the highest `@connectum/*` requirement of the
+fetched base, or `^1.3.0` if that is higher, so no base entry is lowered (also with
+`--ref`). One range for the whole set matters: mixed
 `@connectum/*` versions can install two copies of `@bufbuild/protobuf`. A project without
 auth or events keeps the base's ranges. In a project scaffolded with `--events`,
 `generate service --with-events` writes the events option proto to the same excluded
