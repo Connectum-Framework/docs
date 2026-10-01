@@ -71,5 +71,5 @@ model. The Quickstart executes generated TypeScript directly and therefore uses
 
 - [Runtime Compatibility](/en/guide/runtime-compatibility) — supported versions and limitations
 - [Erasable Syntax](/en/guide/typescript/erasable-syntax) — native type-stripping constraints
-- [Proto Enums](/en/guide/typescript/proto-enums) — generation when enums require transformation
+- [Proto Enums](/en/guide/typescript/proto-enums) — generating proto enums that native type stripping can run
 - [Patterns and Workflow](/en/guide/typescript/patterns) — project conventions

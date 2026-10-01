@@ -235,5 +235,5 @@ Here is the recommended `tsconfig.json` for Connectum projects:
 
 - [TypeScript Overview](/en/guide/typescript) -- back to overview
 - [Runtime Support](/en/guide/typescript/runtime-support) -- Node.js, Bun, tsx comparison
-- [Proto Enums](/en/guide/typescript/proto-enums) -- workaround for proto enum generation
+- [Proto Enums](/en/guide/typescript/proto-enums) -- generating proto enums as `as const` objects (`erasable_syntax=true`)
 - [Patterns & Workflow](/en/guide/typescript/patterns) -- common TypeScript patterns

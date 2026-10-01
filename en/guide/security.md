@@ -17,6 +17,7 @@ TLS encrypts the connection and authenticates the server. Mutual TLS additionall
 | Require and validate client certificates for service-to-service traffic | [Mutual TLS](/en/guide/security/mtls) |
 | Decide between HTTP/1.1, h2c, and TLS/ALPN transports | [Transport matrix](/en/guide/production/transport-matrix) |
 | Add JWT, session, gateway, or per-method policy | [Auth and authz](/en/guide/auth) |
+| Reject unauthenticated or oversized requests before the body is read | [Request admission](/en/guide/security/request-admission) |
 | Find exact server TLS fields | [`CreateServerOptions`](/en/api/@connectum/core/types/interfaces/CreateServerOptions) |
 
 ```typescript

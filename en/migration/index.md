@@ -43,7 +43,7 @@ action below rather than assuming a direct upgrade to the documented line.
 
 | Installed version | Required action |
 |---|---|
-| 1.2.x | Review the 1.3 release notes for each installed package and run your existing tests; if you pin `@bufbuild/protobuf` or Connect, or install with Yarn, follow [Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies); if you implement your own `ProtocolRegistration`, or a `defineLazyService` factory relies on separate instances per transport, follow [Custom protocols: setup/register split](/en/migration/protocol-setup) |
+| 1.2.x | Review the 1.3 release notes for each installed package and run your existing tests; if you pin `@bufbuild/protobuf` or Connect, or install with Yarn, follow [Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies); if you implement your own `ProtocolRegistration`, or a `defineLazyService` factory relies on separate instances per transport, follow [Custom protocols: setup/register split](/en/migration/protocol-setup); if in-process calls (`localClient`, `ctx.call`) watch `context.signal` and must finish during `server.stop()`, follow [In-process calls on shutdown](/en/migration/in-process-shutdown) |
 | 1.1.x | Review the 1.2 and 1.3 release notes for each installed package and run your existing tests; the 1.3 actions for 1.2.x apply as well |
 | 1.0.x | Review package release notes; 1.1 capabilities are additive; the 1.3 actions for 1.2.x apply as well |
 | RC or alpha | Follow [Migrating to 1.0](/en/migration/1.0), then review the [Service Catalog migration](/en/migration/service-catalog) |
@@ -62,6 +62,12 @@ action below rather than assuming a direct upgrade to the documented line.
   `@bufbuild/protobuf`, `@connectrpc/connect` and `@connectrpc/connect-node` pins inside
   the peer ranges, and declare them yourself on Yarn (1.3; **breaking** for out-of-range
   pins and Yarn installs).
+- [Erasable proto enums](/en/migration/erasable-enums) — generate proto enums as
+  `as const` objects (`erasable_syntax=true`) and update code that used enum reverse
+  mapping; only for projects whose protos declare enums.
+- [In-process calls on shutdown](/en/migration/in-process-shutdown) — from 1.3,
+  `server.stop()` aborts `context.signal` of in-flight in-process calls exactly
+  like HTTP calls.
 
 ## Release History
 
