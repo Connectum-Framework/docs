@@ -75,6 +75,8 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 8. STOP event         -- Server is fully stopped
 ```
 
+Steps 6 and 7 run even if closing the transport fails before the timeout, so your hooks always get to release their resources, and step 7 also runs if a hook fails. On this failure path the server emits `error` instead of `stop`, and `stop()` rejects with the error that occurred — or with an `AggregateError` carrying both when the transport close and a hook both failed. A close failure that only arrives after the timeout has already won is logged, not thrown: if the hooks succeed, `stop()` resolves normally.
+
 ### In-process calls
 
 Since 1.3.0, step 2 also aborts `context.signal` of calls made through `server.localClient()`, `server.client()` for a local service, `createLocalTransport()`, and `ctx.call` / `ctx.stream` to a local service — every hop of a local `ctx.call` chain sees it directly. A handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP.
@@ -298,7 +300,7 @@ Always set `shutdown.timeout` to a value **less than** Kubernetes `terminationGr
 
 ### With forceCloseOnTimeout: true (default)
 
-Until the timeout, nothing is cut: in-flight requests and streams keep running, and HTTP/2 clients have been sent GOAWAY so they can finish and disconnect. When the timeout is exceeded, every connection that is still open is destroyed, on every transport — plaintext HTTP/1.1 (the default), h2c, and TLS, including connections that never finished a request or a TLS handshake. Requests still in flight at that moment are aborted.
+Until the timeout, the server does not force-close any connection: HTTP/2 clients have been sent GOAWAY so they can finish and disconnect, and in-flight requests are allowed to complete. Handlers that observe the abort signal (step 2 above) — typically long-running streaming RPCs — are asked to stop at the start of shutdown and may end earlier than the timeout. When the timeout is exceeded, every connection that is still open is destroyed, on every transport — plaintext HTTP/1.1 (the default), h2c, and TLS, including connections that never finished a request or a TLS handshake. Requests still in flight at that moment are aborted.
 
 ```typescript
 shutdown: {
@@ -307,11 +309,11 @@ shutdown: {
 }
 ```
 
-This ensures `stop()` completes within the timeout even if a client holds its connection open (ignores GOAWAY, idles, or stalls mid-request), so no connection accepted by the server keeps the process alive afterwards. Connectum never calls `process.exit()`; anything your own code keeps open (timers, handlers that ignore the abort signal, other sockets) can still keep the process running.
+This bounds the connection drain by the timeout even if a client holds its connection open (ignores GOAWAY, idles, or stalls mid-request), so no connection accepted by the server keeps the process alive afterwards. `stop()` runs the shutdown hooks as soon as every connection has closed or the timeout has won, whichever comes first, and completes when your hooks have finished — keep hooks fast. Connectum never calls `process.exit()`; anything your own code keeps open (timers, handlers that ignore the abort signal, other sockets) can still keep the process running.
 
 ### With forceCloseOnTimeout: false
 
-No connection is destroyed. `stop()` still resolves once the timeout is exceeded and shutdown hooks run, but connections that clients keep open stay open — and keep the process alive — until those clients close them:
+No connection is destroyed. Shutdown still moves on when every connection has closed or the timeout has won, whichever comes first: `stop()` runs the shutdown hooks and completes when they have finished (or rejects if one fails), exactly as with the default. Connections that clients keep open stay open, though, and keep the process alive until those clients close them:
 
 ```typescript
 shutdown: {
