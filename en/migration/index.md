@@ -68,6 +68,10 @@ action below rather than assuming a direct upgrade to the documented line.
 - [In-process calls on shutdown](/en/migration/in-process-shutdown) — from 1.3,
   `server.stop()` aborts `context.signal` of in-flight in-process calls exactly
   like HTTP calls.
+- [Option descriptors from the packages](/en/migration/option-descriptor-imports) —
+  from 1.3, generated code can import the auth and events option descriptors from
+  `@connectum/auth` / `@connectum/events` instead of generating local copies;
+  optional, for projects scaffolded with `--auth` or `--events` before 1.3.
 
 ## Release History
 

@@ -76,6 +76,43 @@ service UserService {
 
 Method-level options always override service-level defaults.
 
+### Generating Code for Annotated Protos
+
+`connectum/auth/v1/options.proto` ships in the `@connectum/auth` package (`proto/`
+directory). Add it to `buf.yaml` as a module so buf can compile your imports:
+
+```yaml
+version: v2
+modules:
+  - path: proto
+  - path: node_modules/@connectum/auth/proto
+```
+
+Since 1.3.0, the package also exports the generated code of that proto at
+`@connectum/auth/gen/connectum/auth/v1/options_pb.js` — the same module
+`@connectum/auth/proto` uses. Import it instead of generating a local copy: in
+`buf.gen.yaml`, generate from your own protos only and map the import (`protoc-gen-es`
+2.15.0 or later):
+
+```yaml
+version: v2
+clean: true
+inputs:
+  - directory: proto
+plugins:
+  - local: protoc-gen-es
+    out: gen
+    opt:
+      - target=ts
+      - import_extension=.ts
+      - map_imports=connectum/auth/v1/:@connectum/auth/gen
+```
+
+The generated `*_pb.ts` files then import `file_connectum_auth_v1_options` from
+`@connectum/auth/gen/connectum/auth/v1/options_pb.js`, and `gen/` holds no
+`connectum/auth/v1/options_pb.ts`. `connectum init --auth` sets this up; see
+[Scaffolding](/en/guide/scaffolding#connectum-option-protos).
+
 ## Interceptor Setup
 
 ```typescript
