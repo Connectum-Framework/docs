@@ -31,12 +31,14 @@ interface ProtocolRegistration {
 }
 ```
 
-The `ProtocolContext` passed to `setup` provides access to registered service file descriptors:
+The `ProtocolContext` passed to `setup` provides the services mounted before this protocol and their file descriptors:
 
 ```typescript
 interface ProtocolContext {
   /** Service file descriptors registered before this protocol (frozen snapshot) */
   readonly registry: ReadonlyArray<DescFile>;
+  /** Services mounted before this protocol, in registration order (frozen snapshot) */
+  readonly services: ReadonlyArray<DescService>;
 }
 ```
 
@@ -63,7 +65,7 @@ const serverA = createServer({ services: [routesA], protocols: [Reflection()] })
 const serverB = createServer({ services: [routesB], protocols: [Reflection()] });
 ```
 
-Protocols are processed in array order. The `context.registry` a protocol receives in `setup` holds every mounted application service plus the services of the protocols listed **before** it, as a frozen snapshot. That is why `Healthcheck()` does not track its own `grpc.health.v1.Health` service, while a `Reflection()` listed after it does list it:
+Protocols are processed in array order. The `context.services` (and `context.registry`, their files) a protocol receives in `setup` hold every mounted application service plus the services of the protocols listed **before** it, as frozen snapshots. That is why `Healthcheck()` does not track its own `grpc.health.v1.Health` service, while a `Reflection()` listed after it does list it:
 
 ```typescript
 import { createServer } from '@connectum/core';
@@ -110,11 +112,9 @@ function ServerInfo(): ProtocolRegistration {
   return {
     name: 'server-info',
 
-    // Once per server: read the registry and keep the result.
+    // Once per server: read the mounted services and keep the result.
     setup(context: ProtocolContext): void {
-      serviceNames = context.registry.flatMap(
-        (file) => file.services.map((s) => s.typeName),
-      );
+      serviceNames = context.services.map((s) => s.typeName);
     },
 
     // Once per router: only add routes, reusing what setup computed, so HTTP
@@ -219,21 +219,20 @@ const server = createServer({
 
 ## Using ProtocolContext
 
-The `context.registry` field passed to `setup` contains an array of `DescFile` objects (from `@bufbuild/protobuf`) representing the proto file descriptors of the application services and of the protocols listed before yours. This is how the built-in Reflection protocol discovers available services:
+`context.services` lists the `DescService` objects (from `@bufbuild/protobuf`) of the services mounted before your protocol: the application services, then the services of the protocols listed before yours. Use it whenever you need the services the server actually serves — this is how the built-in Healthcheck and Reflection protocols decide what to track and list:
 
 ```typescript
 setup(context): void {
-  // List all registered service type names
-  for (const file of context.registry) {
-    for (const service of file.services) {
-      console.log(`Registered: ${service.typeName}`);
-      for (const method of service.methods) {
-        console.log(`  - ${method.name} (${method.kind})`);
-      }
+  for (const service of context.services) {
+    console.log(`Mounted: ${service.typeName}`);
+    for (const method of service.methods) {
+      console.log(`  - ${method.name} (${method.kind})`);
     }
   }
 }
 ```
+
+`context.registry` holds the `DescFile` objects of those services. Use it for file-level information such as the descriptors and their imports (Reflection serves them). Do not derive service names from `registry[].services`: a file may declare services that are not mounted — several services in one `.proto` file of which only some are passed to `createServer()`, or a subset selected with `enabledServices`.
 
 ## Protocol Design Guidelines
 
@@ -247,7 +246,7 @@ setup(context): void {
 
 5. **Return `false` from httpHandler for unmatched routes** -- This allows other protocols and the default 404 handler to process the request.
 
-6. **Use ProtocolContext for service discovery** -- Do not hardcode service names. Use `context.registry` in `setup()` to discover what services are available.
+6. **Use ProtocolContext for service discovery** -- Do not hardcode service names. Use `context.services` in `setup()` to discover what services are mounted.
 
 ::: warning Upgrading from `register(router, context)`
 Earlier releases passed `context` to `register()`. See [Custom protocols: setup/register split](/en/migration/protocol-setup) for the migration.

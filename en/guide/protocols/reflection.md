@@ -60,18 +60,33 @@ const server = createServer({
 await server.start();
 ```
 
-That is all you need. The `Reflection()` factory creates a `ProtocolRegistration` that registers the `grpc.reflection.v1.ServerReflection` service on your server.
+That is all you need. The `Reflection()` factory creates a `ProtocolRegistration` that registers `grpc.reflection.v1.ServerReflection` and `grpc.reflection.v1alpha.ServerReflection` on your server.
 
 ## How It Works
 
 When you pass `Reflection()` to the `protocols` array, Connectum:
 
 1. Collects all registered service file descriptors from your services
-2. Builds a `FileDescriptorSet` from those descriptors and their dependencies
-3. Registers the `grpc.reflection.v1.ServerReflection` service on the ConnectRouter
+2. Indexes those descriptors and their transitive imports by file name, by fully-qualified symbol and by extension
+3. Registers the v1 and v1alpha `ServerReflection` services on the ConnectRouter
 4. Clients can then query the reflection service to discover available services
 
 Reflection is set up **after** your application services, so it has access to all of their descriptors. It also lists the services of protocols placed before it in the `protocols` array — with `[Healthcheck(), Reflection()]`, `grpc.health.v1.Health` is listed.
+
+### Protocol Behavior
+
+The answers follow the [reflection protocol](https://github.com/grpc/grpc-proto/blob/master/grpc/reflection/v1/reflection.proto):
+
+| Request | Answer |
+|---------|--------|
+| `list_services` | The mounted services: application services and the protocols listed before `Reflection()`. Services that are declared but not mounted (in an imported file, or next to a mounted service in the same file) are not listed. |
+| `file_by_filename`, `file_containing_symbol`, `file_containing_extension` | The requested file first, then each transitive import (well-known types included) not yet sent on the same stream. |
+| `file_containing_symbol` | Resolves services, methods (`pkg.Service.Method`), messages, fields, oneofs, enums, enum values and extensions. Enum values are named in the scope that contains their enum (`pkg.LEVEL_HIGH`, not `pkg.Level.LEVEL_HIGH`). |
+| `all_extension_numbers_of_type` | `base_type_name` set to the requested type, numbers in ascending order. |
+| Unknown file, symbol, extension or type | `error_response` with `NOT_FOUND` (5), naming what was not found. |
+| Request with no query set | `error_response` with `INVALID_ARGUMENT` (3). |
+
+An error answers one request only; the stream stays open for the next one.
 
 ## Using grpcurl with Reflection
 
@@ -88,8 +103,9 @@ Output:
 ```
 greeter.v1.GreeterService
 grpc.health.v1.Health
-grpc.reflection.v1.ServerReflection
 ```
+
+The reflection service does not list itself: the listing is taken before reflection registers. Clients still reach it, which is how `list` works.
 
 ### Describe a Service
 
@@ -105,6 +121,21 @@ service GreeterService {
   rpc SayHello ( .greeter.v1.SayHelloRequest ) returns ( .greeter.v1.SayHelloResponse );
 }
 ```
+
+### Describe a Method
+
+```bash
+grpcurl -plaintext localhost:5000 describe greeter.v1.GreeterService.SayHello
+```
+
+Output:
+
+```
+greeter.v1.GreeterService.SayHello is a method:
+rpc SayHello ( .greeter.v1.SayHelloRequest ) returns ( .greeter.v1.SayHelloResponse );
+```
+
+Fields (`greeter.v1.SayHelloRequest.name`), enums and enum values can be described the same way.
 
 ### Describe a Message Type
 
@@ -257,7 +288,6 @@ grpcurl -plaintext localhost:5000 list
 # greeter.v1.GreeterService
 # order.v1.OrderService
 # grpc.health.v1.Health
-# grpc.reflection.v1.ServerReflection
 
 # Describe the order service
 grpcurl -plaintext localhost:5000 describe order.v1.OrderService
@@ -271,7 +301,7 @@ The `collectFileProtos` utility function is also exported for advanced use cases
 import { collectFileProtos } from '@connectum/reflection';
 ```
 
-This is used internally by the `Reflection()` factory to build the `FileDescriptorSet`.
+This is used internally by the `Reflection()` factory to collect the descriptors it serves.
 
 ## Protocol Registration Details
 
@@ -281,16 +311,17 @@ Under the hood, `Reflection()` returns a `ProtocolRegistration` object:
 {
   name: 'reflection',
   setup(context) {
-    // Once per server: context.registry holds the application services and
-    // the protocols listed before Reflection; builds the FileDescriptorSet
+    // Once per server: context.services and context.registry hold the
+    // mounted application services and the protocols listed before
+    // Reflection; indexes their descriptors
   },
   register(router) {
-    // Once per router: mounts the reflection service with that same set
+    // Once per router: mounts the v1 and v1alpha reflection services on that same index
   },
 }
 ```
 
-The `context.registry` is a snapshot taken by `@connectum/core` when the server first builds its routes. Because the descriptor set is built once and shared by every router, HTTP clients and in-process clients (`server.localClient()`, `ctx.call`) see the same listing.
+The context is a snapshot taken by `@connectum/core` when the server first builds its routes. Because the index is built once and shared by every router, HTTP clients and in-process clients (`server.localClient()`, `ctx.call`) see the same listing.
 
 ## Related
 

@@ -43,6 +43,7 @@ meant:
 | One-time work | inside `register` | `setup(context)` — optional, **exactly once per server**, right before the protocol's first `register` |
 | Route registration | `register(router, context)` | `register(router)` — **once per router**, routes only |
 | `context.registry` | live array, grew between calls | frozen snapshot: application services plus the protocols listed before this one |
+| `context.services` | — | new: the mounted services (frozen snapshot, same "listed before this one" view); use it for service names — `registry` files may declare services that are not mounted |
 
 This is a compiling breaking change: a `register` that still declares a `context`
 parameter no longer type-checks against `ProtocolRegistration`. In plain JavaScript, a
@@ -82,7 +83,7 @@ function ServerInfo(): ProtocolRegistration {
   return {
     name: 'server-info',
     setup(context: ProtocolContext): void {
-      services = context.registry.flatMap((file) => file.services.map((s) => s.typeName));
+      services = context.services.map((s) => s.typeName);
     },
     register(router: ConnectRouter): void {
       router.service(InfoService, { getInfo: () => ({ services }) });
