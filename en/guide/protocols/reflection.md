@@ -311,7 +311,7 @@ Under the hood, `Reflection()` returns a `ProtocolRegistration` object:
 {
   name: 'reflection',
   setup(context) {
-    // Once per server: context.services and context.registry hold the
+    // Before the first register: context.services and context.registry hold the
     // mounted application services and the protocols listed before
     // Reflection; indexes their descriptors
   },
