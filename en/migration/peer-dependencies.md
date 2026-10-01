@@ -27,7 +27,8 @@ them inside the ranges below, the upgrade needs **no changes**: the package mana
 installs the peers and keeps one copy of each.
 
 ::: warning Breaking change in a minor release
-An installation that worked with 1.2 can fail or warn with 1.3. Under strict Semantic
+An installation that worked with 1.2 can fail or warn with 1.3, and an application running
+on an out-of-range copy stops at `createServer()`. Under strict Semantic
 Versioning this is a major change; it ships in 1.3.0 as an explicit exception to
 Connectum's breaking-changes policy, so that applications get the single-copy fix without
 waiting for 2.0.
@@ -77,8 +78,40 @@ Yarn does not install missing peer dependencies. See [Required changes](#require
 ::: warning Bun can stay silent about an old `@bufbuild/protobuf`
 When your project also contains a tool that brings its own in-range `@bufbuild/protobuf`
 — `@bufbuild/protoc-gen-es` and `@connectum/protoc-gen-catalog` both do — Bun 1.4 installs
-a too-old `@bufbuild/protobuf` pin **without a warning**. Connectum then runs on your old
-copy. Check your pin against the range yourself when you use Bun.
+a too-old `@bufbuild/protobuf` pin **without a warning**. The startup check below catches it.
+:::
+
+## What happens at startup
+
+Whatever installed your dependencies, `createServer()` checks the `@bufbuild/protobuf`,
+`@connectrpc/connect` and `@connectrpc/connect-node` that `@connectum/core` actually
+loaded. If one is outside the range above, the server is not created and
+`PeerDependencyVersionError` (exported from `@connectum/core`) is thrown:
+
+```text
+PeerDependencyVersionError: @connectum/core loaded peer libraries outside its supported range:
+  - @bufbuild/protobuf: loaded 2.12.1 (from /app/node_modules/@bufbuild/protobuf), @connectum/core requires ^2.16.0
+Generated code and the framework must share one in-range copy of each library; an older copy breaks generated types and Connect at runtime.
+Fix: raise your pins to the required ranges (npm install @bufbuild/protobuf@"^2.16.0", or the pnpm / bun / yarn equivalent), or force one in-range version with "overrides" (npm, Bun), pnpm "overrides" or Yarn "resolutions", then reinstall.
+```
+
+The check has no switch to turn the failure into a warning: an out-of-range copy breaks
+generated types and Connect at runtime.
+
+It is **skipped** when the loaded versions cannot be determined:
+
+- `@connectum/core` is bundled into your application (esbuild, `bun build`, and similar) —
+  a bundle has no package metadata left to read;
+- the runtime has no `import.meta.resolve`.
+
+In those setups the install-time behavior above is your only signal, so keep the pins in
+range.
+
+::: info One known exception to the single copy
+`@connectum/reflection` currently uses `@lambdalisue/connectrpc-grpcreflect`, which lists
+`@bufbuild/protobuf` and `@connectrpc/connect` as regular dependencies, so a package
+manager may give it a copy of its own. This goes away when Connectum ships its own gRPC
+Server Reflection.
 :::
 
 ## Required changes
@@ -150,8 +183,10 @@ bun pm ls --all | grep -E '@bufbuild/protobuf@|@connectrpc/connect(-node)?@'
 `npm ls` exits non-zero and marks an entry `invalid` when a peer range is not met.
 `pnpm peers check` must not list `@bufbuild/protobuf`, `@connectrpc/connect` or
 `@connectrpc/connect-node`. With Bun, a second version of `@bufbuild/protobuf` nested under
-`@bufbuild/protoplugin` belongs to the code generator and is expected; any other second
-version is not. Then run your type-check and tests.
+`@bufbuild/protoplugin` belongs to the code generator and is expected, and so is one under
+`@lambdalisue/connectrpc-grpcreflect` (the known exception above); any other second
+version is not. Then start the service: `createServer()` must not throw
+`PeerDependencyVersionError`. Finally, run your type-check and tests.
 
 ## Related release notes
 
