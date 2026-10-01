@@ -40,7 +40,7 @@ meant:
 
 | | Before | 1.3.0 |
 |---|---|---|
-| One-time work | inside `register` | `setup(context)` — optional, **exactly once per server**, right before the protocol's first `register` |
+| One-time work | inside `register` | `setup(context)` — optional, **once per server**, right before the protocol's first `register`; called again only if that materialization failed |
 | Route registration | `register(router, context)` | `register(router)` — **once per router**, routes only |
 | `context.registry` | live array, grew between calls | frozen snapshot: application services plus the protocols listed before this one |
 | `context.services` | — | new: the mounted services (frozen snapshot, same "listed before this one" view); use it for service names — `registry` files may declare services that are not mounted |

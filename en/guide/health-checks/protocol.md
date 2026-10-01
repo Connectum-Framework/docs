@@ -64,7 +64,7 @@ healthcheckManager.update(ServingStatus.NOT_SERVING);
 | `getStatus(service)` | Get status of a specific service or component. Returns `ServiceStatus \| undefined` (`undefined` for an unknown name — does not throw). |
 | `getAllStatuses()` | Get a Map of all service and component statuses |
 | `areAllHealthy()` | Check if all services and components report `SERVING` |
-| `initialize(serviceNames)` | Initialize the RPC service slice (called once per server by the protocol; in-process transports do not re-run it). Replaces only `service` entries; never touches components. |
+| `initialize(serviceNames)` | Initialize the RPC service slice (called by the protocol's `setup`, before its first `register`; in-process transports do not re-run it, a retry after a failed route materialization does). Replaces only `service` entries; never touches components. |
 | `clear()` | Clear all services and components |
 
 ## gRPC Health Check Protocol
