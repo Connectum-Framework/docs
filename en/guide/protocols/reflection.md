@@ -321,7 +321,7 @@ Under the hood, `Reflection()` returns a `ProtocolRegistration` object:
 }
 ```
 
-The context is a snapshot taken by `@connectum/core` when the server first builds its routes. Because the index is built once and shared by every router, HTTP clients and in-process clients (`server.localClient()`, `ctx.call`) see the same listing.
+The context is a snapshot taken by `@connectum/core` when the server first builds its routes. Because the index is built in `setup` and shared by every router built after it, HTTP clients and in-process clients (`server.localClient()`, `ctx.call`) see the same listing. If that first route materialization fails, the retry runs `setup` again and rebuilds the index.
 
 ## Related
 
