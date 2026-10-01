@@ -151,6 +151,13 @@ By design, the in-process transport bypasses HTTP-wire concerns:
 - **Messages are serialized, not shared** — the transport encodes each message to binary protobuf and decodes it on the other side, so the handler and the caller never share a message object. You pay the encode/decode cost, but not the network. `Headers` are cloned at the boundary.
 - **Shutdown does not wait for in-process calls** — `server.stop()` aborts `context.signal` of in-flight in-process calls exactly as it does for HTTP calls (since 1.3.0), but the shutdown timeout and `forceCloseOnTimeout` act on connections, and an in-process call has none: `stop()` neither waits for it nor kills it. A handler that ignores the signal keeps running. See [Graceful shutdown](/en/guide/server/graceful-shutdown).
 
+## Security Considerations
+
+Two transport-specific values are visible to interceptors. Neither is a security signal:
+
+- **`req.url` is synthetic.** For an in-process call, interceptors see `req.url` as `https://in-memory/<service>/<method>` — for example `https://in-memory/greeter.v1.GreeterService/SayHello`. The origin is set by the ConnectRPC router transport, not by a network peer. Do not parse `req.url` (host, scheme, or path) for authorization or other policy decisions; use `req.service.typeName` and `req.method.name`, which are identical on both transports.
+- **The transport marker is telemetry-only.** The `connectum.transport` span attribute, the `transport` metric label, and the logger's [`includeTransport` tag](/en/guide/interceptors/built-in#request-logging) all come from a framework-internal request marker. The server strips a forged marker from inbound HTTP requests, but the marker is still not an authentication mechanism: do not rely on it to grant or deny access, or to skip checks for "local" callers. The in-process path already runs the full server-side interceptor chain, so authorization applies to it without special cases.
+
 ## Coexistence with HTTP
 
 A single `Server` instance can simultaneously serve HTTP clients (after `server.start()`) and in-process clients (available immediately after `createServer()`). Both paths go through the same router and the same interceptor chain, so an interceptor observes both kinds of calls uniformly.
