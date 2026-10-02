@@ -53,6 +53,7 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `createEventBus` | Create the lifecycle-managed event bus. |
 | `MemoryAdapter` | Run deterministic in-memory event tests. |
 | `createBroadcastSubscribers` | Create explicit one-to-many reactor subscribers. |
+| `EventAdapterFactory` | Give each broadcast reactor its own broker connection; see [Adapter instances and factories](/en/guide/events/adapters#adapter-factory). |
 
 Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 

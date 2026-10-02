@@ -181,12 +181,17 @@ export const eventBus = createEventBus({
   group: 'notification-service',
   handlerTimeout: 30_000,  // Per-event handler timeout (default: 30s)
   drainTimeout: 15_000,    // Wait up to 15s for in-flight handlers on shutdown
+  drainPublishTimeout: 5_000, // Opt-in (default: off): wait up to 5s for in-flight publishes on shutdown
   middleware: {
     retry: { maxRetries: 3, backoff: 'exponential' },
     dlq: { topic: 'notification-service.dlq' },
   },
 });
 ```
+
+`drainTimeout` and `drainPublishTimeout` both apply when the bus stops. See
+[Shutdown drain](/en/guide/events#shutdown-drain) for what each budget waits for
+and how they combine.
 
 ## Step 6: Integrate with Connectum Server
 

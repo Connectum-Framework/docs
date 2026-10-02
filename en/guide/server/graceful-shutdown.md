@@ -83,6 +83,13 @@ Since 1.3.0, step 2 also aborts `context.signal` of calls made through `server.l
 
 Steps 4 and 5 act on connections, and an in-process call has none: `stop()` neither waits for it nor destroys it, so a handler that ignores the signal keeps running and still completes its call. A local call made after `stop()` starts with an already-aborted signal. Upgrading from 1.2: see [In-process calls on shutdown](/en/migration/in-process-shutdown).
 
+### EventBus
+
+A bus passed as `createServer({ eventBus })` is stopped by a shutdown hook named
+`eventbus` in step 6, after the timeout race. Its handler and publish drain
+budgets therefore add to the time `stop()` takes; they are not bounded by
+`shutdown.timeout`. See [Shutdown drain](/en/guide/events#shutdown-drain).
+
 ## Shutdown Hooks
 
 Shutdown hooks allow you to run cleanup logic during shutdown with dependency ordering. Register them via `server.onShutdown()`.

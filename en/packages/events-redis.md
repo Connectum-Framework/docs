@@ -37,6 +37,32 @@ const adapter = RedisAdapter({
 
 For a complete, source-verified workflow, continue with the focused guide below.
 
+## Redis Protocol {#redis-protocol}
+
+The adapter connects with RESP2 by default, so upgrading `ioredis` does not
+change the wire protocol of an existing application. To use RESP3, set
+`protocol: 3` in `redisOptions`:
+
+~~~typescript
+import { RedisAdapter } from '@connectum/events-redis';
+
+const adapter = RedisAdapter({
+  url: 'redis://localhost:6379',
+  redisOptions: {
+    protocol: 3,
+    replyMapping: 'resp3', // Optional; omit it to keep the ioredis default, 'legacy'
+  },
+});
+~~~
+
+`replyMapping` chooses how `ioredis` returns RESP3 map replies: `'legacy'` as
+flat arrays, `'resp3'` as plain objects. The adapter reads stream replies in
+either shape. `replyMapping: 'resp3'` requires `protocol: 3`: with RESP2,
+explicit or default, `RedisAdapter()` throws a `TypeError` when it is called,
+before opening any connection. The dedicated blocking connections used for
+`XREADGROUP` are duplicates of the main connection and use the same protocol
+and reply mapping. RESP3 support is available since 1.3.0.
+
 ## Key Entry Points
 
 | Entry point | Use it to |
