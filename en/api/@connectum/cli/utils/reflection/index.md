@@ -4,8 +4,8 @@
 
 Reflection client utilities
 
-Wraps @lambdalisue/connectrpc-grpcreflect ServerReflectionClient
-for use in CLI commands.
+A gRPC Server Reflection Protocol client for CLI commands. It speaks v1 and
+falls back to v1alpha for servers that only implement the older version.
 
 ## Interfaces
 

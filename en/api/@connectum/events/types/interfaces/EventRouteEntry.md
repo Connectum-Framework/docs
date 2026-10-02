@@ -20,7 +20,7 @@ Typed handler function
 
 ### method
 
-> `readonly` **method**: `DescMethod`
+> `readonly` **method**: [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 Defined in: [packages/events/src/types.ts:231](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L231)
 

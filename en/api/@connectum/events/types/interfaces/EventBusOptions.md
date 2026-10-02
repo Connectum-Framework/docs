@@ -100,7 +100,7 @@ Middleware configuration
 
 ### publishes?
 
-> `optional` **publishes?**: `DescService`[]
+> `optional` **publishes?**: [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)[]
 
 Defined in: [packages/events/src/types.ts:340](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L340)
 

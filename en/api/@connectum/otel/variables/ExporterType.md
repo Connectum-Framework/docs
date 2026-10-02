@@ -4,7 +4,7 @@
 
 > `const` **ExporterType**: `object`
 
-Defined in: [packages/otel/src/config.ts:19](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L19)
+Defined in: [config.ts:19](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L19)
 
 Available exporter types
 

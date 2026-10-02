@@ -16,4 +16,4 @@ Each handler can be either:
 
 ### S
 
-`S` *extends* `DescService`
+`S` *extends* [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)

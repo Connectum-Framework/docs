@@ -4,4 +4,4 @@
 
 > `const` **ATTR\_RPC\_SYSTEM**: `"rpc.system"` = `"rpc.system"`
 
-Defined in: [packages/otel/src/attributes.ts:16](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L16)
+Defined in: [attributes.ts:16](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L16)

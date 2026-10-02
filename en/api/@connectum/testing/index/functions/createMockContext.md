@@ -6,7 +6,7 @@
 
 Defined in: [testing/src/mockContext.ts:68](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockContext.ts#L68)
 
-Create a Context whose `ctx.call` / `ctx.stream` resolve against the
+Create a [Context](../../../core/interfaces/Context.md) whose `ctx.call` / `ctx.stream` resolve against the
 given mocks. Pass it as the second argument to a handler under test.
 
 ## Parameters

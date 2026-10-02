@@ -16,4 +16,4 @@ Mirrors `@connectrpc/connect`'s `ServiceImpl` with the Connectum
 
 ### Desc
 
-`Desc` *extends* `DescService`
+`Desc` *extends* [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)

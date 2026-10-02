@@ -4,7 +4,7 @@
 
 > **wrapAsyncIterable**\<`T`\>(`iterable`, `span`, `direction`, `recordMessages`, `endSpanOnComplete?`): `AsyncGenerator`\<`T`\>
 
-Defined in: [packages/otel/src/shared.ts:83](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L83)
+Defined in: [shared.ts:83](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L83)
 
 Wraps an AsyncIterable to track streaming messages with OTel span events.
 
@@ -25,13 +25,13 @@ on normal completion, error, or early break (generator.return()).
 
 ### iterable
 
-`AsyncIterable`\<`T`\>
+[`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols)\<`T`\>
 
 The source async iterable (streaming messages)
 
 ### span
 
-[`Span`](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api.Span.html)
+[`Span`](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.Span.html)
 
 The OTel span to record events on
 

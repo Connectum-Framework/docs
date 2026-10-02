@@ -12,34 +12,8 @@ and [defineLazyService](../functions/defineLazyService.md); consumed by `createS
 
 ### descriptor
 
-> `readonly` **descriptor**: `DescService`
+> `readonly` **descriptor**: [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 Defined in: [packages/core/src/defineService.ts:52](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L52)
 
 The proto service descriptor (carries `typeName` and `file`).
-
-***
-
-### register
-
-> `readonly` **register**: (`router`, `ctx`) => `void`
-
-Defined in: [packages/core/src/defineService.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L54)
-
-**`Internal`**
-
-Mounts the service's handlers on the given router.
-
-#### Parameters
-
-##### router
-
-`ConnectRouter`
-
-##### ctx
-
-`RegisterContext`
-
-#### Returns
-
-`void`

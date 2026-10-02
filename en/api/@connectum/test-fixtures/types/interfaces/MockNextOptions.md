@@ -2,9 +2,9 @@
 
 # Interface: MockNextOptions
 
-Defined in: [types.ts:34](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L34)
+Defined in: [types.ts:38](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L38)
 
-Options for createMockNext and createMockNextSlow.
+Options for [createMockNext](../../index/functions/createMockNext.md) and [createMockNextSlow](../../index/functions/createMockNextSlow.md).
 
 ## Properties
 
@@ -12,7 +12,7 @@ Options for createMockNext and createMockNextSlow.
 
 > `optional` **message?**: `unknown`
 
-Defined in: [types.ts:36](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L36)
+Defined in: [types.ts:40](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L40)
 
 Response message. Default: `{ result: 'success' }`
 
@@ -22,6 +22,6 @@ Response message. Default: `{ result: 'success' }`
 
 > `optional` **stream?**: `boolean`
 
-Defined in: [types.ts:38](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L38)
+Defined in: [types.ts:42](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L42)
 
 Streaming response flag. Default: `false`

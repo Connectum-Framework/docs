@@ -15,7 +15,7 @@ interceptors applied to every method of this service:
 
 ### S
 
-`S` *extends* `DescService`
+`S` *extends* [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 ## Parameters
 

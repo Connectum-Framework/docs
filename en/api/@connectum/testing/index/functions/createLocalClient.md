@@ -12,7 +12,7 @@ Create an in-process ConnectRPC client for a service registered on the given Ser
 
 ### T
 
-`T` *extends* `DescService`
+`T` *extends* [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 ## Parameters
 

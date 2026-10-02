@@ -10,7 +10,7 @@ Options for [createMockDescMethod](../functions/createMockDescMethod.md).
 
 ### input?
 
-> `optional` **input?**: `DescMessage`
+> `optional` **input?**: [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 Defined in: test-fixtures/dist/types.d.ts:54
 
@@ -30,7 +30,7 @@ Method kind. Default: `'unary'`
 
 ### output?
 
-> `optional` **output?**: `DescMessage`
+> `optional` **output?**: [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 Defined in: test-fixtures/dist/types.d.ts:56
 

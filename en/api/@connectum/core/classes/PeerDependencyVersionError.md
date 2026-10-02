@@ -1,42 +1,36 @@
-[Connectum API Reference](../../../index.md) / [@connectum/events-amqp](../index.md) / AmqpSerializationError
+[Connectum API Reference](../../../index.md) / [@connectum/core](../index.md) / PeerDependencyVersionError
 
-# Class: AmqpSerializationError
+# Class: PeerDependencyVersionError
 
-Defined in: [packages/events-amqp/src/errors.ts:115](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L115)
+Defined in: [packages/core/src/peerVersions.ts:72](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/peerVersions.ts#L72)
 
-Payload encoding/decoding failed in a custom serialization hook.
+Thrown by `createServer()` when a loaded peer library is outside core's range.
 
 ## Extends
 
-- [`AmqpAdapterError`](AmqpAdapterError.md)
+- `Error`
 
 ## Constructors
 
 ### Constructor
 
-> **new AmqpSerializationError**(`message`, `options?`): `AmqpSerializationError`
+> **new PeerDependencyVersionError**(`problems`): `PeerDependencyVersionError`
 
-Defined in: [packages/events-amqp/src/errors.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L31)
+Defined in: [packages/core/src/peerVersions.ts:76](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/peerVersions.ts#L76)
 
 #### Parameters
 
-##### message
+##### problems
 
-`string`
-
-##### options?
-
-###### cause?
-
-`unknown`
+readonly [`PeerVersionProblem`](../interfaces/PeerVersionProblem.md)[]
 
 #### Returns
 
-`AmqpSerializationError`
+`PeerDependencyVersionError`
 
-#### Inherited from
+#### Overrides
 
-[`AmqpAdapterError`](AmqpAdapterError.md).[`constructor`](AmqpAdapterError.md#constructor)
+`Error.constructor`
 
 ## Properties
 
@@ -48,7 +42,7 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 
 #### Inherited from
 
-[`AmqpAdapterError`](AmqpAdapterError.md).[`cause`](AmqpAdapterError.md#cause)
+`Error.cause`
 
 ***
 
@@ -60,19 +54,27 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 
 #### Inherited from
 
-[`AmqpAdapterError`](AmqpAdapterError.md).[`message`](AmqpAdapterError.md#message)
+`Error.message`
 
 ***
 
 ### name
 
-> **name**: `string`
+> `readonly` **name**: `"PeerDependencyVersionError"` = `"PeerDependencyVersionError"`
 
-Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/lib.es5.d.ts:1076
+Defined in: [packages/core/src/peerVersions.ts:73](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/peerVersions.ts#L73)
 
-#### Inherited from
+#### Overrides
 
-[`AmqpAdapterError`](AmqpAdapterError.md).[`name`](AmqpAdapterError.md#name)
+`Error.name`
+
+***
+
+### problems
+
+> `readonly` **problems**: readonly [`PeerVersionProblem`](../interfaces/PeerVersionProblem.md)[]
+
+Defined in: [packages/core/src/peerVersions.ts:74](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/peerVersions.ts#L74)
 
 ***
 
@@ -84,7 +86,7 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 
 #### Inherited from
 
-[`AmqpAdapterError`](AmqpAdapterError.md).[`stack`](AmqpAdapterError.md#stack)
+`Error.stack`
 
 ***
 
@@ -106,7 +108,7 @@ not capture any frames.
 
 #### Inherited from
 
-[`AmqpAdapterError`](AmqpAdapterError.md).[`stackTraceLimit`](AmqpAdapterError.md#stacktracelimit)
+`Error.stackTraceLimit`
 
 ## Methods
 
@@ -176,7 +178,7 @@ a();
 
 #### Inherited from
 
-[`AmqpAdapterError`](AmqpAdapterError.md).[`captureStackTrace`](AmqpAdapterError.md#capturestacktrace)
+`Error.captureStackTrace`
 
 ***
 
@@ -200,7 +202,7 @@ Indicates whether the argument provided is a built-in Error instance or not.
 
 #### Inherited from
 
-[`AmqpAdapterError`](AmqpAdapterError.md).[`isError`](AmqpAdapterError.md#iserror)
+`Error.isError`
 
 ***
 
@@ -230,4 +232,4 @@ https://v8.dev/docs/stack-trace-api#customizing-stack-traces
 
 #### Inherited from
 
-[`AmqpAdapterError`](AmqpAdapterError.md).[`prepareStackTrace`](AmqpAdapterError.md#preparestacktrace)
+`Error.prepareStackTrace`

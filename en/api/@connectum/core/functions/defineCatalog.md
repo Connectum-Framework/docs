@@ -18,7 +18,7 @@ and break resolution by canonical type name.
 
 ### T
 
-`T` *extends* `Record`\<`string`, `DescService`\>
+`T` *extends* `Record`\<`string`, [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)\>
 
 ## Parameters
 

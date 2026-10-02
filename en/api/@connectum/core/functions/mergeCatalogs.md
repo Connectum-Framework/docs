@@ -18,7 +18,7 @@ route calls to the wrong service.
 
 ### catalogs
 
-...readonly `Readonly`\<`Record`\<`string`, `DescService`\>\>[]
+...readonly `Readonly`\<`Record`\<`string`, [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)\>\>[]
 
 ## Returns
 

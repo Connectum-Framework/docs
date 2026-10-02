@@ -6,7 +6,7 @@
 
 Defined in: test-fixtures/dist/index.d.ts:289
 
-Create a mock `next` handler that always throws a ConnectError.
+Create a mock `next` handler that always throws a [ConnectError](https://connectrpc.com/docs/web/errors).
 
 Useful for testing how interceptors handle downstream failures.
 

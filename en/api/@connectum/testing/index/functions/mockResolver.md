@@ -6,7 +6,7 @@
 
 Defined in: [testing/src/mockResolver.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L54)
 
-Build a RemoteResolver that serves the given mocks in-process. Returns
+Build a [RemoteResolver](../../../core/type-aliases/RemoteResolver.md) that serves the given mocks in-process. Returns
 `null` for any service not in the mock set (so it composes with real
 resolvers via `mapResolver`-style fallbacks).
 

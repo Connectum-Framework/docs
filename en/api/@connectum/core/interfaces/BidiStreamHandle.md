@@ -22,7 +22,7 @@ response half keeps yielding until the server completes.
 
 ### responses
 
-> `readonly` **responses**: `AsyncIterable`\<`Res`\>
+> `readonly` **responses**: [`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols)\<`Res`\>
 
 Defined in: [packages/core/src/context.ts:90](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L90)
 

@@ -10,7 +10,7 @@ A mocked service: its proto descriptor paired with a (partial) implementation.
 
 ### impl
 
-> `readonly` **impl**: `Partial`\<`ServiceImpl`\<`DescService`\>\>
+> `readonly` **impl**: `Partial`\<`ServiceImpl`\<[`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)\>\>
 
 Defined in: [testing/src/mockResolver.ts:24](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L24)
 
@@ -18,6 +18,6 @@ Defined in: [testing/src/mockResolver.ts:24](https://github.com/Connectum-Framew
 
 ### service
 
-> `readonly` **service**: `DescService`
+> `readonly` **service**: [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 Defined in: [testing/src/mockResolver.ts:23](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L23)

@@ -2,11 +2,11 @@
 
 # Function: createMockDescMethod()
 
-> **createMockDescMethod**(`name`, `options?`): `DescMethod`
+> **createMockDescMethod**(`name`, `options?`): [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 Defined in: test-fixtures/dist/index.d.ts:236
 
-Create a mock DescMethod descriptor.
+Create a mock [DescMethod](https://protobufes.com/reference/reflection/descriptors/#types) descriptor.
 
 When `input` or `output` are not provided, default mock messages are created
 automatically based on the method name (e.g. `test.GetUserRequest` /
@@ -28,7 +28,7 @@ Optional overrides for kind, input/output, and redaction.
 
 ## Returns
 
-`DescMethod`
+[`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 A mock `DescMethod` object.
 

@@ -2,14 +2,16 @@
 
 # Class: InMemorySpanCollector
 
-Defined in: [testing/src/otel-collectors.ts:147](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L147)
+Defined in: [testing/src/otel-collectors.ts:149](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L149)
 
 In-memory span collector. Owns its own `BasicTracerProvider` so that
 different scenarios cannot cross-contaminate.
 
-Callers wishing to register the provider globally (so that
-`trace.getTracer(...)` resolves here) should call registerGlobal
-— and pair it with [InMemorySpanCollector.dispose](#dispose) when done.
+The provider is not registered globally. Callers that need
+`trace.getTracer(...)` to resolve here should pass `collector.provider` to
+`trace.setGlobalTracerProvider()` from `@opentelemetry/api`, and when done
+call `trace.disable()` (which removes the global registration) before
+[InMemorySpanCollector.dispose](#dispose).
 
 ## Constructors
 
@@ -17,7 +19,7 @@ Callers wishing to register the provider globally (so that
 
 > **new InMemorySpanCollector**(): `InMemorySpanCollector`
 
-Defined in: [testing/src/otel-collectors.ts:151](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L151)
+Defined in: [testing/src/otel-collectors.ts:153](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L153)
 
 #### Returns
 
@@ -29,7 +31,7 @@ Defined in: [testing/src/otel-collectors.ts:151](https://github.com/Connectum-Fr
 
 > `readonly` **exporter**: `InMemorySpanExporter`
 
-Defined in: [testing/src/otel-collectors.ts:148](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L148)
+Defined in: [testing/src/otel-collectors.ts:150](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L150)
 
 ***
 
@@ -37,7 +39,7 @@ Defined in: [testing/src/otel-collectors.ts:148](https://github.com/Connectum-Fr
 
 > `readonly` **provider**: `BasicTracerProvider`
 
-Defined in: [testing/src/otel-collectors.ts:149](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L149)
+Defined in: [testing/src/otel-collectors.ts:151](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L151)
 
 ## Methods
 
@@ -45,7 +47,7 @@ Defined in: [testing/src/otel-collectors.ts:149](https://github.com/Connectum-Fr
 
 > **dispose**(): `Promise`\<`void`\>
 
-Defined in: [testing/src/otel-collectors.ts:181](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L181)
+Defined in: [testing/src/otel-collectors.ts:183](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L183)
 
 #### Returns
 
@@ -57,7 +59,7 @@ Defined in: [testing/src/otel-collectors.ts:181](https://github.com/Connectum-Fr
 
 > **flush**(): [`NormalizedSpan`](../interfaces/NormalizedSpan.md)[]
 
-Defined in: [testing/src/otel-collectors.ts:165](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L165)
+Defined in: [testing/src/otel-collectors.ts:167](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L167)
 
 Returns normalized finished spans collected so far.
 
@@ -75,7 +77,7 @@ for the parity structural diff.
 
 > **reset**(): `void`
 
-Defined in: [testing/src/otel-collectors.ts:177](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L177)
+Defined in: [testing/src/otel-collectors.ts:179](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L179)
 
 Clear the internal buffer.
 

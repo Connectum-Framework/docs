@@ -2,12 +2,13 @@
 
 # Interface: AmqpPublishRetryOptions
 
-Defined in: [packages/events-amqp/src/types.ts:461](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L461)
+Defined in: [packages/events-amqp/src/types.ts:484](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L484)
 
 Tuning for the opt-in bounded publish retry
 ([AmqpAdapterOptions.publishRetry](AmqpAdapterOptions.md#publishretry)). Backoff knobs mirror
-[AmqpRecoveryOptions](AmqpRecoveryOptions.md) (same names, same cap-before-jitter semantics)
-— but `maxRetries` defaults to a BOUNDED `5` here, not `Infinity`.
+[AmqpRecoveryOptions](AmqpRecoveryOptions.md) (same names, same formula — a delay never
+exceeds `maxDelay`) — but `maxRetries` defaults to a BOUNDED `5` here, not
+`Infinity`.
 
 ## Properties
 
@@ -15,7 +16,7 @@ Tuning for the opt-in bounded publish retry
 
 > `readonly` `optional` **factor?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:469](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L469)
+Defined in: [packages/events-amqp/src/types.ts:492](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L492)
 
 Exponential backoff factor.
 
@@ -31,7 +32,7 @@ Exponential backoff factor.
 
 > `readonly` `optional` **initialDelay?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:465](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L465)
+Defined in: [packages/events-amqp/src/types.ts:488](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L488)
 
 First retry delay in ms.
 
@@ -47,7 +48,7 @@ First retry delay in ms.
 
 > `readonly` `optional` **jitter?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:471](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L471)
+Defined in: [packages/events-amqp/src/types.ts:494](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L494)
 
 Symmetric jitter factor (0..1).
 
@@ -63,9 +64,9 @@ Symmetric jitter factor (0..1).
 
 > `readonly` `optional` **maxDelay?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:467](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L467)
+Defined in: [packages/events-amqp/src/types.ts:490](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L490)
 
-Base delay cap in ms; jitter applies on top of the capped base.
+Upper bound of every retry delay in ms; jitter never pushes a delay above it.
 
 #### Default
 
@@ -79,7 +80,7 @@ Base delay cap in ms; jitter applies on top of the capped base.
 
 > `readonly` `optional` **maxRetries?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:463](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L463)
+Defined in: [packages/events-amqp/src/types.ts:486](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L486)
 
 Retries after the first attempt (N retries = N+1 attempts). A negative value clamps to `0` (single attempt); `Infinity` is honored — retry until `disconnect()` aborts.
 
@@ -95,7 +96,7 @@ Retries after the first attempt (N retries = N+1 attempts). A negative value cla
 
 > `readonly` `optional` **onRetry?**: (`info`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:485](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L485)
+Defined in: [packages/events-amqp/src/types.ts:508](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L508)
 
 Observability hook, invoked once per scheduled retry. MUST NOT throw
 (exceptions are isolated). Scoped here deliberately — publish retries
@@ -132,7 +133,7 @@ are per-operation events, not connection lifecycle, so they do not join
 
 > `readonly` `optional` **retryOnTimeout?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:478](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L478)
+Defined in: [packages/events-amqp/src/types.ts:501](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L501)
 
 Also retry `AmqpPublishTimeoutError` (no broker outcome within
 `publishTimeoutMs`). The message state at a timeout is UNKNOWN, so this

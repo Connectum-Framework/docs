@@ -26,7 +26,7 @@ method.policy       -> service.default_policy    -> undefined
 
 ### method
 
-`DescMethod`
+[`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 The protobuf method descriptor
 

@@ -10,6 +10,7 @@
 ## Classes
 
 - [CatalogConfigError](classes/CatalogConfigError.md)
+- [PeerDependencyVersionError](classes/PeerDependencyVersionError.md)
 - [TransportValidationError](classes/TransportValidationError.md)
 
 ## Interfaces
@@ -23,6 +24,7 @@
 - [CreateCatalogClientOptions](interfaces/CreateCatalogClientOptions.md)
 - [CreateLocalTransportOptions](interfaces/CreateLocalTransportOptions.md)
 - [DnsResolverOptions](interfaces/DnsResolverOptions.md)
+- [PeerVersionProblem](interfaces/PeerVersionProblem.md)
 - [PerServiceEnvResolverOptions](interfaces/PerServiceEnvResolverOptions.md)
 - [ResolverContext](interfaces/ResolverContext.md)
 - [SanitizableError](interfaces/SanitizableError.md)

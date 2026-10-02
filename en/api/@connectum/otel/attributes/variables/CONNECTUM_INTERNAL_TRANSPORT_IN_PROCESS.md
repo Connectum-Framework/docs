@@ -4,6 +4,6 @@
 
 > `const` **CONNECTUM\_INTERNAL\_TRANSPORT\_IN\_PROCESS**: `"in-process"` = `"in-process"`
 
-Defined in: [packages/otel/src/attributes.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L54)
+Defined in: [attributes.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L54)
 
 Header value indicating an in-process call (the only one currently defined).

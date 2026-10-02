@@ -4,4 +4,4 @@
 
 > `const` **ATTR\_RPC\_SERVICE**: `"rpc.service"` = `"rpc.service"`
 
-Defined in: [packages/otel/src/attributes.ts:17](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L17)
+Defined in: [attributes.ts:17](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L17)

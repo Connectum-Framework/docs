@@ -4,7 +4,7 @@
 
 > **createRpcServerMetrics**(`meter`): [`RpcServerMetrics`](../interfaces/RpcServerMetrics.md)
 
-Defined in: [packages/otel/src/metrics.ts:65](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/metrics.ts#L65)
+Defined in: [metrics.ts:65](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/metrics.ts#L65)
 
 Creates RPC server metric instruments from the given meter
 
@@ -17,7 +17,7 @@ All metrics follow OpenTelemetry semantic conventions for RPC:
 
 ### meter
 
-[`Meter`](../../interfaces/Meter.md)
+[`Meter`](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.Meter.html)
 
 OpenTelemetry Meter instance to create histograms from
 
