@@ -98,6 +98,7 @@ const adapter = AmqpAdapter({
 ```
 
 - [Module hub](/en/packages/events-amqp)
+- [Configure connection recovery](/en/guide/events/amqp-recovery)
 - [`AmqpAdapterOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpAdapterOptions)
 - [AMQP example](https://github.com/Connectum-Framework/examples/tree/main/with-events-amqp)
 

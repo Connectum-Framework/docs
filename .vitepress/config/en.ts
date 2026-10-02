@@ -68,6 +68,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
                 items: [
                     { text: 'Publish and subscribe', link: '/en/guide/events/getting-started' },
                     { text: 'Choose an adapter', link: '/en/guide/events/adapters' },
+                    { text: 'AMQP connection recovery', link: '/en/guide/events/amqp-recovery' },
                     { text: 'Custom topics', link: '/en/guide/events/custom-topics' },
                     { text: 'Middleware', link: '/en/guide/events/middleware' },
                 ],
