@@ -1,0 +1,445 @@
+---
+title: Run the AMQP Adapter Reliably
+description: Configure publish retry, connection recovery, lifecycle observability, topology-drift handling, and broker-free tests for @connectum/events-amqp.
+docType: how-to
+outline: deep
+---
+
+# Run the AMQP Adapter Reliably
+
+`@connectum/events-amqp` publishes with per-message broker confirms and recovers
+lost connections automatically. This page shows how to tune that behavior for
+production: what a failed publish means, when the adapter retries on its own,
+what happens while the broker is away, how to observe it, and how to test it
+without a broker. Exact option fields and defaults live in the generated
+[`AmqpAdapterOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpAdapterOptions)
+reference.
+
+## Before you begin
+
+- `@connectum/events-amqp` 1.3 or later. Upgrading from 1.2? Read
+  [events-amqp 1.3 behavior changes](/en/migration/events-amqp-1.3) first.
+- The package depends on `amqplib` `^2.2.0`. Connection recovery and the reconnect
+  backoff are amqplib's built-in recovery; the adapter configures it and adds its
+  own channel, topology, and subscription replay on top.
+- A RabbitMQ (or other AMQP 0-9-1) broker for integration tests. Unit tests can use
+  the [fake adapter](#testing-subpath-exports) instead.
+
+## Reliable publishing {#reliable-publishing}
+
+Every `publish()` waits for the broker's outcome for that one message and either
+resolves (the broker acknowledged it) or rejects with a typed error. The error
+class tells an at-least-once producer whether to send the message again:
+
+| Error | Message state | Republish? |
+|---|---|---|
+| `AmqpConnectionError` | Not sent, or unknown (confirm lost with the connection) | Yes |
+| `AmqpPublishTimeoutError` | Unknown: no outcome within `publishTimeoutMs` (default 30 s) | Yes |
+| `AmqpPublishNackError` | Sent and refused by the broker | Yes, by policy |
+| `AmqpUnroutableError` | Sent with `mandatory: true` and dropped: no queue bound | No |
+| `AmqpSerializationError` | Never sent: the `serialization.encode` hook threw | No |
+| `AmqpTopologyError` | Not a publish outcome: fix the topology configuration | No |
+
+### Retry connection failures in place {#publish-retry}
+
+By default a publish made while the connection is down (or recovering) rejects
+immediately with `AmqpConnectionError`. Set `publishRetry` to turn a short broker
+outage into a delay instead:
+
+```typescript
+import { AmqpAdapter } from '@connectum/events-amqp';
+
+const adapter = AmqpAdapter({
+  url: process.env.AMQP_URL ?? 'amqp://localhost:5672',
+  publishRetry: {
+    maxRetries: 5,          // default: 5 retries = up to 6 attempts
+    initialDelay: 100,      // same backoff knobs as `recovery`
+    maxDelay: 30_000,
+    onRetry: ({ attempt, delay, routingKey, error }) => {
+      logger.warn({ attempt, delay, routingKey, err: error }, 'AMQP publish retry');
+    },
+  },
+});
+```
+
+`publishRetry: true` uses the defaults. The option is off unless you set it.
+
+What is retried, and what is not:
+
+- **Retried:** `AmqpConnectionError`, which covers a publish made during a recovery
+  window and an in-flight confirm lost to a connection drop. Each attempt uses the
+  publish channel that is current at that moment, so a channel re-created by recovery
+  is picked up.
+- **Retried only with `retryOnTimeout: true`:** `AmqpPublishTimeoutError`. The
+  message state at a timeout is unknown, so this raises the chance of duplicates.
+- **Never retried inline:** a broker nack, an unroutable message, a serialization
+  failure, and a topology error.
+- **Not retried when retrying cannot help:** a broker reply with code `404` or `406`
+  that closed the publish channel (for example, a publish to a missing exchange under
+  `topologyMode: 'skip'`) rejects at once with the broker reply as `cause`. A publish
+  made when the adapter has no connection at all (never connected, after
+  `disconnect()`, or after recovery [gave up](#recovery-gives-up)) also rejects at once
+  without using the budget.
+- **Shutdown:** `disconnect()` aborts the backoff wait and the publish rejects with
+  the error of its last attempt. Because the retry loop runs inside the
+  `adapter.publish()` promise, the EventBus
+  [`drainPublishTimeout`](/en/api/@connectum/events/types/interfaces/EventBusOptions)
+  covers it.
+
+::: warning Retries can duplicate
+If a confirm was lost in flight, the broker may already hold the message, and the
+retry sends it again. `x-event-id` and the AMQP `messageId` stay the same across all
+attempts (including a caller-supplied `messageId` under `externalContract`), so
+consumers can deduplicate on them.
+:::
+
+A single `publish()` can take up to `maxRetries + 1` attempts, each bounded by
+`publishTimeoutMs`, plus the backoff delays between them. With
+`publisherOptions.mandatory: true` and `correlationHeader: false` (also forced by
+`externalContract`), mandatory publishes run one at a time; a retrying publish holds
+that queue, so order is kept at the cost of the publishes behind it waiting.
+
+### Apply the same boundary in your own code {#auto-retriable-errors}
+
+`isAutoRetriablePublishError(err, { retryOnTimeout })` is the error-class part of the
+`publishRetry` rule: it returns `true` for any `AmqpConnectionError`, plus
+`AmqpPublishTimeoutError` when `retryOnTimeout` is `true`. `publishRetry` adds two
+stops on top of it, described above: a `404`/`406` broker reply in `cause`, and an
+adapter with no connection. Use the helper when a producer retries at a higher level
+(an outbox, a job queue) and should agree with the adapter, and add the reply-code
+check yourself, because a publish channel closed by such a reply fails the same way
+every time:
+
+```typescript
+import { isAutoRetriablePublishError } from '@connectum/events-amqp';
+
+function isRepublishable(err: unknown): boolean {
+  if (!isAutoRetriablePublishError(err)) return false;
+  const cause = (err as Error).cause as { code?: unknown } | undefined;
+  return cause?.code !== 404 && cause?.code !== 406; // 404/406: fix the config instead
+}
+
+try {
+  await adapter.publish('orders.created', payload);
+} catch (err) {
+  if (isRepublishable(err)) {
+    scheduleRepublish(); // connection-class failure: safe to try again later
+  } else {
+    throw err;
+  }
+}
+```
+
+The helper is narrower than the republish column above on purpose: a nack is safe to
+republish later, but it is not retried in a tight loop.
+
+## Connection recovery {#connection-recovery}
+
+Recovery is on by default (`recovery: true`). After a connection loss amqplib
+reconnects with backoff, and on every successful reconnect the adapter re-creates
+its publish channel, re-applies the declared topology according to `topologyMode`,
+and restarts every active subscription before the connection is reported ready.
+
+While the connection is down, a publish rejects with `AmqpConnectionError` (or
+waits, with [`publishRetry`](#publish-retry)), and confirms that were in flight at the
+moment of the loss reject with `AmqpConnectionError`.
+
+```mermaid
+stateDiagram-v2
+    state "Recovery gave up" as GaveUp
+    [*] --> Connecting: connect()
+    Connecting --> Connected: broker reachable, topology applied
+    Connected --> Recovering: connection lost (disconnected)
+    Recovering --> Connected: reconnect + setup succeeded (connected, reconnected true)
+    Recovering --> Recovering: attempt failed (reconnecting)
+    Recovering --> GaveUp: maxRetries exhausted or fatal topology drift (reconnect-failed)
+    GaveUp --> Connecting: connect() again, without old subscriptions
+    Connected --> [*]: disconnect()
+```
+
+### Bound the retry budget {#retry-budget}
+
+[`AmqpRecoveryOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpRecoveryOptions)
+`maxRetries` (default `Infinity`) is the number of retries in one series. The same
+value applies to the initial connect and to every recovery series, and the counter
+resets after each successful connect. Two consequences:
+
+- With the default `Infinity`, `connect()` (and therefore `bus.start()`) waits until
+  the broker is reachable instead of failing.
+- A finite `maxRetries` chosen to bound startup also stops steady-state recovery
+  after that many consecutive failures in one outage.
+
+To bound only startup, set `recovery.initialConnectMaxRetries`:
+
+```typescript
+const adapter = AmqpAdapter({
+  url: process.env.AMQP_URL ?? 'amqp://localhost:5672',
+  recovery: {
+    initialConnectMaxRetries: 10, // 11 attempts at startup, then connect() rejects
+    // maxRetries stays Infinity: recovery after the first connect never gives up
+  },
+});
+```
+
+With `initialConnectMaxRetries` set to a finite number, the adapter runs the startup
+attempts itself:
+
+- each attempt connects and applies the topology on a short-lived connection; after the first successful attempt the real recovering
+  connection is opened;
+- each failed attempt except the last reports `reconnecting { attempt, delay }`, and
+  a topology failure also reports `setup-failed { initial: true, attempt }`;
+- when the budget is spent, the adapter reports `reconnect-failed` and `connect()`
+  rejects with `AmqpConnectionError` whose `cause` is the last failure;
+- `failFastOnInitialSetupError: true` still rejects on the first topology error,
+  whatever the budget;
+- `disconnect()` during the backoff stops the loop and `connect()` rejects with
+  `AmqpConnectionError`.
+
+A negative value is treated as `0` (a single attempt); a non-finite value is the same
+as leaving the option unset. Without it, amqplib's own startup loop runs under the
+shared `maxRetries`, and its per-attempt events are not reported. If that loop gives
+up (finite `maxRetries`), `connect()` rejects with `AmqpConnectionError` and the
+original error (for example `ECONNREFUSED`) as `cause`. With `recovery: false` the
+original error is thrown unchanged.
+
+### When recovery gives up {#recovery-gives-up}
+
+Recovery ends for good in two cases: a finite `maxRetries` is exhausted, or
+[`treatTopologyErrorAsFatal`](#topology-drift) stopped it. Before reporting the
+terminal `reconnect-failed` event, the adapter drops the dead connection, its publish
+channel, and all subscription records. After that:
+
+- `publish()` and `subscribe()` reject immediately with `AmqpConnectionError`
+  ("not connected");
+- a `subscribe()` that was waiting for a channel when the cycle died rejects with
+  `AmqpConnectionError`;
+- `connect()` is accepted again and starts with **no subscriptions**: subscribe again
+  explicitly.
+
+With the EventBus, restarting the bus does both: `bus.stop()` followed by
+`bus.start()` connects the adapter and subscribes the registered routes again.
+Alternatively, treat `reconnect-failed` as fatal and let your process supervisor
+restart the service.
+
+### Stop on topology drift {#topology-drift}
+
+Under the default unlimited budget, a queue or exchange that was deleted, or
+redeclared with incompatible arguments, makes every reconnect fail the same way, and
+the adapter retries forever. `treatTopologyErrorAsFatal: true` stops recovery on the
+first such failure: the adapter reports `setup-failed`, then `reconnect-failed`, and
+enters the [terminal state](#recovery-gives-up).
+
+The decision uses the AMQP reply code of the failure's `cause`: `404` (NOT_FOUND) and
+`406` (PRECONDITION_FAILED) are fatal. Transient failures stay in recovery, including
+a restarting broker (`320`), an internal error (`541`), a locked resource (`405`), a
+connection drop during setup, and the RabbitMQ cluster `404` for a classic queue whose
+home node is "down or inaccessible". A failure that races your own `disconnect()` does
+not trigger the stop.
+
+The option covers recovery after the first successful connect. For startup use
+`failFastOnInitialSetupError` (and `initialConnectMaxRetries` when the broker may also
+be unreachable at startup).
+
+### Identify the failing topology object {#topology-errors}
+
+`AmqpTopologyError.object` names the object whose declaration or check failed, as an
+[`AmqpTopologyObject`](/en/api/@connectum/events-amqp/type-aliases/AmqpTopologyObject):
+`{ kind: 'exchange' | 'queue', name }`, or for a binding
+`{ kind: 'binding', source, destination, destinationType, routingKey }`. Use it in
+drift checks and logs instead of parsing the broker's reply text:
+
+```typescript
+import { AmqpTopologyError } from '@connectum/events-amqp';
+
+function describeSetupFailure(error: Error): string {
+  if (error instanceof AmqpTopologyError && error.object) {
+    const target = error.object;
+    return target.kind === 'binding'
+      ? `binding ${target.source} -> ${target.destination} (${target.routingKey})`
+      : `${target.kind} ${target.name}`;
+  }
+  return error.message;
+}
+```
+
+`object` says what was being declared; why it failed stays in `cause`. It is optional:
+a binding declared with neither `queue` nor `exchange` is rejected without it, and so
+is an unexpected error outside a single declaration step.
+
+## Tuning the reconnect backoff {#tuning-the-reconnect-backoff}
+
+The delay before reconnect attempt `n` uses amqplib 2.2's built-in formula:
+
+```text
+base  = min(maxDelay / (1 + jitter), initialDelay × factor^(n − 1))
+delay = round(uniform(base × (1 − jitter), base × (1 + jitter)))
+```
+
+Because the base is capped at `maxDelay / (1 + jitter)`, the largest jitter offset
+lands exactly on `maxDelay`, so a delay never exceeds it. With the defaults
+(`initialDelay: 100`, `factor: 2`, `jitter: 0.2`, `maxDelay: 30000`) a saturated
+delay is between 20 000 and 30 000 ms. The adapter's own waits, the
+[startup attempts](#retry-budget) and [`publishRetry`](#publish-retry), use the same
+formula and the same option names.
+
+For full jitter with a hard cap — a delay uniform in `[0, min(I × factor^(n − 1), C)]`
+— set `jitter: 1`, `initialDelay: I / 2`, and `maxDelay: C`:
+
+```typescript
+const adapter = AmqpAdapter({
+  url: process.env.AMQP_URL ?? 'amqp://localhost:5672',
+  recovery: { jitter: 1, initialDelay: 50, maxDelay: 10_000 }, // I = 100 ms, C = 10 s
+});
+```
+
+amqplib 2.2 also has `initialMaxRetries` and a `calculateDelay` hook; the adapter
+passes neither to amqplib. Use `initialConnectMaxRetries` to bound startup.
+
+## Adapter lifecycle {#adapter-lifecycle}
+
+Observe the connection through `lifecycle.onLifecycle`, which receives one
+[`AmqpLifecycleEvent`](/en/api/@connectum/events-amqp/types/type-aliases/AmqpLifecycleEvent)
+per change:
+
+```typescript
+const adapter = AmqpAdapter({
+  url: process.env.AMQP_URL ?? 'amqp://localhost:5672',
+  lifecycle: {
+    onLifecycle: (event) => {
+      switch (event.type) {
+        case 'connected':
+          metrics.amqpConnected.set(1);
+          break;
+        case 'disconnected':
+          metrics.amqpConnected.set(0);
+          metrics.amqpDisconnects.inc();
+          break;
+        case 'reconnect-failed':
+          logger.error({ err: event.error }, 'AMQP recovery gave up');
+          break;
+        case 'blocked':
+          logger.warn({ reason: event.reason }, 'broker flow control');
+          break;
+        default:
+          break;
+      }
+    },
+  },
+});
+```
+
+| `type` | Fields | When |
+|---|---|---|
+| `connected` | `reconnected` | Once per successful connect; `reconnected` is `false` for the first connect and `true` after recovery. |
+| `disconnected` | `error` | Once per connection loss. Not reported for your own `disconnect()`. |
+| `reconnecting` | `attempt`, `delay`, `error` | Once per scheduled reconnect, and per startup attempt with `initialConnectMaxRetries`. |
+| `reconnect-failed` | `error` | Terminal: retry budget exhausted, fatal topology drift, or startup budget exhausted. See [When recovery gives up](#recovery-gives-up). |
+| `setup-failed` | `initial`, `attempt`, `error` | Topology setup failed: at startup (`initial: true`) or on a reconnect (`initial: false`, `attempt` ≥ 1). Reported for `AmqpTopologyError` failures only. |
+| `blocked` | `reason` | The broker applied flow control (RabbitMQ `connection.blocked`, for example under a memory or disk alarm). |
+| `unblocked` | — | Flow control lifted. |
+
+Rules for the callback:
+
+- **It must not throw.** The adapter catches and discards exceptions from lifecycle
+  callbacks so that a faulty callback cannot break recovery.
+- **It enables a startup check.** With recovery enabled and
+  `initialConnectMaxRetries` unset, setting `onLifecycle` (like `onSetupFailed` or
+  `failFastOnInitialSetupError`) makes `connect()` open one extra short-lived
+  connection and validate the topology first, so a misconfiguration at startup is
+  reported as `setup-failed { initial: true, attempt: 0 }`. Without
+  `failFastOnInitialSetupError` the adapter then continues with normal recovery.
+- **The flat callbacks are deprecated.** `onConnected`, `onDisconnected`,
+  `onReconnecting`, `onReconnectFailed`, and `onSetupFailed` still work (removal not
+  before 2.0) and receive the same events. When both are set, the flat callback runs
+  after `onLifecycle`. `blocked` and `unblocked` have no flat callback.
+
+With the default startup path (no `initialConnectMaxRetries`), amqplib's startup
+retries happen before the adapter can report them, so no `reconnecting` events appear
+while `connect()` waits for an unreachable broker.
+
+With `recovery: false` there is no reconnect: `disconnected` is reported once when
+the connection closes, including a close forced by the server, and later operations
+reject with `AmqpConnectionError` until you call `connect()` again.
+
+## Testing {#testing-subpath-exports}
+
+`@connectum/events-amqp/testing` exports
+[`FakeAmqpAdapter`](/en/api/@connectum/events-amqp/testing/functions/FakeAmqpAdapter),
+an in-memory `EventAdapter` that reproduces the adapter's failure behavior
+deterministically. It needs no broker and does not import `amqplib`.
+
+```typescript
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { createEventBus } from '@connectum/events';
+import { AmqpPublishTimeoutError } from '@connectum/events-amqp';
+import { FakeAmqpAdapter } from '@connectum/events-amqp/testing';
+
+test('a publish with an unknown outcome is reported to the caller', async () => {
+  const events: string[] = [];
+  const fake = FakeAmqpAdapter({ lifecycle: { onLifecycle: (e) => events.push(e.type) } });
+  const bus = createEventBus({ adapter: fake, routes: [orderEvents] });
+  await bus.start();
+
+  fake.control.nextPublish(new AmqpPublishTimeoutError('no broker outcome'));
+  await assert.rejects(() => bus.publish(OrderCreatedSchema, order), AmqpPublishTimeoutError);
+
+  fake.control.dropConnection();   // disconnected, then reconnecting
+  fake.control.completeRecovery(); // connected { reconnected: true }
+  assert.deepEqual(events, ['connected', 'disconnected', 'reconnecting', 'connected']);
+
+  await bus.stop();
+});
+```
+
+The [`control`](/en/api/@connectum/events-amqp/testing/interfaces/FakeAmqpControl)
+object drives the fake:
+
+| Method | Effect |
+|---|---|
+| `nextPublish(...outcomes)` | Queue outcomes for the next publishes: `'ack'` or an error instance, such as `AmqpPublishNackError` or `AmqpPublishTimeoutError`. An empty queue acknowledges. |
+| `published` | Successfully acknowledged publishes, in order, as the adapter received them. |
+| `deliver(eventType, payload, { metadata, attempt })` | Deliver an event to matching subscriptions (one handler per consumer group) and resolve with `{ delivered, acked, nacked, requeued, failed }`. |
+| `dropConnection(error?)` | Enter recovery: publishes reject with `AmqpConnectionError`, and new `subscribe()` calls wait for the outcome. |
+| `completeRecovery()` | Finish recovery, or report a failure queued with `failSetup()` and stay in recovery. |
+| `exhaustRecovery(error?)` | Report `reconnect-failed` and enter the terminal state: subscriptions are dropped and a new `connect()` is accepted. |
+| `failSetup(error?, object?)` | Queue a setup failure for the next `connect()` or `completeRecovery()`; defaults to a `404` `AmqpTopologyError`. |
+| `block(reason?)` / `unblock()` | Report broker flow control. |
+
+The fake does not model time: recovery advances only through control calls and
+`reconnecting.delay` is always `0`. Handler acknowledgements are counted, not acted on;
+model a redelivery by calling `deliver()` again with a higher `attempt`. A topology
+failure queued before `connect()` without `failFastOnInitialSetupError` is reported
+and the fake then connects, where the real adapter would keep retrying. For wire-level
+behavior, run integration tests against a broker.
+
+## Verify
+
+- Stop the broker while the service runs: you should see `disconnected`, then
+  `reconnecting` events, then `connected { reconnected: true }` after the broker is
+  back, and subscriptions should receive events again.
+- With `publishRetry` enabled, publishes made during a short outage resolve after
+  the broker returns instead of rejecting.
+- With a finite `initialConnectMaxRetries` and the broker down, `bus.start()` rejects
+  with `AmqpConnectionError` after the budget is spent.
+
+## Troubleshooting
+
+- **`connect()` never returns.** The broker is unreachable and `maxRetries` is
+  `Infinity`. Set `initialConnectMaxRetries` to bound startup.
+- **`AmqpConnectionError: AmqpAdapter: already connected`.** `connect()` was called on
+  an adapter that is connected or still recovering. Call `disconnect()` first.
+- **Events stopped arriving after an outage.** Check for a `reconnect-failed` event:
+  recovery gave up and dropped all subscriptions. Restart the bus or the service.
+- **The same event arrives twice.** Expected under at-least-once delivery, more often
+  with `publishRetry`. Deduplicate on `eventId` (`x-event-id`).
+
+## Learn / Configure / API reference
+
+- **Learn:** [Choose an event adapter](/en/guide/events/adapters#amqp--rabbitmq-adapter)
+- **Configure:** [`AmqpAdapterOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpAdapterOptions),
+  [`AmqpRecoveryOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpRecoveryOptions),
+  [`AmqpPublishRetryOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpPublishRetryOptions),
+  [`AmqpLifecycleCallbacks`](/en/api/@connectum/events-amqp/types/interfaces/AmqpLifecycleCallbacks)
+- **API reference:** [`@connectum/events-amqp`](/en/api/@connectum/events-amqp/),
+  [`@connectum/events-amqp/testing`](/en/api/@connectum/events-amqp/testing/)
