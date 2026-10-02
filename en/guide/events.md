@@ -143,7 +143,7 @@ Two budgets control the drain:
 | Option | Default | Waits for | When the budget runs out |
 |---|---|---|---|
 | `drainTimeout` | `30000` ms | Event handlers that are still running | Remaining handlers are aborted through their `AbortSignal` (`0` aborts them immediately), and the bus then waits for them to return |
-| `drainPublishTimeout` | Off | `publish()` calls that were already pending when `stop()` began | Nothing is aborted; the adapter disconnects, and each unfinished `publish()` settles with whatever outcome the adapter reports |
+| `drainPublishTimeout` | Off | `publish()` calls that were already pending when `stop()` began | Nothing is aborted; the bus stops waiting and disconnects the adapter. The bus does not settle an unfinished `publish()` itself: the caller's promise settles later or stays pending, as the adapter decides |
 
 Without `drainPublishTimeout`, a pending `publish()` races the adapter
 disconnect, and a broker confirmation can fail because the connection closed
