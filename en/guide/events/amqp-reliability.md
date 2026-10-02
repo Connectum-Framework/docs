@@ -230,11 +230,14 @@ first such failure: the adapter reports `setup-failed`, then `reconnect-failed`,
 enters the [terminal state](#recovery-gives-up).
 
 The decision uses the AMQP reply code of the failure's `cause`: `404` (NOT_FOUND) and
-`406` (PRECONDITION_FAILED) are fatal. Transient failures stay in recovery, including
-a restarting broker (`320`), an internal error (`541`), a locked resource (`405`), a
-connection drop during setup, and the RabbitMQ cluster `404` for a classic queue whose
-home node is "down or inaccessible". A failure that races your own `disconnect()` does
-not trigger the stop.
+`406` (PRECONDITION_FAILED) are fatal, with one exception. In a RabbitMQ cluster, a
+classic queue whose home node is unavailable also answers `404`, but that condition
+clears when the node returns. The adapter tells it apart by the reply text: a `404`
+whose message contains "down or inaccessible" is treated as transient and stays in
+recovery; any other `404` stops it. Other transient failures stay in recovery too:
+a restarting broker (`320`), an internal error (`541`), a locked resource (`405`) and
+a connection drop during setup. A failure that races your own `disconnect()` does not
+trigger the stop.
 
 The option covers recovery after the first successful connect. For startup use
 `failFastOnInitialSetupError` (and `initialConnectMaxRetries` when the broker may also
