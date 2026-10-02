@@ -95,6 +95,17 @@ function ServerInfo(): ProtocolRegistration {
 A protocol that never used `context` only drops the parameter:
 `register(router, _context)` becomes `register(router)`.
 
+Tests that call `setup` directly build the `ProtocolContext` themselves, and that object
+now needs `services` next to `registry`. List the services your test mounts, in the order
+the server would mount them:
+
+```typescript
+myProtocol.setup({
+  registry: [GreeterService.file],
+  services: [GreeterService],
+});
+```
+
 ## Related fix: `defineLazyService`
 
 In the same release `defineLazyService` runs its `factory` **once per server** instead of
@@ -106,5 +117,6 @@ the instance is shared by HTTP, `server.localClient()` and `ctx.call`.
 
 - [ ] Every custom `ProtocolRegistration` has a single-parameter `register(router)`.
 - [ ] Registry reads and side effects live in `setup(context)`.
+- [ ] Tests that build a `ProtocolContext` by hand pass `services` as well as `registry`.
 - [ ] `pnpm typecheck` (or your equivalent) passes.
 - [ ] Health and reflection behave the same over HTTP and through `server.localClient()`.

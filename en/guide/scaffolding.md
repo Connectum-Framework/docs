@@ -199,6 +199,26 @@ order (outermost → innermost): **OpenTelemetry → error handler → auth → 
 resilience → your custom interceptors**. OpenTelemetry is outermost so a span always
 covers the whole request, including errors.
 
+### Dependency build scripts under pnpm
+
+pnpm 11 and later stop the first `pnpm install` with `ERR_PNPM_IGNORED_BUILDS` when a
+dependency has a build script that the project neither approves nor denies. With
+`--package-manager pnpm`, `init` therefore writes an `allowBuilds` map in
+`pnpm-workspace.yaml` that covers every module combination:
+
+```yaml
+allowBuilds:
+  '@bufbuild/buf': true
+  esbuild: true
+  protobufjs: false
+```
+
+`@bufbuild/buf` and `esbuild` stay approved, because their scripts locate or download the
+platform binary the project needs. `protobufjs` arrives with the OpenTelemetry module's
+OTLP gRPC exporters; its script only prints a warning and has no effect at runtime, so it
+is denied. A project scaffolded with `--otel` before this was added fails its first
+`pnpm install`; add `protobufjs: false` under `allowBuilds` in its `pnpm-workspace.yaml`.
+
 ## `connectum generate service`
 
 Add a service to an existing project:

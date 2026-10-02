@@ -27,4 +27,4 @@ Connectum supports two complementary testing layers. Use TypeScript tests for fa
 
 Scenario tests catch serialization, validation, interceptor-order, reflection, and health-endpoint integration that isolated unit tests cannot. They should not repeat every business-rule case already covered in TypeScript.
 
-See the complete [runn example suite](https://github.com/Connectum-Framework/examples/tree/main/runn) for the executable end-to-end shape. Exact testing helpers remain in the [`@connectum/testing` API](/en/api/@connectum/testing/); shared low-level fixtures are separated in [`@connectum/test-fixtures`](/en/packages/test-fixtures).
+For executable end-to-end suites, see the examples' tests: [hris](https://github.com/Connectum-Framework/examples/tree/main/hris/tests) runs against a whole multi-service system, and every `with-events-*` example runs its saga against a real broker through `docker compose`. Exact testing helpers remain in the [`@connectum/testing` API](/en/api/@connectum/testing/); shared low-level fixtures are separated in [`@connectum/test-fixtures`](/en/packages/test-fixtures).
