@@ -34,10 +34,10 @@ exposed by `@connectum/cli/utils/reflection`.
 ## Start Here {#quick-start}
 
 ~~~bash
-npx connectum init payments
+npx @connectum/cli init payments
 cd payments
-npx connectum generate service invoices
-npx connectum --version
+npx @connectum/cli generate service invoices
+npx @connectum/cli --version
 ~~~
 
 For a complete, source-verified workflow, continue with the focused guide below.
