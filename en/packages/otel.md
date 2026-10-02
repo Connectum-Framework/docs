@@ -46,6 +46,7 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | Entry point | Use it to |
 |---|---|
 | `initProvider` | Initialize trace, metric, and log providers. |
+| `getProvider` / `OtelProvider` | Get the shared provider (`tracer`, `meter`, `logger`, `shutdown()`) and name its type; see [Provider management](/en/guide/observability/backends#provider-management). |
 | `createOtelInterceptor` | Instrument inbound RPCs. |
 | `createOtelClientInterceptor` | Instrument outbound RPCs and propagate context. |
 

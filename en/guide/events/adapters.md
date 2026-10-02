@@ -79,6 +79,9 @@ import { RedisAdapter } from '@connectum/events-redis';
 const adapter = RedisAdapter({ url: 'redis://localhost:6379' });
 ```
 
+The adapter speaks RESP2 unless you opt into RESP3 through `redisOptions`; see
+[Redis protocol](/en/packages/events-redis#redis-protocol).
+
 - [Module hub](/en/packages/events-redis)
 - [`RedisAdapterOptions`](/en/api/@connectum/events-redis/types/interfaces/RedisAdapterOptions)
 
@@ -107,6 +110,60 @@ When an adapter-specific client or connection name is not supplied, the EventBus
 derives a service identifier from registered proto service names and the host.
 An explicit adapter option always wins. Use explicit names when broker ACLs,
 dashboards, or support procedures depend on stable identifiers.
+
+## Adapter Instances and Factories {#adapter-factory}
+
+`createEventBus()` takes an adapter **instance**. Construct it once at the
+composition root and pass it in. This is also how tests replace the broker:
+inject `MemoryAdapter()` or another configured test double instead of the
+production adapter.
+
+```typescript
+import { createEventBus, type EventAdapter } from '@connectum/events';
+
+export function createOrdersBus(adapter: EventAdapter) {
+  return createEventBus({ adapter, routes: [orderEvents], group: 'orders-service' });
+}
+
+// Production: createOrdersBus(NatsAdapter({ servers: 'nats://localhost:4222', stream: 'orders' }))
+// Tests:      createOrdersBus(MemoryAdapter())
+```
+
+Use an `EventAdapterFactory` -- a zero-argument function that returns a new
+adapter -- only when each consumer needs its own broker connection. Since 1.3.0
+it is the named type of the `adapter` option of `createBroadcastSubscribers`,
+which accepts either one shared instance or a factory. With a factory,
+`createBroadcastSubscribers` calls it once per reactor when it builds the buses,
+so every reactor gets an independent connection and consumer group:
+
+```typescript
+import { createBroadcastSubscribers, type EventAdapterFactory } from '@connectum/events';
+import { NatsAdapter } from '@connectum/events-nats';
+
+const newAdapter: EventAdapterFactory = () =>
+  NatsAdapter({ servers: 'nats://localhost:4222', stream: 'orders' });
+
+const buses = createBroadcastSubscribers({
+  adapter: newAdapter,
+  reactors: [
+    { group: 'pricing', routes: [pricingRoutes] },
+    { group: 'audit', routes: [auditRoutes] },
+  ],
+});
+
+await Promise.all(buses.map((bus) => bus.start()));
+```
+
+The returned buses are not started, and you stop them yourself on shutdown.
+Two reactors with the same `group` make `createBroadcastSubscribers` throw,
+because a shared group load-balances events instead of delivering each event to
+every reactor. Passing one shared instance instead fits `MemoryAdapter` in
+tests: every bus then publishes and subscribes through the same in-memory
+adapter. Stop those buses together, because stopping any one of them
+disconnects the shared adapter and removes the subscriptions of all the others.
+
+- [`EventAdapterFactory`](/en/api/@connectum/events/types/type-aliases/EventAdapterFactory)
+- [`BroadcastSubscribersOptions`](/en/api/@connectum/events/interfaces/BroadcastSubscribersOptions)
 
 ## Custom Adapters {#eventadapter-interface}
 

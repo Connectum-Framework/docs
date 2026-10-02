@@ -134,6 +134,55 @@ Every event handler receives an `EventContext` with explicit acknowledgment cont
 
 Both `ack()` and `nack()` are idempotent -- calling either multiple times after the first call has no effect.
 
+### Shutdown Drain {#shutdown-drain}
+
+`eventBus.stop()` first closes every subscription, so no new events are
+delivered. It then drains outstanding work and finally disconnects the adapter.
+Two budgets control the drain:
+
+| Option | Default | Waits for | When the budget runs out |
+|---|---|---|---|
+| `drainTimeout` | `30000` ms | Event handlers that are still running | Remaining handlers are aborted through their `AbortSignal` (`0` aborts them immediately), and the bus then waits for them to return |
+| `drainPublishTimeout` | Off | `publish()` calls that were already pending when `stop()` began | Nothing is aborted; the adapter disconnects, and each unfinished `publish()` settles with whatever outcome the adapter reports |
+
+Without `drainPublishTimeout`, a pending `publish()` races the adapter
+disconnect, and a broker confirmation can fail because the connection closed
+first. Set the option to give those publishes time to settle:
+
+```typescript
+const eventBus = createEventBus({
+  adapter,
+  routes: [orderEvents],
+  drainTimeout: 15_000,
+  drainPublishTimeout: 5_000,
+});
+```
+
+Both drains run at the same time, so the bus waits for the longer budget,
+not their sum. A handler that ignores its abort signal extends the handler
+drain until it returns. The publish drain is available since 1.3.0 and works
+with every adapter. `undefined`, `0`, and negative values disable it. Tracking
+a publish for the drain adds no unhandled rejection of its own; each caller
+still receives the result of its `publish()` promise and must handle it.
+
+The publish drain does not cover:
+
+- `publish()` calls made after `stop()` begins. They reject immediately,
+  including calls from handlers that are still draining.
+- The dead letter republish of the [DLQ middleware](/en/guide/events/middleware).
+  It publishes through the adapter inside the handler, so it belongs to the
+  handler drain.
+
+`createBroadcastSubscribers` accepts the same `drainTimeout` and
+`drainPublishTimeout` options and passes them to every bus it creates.
+
+When the bus is passed to `createServer({ eventBus })`, the server stops it in a
+shutdown hook. Hooks run after the server's `shutdown.timeout` phase, so drain
+time adds to total shutdown time. Keep the sum below your orchestrator's grace
+period; see [Graceful shutdown](/en/guide/server/graceful-shutdown).
+Exact option types are in
+[`EventBusOptions`](/en/api/@connectum/events/types/interfaces/EventBusOptions).
+
 ## Adapter Comparison
 
 Use the canonical [Event Adapter selection matrix](/en/guide/events/adapters#adapter-comparison)

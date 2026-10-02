@@ -57,7 +57,7 @@ Configure OpenTelemetry exporters, provider management, and integration with obs
 
 ## Provider Management
 
-The OTel provider initializes lazily when you first call `getTracer()`, `getMeter()`, or `getLogger()`. For explicit control:
+The OTel provider initializes lazily when you first call `getProvider()`, `getTracer()`, `getMeter()`, or `getLogger()`. For explicit control:
 
 ```typescript
 import { initProvider, shutdownProvider } from '@connectum/otel';
@@ -73,6 +73,53 @@ server.onShutdown('otel', async () => {
   await shutdownProvider();
 });
 ```
+
+`initProvider()` applies its options only when no provider exists yet. Once
+`getProvider()`, `getTracer()`, `getMeter()`, or `getLogger()` has created the
+provider from environment defaults, a later `initProvider()` call does nothing.
+Call it at startup, before any instrumentation code runs.
+
+### Access the provider
+
+`getProvider()` returns the provider that `initProvider()`, `getTracer()`,
+`getMeter()`, and `getLogger()` from `@connectum/otel` share, typed as
+`OtelProvider`, and creates it from environment defaults if needed. The provider
+exposes the `tracer`, `meter`, and `logger` bound to the service name and
+version, plus `shutdown()`. `getTracer()`, `getMeter()`, and `getLogger()` read
+the same provider.
+
+Use `getProvider()` when one component needs all three signals or must be handed
+the provider explicitly. Since 1.3.0 the `OtelProvider` type is exported, so you
+can name it in a field or parameter. It is an interface only: the provider is
+created by `initProvider()` or `getProvider()`, never with a constructor.
+
+```typescript
+import { getProvider, type OtelProvider } from '@connectum/otel';
+
+function createOrderTelemetry(provider: OtelProvider) {
+  const recorded = provider.meter.createCounter('orders.recorded');
+
+  return {
+    recordOrder(): void {
+      provider.tracer.startActiveSpan('order.record', (span) => {
+        recorded.add(1);
+        span.end();
+      });
+    },
+  };
+}
+
+const telemetry = createOrderTelemetry(getProvider());
+```
+
+`provider.shutdown()` shuts down the trace, metric, and log providers it
+created, but keeps the instance: `getProvider()` keeps returning the stopped provider. To shut down at
+process exit, call `shutdownProvider()` instead. It shuts the provider down and
+clears it, so the next `getProvider()` or `initProvider()` creates a new one.
+
+See [`OtelProvider`](/en/api/@connectum/otel/provider/interfaces/OtelProvider)
+and [`getProvider`](/en/api/@connectum/otel/provider/functions/getProvider) for
+the exact types.
 
 ## Development vs Production Configuration
 
