@@ -107,6 +107,27 @@ pnpm test -- --coverage
 pnpm --filter @connectum/core test -- --watch
 ```
 
+### Protocol Interop Tests
+
+These suites check gRPC Server Reflection, the Health service and `connectum proto sync` with clients that are not built on Connect: grpcurl, `buf curl` and `grpc_health_probe`. They are not part of `pnpm test`. CI runs them in the required `Protocol interop` check on every pull request.
+
+They need Docker on Linux, because the clients reach the test server through the host network.
+
+```bash
+# The CLI suite runs the built `connectum` binary
+pnpm build
+
+# Build the image with the pinned clients (cached after the first run)
+pnpm interop:tools
+
+# Run one suite per package
+pnpm --filter @connectum/reflection test:interop
+pnpm --filter @connectum/healthcheck test:interop
+pnpm --filter @connectum/cli test:interop
+```
+
+The pinned client versions and the upstream protos the suites check against are listed in `tests/interop/README.md` in the framework repository.
+
 ### Linting and Formatting
 
 ```bash
