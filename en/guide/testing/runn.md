@@ -14,8 +14,8 @@ outline: deep
 - Single binary, CI-friendly
 - Docker image available
 
-::: info Working Example
-See [examples/runn](https://github.com/Connectum-Framework/examples/tree/main/runn) for a complete Docker-based E2E test suite with 9 runbooks covering healthcheck, reflection, auth, interceptors, timeout, and multi-service scenarios.
+::: info Reference
+The runbook syntax, the gRPC runner and the assertion functions are documented in the [runn README](https://github.com/k1LoW/runn#readme). The examples below cover the Connectum-specific parts: reflection, health checks, and auth headers.
 :::
 
 ## Installation
