@@ -101,6 +101,7 @@ const adapter = AmqpAdapter({
 ```
 
 - [Module hub](/en/packages/events-amqp)
+- [Run the AMQP adapter reliably](/en/guide/events/amqp-reliability) — publish retry, recovery, lifecycle, and broker-free tests
 - [`AmqpAdapterOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpAdapterOptions)
 - [AMQP example](https://github.com/Connectum-Framework/examples/tree/main/with-events-amqp)
 

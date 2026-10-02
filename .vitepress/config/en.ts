@@ -68,6 +68,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
                 items: [
                     { text: 'Publish and subscribe', link: '/en/guide/events/getting-started' },
                     { text: 'Choose an adapter', link: '/en/guide/events/adapters' },
+                    { text: 'AMQP reliability', link: '/en/guide/events/amqp-reliability' },
                     { text: 'Custom topics', link: '/en/guide/events/custom-topics' },
                     { text: 'Middleware', link: '/en/guide/events/middleware' },
                 ],
@@ -250,6 +251,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Erasable proto enums', link: '/en/migration/erasable-enums' },
                         { text: 'In-process calls on shutdown', link: '/en/migration/in-process-shutdown' },
                         { text: 'Option descriptors from the packages', link: '/en/migration/option-descriptor-imports' },
+                        { text: 'events-amqp 1.3 behavior changes', link: '/en/migration/events-amqp-1.3' },
                     ],
                 },
             ],

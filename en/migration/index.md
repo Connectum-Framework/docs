@@ -43,7 +43,7 @@ action below rather than assuming a direct upgrade to the documented line.
 
 | Installed version | Required action |
 |---|---|
-| 1.2.x | Review the 1.3 release notes for each installed package and run your existing tests; if you pin `@bufbuild/protobuf` or Connect, or install with Yarn, follow [Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies); if you implement your own `ProtocolRegistration`, or a `defineLazyService` factory relies on separate instances per transport, follow [Custom protocols: setup/register split](/en/migration/protocol-setup); if in-process calls (`localClient`, `ctx.call`) watch `context.signal` and must finish during `server.stop()`, follow [In-process calls on shutdown](/en/migration/in-process-shutdown) |
+| 1.2.x | Review the 1.3 release notes for each installed package and run your existing tests; if you pin `@bufbuild/protobuf` or Connect, or install with Yarn, follow [Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies); if you implement your own `ProtocolRegistration`, or a `defineLazyService` factory relies on separate instances per transport, follow [Custom protocols: setup/register split](/en/migration/protocol-setup); if in-process calls (`localClient`, `ctx.call`) watch `context.signal` and must finish during `server.stop()`, follow [In-process calls on shutdown](/en/migration/in-process-shutdown); if you use `@connectum/events-amqp`, follow [events-amqp 1.3 behavior changes](/en/migration/events-amqp-1.3): `onDisconnected` now fires once per drop (disconnect counters drop, roughly by half), you must subscribe again after `connect()` once recovery has given up, and a finite `maxRetries` makes the initial connect reject with `AmqpConnectionError` (original error in `cause`) instead of the raw error |
 | 1.1.x | Review the 1.2 and 1.3 release notes for each installed package and run your existing tests; the 1.3 actions for 1.2.x apply as well |
 | 1.0.x | Review package release notes; 1.1 capabilities are additive; the 1.3 actions for 1.2.x apply as well |
 | RC or alpha | Follow [Migrating to 1.0](/en/migration/1.0), then review the [Service Catalog migration](/en/migration/service-catalog) |
@@ -72,6 +72,10 @@ action below rather than assuming a direct upgrade to the documented line.
   from 1.3, generated code can import the auth and events option descriptors from
   `@connectum/auth` / `@connectum/events` instead of generating local copies;
   optional, for projects scaffolded with `--auth` or `--events` before 1.3.
+- [events-amqp 1.3 behavior changes](/en/migration/events-amqp-1.3) — single
+  `disconnected` per drop, re-subscribing after recovery gives up, typed initial-connect
+  failure, `recovery: false` close reporting, isolated lifecycle callbacks, and the
+  `amqplib` 2.2.0 minimum (1.3; for `@connectum/events-amqp` users).
 
 ## Release History
 
