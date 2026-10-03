@@ -52,12 +52,25 @@ function toRoute(file) {
     return withoutExtension.endsWith('/index') ? withoutExtension.slice(0, -5) : withoutExtension;
 }
 
+// One pass of the tag pattern leaves a tag behind when tags nest (`<a<b>c>`
+// becomes `<ac>`), so repeat it until nothing changes.
+function stripTags(value) {
+    let previous;
+    let current = value;
+    do {
+        previous = current;
+        current = current.replace(/<[^>]+>/g, '');
+    } while (current !== previous);
+    return current;
+}
+
 function stripInlineMarkdown(value) {
-    return value
-        .replace(/\s+\{#[^}]+\}\s*$/, '')
-        .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
-        .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-        .replace(/<[^>]+>/g, '')
+    return stripTags(
+        value
+            .replace(/\s+\{#[^}]+\}\s*$/, '')
+            .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
+            .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1'),
+    )
         .replace(/[`*_~]/g, '')
         .trim();
 }
