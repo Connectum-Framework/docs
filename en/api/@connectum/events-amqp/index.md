@@ -113,6 +113,12 @@ Re-exports [AmqpSerializationOptions](types/interfaces/AmqpSerializationOptions.
 
 ***
 
+### AmqpSettlementAction
+
+Re-exports [AmqpSettlementAction](types/type-aliases/AmqpSettlementAction.md)
+
+***
+
 ### AmqpTopology
 
 Re-exports [AmqpTopology](types/interfaces/AmqpTopology.md)

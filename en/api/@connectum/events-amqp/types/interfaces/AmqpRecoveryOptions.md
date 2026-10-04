@@ -2,7 +2,7 @@
 
 # Interface: AmqpRecoveryOptions
 
-Defined in: [packages/events-amqp/src/types.ts:378](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L378)
+Defined in: [packages/events-amqp/src/types.ts:402](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L402)
 
 Recovery knobs (passed through to amqplib's opt-in recovery).
 
@@ -37,7 +37,7 @@ tracked in [https://github.com/Connectum-Framework/connectum/issues/199](https:/
 
 > `readonly` `optional` **factor?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:384](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L384)
+Defined in: [packages/events-amqp/src/types.ts:408](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L408)
 
 #### Default
 
@@ -51,7 +51,7 @@ Defined in: [packages/events-amqp/src/types.ts:384](https://github.com/Connectum
 
 > `readonly` `optional` **initialConnectMaxRetries?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:424](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L424)
+Defined in: [packages/events-amqp/src/types.ts:448](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L448)
 
 Bound the retry budget of the INITIAL connect independently of
 steady-state recovery: N retries = N+1 attempts, mirroring `maxRetries`
@@ -92,7 +92,7 @@ attached — and rejects with the raw last error on exhaustion.
 
 > `readonly` `optional` **initialDelay?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:380](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L380)
+Defined in: [packages/events-amqp/src/types.ts:404](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L404)
 
 #### Default
 
@@ -106,7 +106,7 @@ Defined in: [packages/events-amqp/src/types.ts:380](https://github.com/Connectum
 
 > `readonly` `optional` **jitter?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:386](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L386)
+Defined in: [packages/events-amqp/src/types.ts:410](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L410)
 
 Symmetric jitter factor (0..1): the delay is uniform in `[base × (1 − jitter), base × (1 + jitter)]` around the capped base.
 
@@ -122,7 +122,7 @@ Symmetric jitter factor (0..1): the delay is uniform in `[base × (1 − jitter)
 
 > `readonly` `optional` **maxDelay?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:382](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L382)
+Defined in: [packages/events-amqp/src/types.ts:406](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L406)
 
 Upper bound of every reconnect delay in ms: the base is capped at `maxDelay / (1 + jitter)`, so jitter never pushes a delay above it.
 
@@ -138,7 +138,7 @@ Upper bound of every reconnect delay in ms: the base is capped at `maxDelay / (1
 
 > `readonly` `optional` **maxRetries?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:388](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L388)
+Defined in: [packages/events-amqp/src/types.ts:412](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L412)
 
 Attempts per series (initial connect and each recovery series); resets on success. To bound ONLY startup, use [initialConnectMaxRetries](#initialconnectmaxretries).
 

@@ -2,7 +2,7 @@
 
 # Interface: AmqpPublishRetryOptions
 
-Defined in: [packages/events-amqp/src/types.ts:484](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L484)
+Defined in: [packages/events-amqp/src/types.ts:543](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L543)
 
 Tuning for the opt-in bounded publish retry
 ([AmqpAdapterOptions.publishRetry](AmqpAdapterOptions.md#publishretry)). Backoff knobs mirror
@@ -16,7 +16,7 @@ exceeds `maxDelay`) — but `maxRetries` defaults to a BOUNDED `5` here, not
 
 > `readonly` `optional` **factor?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:492](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L492)
+Defined in: [packages/events-amqp/src/types.ts:551](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L551)
 
 Exponential backoff factor.
 
@@ -32,7 +32,7 @@ Exponential backoff factor.
 
 > `readonly` `optional` **initialDelay?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:488](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L488)
+Defined in: [packages/events-amqp/src/types.ts:547](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L547)
 
 First retry delay in ms.
 
@@ -48,7 +48,7 @@ First retry delay in ms.
 
 > `readonly` `optional` **jitter?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:494](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L494)
+Defined in: [packages/events-amqp/src/types.ts:553](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L553)
 
 Symmetric jitter factor (0..1).
 
@@ -64,7 +64,7 @@ Symmetric jitter factor (0..1).
 
 > `readonly` `optional` **maxDelay?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:490](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L490)
+Defined in: [packages/events-amqp/src/types.ts:549](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L549)
 
 Upper bound of every retry delay in ms; jitter never pushes a delay above it.
 
@@ -80,7 +80,7 @@ Upper bound of every retry delay in ms; jitter never pushes a delay above it.
 
 > `readonly` `optional` **maxRetries?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:486](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L486)
+Defined in: [packages/events-amqp/src/types.ts:545](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L545)
 
 Retries after the first attempt (N retries = N+1 attempts). A negative value clamps to `0` (single attempt); `Infinity` is honored — retry until `disconnect()` aborts.
 
@@ -96,7 +96,7 @@ Retries after the first attempt (N retries = N+1 attempts). A negative value cla
 
 > `readonly` `optional` **onRetry?**: (`info`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:508](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L508)
+Defined in: [packages/events-amqp/src/types.ts:567](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L567)
 
 Observability hook, invoked once per scheduled retry. MUST NOT throw
 (exceptions are isolated). Scoped here deliberately — publish retries
@@ -133,7 +133,7 @@ are per-operation events, not connection lifecycle, so they do not join
 
 > `readonly` `optional` **retryOnTimeout?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:501](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L501)
+Defined in: [packages/events-amqp/src/types.ts:560](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L560)
 
 Also retry `AmqpPublishTimeoutError` (no broker outcome within
 `publishTimeoutMs`). The message state at a timeout is UNKNOWN, so this
