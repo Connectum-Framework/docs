@@ -103,7 +103,7 @@ false
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/types.ts:259](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L259)
+Defined in: [packages/events-amqp/src/types.ts:283](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L283)
 
 Connection lifecycle callbacks. Connection errors are surfaced here —
 not just logged.
@@ -124,7 +124,7 @@ Publisher options.
 
 > `readonly` `optional` **publishRetry?**: `boolean` \| [`AmqpPublishRetryOptions`](AmqpPublishRetryOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:253](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L253)
+Defined in: [packages/events-amqp/src/types.ts:277](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L277)
 
 Opt-in bounded publish retry for CONNECTION-CLASS outcomes (since 1.3.0).
 
@@ -163,11 +163,18 @@ Semantics — read before enabling:
   current one (correlation is attempt-agnostic without the header) —
   prefer the default header correlation when combining `mandatory` with
   `retryOnTimeout`.
-- **Deterministic channel-close is not retried**: a broker reply with a
-  `404`/`406` code that killed the publish CHANNEL (e.g. a publish to a
-  missing exchange under `topologyMode: "skip"`) surfaces immediately
-  with the broker reply as `cause` — the connection stays up, recovery
-  never recreates the channel, so retrying cannot heal.
+- **A broker-closed publish channel is not retried**: when the broker
+  closes the publish CHANNEL with a reply code of any kind — `404` (a
+  publish to a missing exchange under `topologyMode: "skip"`), `403`
+  (a publish to an internal exchange), `406`, `541`, … — and that
+  channel is still the current one, the publish surfaces immediately
+  with the broker reply as `cause`, without `onRetry` or backoff. The
+  connection stays up and recovery only recreates the channel when the
+  connection itself drops, so retrying cannot heal. If recovery has
+  already replaced the channel, retrying continues normally.
+- **`maxRetries: Infinity`** makes `publish()` wait until recovery heals
+  the connection or `disconnect()` is called. A channel-only close with
+  a reply code is not part of that wait (see the previous item).
 
 - **No retry against a dead cycle**: once recovery has given up
   (terminal `reconnect-failed`) or `recovery: false` lost its
@@ -190,7 +197,7 @@ undefined (disabled — behavior unchanged)
 
 > `readonly` `optional` **publishTimeoutMs?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:269](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L269)
+Defined in: [packages/events-amqp/src/types.ts:293](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L293)
 
 Per-publish broker-outcome deadline in milliseconds. A publish whose
 ack/nack/return/connection-loss outcome does not arrive in time
@@ -334,7 +341,7 @@ How topology is established:
 
 > `readonly` `optional` **treatTopologyErrorAsFatal?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:196](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L196)
+Defined in: [packages/events-amqp/src/types.ts:213](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L213)
 
 Treat DETERMINISTIC topology drift during steady-state recovery as
 fatal: stop the reconnect cycle instead of retrying forever against a
@@ -349,13 +356,30 @@ and reports the terminal `reconnect-failed` lifecycle event (after the
 `setup-failed` event for the same attempt); subsequent publishes fail
 fast with `AmqpConnectionError`.
 
-The gate is the AMQP reply code of the failure cause — `404`
-(NOT_FOUND) or `406` (PRECONDITION_FAILED) — NOT the error class:
-transient causes wrapped into `AmqpTopologyError` during a setup pass
-(broker restarting `320`, internal error `541`, resource locked `405`,
-a mid-setup connection drop) stay in normal recovery. One known
-transient 404 is excluded explicitly: a RabbitMQ cluster classic queue
-whose home node is down ("... down or inaccessible") stays in recovery.
+The gate is the broker reply of the failure cause (its AMQP reply code
+AND reply text) — NOT the error class: transient causes wrapped into
+`AmqpTopologyError` during a setup pass (broker restarting `320`,
+internal error `541`, resource locked `405`, a mid-setup connection
+drop) stay in normal recovery. Only replies that name a condition which
+cannot heal without a configuration or topology change are fatal:
+- `404` "no queue" / "no exchange" (the object is missing);
+- `406` "inequivalent arg" (redeclare with different arguments),
+  "invalid arg", "unknown exchange type" / "invalid exchange type".
+
+Everything else stays in recovery, including a `404` that RabbitMQ
+raises for a self-healing queue condition (home node down or
+inaccessible, queue process crashed or stopped by its supervisor,
+timeout, leader stopping or being demoted), a `406` such as "exchange
+limit reached" (clears when exchanges are removed), and a reply that
+carries no text. A RabbitMQ release that rewords a message therefore
+degrades to "keep retrying" (visible through `reconnecting` /
+`setup-failed`), never to a silent permanent stop.
+
+A fatal stop is quiet: no exception reaches application code. It is
+observable only through `lifecycle.onLifecycle` (`reconnect-failed`) or
+`lifecycle.onReconnectFailed`, and after it the adapter stays down until
+the application starts the bus again — wire one of those callbacks and
+restart from there.
 
 After the fatal stop the adapter is fully torn down: consumers are dead
 (subscription records are cleared, mirroring `disconnect()`), publishes

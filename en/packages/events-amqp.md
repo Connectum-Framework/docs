@@ -69,7 +69,10 @@ and [`AmqpPublishRetryOptions`](/en/api/@connectum/events-amqp/types/interfaces/
 Recovery is on by default: the adapter reconnects, re-applies topology, and restarts
 subscriptions. `recovery.maxRetries` (default `Infinity`) bounds every outage and the
 initial connect; `recovery.initialConnectMaxRetries` bounds only startup.
-`treatTopologyErrorAsFatal` stops recovery on deterministic topology drift. When
+`treatTopologyErrorAsFatal` stops recovery on deterministic topology drift (a missing
+queue or exchange, or a redeclare with different or invalid arguments, judged by the
+broker's reply code and message text); the stop is quiet, so observe
+`reconnect-failed`. When
 recovery gives up, the adapter drops the connection and **all subscriptions**: a later
 `connect()` starts clean and you must subscribe again. See
 [Connection recovery](/en/guide/events/amqp-reliability#connection-recovery) and
@@ -87,10 +90,14 @@ for the formula and a full-jitter recipe.
 ## Adapter Lifecycle {#adapter-lifecycle}
 
 `lifecycle.onLifecycle` receives one event per connection change: `connected`,
-`disconnected`, `reconnecting`, `reconnect-failed`, `setup-failed`, `blocked`, and
-`unblocked`. The flat callbacks (`onConnected`, `onDisconnected`, and the others) are
-deprecated since 1.3 and kept until at least 2.0. Callbacks must not throw; the adapter
-discards their exceptions. See
+`disconnected`, `reconnecting`, `reconnect-failed`, `setup-failed`, `blocked`,
+`unblocked`, `settlement-skipped` (a delivery could not be settled because its channel
+had closed; the broker returns it to the queue, and on a quorum queue each return
+counts toward the delivery limit), and `lifecycle-error` (a callback threw or
+rejected). The flat callbacks (`onConnected`, `onDisconnected`, and the others) are
+deprecated since 1.3 and kept until at least 2.0. Callbacks should not throw: the
+adapter isolates a thrown exception or a rejected returned promise, does not await a
+promise, and reports the failure as `lifecycle-error`. See
 [Adapter lifecycle](/en/guide/events/amqp-reliability#adapter-lifecycle) and
 [`AmqpLifecycleCallbacks`](/en/api/@connectum/events-amqp/types/interfaces/AmqpLifecycleCallbacks).
 

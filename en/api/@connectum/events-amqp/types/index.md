@@ -24,6 +24,7 @@ Configuration types for the AMQP/RabbitMQ adapter.
 ## Type Aliases
 
 - [AmqpLifecycleEvent](type-aliases/AmqpLifecycleEvent.md)
+- [AmqpSettlementAction](type-aliases/AmqpSettlementAction.md)
 - [AmqpTopologyMode](type-aliases/AmqpTopologyMode.md)
 
 ## Variables
