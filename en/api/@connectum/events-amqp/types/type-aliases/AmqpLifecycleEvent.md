@@ -4,7 +4,7 @@
 
 > **AmqpLifecycleEvent** = \{ `reconnected`: `boolean`; `type`: `"connected"`; \} \| \{ `error`: `Error`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `delay`: `number`; `error`: `Error`; `type`: `"reconnecting"`; \} \| \{ `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `initial`: `boolean`; `type`: `"setup-failed"`; \} \| \{ `reason`: `string`; `type`: `"blocked"`; \} \| \{ `type`: `"unblocked"`; \} \| \{ `action`: [`AmqpSettlementAction`](AmqpSettlementAction.md); `deliveryTag`: `number`; `error`: `Error`; `queue`: `string`; `routingKey`: `string`; `type`: `"settlement-skipped"`; \} \| \{ `callback`: `string`; `error`: `Error`; `event`: `string`; `type`: `"lifecycle-error"`; \}
 
-Defined in: [packages/events-amqp/src/types.ts:508](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L508)
+Defined in: [packages/events-amqp/src/types.ts:567](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L567)
 
 Discriminated connection lifecycle event, delivered to
 [AmqpLifecycleCallbacks.onLifecycle](../interfaces/AmqpLifecycleCallbacks.md#onlifecycle).
@@ -15,20 +15,26 @@ Exactly-once guarantees (pinned by integration tests):
 - `disconnected` fires once per connection loss (a socket-level cut no longer
   double-fires via the raw `error` event — fixed in 1.3.0).
 - `reconnecting` fires once per scheduled retry — after the connection has
-  been established once, and also per attempt of the bounded initial phase
+  been established once, and also for every retry of the initial connect
   when [AmqpRecoveryOptions.initialConnectMaxRetries](../interfaces/AmqpRecoveryOptions.md#initialconnectmaxretries) is set.
-  `reconnect-failed` is terminal and fires for any of its three triggers:
+  `reconnect-failed` is terminal and fires for any of its four triggers:
   the retry budget is exhausted (`maxRetries`), the fatal topology policy
-  stopped the cycle (`treatTopologyErrorAsFatal`), or the initial connect
-  budget ran out (`initialConnectMaxRetries`). Once it fires, the adapter
+  stopped the cycle (`treatTopologyErrorAsFatal`), the initial connect
+  budget ran out (`initialConnectMaxRetries`), or the
+  [AmqpRecoveryOptions.backoff](../interfaces/AmqpRecoveryOptions.md#backoff) hook failed in steady-state recovery
+  or in a bounded initial connect (the event then carries an
+  `AmqpConnectionError` with the hook's error as `cause`). Without
+  `initialConnectMaxRetries` a hook failure in the initial loop happens
+  before the lifecycle wiring attaches: `connect()` rejects and no event
+  is reported. Once it fires, the adapter
   has already dropped the dead connection and its subscriptions:
   `publish()` and `subscribe()` reject with `AmqpConnectionError`
   ("not connected"), and a new `connect()` starts from a clean state —
   re-subscribe explicitly.
 - `setup-failed` reports a topology/setup failure with `initial: true` for
-  the startup window (`attempt: 0` on the probe; the 0-based attempt index
-  in the bounded initial phase) or `initial: false` for a reconnect
-  re-assert (`attempt` >= 1).
+  the startup window (`attempt: 0` on the probe; the 0-based index of the
+  failed attempt under `initialConnectMaxRetries`) or `initial: false` for
+  a reconnect re-assert (`attempt` >= 1).
 - `blocked`/`unblocked` surface broker flow control (RabbitMQ
   `connection.blocked`, e.g. under a memory/disk alarm); they have no flat
   callback equivalent.
@@ -54,10 +60,10 @@ INITIAL connect (broker unreachable when `connect()` is called) happens
 before the lifecycle wiring can attach, so its per-retry events are not
 surfaced; the startup probe covers the deterministic-misconfiguration case
 (`setup-failed { initial: true }`). Set
-[AmqpRecoveryOptions.initialConnectMaxRetries](../interfaces/AmqpRecoveryOptions.md#initialconnectmaxretries) (since 1.3.0) to make
-the adapter own that window — its bounded phase surfaces per-attempt
-`reconnecting`/`setup-failed` events and a terminal `reconnect-failed` on
-budget exhaustion.
+[AmqpRecoveryOptions.initialConnectMaxRetries](../interfaces/AmqpRecoveryOptions.md#initialconnectmaxretries) (since 1.3.0) to bound
+that window: the wiring is then attached before the first attempt, so it
+reports per-attempt `reconnecting`/`setup-failed` events and a terminal
+`reconnect-failed` on budget exhaustion.
 
 The `type` values are deliberately broker-agnostic so a future
 cross-adapter generalization stays non-breaking.

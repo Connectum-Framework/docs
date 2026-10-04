@@ -2,7 +2,7 @@
 
 # Interface: AmqpLifecycleCallbacks
 
-Defined in: [packages/events-amqp/src/types.ts:577](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L577)
+Defined in: [packages/events-amqp/src/types.ts:636](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L636)
 
 Connection lifecycle callbacks.
 
@@ -16,7 +16,7 @@ deprecated since 1.3.0 (removal not before 2.0).
 
 > `readonly` `optional` **onConnected?**: () => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:599](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L599)
+Defined in: [packages/events-amqp/src/types.ts:660](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L660)
 
 #### Returns
 
@@ -32,7 +32,7 @@ Since 1.3.0 — use [onLifecycle](#onlifecycle) (`type: "connected"`). Kept unti
 
 > `readonly` `optional` **onDisconnected?**: (`cause`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:601](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L601)
+Defined in: [packages/events-amqp/src/types.ts:662](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L662)
 
 #### Parameters
 
@@ -54,7 +54,7 @@ Since 1.3.0 — use [onLifecycle](#onlifecycle) (`type: "disconnected"`). Kept u
 
 > `readonly` `optional` **onLifecycle?**: (`event`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:597](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L597)
+Defined in: [packages/events-amqp/src/types.ts:658](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L658)
 
 Single discriminated-union lifecycle callback — the preferred surface.
 Receives every [AmqpLifecycleEvent](../type-aliases/AmqpLifecycleEvent.md), including `blocked`/`unblocked`,
@@ -72,7 +72,9 @@ Setting this (like `onSetupFailed` / `failFastOnInitialSetupError`)
 enables the startup validation probe: one extra short-lived connection
 plus a topology validation pass at `connect()` (requires recovery
 enabled), so `setup-failed { initial: true }` can be delivered for a
-deterministic misconfiguration at boot.
+deterministic misconfiguration at boot. With
+[AmqpRecoveryOptions.initialConnectMaxRetries](AmqpRecoveryOptions.md#initialconnectmaxretries) no probe runs: the
+initial attempts themselves report their setup failures.
 
 #### Parameters
 
@@ -90,7 +92,7 @@ deterministic misconfiguration at boot.
 
 > `readonly` `optional` **onReconnectFailed?**: (`cause`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:614](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L614)
+Defined in: [packages/events-amqp/src/types.ts:675](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L675)
 
 #### Parameters
 
@@ -112,7 +114,7 @@ Since 1.3.0 — use [onLifecycle](#onlifecycle) (`type: "reconnect-failed"`). Ke
 
 > `readonly` `optional` **onReconnecting?**: (`info`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:612](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L612)
+Defined in: [packages/events-amqp/src/types.ts:673](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L673)
 
 A reconnect attempt has been scheduled. Fires exactly ONCE per scheduled
 retry (amqplib's `reconnect-scheduled`). A failed attempt that also emits
@@ -151,18 +153,19 @@ Since 1.3.0 — use [onLifecycle](#onlifecycle) (`type: "reconnecting"`). Kept u
 
 > `readonly` `optional` **onSetupFailed?**: (`error`, `ctx`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:630](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L630)
+Defined in: [packages/events-amqp/src/types.ts:692](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L692)
 
 A setup/topology failure occurred while (re)applying the declarative
 topology — during the startup window (`ctx.initial: true`; `ctx.attempt`
-is 0 on the probe, or the 0-based attempt index in the bounded initial
-phase) and/or on a reconnect whose topology re-assert fails
-(`ctx.initial: false`, `ctx.attempt` ≥ 1).
+is 0 on the probe, or the 0-based index of the failed attempt under
+`initialConnectMaxRetries`) and/or on a reconnect whose topology
+re-assert fails (`ctx.initial: false`, `ctx.attempt` ≥ 1).
 
 This surfaces deterministic configuration drift (e.g. a missing queue in
 `check` mode, or a `PRECONDITION_FAILED` redeclare) distinctly from a mere
-broker outage, even when fail-fast is off. The initial-connect invocation
-requires a startup validation probe, which runs when either this callback,
+broker outage, even when fail-fast is off. Without
+`initialConnectMaxRetries`, the initial-connect invocation requires a
+startup validation probe, which runs when either this callback,
 [onLifecycle](#onlifecycle), or [AmqpAdapterOptions.failFastOnInitialSetupError](AmqpAdapterOptions.md#failfastoninitialsetuperror) is set.
 
 #### Parameters
