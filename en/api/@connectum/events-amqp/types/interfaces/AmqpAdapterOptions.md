@@ -64,7 +64,7 @@ Exchange type.
 
 > `readonly` `optional` **failFastOnInitialSetupError?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:157](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L157)
+Defined in: [packages/events-amqp/src/types.ts:161](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L161)
 
 Fail fast on a DETERMINISTIC setup/topology error on the FIRST connect,
 instead of entering amqplib's infinite recovery loop.
@@ -74,19 +74,23 @@ succeeds, and rejects only once `maxRetries` is exhausted (default
 `Infinity`). A permanent topology error on the first connect under the
 default recovery therefore HANGS `connect()` forever, with no thrown error
 and — because the lifecycle listeners attach only after that never-returning
-await — no callback. When this flag is `true` (and recovery is enabled), the
-adapter first validates topology against a throwaway non-recovering
-connection; a topology error rejects `connect()` with the typed
-`AmqpTopologyError` / `AmqpConnectionError`.
+await — no callback. When this flag is `true` (and recovery is enabled), a
+topology error of the initial connect rejects `connect()` with the typed
+`AmqpTopologyError` / `AmqpConnectionError`. Without
+[AmqpRecoveryOptions.initialConnectMaxRetries](AmqpRecoveryOptions.md#initialconnectmaxretries) the adapter first
+validates topology against a throwaway non-recovering connection (the
+startup probe); with it, every initial attempt runs the full setup and
+the first setup error stops the initial connect.
 
 Only deterministic setup/topology errors fail fast. A transient
 broker-unreachable at startup is NOT a fail-fast condition — it falls
-through to normal recovery (block-until-broker). SUBSEQUENT reconnects
-always keep infinite-recovery behavior.
+through to normal recovery (block-until-broker, or the initial connect
+budget). SUBSEQUENT reconnects always keep infinite-recovery behavior.
 
 No-op with `recovery: false` (that path already fails fast on setup).
-Enabling this — or supplying [AmqpLifecycleCallbacks.onLifecycle](AmqpLifecycleCallbacks.md#onlifecycle)
-or [AmqpLifecycleCallbacks.onSetupFailed](AmqpLifecycleCallbacks.md#onsetupfailed) — adds one extra
+Without `initialConnectMaxRetries`, enabling this — or supplying
+[AmqpLifecycleCallbacks.onLifecycle](AmqpLifecycleCallbacks.md#onlifecycle) or
+[AmqpLifecycleCallbacks.onSetupFailed](AmqpLifecycleCallbacks.md#onsetupfailed) — adds one extra
 short-lived connection plus a topology validation pass at startup for
 the probe (recovery must be enabled; with `recovery: false` no probe
 runs and no `setup-failed` event is delivered).
@@ -103,7 +107,7 @@ false
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/types.ts:283](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L283)
+Defined in: [packages/events-amqp/src/types.ts:287](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L287)
 
 Connection lifecycle callbacks. Connection errors are surfaced here —
 not just logged.
@@ -124,7 +128,7 @@ Publisher options.
 
 > `readonly` `optional` **publishRetry?**: `boolean` \| [`AmqpPublishRetryOptions`](AmqpPublishRetryOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:277](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L277)
+Defined in: [packages/events-amqp/src/types.ts:281](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L281)
 
 Opt-in bounded publish retry for CONNECTION-CLASS outcomes (since 1.3.0).
 
@@ -197,7 +201,7 @@ undefined (disabled — behavior unchanged)
 
 > `readonly` `optional` **publishTimeoutMs?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:293](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L293)
+Defined in: [packages/events-amqp/src/types.ts:297](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L297)
 
 Per-publish broker-outcome deadline in milliseconds. A publish whose
 ack/nack/return/connection-loss outcome does not arrive in time
@@ -341,7 +345,7 @@ How topology is established:
 
 > `readonly` `optional` **treatTopologyErrorAsFatal?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:213](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L213)
+Defined in: [packages/events-amqp/src/types.ts:217](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L217)
 
 Treat DETERMINISTIC topology drift during steady-state recovery as
 fatal: stop the reconnect cycle instead of retrying forever against a
@@ -392,7 +396,7 @@ covers boot and steady state; the remaining window — broker unreachable
 at `connect()` time with drift surfacing before the first successful
 connect — is closed by
 [AmqpRecoveryOptions.initialConnectMaxRetries](AmqpRecoveryOptions.md#initialconnectmaxretries) (since 1.3.0),
-whose bounded phase surfaces those failures and rejects on exhaustion.
+which reports those failures per attempt and rejects on exhaustion.
 
 #### Default
 

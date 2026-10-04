@@ -4,6 +4,6 @@
 
 > **AmqpSettlementAction** = `"ack"` \| `"requeue"` \| `"reject"`
 
-Defined in: [packages/events-amqp/src/types.ts:534](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L534)
+Defined in: [packages/events-amqp/src/types.ts:586](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L586)
 
 What the adapter intended to do with a delivery when its settlement was skipped.

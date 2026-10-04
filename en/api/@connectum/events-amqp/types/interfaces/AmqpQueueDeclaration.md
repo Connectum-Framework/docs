@@ -2,7 +2,7 @@
 
 # Interface: AmqpQueueDeclaration
 
-Defined in: [packages/events-amqp/src/types.ts:344](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L344)
+Defined in: [packages/events-amqp/src/types.ts:348](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L348)
 
 ## Properties
 
@@ -10,7 +10,7 @@ Defined in: [packages/events-amqp/src/types.ts:344](https://github.com/Connectum
 
 > `readonly` `optional` **arguments?**: `Record`\<`string`, `unknown`\>
 
-Defined in: [packages/events-amqp/src/types.ts:350](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L350)
+Defined in: [packages/events-amqp/src/types.ts:354](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L354)
 
 Raw AMQP arguments passthrough (e.g. x-dead-letter-exchange).
 
@@ -20,7 +20,7 @@ Raw AMQP arguments passthrough (e.g. x-dead-letter-exchange).
 
 > `readonly` `optional` **autoDelete?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:347](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L347)
+Defined in: [packages/events-amqp/src/types.ts:351](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L351)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [packages/events-amqp/src/types.ts:347](https://github.com/Connectum
 
 > `readonly` `optional` **durable?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:346](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L346)
+Defined in: [packages/events-amqp/src/types.ts:350](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L350)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: [packages/events-amqp/src/types.ts:346](https://github.com/Connectum
 
 > `readonly` `optional` **exclusive?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:348](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L348)
+Defined in: [packages/events-amqp/src/types.ts:352](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L352)
 
 ***
 
@@ -44,4 +44,4 @@ Defined in: [packages/events-amqp/src/types.ts:348](https://github.com/Connectum
 
 > `readonly` **name**: `string`
 
-Defined in: [packages/events-amqp/src/types.ts:345](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L345)
+Defined in: [packages/events-amqp/src/types.ts:349](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L349)
