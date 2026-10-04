@@ -361,7 +361,9 @@ greater than or equal to 0 (`NaN`, `Infinity`, a negative number, a numeric stri
 or returns a Promise (an `async` function), recovery gives up. There is no fallback
 to the built-in schedule.
 
-- During the initial connect, `connect()` rejects.
+- During the initial connect, `connect()` rejects. With `initialConnectMaxRetries` the
+  terminal `reconnect-failed` is reported first; without it the initial loop runs before
+  the lifecycle wiring attaches, so no event is reported.
 - In steady state, the terminal `reconnect-failed` fires once and the adapter drops
   the dead connection and its subscriptions, as after an exhausted `maxRetries`.
 

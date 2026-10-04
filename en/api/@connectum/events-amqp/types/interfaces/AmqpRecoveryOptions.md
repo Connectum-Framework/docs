@@ -35,7 +35,7 @@ cannot express is set with [AmqpRecoveryOptions.backoff](#backoff).
 
 > `readonly` `optional` **backoff?**: (`attempt`) => `number`
 
-Defined in: [packages/events-amqp/src/types.ts:498](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L498)
+Defined in: [packages/events-amqp/src/types.ts:501](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L501)
 
 Custom reconnect delay: called with the attempt number, returns the
 delay in milliseconds before that attempt. Forwarded to amqplib's
@@ -54,9 +54,12 @@ delay in milliseconds before that attempt. Forwarded to amqplib's
   number ≥ 0 (`NaN`, `Infinity`, a negative number, a numeric string)
   or a Promise (an `async` function) ends recovery for good — there is
   no fallback to the built-in schedule. During the initial connect,
-  `connect()` rejects; in steady state the terminal `reconnect-failed`
-  fires once and the adapter drops the dead connection, as after an
-  exhausted `maxRetries`. Either way the error is an
+  `connect()` rejects, and with `initialConnectMaxRetries` the terminal
+  `reconnect-failed` is reported first; without it the initial loop runs
+  before the lifecycle wiring attaches, so no event is reported. In
+  steady state the terminal `reconnect-failed` fires once and the
+  adapter drops the dead connection, as after an exhausted
+  `maxRetries`. Either way the error is an
   `AmqpConnectionError` whose `cause` is the hook's error (the thrown
   error, or one stating the invalid return or that the hook must be
   synchronous) and whose message names the last connection error —

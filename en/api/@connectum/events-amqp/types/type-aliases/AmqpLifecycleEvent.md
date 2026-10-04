@@ -4,7 +4,7 @@
 
 > **AmqpLifecycleEvent** = \{ `reconnected`: `boolean`; `type`: `"connected"`; \} \| \{ `error`: `Error`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `delay`: `number`; `error`: `Error`; `type`: `"reconnecting"`; \} \| \{ `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `initial`: `boolean`; `type`: `"setup-failed"`; \} \| \{ `reason`: `string`; `type`: `"blocked"`; \} \| \{ `type`: `"unblocked"`; \} \| \{ `action`: [`AmqpSettlementAction`](AmqpSettlementAction.md); `deliveryTag`: `number`; `error`: `Error`; `queue`: `string`; `routingKey`: `string`; `type`: `"settlement-skipped"`; \} \| \{ `callback`: `string`; `error`: `Error`; `event`: `string`; `type`: `"lifecycle-error"`; \}
 
-Defined in: [packages/events-amqp/src/types.ts:560](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L560)
+Defined in: [packages/events-amqp/src/types.ts:567](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L567)
 
 Discriminated connection lifecycle event, delivered to
 [AmqpLifecycleCallbacks.onLifecycle](../interfaces/AmqpLifecycleCallbacks.md#onlifecycle).
@@ -21,8 +21,12 @@ Exactly-once guarantees (pinned by integration tests):
   the retry budget is exhausted (`maxRetries`), the fatal topology policy
   stopped the cycle (`treatTopologyErrorAsFatal`), the initial connect
   budget ran out (`initialConnectMaxRetries`), or the
-  [AmqpRecoveryOptions.backoff](../interfaces/AmqpRecoveryOptions.md#backoff) hook failed (the event then carries
-  an `AmqpConnectionError` with the hook's error as `cause`). Once it fires, the adapter
+  [AmqpRecoveryOptions.backoff](../interfaces/AmqpRecoveryOptions.md#backoff) hook failed in steady-state recovery
+  or in a bounded initial connect (the event then carries an
+  `AmqpConnectionError` with the hook's error as `cause`). Without
+  `initialConnectMaxRetries` a hook failure in the initial loop happens
+  before the lifecycle wiring attaches: `connect()` rejects and no event
+  is reported. Once it fires, the adapter
   has already dropped the dead connection and its subscriptions:
   `publish()` and `subscribe()` reject with `AmqpConnectionError`
   ("not connected"), and a new `connect()` starts from a clean state —
