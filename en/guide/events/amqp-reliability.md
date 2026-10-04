@@ -74,12 +74,18 @@ What is retried, and what is not:
   message state at a timeout is unknown, so this raises the chance of duplicates.
 - **Never retried inline:** a broker nack, an unroutable message, a serialization
   failure, and a topology error.
-- **Not retried when retrying cannot help:** a broker reply with code `404` or `406`
-  that closed the publish channel (for example, a publish to a missing exchange under
-  `topologyMode: 'skip'`) rejects at once with the broker reply as `cause`. A publish
-  made when the adapter has no connection at all (never connected, after
-  `disconnect()`, or after recovery [gave up](#recovery-gives-up)) also rejects at once
-  without using the budget.
+- **Not retried when retrying cannot help:** when the broker closes the *current*
+  publish channel with a reply code of any kind (`404` for a publish to a missing
+  exchange under `topologyMode: 'skip'`, `403` for a publish to an internal exchange,
+  `406`, `541`), the publish rejects at once with the broker reply as `cause`, without
+  using the budget. The connection stays up and recovery does not re-create a channel
+  the broker closed, so every further attempt would meet the same closed channel; with
+  `maxRetries: Infinity` this is what keeps the loop from running forever. A
+  connection loss closes channels without a reply code and stays retriable, and so does
+  a failure that arrived on a channel recovery had already replaced. A publish made
+  when the adapter has no connection at all (never connected, after `disconnect()`, or
+  after recovery [gave up](#recovery-gives-up)) also rejects at once without using the
+  budget.
 - **Shutdown:** `disconnect()` aborts the backoff wait and the publish rejects with
   the error of its last attempt. Because the retry loop runs inside the
   `adapter.publish()` promise, the EventBus
@@ -104,11 +110,12 @@ that queue, so order is kept at the cost of the publishes behind it waiting.
 `isAutoRetriablePublishError(err, { retryOnTimeout })` is the error-class part of the
 `publishRetry` rule: it returns `true` for any `AmqpConnectionError`, plus
 `AmqpPublishTimeoutError` when `retryOnTimeout` is `true`. `publishRetry` adds two
-stops on top of it, described above: a `404`/`406` broker reply in `cause`, and an
+stops on top of it, described above: a publish channel closed by the broker, and an
 adapter with no connection. Use the helper when a producer retries at a higher level
 (an outbox, a job queue) and should agree with the adapter, and add the reply-code
-check yourself, because a publish channel closed by such a reply fails the same way
-every time:
+check yourself, because a publish channel closed by the broker fails the same way
+every time. The adapter decides by channel identity; the check below is the part
+visible to application code, a numeric broker reply code in `cause`:
 
 ```typescript
 import { isAutoRetriablePublishError } from '@connectum/events-amqp';
@@ -116,7 +123,7 @@ import { isAutoRetriablePublishError } from '@connectum/events-amqp';
 function isRepublishable(err: unknown): boolean {
   if (!isAutoRetriablePublishError(err)) return false;
   const cause = (err as Error).cause as { code?: unknown } | undefined;
-  return cause?.code !== 404 && cause?.code !== 406; // 404/406: fix the config instead
+  return typeof cause?.code !== 'number'; // a broker reply code: fix the config instead
 }
 
 try {
@@ -229,15 +236,28 @@ the adapter retries forever. `treatTopologyErrorAsFatal: true` stops recovery on
 first such failure: the adapter reports `setup-failed`, then `reconnect-failed`, and
 enters the [terminal state](#recovery-gives-up).
 
-The decision uses the AMQP reply code of the failure's `cause`: `404` (NOT_FOUND) and
-`406` (PRECONDITION_FAILED) are fatal, with one exception. In a RabbitMQ cluster, a
-classic queue whose home node is unavailable also answers `404`, but that condition
-clears when the node returns. The adapter tells it apart by the reply text: a `404`
-whose message contains "down or inaccessible" is treated as transient and stays in
-recovery; any other `404` stops it. Other transient failures stay in recovery too:
-a restarting broker (`320`), an internal error (`541`), a locked resource (`405`) and
-a connection drop during setup. A failure that races your own `disconnect()` does not
-trigger the stop.
+The decision reads the AMQP reply code of the failure's `cause` **together with** the
+broker's message text. Only replies that name a condition which cannot heal without a
+configuration or topology change are fatal:
+
+| Reply code | Fatal when the text says |
+|---|---|
+| `404` (NOT_FOUND) | `no queue '…'` or `no exchange '…'`: the object is missing |
+| `406` (PRECONDITION_FAILED) | `inequivalent arg`, `invalid arg`, `unknown exchange type` or `invalid exchange type`: the redeclare or the exchange type is incompatible or invalid |
+
+Everything else stays in recovery: a restarting broker (`320`), an internal error
+(`541`), a locked resource (`405`), a connection drop during setup, the `404`s that
+heal on their own (a queue's home node down or inaccessible, its process stopped by
+the supervisor or crashed, a timeout, a leader being demoted), and `406` "exchange
+limit reached", which clears when exchanges are removed. A `404` or `406` whose
+message is not recognised is treated as transient, so a broker release that rewords a
+message degrades to "keep retrying", visible through `reconnecting` and
+`setup-failed`, never to a silent permanent stop. A failure that races your own
+`disconnect()` does not trigger the stop.
+
+The fatal stop is quiet: no exception reaches your code. Observe `reconnect-failed`
+through `lifecycle.onLifecycle` or `onReconnectFailed` and
+[restart the bus](#recovery-gives-up) from there; until then the adapter stays down.
 
 The option covers recovery after the first successful connect. For startup use
 `failFastOnInitialSetupError` (and `initialConnectMaxRetries` when the broker may also
@@ -334,17 +354,25 @@ const adapter = AmqpAdapter({
 | `type` | Fields | When |
 |---|---|---|
 | `connected` | `reconnected` | Once per successful connect; `reconnected` is `false` for the first connect and `true` after recovery. |
-| `disconnected` | `error` | Once per connection loss. Not reported for your own `disconnect()`. |
+| `disconnected` | `error` | Once per connection loss. Not reported for your own `disconnect()`. With `recovery: false`, `error` is the broker's own close error when there is one (`code` carries the reply code, for example `320` for a forced close). |
 | `reconnecting` | `attempt`, `delay`, `error` | Once per scheduled reconnect, and per startup attempt with `initialConnectMaxRetries`. |
 | `reconnect-failed` | `error` | Terminal: retry budget exhausted, fatal topology drift, or startup budget exhausted. See [When recovery gives up](#recovery-gives-up). |
 | `setup-failed` | `initial`, `attempt`, `error` | Topology setup failed: at startup (`initial: true`) or on a reconnect (`initial: false`, `attempt` ≥ 1). Reported for `AmqpTopologyError` failures only. |
 | `blocked` | `reason` | The broker applied flow control (RabbitMQ `connection.blocked`, for example under a memory or disk alarm). |
 | `unblocked` | — | Flow control lifted. |
+| `settlement-skipped` | `action`, `queue`, `routingKey`, `deliveryTag`, `error` | A delivery could not be acknowledged because its channel was already closed; `action` is `ack`, `requeue` or `reject`. See [Settling a delivery after the channel closed](#settlement-skipped). |
+| `lifecycle-error` | `callback`, `event`, `error` | A lifecycle callback threw or returned a rejected promise. `callback` names it (`onLifecycle` or a flat callback such as `onReconnecting`); `event` is the `type` it was handling. |
 
 Rules for the callback:
 
-- **It must not throw.** The adapter catches and discards exceptions from lifecycle
-  callbacks so that a faulty callback cannot break recovery.
+- **It should not throw.** The adapter isolates a thrown exception, or a returned
+  promise that rejects, so a faulty callback cannot break recovery, and reports it as
+  a `lifecycle-error` event instead of dropping it. A failure of the callback that is
+  handling `lifecycle-error` itself is dropped, so the report path cannot recurse.
+- **A returned promise is not awaited.** The callback types return `void`, so an
+  `async` function is accepted, but events are dispatched in order without waiting for
+  it: a slow callback may finish after later events. The same holds for the flat
+  callbacks.
 - **It enables a startup check.** With recovery enabled and
   `initialConnectMaxRetries` unset, setting `onLifecycle` (like `onSetupFailed` or
   `failFastOnInitialSetupError`) makes `connect()` open one extra short-lived
@@ -354,7 +382,8 @@ Rules for the callback:
 - **The flat callbacks are deprecated.** `onConnected`, `onDisconnected`,
   `onReconnecting`, `onReconnectFailed`, and `onSetupFailed` still work (removal not
   before 2.0) and receive the same events. When both are set, the flat callback runs
-  after `onLifecycle`. `blocked` and `unblocked` have no flat callback.
+  after `onLifecycle`. `blocked`, `unblocked`, `settlement-skipped` and
+  `lifecycle-error` have no flat callback.
 
 With the default startup path (no `initialConnectMaxRetries`), amqplib's startup
 retries happen before the adapter can report them, so no `reconnecting` events appear
@@ -362,7 +391,20 @@ while `connect()` waits for an unreachable broker.
 
 With `recovery: false` there is no reconnect: `disconnected` is reported once when
 the connection closes, including a close forced by the server, and later operations
-reject with `AmqpConnectionError` until you call `connect()` again.
+reject with `AmqpConnectionError` until you call `connect()` again. The event's
+`error` is the one amqplib reports for the close, so a broker-forced close exposes its
+reply `code`; only a close that carries no cause at all gets a generic
+`Error('Connection closed')`.
+
+### Settling a delivery after the channel closed {#settlement-skipped}
+
+A handler can outlive its connection: it rejects, or calls `ack()` or `nack()`, after
+the connection dropped and the consumer channel closed. amqplib throws on a closed
+channel, and the adapter treats that one error as a no-op instead of letting it escape
+as an unhandled rejection. It reports a `settlement-skipped` event and nothing is
+lost: the broker returns every delivery that was not acknowledged before the channel
+closed to the queue, and it arrives again with `attempt` greater than 1, so handlers
+must stay idempotent. Any other settlement error is not hidden.
 
 ## Testing {#testing-subpath-exports}
 
@@ -410,7 +452,8 @@ object drives the fake:
 | `block(reason?)` / `unblock()` | Report broker flow control. |
 
 The fake does not model time: recovery advances only through control calls and
-`reconnecting.delay` is always `0`. Handler acknowledgements are counted, not acted on;
+`reconnecting.delay` is always `0`. The fake has no consumer channel to close, so it
+never emits `settlement-skipped`. Handler acknowledgements are counted, not acted on;
 model a redelivery by calling `deliver()` again with a higher `attempt`. A topology
 failure queued before `connect()` without `failFastOnInitialSetupError` is reported
 and the fake then connects, where the real adapter would keep retrying. For wire-level

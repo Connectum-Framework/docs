@@ -44,7 +44,9 @@ In 1.2, with `recovery: false`, `onDisconnected` ran only on the connection `err
 event, so a close forced by the server without an error (for example, an operator
 closing the connection) was not reported at all. In 1.3 the adapter reports
 `disconnected` once when the connection closes, with the preceding error as the cause
-when there was one, or `Error('Connection closed')` otherwise. It is not reported for
+when there was one, otherwise the close error from the broker (its `code` is the reply
+code, for example `320` for a forced close), and `Error('Connection closed')` only
+when the close carries no cause at all. It is not reported for
 your own `disconnect()` or when `connect()` discards a connection whose setup failed.
 
 **Action:** make sure your `onDisconnected` handler is correct for server-forced
@@ -108,12 +110,17 @@ message text.
 ### Lifecycle callbacks no longer propagate exceptions {#lifecycle-exceptions}
 
 In 1.2 an exception thrown by a lifecycle callback propagated into amqplib's
-connection event handlers. In 1.3 the adapter catches and discards it, so a faulty
-callback cannot interfere with recovery, and a throwing `onLifecycle` does not prevent
-the flat callbacks from running (or the reverse).
+connection event handlers. In 1.3 the adapter catches it, so a faulty callback cannot
+interfere with recovery, and a throwing `onLifecycle` does not prevent the flat
+callbacks from running (or the reverse). A promise returned by a callback is attached
+to but not awaited, and a rejection is isolated the same way. Each isolated failure is
+reported to `onLifecycle` as a `lifecycle-error` event with the `callback` and the
+`event` it was handling; a failure of the callback handling `lifecycle-error` itself
+is dropped.
 
 **Action:** if a callback threw to signal a failure, report it another way, such as
-logging, a metric, or a flag your health check reads.
+logging, a metric, or a flag your health check reads. Handle `lifecycle-error` in
+`onLifecycle` to see callback failures.
 
 ### amqplib 2.2.0 is the minimum {#amqplib-2-2}
 
