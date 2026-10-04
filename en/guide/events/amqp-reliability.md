@@ -360,7 +360,7 @@ const adapter = AmqpAdapter({
 | `setup-failed` | `initial`, `attempt`, `error` | Topology setup failed: at startup (`initial: true`) or on a reconnect (`initial: false`, `attempt` ≥ 1). Reported for `AmqpTopologyError` failures only. |
 | `blocked` | `reason` | The broker applied flow control (RabbitMQ `connection.blocked`, for example under a memory or disk alarm). |
 | `unblocked` | — | Flow control lifted. |
-| `settlement-skipped` | `action`, `queue`, `routingKey`, `deliveryTag`, `error` | A delivery could not be acknowledged because its channel was already closed; `action` is `ack`, `requeue` or `reject`. See [Settling a delivery after the channel closed](#settlement-skipped). |
+| `settlement-skipped` | `action`, `queue`, `routingKey`, `deliveryTag`, `error` | A delivery could not be acknowledged because its channel was already closed; `action` is `ack`, `requeue` or `reject`. The broker returns the delivery to the queue, but on a quorum queue each return counts toward its delivery limit. See [Settling a delivery after the channel closed](#settlement-skipped). |
 | `lifecycle-error` | `callback`, `event`, `error` | A lifecycle callback threw or returned a rejected promise. `callback` names it (`onLifecycle` or a flat callback such as `onReconnecting`); `event` is the `type` it was handling. |
 
 Rules for the callback:
@@ -371,8 +371,9 @@ Rules for the callback:
   handling `lifecycle-error` itself is dropped, so the report path cannot recurse.
 - **A returned promise is not awaited.** The callback types return `void`, so an
   `async` function is accepted, but events are dispatched in order without waiting for
-  it: a slow callback may finish after later events. The same holds for the flat
-  callbacks.
+  it: a slow callback may finish after later events. The adapter isolates any returned
+  value with a callable `then`, not only a native `Promise`. The same holds for the
+  flat callbacks.
 - **It enables a startup check.** With recovery enabled and
   `initialConnectMaxRetries` unset, setting `onLifecycle` (like `onSetupFailed` or
   `failFastOnInitialSetupError`) makes `connect()` open one extra short-lived
@@ -401,10 +402,12 @@ reply `code`; only a close that carries no cause at all gets a generic
 A handler can outlive its connection: it rejects, or calls `ack()` or `nack()`, after
 the connection dropped and the consumer channel closed. amqplib throws on a closed
 channel, and the adapter treats that one error as a no-op instead of letting it escape
-as an unhandled rejection. It reports a `settlement-skipped` event and nothing is
-lost: the broker returns every delivery that was not acknowledged before the channel
-closed to the queue, and it arrives again with `attempt` greater than 1, so handlers
-must stay idempotent. Any other settlement error is not hidden.
+as an unhandled rejection. It reports a `settlement-skipped` event. The broker returns
+a delivery that was not acknowledged before the channel closed to the queue, and it
+arrives again with `attempt` greater than 1, so handlers must stay idempotent. The
+return is not unconditional: on a quorum queue each such return counts toward the
+queue's delivery limit (default 20 since RabbitMQ 4.0), and past the limit the broker
+drops the message or dead-letters it. Any other settlement error is not hidden.
 
 ## Testing {#testing-subpath-exports}
 
