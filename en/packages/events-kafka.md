@@ -51,6 +51,7 @@ Runtime boundaries and extension seams remain in [Connectum Runtime Architecture
 
 - **Learn:** [Focused guide](/en/guide/events/adapters)
 - **Configure:** [Task and configuration guidance](/en/guide/events/adapters)
+- **Delivery semantics:** [Acknowledgement, redelivery, and start position](/en/guide/events/adapters#kafka-ack-redelivery)
 - **API reference:** [Exact options and symbols](/en/api/@connectum/events-kafka/types/interfaces/KafkaAdapterOptions)
 - **Package API index:** [Generated TypeDoc](/en/api/@connectum/events-kafka/)
 - **Source:** [@connectum/events-kafka on GitHub](https://github.com/Connectum-Framework/connectum/tree/main/packages/events-kafka)
