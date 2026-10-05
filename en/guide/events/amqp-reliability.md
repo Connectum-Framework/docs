@@ -627,8 +627,8 @@ object drives the fake:
 | `restoreConsumers()` | Bring every lost subscription back and report `consumer-restored { attempt: 1 }` for each. Throws when nothing is lost or when `recovery: false`. A `completeRecovery()` also brings lost consumers back, without that event. |
 
 The fake does not model time: recovery advances only through control calls and
-`reconnecting.delay` is always `0`; a lost consumer comes back only through
-`restoreConsumers()`, on attempt 1, and never reports `consumer-restore-failed`. The fake has no consumer channel to close, so it
+`reconnecting.delay` is always `0`; a lost consumer comes back through
+`restoreConsumers()` (on attempt 1, never reporting `consumer-restore-failed`) or silently through `completeRecovery()`. The fake has no consumer channel to close, so it
 never emits `settlement-skipped`. Handler acknowledgements are counted, not acted on,
 and only the first settlement per delivery per handler is counted, as in the real
 adapter (a bare `nack()` counts as a requeue); model a redelivery by calling `deliver()` again with a higher `attempt`. A topology

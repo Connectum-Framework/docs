@@ -90,7 +90,7 @@ for the formula and a full-jitter recipe.
 
 ## Adapter Lifecycle {#adapter-lifecycle}
 
-`lifecycle.onLifecycle` receives one event per connection change: `connected`,
+`lifecycle.onLifecycle` receives one event per adapter lifecycle change, connection or consumer: `connected`,
 `disconnected`, `reconnecting`, `reconnect-failed`, `setup-failed`, `blocked`,
 `unblocked`, `settlement-skipped` (a delivery could not be settled because its channel
 had closed; the broker returns it to the queue, and on a quorum queue each return
