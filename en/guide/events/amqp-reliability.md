@@ -453,6 +453,32 @@ reject with `AmqpConnectionError` until you call `connect()` again. The event's
 reply `code`; only a close that carries no cause at all gets a generic
 `Error('Connection closed')`.
 
+### Settle a delivery once {#settle-once}
+
+The adapter sends the broker at most one settlement for a delivery, and the first
+settlement wins. That covers `ack()`, `nack(false)` (reject without requeue),
+`nack()` or `nack(true)` (requeue), the requeue the adapter sends when a handler
+rejects, and the reject after a `decode` failure. A later call for the same delivery
+resolves without reaching the broker and raises no lifecycle event, the same way
+`ctx.ack()` called twice does.
+
+A handler that settles and then throws keeps its settlement:
+
+```typescript
+await adapter.subscribe(['orders.*'], async (event, ack) => {
+  await ack();
+  await notifyWarehouse(event); // throws: the message is NOT requeued
+}, { group: 'orders' });
+```
+
+A handler that throws without settling is requeued. Settle explicitly only when you
+want to choose the outcome yourself, and settle before work that can fail if a failure
+must not redeliver the message.
+
+The rule exists because the broker treats a second settlement of one delivery tag as a
+protocol violation: it answers `PRECONDITION_FAILED - unknown delivery tag` and closes
+the consumer channel.
+
 ### Settling a delivery after the channel closed {#settlement-skipped}
 
 A handler can outlive its connection: it rejects, or calls `ack()` or `nack()`, after
@@ -512,8 +538,9 @@ object drives the fake:
 
 The fake does not model time: recovery advances only through control calls and
 `reconnecting.delay` is always `0`. The fake has no consumer channel to close, so it
-never emits `settlement-skipped`. Handler acknowledgements are counted, not acted on;
-model a redelivery by calling `deliver()` again with a higher `attempt`. A topology
+never emits `settlement-skipped`. Handler acknowledgements are counted, not acted on,
+and only the first settlement per delivery per handler is counted, as in the real
+adapter (a bare `nack()` counts as a requeue); model a redelivery by calling `deliver()` again with a higher `attempt`. A topology
 failure queued before `connect()` without `failFastOnInitialSetupError` is reported
 and the fake then connects, where the real adapter would keep retrying. For wire-level
 behavior, run integration tests against a broker.
@@ -543,6 +570,9 @@ behavior, run integration tests against a broker.
   an adapter that is connected or still recovering. Call `disconnect()` first.
 - **Events stopped arriving after an outage.** Check for a `reconnect-failed` event:
   recovery gave up and dropped all subscriptions. Restart the bus or the service.
+- **A message was not redelivered after the handler threw.** The handler had already
+  called `ack()` or `nack()`. The first settlement wins and a later throw does not
+  requeue the message; see [Settle a delivery once](#settle-once).
 - **The same event arrives twice.** Expected under at-least-once delivery, more often
   with `publishRetry`. Deduplicate on `eventId` (`x-event-id`).
 
