@@ -623,7 +623,7 @@ object drives the fake:
 | `exhaustRecovery(error?)` | Report `reconnect-failed` and enter the terminal state: subscriptions are dropped and a new `connect()` is accepted. |
 | `failSetup(error?, object?)` | Queue a setup failure for the next `connect()` or `completeRecovery()`; defaults to a `404` `AmqpTopologyError`. |
 | `block(reason?)` / `unblock()` | Report broker flow control. |
-| `loseConsumer({ queue?, cause?, error? })` | End the consumer of every live subscription, or of the one whose queue is `queue` (its `group`, or `fake.sub-N` without one). It stops receiving `deliver()` calls and `consumer-lost` is reported; `willRestore` follows the fake's `recovery` option. Throws when the adapter is not connected or nothing matches. |
+| `loseConsumer({ queue?, cause?, error? })` | End the consumer of every live subscription, or of every one whose queue is `queue` (its `group`, or `fake.sub-N` without one; subscriptions sharing a `group` are lost together, whatever the `cause`). It stops receiving `deliver()` calls and `consumer-lost` is reported; `willRestore` follows the fake's `recovery` option. Throws when the adapter is not connected or nothing matches. |
 | `restoreConsumers()` | Bring every lost subscription back and report `consumer-restored { attempt: 1 }` for each. Throws when nothing is lost or when `recovery: false`. A `completeRecovery()` also brings lost consumers back, without that event. |
 
 The fake does not model time: recovery advances only through control calls and
