@@ -212,6 +212,22 @@ The option is off by default; without it the log lines are unchanged.
 The transport tag comes from a framework-internal request marker. Use it to read logs, never to authorize: base access decisions on `req.service.typeName` and `req.method.name`.
 :::
 
+### What a call writes
+
+Every call writes a request line, a response line and a completion line:
+
+```text
+RPC /greeter.v1.GreeterService/SayHello request ...
+RPC /greeter.v1.GreeterService/SayHello response ...
+RPC /greeter.v1.GreeterService/SayHello completed in 1.84ms
+```
+
+A call that fails writes `RPC <path> failed with <Code>` before the completion line. `<Code>` is the Connect code name, or `Unknown` for an error that is not a `ConnectError`; the original error reaches the caller unchanged. A streaming call writes `STREAM <path> request` and `STREAM <path> response` for every message, and its completion line when the stream ends: fully read, failed midway, or abandoned by the reader. The duration therefore covers the whole stream.
+
+### The logger cannot break a call
+
+Logging never changes the outcome of a call. If the `logger` function you pass throws, the call still returns its response or its original error: the first failure is reported once on the console, and later ones are dropped. A streamed message that cannot be converted to JSON is logged as a marker and the stream continues.
+
 ## Execution Order
 
 Interceptors execute in the order they are defined. Each interceptor wraps the next one:
