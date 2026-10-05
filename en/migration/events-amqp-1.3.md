@@ -146,6 +146,17 @@ Setting `onLifecycle` enables the startup topology check, as `onSetupFailed` and
 and validates the topology before connecting. A service that used only
 `onConnected` or `onDisconnected` in 1.2 did not run this check.
 
+### Watch for `consumer-lost` {#consumer-lost}
+
+When the broker ends one subscription's consumer on a live connection (the queue was
+deleted, the consumer was cancelled, the channel was closed), 1.2 stayed silent and the
+subscription stopped receiving. From 1.3 the adapter reports `consumer-lost` and, with
+`recovery` enabled, restores the consumer. In `assert` mode a restoration declares the
+queue again, so a queue you deleted on purpose returns unless you also `unsubscribe()`,
+set `recovery: false`, or use `topologyMode: 'check'`. Alert on `consumer-lost` and
+`consumer-restore-failed`. See
+[A consumer the broker ends](/en/guide/events/amqp-reliability#consumer-loss).
+
 ## Before and after
 
 ```typescript

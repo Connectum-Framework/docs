@@ -1,6 +1,6 @@
 ---
 title: Run the AMQP Adapter Reliably
-description: Configure publish retry, connection recovery, lifecycle observability, topology-drift handling, and broker-free tests for @connectum/events-amqp.
+description: Configure publish retry, connection recovery, consumer restoration, lifecycle observability, topology-drift handling, and broker-free tests for @connectum/events-amqp.
 docType: how-to
 outline: deep
 ---
@@ -417,6 +417,9 @@ const adapter = AmqpAdapter({
 | `blocked` | `reason` | The broker applied flow control (RabbitMQ `connection.blocked`, for example under a memory or disk alarm). |
 | `unblocked` | — | Flow control lifted. |
 | `settlement-skipped` | `action`, `queue`, `routingKey`, `deliveryTag`, `error` | A delivery could not be acknowledged because its channel was already closed; `action` is `ack`, `requeue` or `reject`. The broker returns the delivery to the queue, but on a quorum queue each return counts toward its delivery limit. See [Settling a delivery after the channel closed](#settlement-skipped). |
+| `consumer-lost` | `queue`, `cause`, `error?`, `willRestore` | The broker ended one subscription's consumer while the connection stayed up. `cause` is `cancelled` (queue deleted or consumer cancelled) or `channel-closed` (the broker closed the channel; `error` is its exception). `willRestore` is `true` when `recovery` is enabled. See [A consumer the broker ends](#consumer-loss). |
+| `consumer-restored` | `queue`, `attempt` | A lost consumer is consuming again. For a subscription without a group, `queue` is the new auto-named queue. |
+| `consumer-restore-failed` | `queue`, `attempt`, `error`, `willRetry` | A restoration attempt failed. `willRetry: false` means this subscription's restoration has ended. For a subscription without a group, `queue` is the name the lost consumer had, not a queue declared by the failed attempt. |
 | `lifecycle-error` | `callback`, `event`, `error` | A lifecycle callback threw or returned a rejected promise. `callback` names it (`onLifecycle` or a flat callback such as `onReconnecting`); `event` is the `type` it was handling. |
 
 Rules for the callback:
@@ -439,8 +442,8 @@ Rules for the callback:
 - **The flat callbacks are deprecated.** `onConnected`, `onDisconnected`,
   `onReconnecting`, `onReconnectFailed`, and `onSetupFailed` still work (removal not
   before 2.0) and receive the same events. When both are set, the flat callback runs
-  after `onLifecycle`. `blocked`, `unblocked`, `settlement-skipped` and
-  `lifecycle-error` have no flat callback.
+  after `onLifecycle`. `blocked`, `unblocked`, `settlement-skipped`, the three
+  `consumer-*` events and `lifecycle-error` have no flat callback.
 
 With the default startup path (no `initialConnectMaxRetries`), amqplib's startup
 retries happen before the adapter can report them, so no `reconnecting` events appear
@@ -491,6 +494,91 @@ return is not unconditional: on a quorum queue each such return counts toward th
 queue's delivery limit (default 20 since RabbitMQ 4.0), and past the limit the broker
 drops the message or dead-letters it. Any other settlement error is not hidden.
 
+## A consumer the broker ends {#consumer-loss}
+
+The broker can end one subscription's consumer while the connection stays up:
+
+- the queue was deleted (an operator ran `rabbitmqctl delete_queue`, or a policy removed it);
+- the consumer was cancelled by the broker;
+- the broker closed the consumer's channel with a channel exception (the adapter reports
+  it as `channel-closed` with that exception as `error`).
+
+Before 1.3 this was silent: the subscription stayed registered, nothing reached the
+handler, and no event was raised. Now the adapter reports it and, with `recovery` enabled,
+restores the consumer.
+
+```typescript
+onLifecycle: (event) => {
+  switch (event.type) {
+    case 'consumer-lost':
+      logger.warn({ queue: event.queue, cause: event.cause, err: event.error }, 'AMQP consumer lost');
+      break;
+    case 'consumer-restored':
+      logger.info({ queue: event.queue, attempt: event.attempt }, 'AMQP consumer restored');
+      break;
+    case 'consumer-restore-failed':
+      logger.error({ queue: event.queue, attempt: event.attempt, err: event.error, willRetry: event.willRetry }, 'AMQP consumer restoration failed');
+      break;
+    default:
+      break;
+  }
+},
+```
+
+How it behaves:
+
+- **One `consumer-lost` per loss.** A connection loss is not a consumer loss: the
+  connection's own `disconnected` covers it, and connection recovery re-creates every
+  consumer. `unsubscribe()` and `disconnect()` raise no consumer events.
+- **Restoration repeats the subscription's topology step.** In `assert` mode the queue is
+  declared again, so a deleted queue comes back (empty: the messages it held are gone).
+  In `check` mode the check fails with `AmqpTopologyError` when the queue is missing, so
+  the adapter reports `consumer-restore-failed { willRetry: false }` and does not create
+  it. In `skip` mode the adapter never declares the queue, so it cannot bring a deleted
+  queue back. A restoration that ended this way is not retried; a later connection
+  recovery or a new `subscribe()` starts it again.
+- **Backoff.** Attempt `n` waits the delay the reconnect formula gives for `n`
+  (`initialDelay`, `factor`, `jitter`, `maxDelay`; the defaults apply when
+  `recovery.backoff` is set, and `maxRetries` is not consulted). A failure that can heal,
+  such as a queue the broker has not made available yet, is retried without a limit. The attempt counter restarts only
+  after the consumer has been consuming for `maxDelay` without a new loss, so a queue that
+  vanishes after every restore sees growing delays instead of a tight loop.
+- **`recovery: false`.** `consumer-lost` is reported with `willRestore: false` and the
+  consumer stays dead. Nothing is restored.
+- **A subscription without a group** gets a new auto-named queue; `consumer-restored.queue`
+  is its name. Messages the old queue held, including unacknowledged ones, are gone with
+  it. Use a `group` when messages must survive.
+- **Handlers that were running keep running.** The adapter closes the lost consumer's
+  channel, so a late `ack()` or `nack()` from such a handler is skipped and reported as
+  `settlement-skipped`. The broker returns an unacknowledged message to its queue (when the
+  queue still exists), and the restored consumer receives it again with `attempt` greater
+  than 1. Keep handlers idempotent.
+- **A handler that throws synchronously** (a plain function, not an `async` one) is
+  handled like a rejection: the message is requeued and the consumer keeps working.
+
+### Restoring a queue an operator removed on purpose {#consumer-restoration-recreates}
+
+In `assert` mode restoration declares the queue again, exactly as connection recovery
+already does after a reconnect. If you delete a queue to retire a consumer, also
+`unsubscribe()` it, set `recovery: false`, or use `topologyMode: 'check'`, otherwise the
+queue returns on the next restoration attempt.
+
+### `consumer_timeout` {#consumer-timeout}
+
+RabbitMQ ends a consumer that holds a delivery unacknowledged for longer than
+`consumer_timeout`. Measured on RabbitMQ 4.3.1 with `consumer_timeout = 60000` and a
+handler that never settles:
+
+- **Quorum queue.** The broker cancelled the consumer at about 60 s, so the adapter
+  reported `consumer-lost` with `cause: 'cancelled'`. The consumer was restored about
+  100 ms later and the message arrived again with `attempt: 2`. The channel stayed open.
+- **Classic queue.** Over a 330 s window the client saw no event and no redelivery. This is
+  one observation of one run, not a guarantee in either direction.
+
+Restoration does not remove the cause: the redelivered message reaches the same kind of
+handler and is held again. Settle deliveries in bounded time, and enforce your own handler
+deadline instead of relying on the broker.
+
 ## Testing {#testing-subpath-exports}
 
 `@connectum/events-amqp/testing` exports
@@ -535,9 +623,12 @@ object drives the fake:
 | `exhaustRecovery(error?)` | Report `reconnect-failed` and enter the terminal state: subscriptions are dropped and a new `connect()` is accepted. |
 | `failSetup(error?, object?)` | Queue a setup failure for the next `connect()` or `completeRecovery()`; defaults to a `404` `AmqpTopologyError`. |
 | `block(reason?)` / `unblock()` | Report broker flow control. |
+| `loseConsumer({ queue?, cause?, error? })` | End the consumer of every live subscription, or of every one whose queue is `queue` (its `group`, or `fake.sub-N` without one; subscriptions sharing a `group` are lost together, whatever the `cause`). It stops receiving `deliver()` calls and `consumer-lost` is reported; `willRestore` follows the fake's `recovery` option. Throws when the adapter is not connected or nothing matches. |
+| `restoreConsumers()` | Bring every lost subscription back and report `consumer-restored { attempt: 1 }` for each. Throws when nothing is lost or when `recovery: false`. A `completeRecovery()` also brings lost consumers back, without that event. |
 
 The fake does not model time: recovery advances only through control calls and
-`reconnecting.delay` is always `0`. The fake has no consumer channel to close, so it
+`reconnecting.delay` is always `0`; a lost consumer comes back through
+`restoreConsumers()` (on attempt 1, never reporting `consumer-restore-failed`) or silently through `completeRecovery()`. The fake has no consumer channel to close, so it
 never emits `settlement-skipped`. Handler acknowledgements are counted, not acted on,
 and only the first settlement per delivery per handler is counted, as in the real
 adapter (a bare `nack()` counts as a requeue); model a redelivery by calling `deliver()` again with a higher `attempt`. A topology
@@ -550,6 +641,9 @@ behavior, run integration tests against a broker.
 - Stop the broker while the service runs: you should see `disconnected`, then
   `reconnecting` events, then `connected { reconnected: true }` after the broker is
   back, and subscriptions should receive events again.
+- Delete a subscription's queue on a test broker (`rabbitmqctl delete_queue <name>`):
+  you should see `consumer-lost` with `cause: 'cancelled'`, then `consumer-restored`, and
+  a message published afterwards should reach the handler.
 - With `publishRetry` enabled, publishes made during a short outage resolve after
   the broker returns instead of rejecting.
 - With a finite `initialConnectMaxRetries` and the broker down, `bus.start()` rejects
@@ -570,6 +664,14 @@ behavior, run integration tests against a broker.
   an adapter that is connected or still recovering. Call `disconnect()` first.
 - **Events stopped arriving after an outage.** Check for a `reconnect-failed` event:
   recovery gave up and dropped all subscriptions. Restart the bus or the service.
+- **A subscription went quiet but the connection is up.** Look for `consumer-lost`: the
+  broker ended that consumer (a deleted queue, a cancel, a channel exception). With
+  `recovery` enabled a `consumer-restored` follows; `consumer-restore-failed` with
+  `willRetry: false` means the restoration ended (for example the queue is missing in
+  `check` mode). With `recovery: false`, restart the subscription yourself. See
+  [A consumer the broker ends](#consumer-loss).
+- **A deleted queue keeps coming back.** In `assert` mode a restoration declares it again;
+  see [Restoring a queue an operator removed on purpose](#consumer-restoration-recreates).
 - **A message was not redelivered after the handler threw.** The handler had already
   called `ack()` or `nack()`. The first settlement wins and a later throw does not
   requeue the message; see [Settle a delivery once](#settle-once).
