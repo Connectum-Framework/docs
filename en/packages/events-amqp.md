@@ -94,8 +94,11 @@ for the formula and a full-jitter recipe.
 `disconnected`, `reconnecting`, `reconnect-failed`, `setup-failed`, `blocked`,
 `unblocked`, `settlement-skipped` (a delivery could not be settled because its channel
 had closed; the broker returns it to the queue, and on a quorum queue each return
-counts toward the delivery limit), and `lifecycle-error` (a callback threw or
-rejected). The flat callbacks (`onConnected`, `onDisconnected`, and the others) are
+counts toward the delivery limit), `consumer-lost`, `consumer-restored` and
+`consumer-restore-failed` (the broker ended one subscription's consumer on a live
+connection; with `recovery` enabled the adapter restores it, see
+[A consumer the broker ends](/en/guide/events/amqp-reliability#consumer-loss)), and
+`lifecycle-error` (a callback threw or rejected). The flat callbacks (`onConnected`, `onDisconnected`, and the others) are
 deprecated since 1.3 and kept until at least 2.0. Callbacks should not throw: the
 adapter isolates a thrown exception or a rejected returned promise, does not await a
 promise, and reports the failure as `lifecycle-error`. See
