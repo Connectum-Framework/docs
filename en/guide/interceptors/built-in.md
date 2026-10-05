@@ -180,7 +180,7 @@ For detailed documentation on each interceptor, see the [@connectum/interceptors
 
 ## Request Logging
 
-`createLoggerInterceptor()` is not part of the default chain. Add it to `interceptors` when you want every RPC except health checks (`skipHealthCheck` defaults to `true`) logged with its request, response, and duration:
+`createLoggerInterceptor()` is not part of the default chain. Add it to `interceptors` when you want every RPC except health checks (`skipHealthCheck` defaults to `true`) logged with a request line, a response line and its duration:
 
 ```typescript
 import { createServer } from '@connectum/core';
@@ -194,6 +194,7 @@ const server = createServer({
       level: 'info',            // default: 'debug'
       skipHealthCheck: true,    // default: true
       includeTransport: true,   // default: false
+      includeBodies: false,     // default: false
     }),
   ],
 });
@@ -202,11 +203,11 @@ const server = createServer({
 With `includeTransport: true`, every line of a call carries the transport right after the `RPC` / `STREAM` prefix — `[in-process]` for calls made through `server.localClient()` or `createLocalTransport()` (see [In-Process Transport](/en/guide/production/in-process-transport)), `[http]` for all other calls:
 
 ```text
-RPC [in-process] /greeter.v1.GreeterService/SayHello request ...
+RPC [in-process] /greeter.v1.GreeterService/SayHello request
 RPC [http] /greeter.v1.GreeterService/SayHello completed in 1.84ms
 ```
 
-The option is off by default; without it the log lines are unchanged.
+`includeTransport` is off by default; without it the log lines carry no tag.
 
 ::: warning Telemetry only
 The transport tag comes from a framework-internal request marker. Use it to read logs, never to authorize: base access decisions on `req.service.typeName` and `req.method.name`.
@@ -217,12 +218,25 @@ The transport tag comes from a framework-internal request marker. Use it to read
 Every call writes a request line, a response line and a completion line:
 
 ```text
-RPC /greeter.v1.GreeterService/SayHello request ...
-RPC /greeter.v1.GreeterService/SayHello response ...
+RPC /greeter.v1.GreeterService/SayHello request
+RPC /greeter.v1.GreeterService/SayHello response
 RPC /greeter.v1.GreeterService/SayHello completed in 1.84ms
 ```
 
 A call that fails writes `RPC <path> failed with <Code>` before the completion line. `<Code>` is the Connect code name, or `Unknown` for an error that is not a `ConnectError`; the original error reaches the caller unchanged. A streaming call writes `STREAM <path> request` and `STREAM <path> response` for every message, and its completion line when the stream ends: fully read, failed midway, or closed early by the reader with `break` or `return()`. The duration therefore covers the whole stream.
+
+### Message bodies are opt-in
+
+By default a log line carries only metadata: no request or response body reaches the `logger` function, because bodies can hold credentials, tokens and personal data, and a log outlives the call and has more readers. Set `includeBodies: true` to pass them. A unary call then hands its request and response message to `logger` as an extra argument, and a streaming call hands each request message and the JSON form of each response message:
+
+```typescript
+createLoggerInterceptor({ includeBodies: true });
+// logger('RPC /greeter.v1.GreeterService/SayHello request', { name: 'Ada' })
+```
+
+::: warning Bodies in logs
+Enable `includeBodies` only where the log is as protected as the traffic itself. Before 1.3.0 bodies were always logged; see [Logger bodies are opt-in](/en/migration/logger-bodies).
+:::
 
 ### The logger cannot break a call
 
