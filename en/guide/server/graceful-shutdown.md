@@ -59,6 +59,13 @@ interface ShutdownOptions {
 | `autoShutdown` | `false` | Automatically install signal handlers |
 | `forceCloseOnTimeout` | `true` | Destroy every remaining client connection (HTTP/1.1, h2c, TLS) if the timeout is exceeded |
 
+`createServer()` validates both values and throws instead of starting a server that would cut connections at once:
+
+- `timeout` must be an integer from `0` to `2147483647` (the largest delay a Node.js timer accepts). `0` means "do not wait for in-flight requests". A number outside that range (`NaN`, `Infinity`, a negative or fractional number, a larger value) throws a `RangeError`; a value that is not a number throws a `TypeError`.
+- `forceCloseOnTimeout` must be a boolean; anything else throws a `TypeError`.
+
+Both error messages name the option and the rejected value, in the same form as the [`readMaxBytes`](/en/guide/security/request-admission) check. Leaving an option out, or setting it to `undefined`, keeps the default.
+
 ## Shutdown Sequence
 
 When `server.stop()` is called (or a signal is received with `autoShutdown: true`), the following sequence executes:

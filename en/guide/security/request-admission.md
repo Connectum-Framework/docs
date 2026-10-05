@@ -133,6 +133,8 @@ const publicCatalog = defineService(CatalogService, handlers, {
 ```
 
 ::: warning The server gate is not a floor
+A service's own `readMaxBytes` obeys the same range as the server value: `defineService()` and `defineLazyService()` throw a `RangeError` or `TypeError` naming `readMaxBytes` at the call that declares the service, not when the server first builds its routes. `readMaxBytes: undefined` is not an error.
+
 Server and service values are not composed. A service gate replaces the server gate, and a larger service `readMaxBytes` raises the limit for that service. An options object that carries `requestGate: undefined` as an own key — for example after spreading a partially filled object — also removes the server gate for that service. Review service options when you rely on the server gate for security.
 :::
 
