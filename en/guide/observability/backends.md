@@ -24,7 +24,7 @@ Configure OpenTelemetry exporters, provider management, and integration with obs
 | `OTEL_METRICS_EXPORTER` | Metrics exporter | `otlp`, `otlp/http`, `otlp/http-protobuf`, `otlp/grpc`, `console`, `none` |
 | `OTEL_LOGS_EXPORTER` | Logs exporter | `otlp`, `otlp/http`, `otlp/http-protobuf`, `otlp/grpc`, `console`, `none` |
 
-`otlp` takes its transport and encoding from the protocol variables below and sends protobuf-encoded OTLP/HTTP when none is set, as the OpenTelemetry specification defines. `otlp/http` (JSON), `otlp/http-protobuf` and `otlp/grpc` name the transport explicitly and ignore the protocol variables.
+`otlp` takes its transport and encoding from the protocol variables below and sends protobuf-encoded OTLP/HTTP when none is set, as the OpenTelemetry specification defines. `otlp/http` (JSON), `otlp/http-protobuf` and `otlp/grpc` name the transport explicitly and ignore the protocol variables. The bare `otlp` value, the protocol variables below and `otlp/http-protobuf` are available since 1.3.0; earlier versions accept only `otlp/http` and `otlp/grpc`.
 
 ### OTLP Endpoints
 
