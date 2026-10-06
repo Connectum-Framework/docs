@@ -70,7 +70,7 @@ server.on('error', (err) => {
 
 Events always fire in the transition order shown in the state diagram: `start`, `ready`, `stopping`, then `stop`.
 
-`error` may fire at any point. If an error occurs during startup, the sequence is `start → error`. If it occurs during shutdown, it is `stopping → error → stop`: a failed shutdown still ends with `stop`, and `stop()` rejects with the original error.
+`error` may fire at any point. If startup fails before the server is listening, or a `start` listener throws, the sequence is `start → error`. If a `ready` listener throws, `ready` has already been emitted, so the sequence is `start → ready → error`. If the shutdown itself fails (closing the transport or a shutdown hook), it is `stopping → error → stop`: a failed shutdown still ends with `stop`, and `stop()` rejects with the original error, or with an `AggregateError` when the transport close and a hook both failed (see [Graceful Shutdown](/en/guide/server/graceful-shutdown)). A `stopping` or `stop` listener that throws is not a failed shutdown: it is reported through `error` and `stop()` still resolves.
 
 ### Listener Exceptions
 
