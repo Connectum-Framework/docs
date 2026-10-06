@@ -47,7 +47,7 @@ coverage:
 | `ConnectError` metadata / details | ✅ groups 3a / 3b |
 | Streaming message order | ✅ group 4 |
 | Cancellation propagation | ✅ group 4 (5, 6) |
-| Handler-side cleanup after cancellation (`finally`, `context.signal`) | ✅ group 4 (7, 8; Node only — see the note below) |
+| Handler-side cleanup after cancellation (`finally`, `context.signal`) | ✅ group 4 (7, 8) |
 | Interceptor chain order | ✅ group 3 |
 | Validation interceptor outcomes | ✅ group 3a |
 | Auth/authz interceptor outcomes | ✅ group 3b |
@@ -95,8 +95,3 @@ coverage clears the 90 % target.
    ```
 3. Run `./scripts/parity-suite.sh` locally.
 4. Update the table above.
-
-The handler-cleanup scenarios of group 4 (7, 8) run on Node only: Bun's HTTP/2
-server does not unwind a handler's generator when the client cancels, so the
-HTTP side has no reference behaviour there. The in-process transport itself is
-checked under Bun by the integration tests of `@connectum/core`.
