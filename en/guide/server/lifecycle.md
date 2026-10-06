@@ -70,7 +70,20 @@ server.on('error', (err) => {
 
 Events always fire in the transition order shown in the state diagram: `start`, `ready`, `stopping`, then `stop`.
 
-`error` may fire at any point. If an error occurs during startup, the sequence is `start → error`. If it occurs during shutdown, it is `stopping → error → stop`.
+`error` may fire at any point. If startup fails before the server is listening, or a `start` listener throws, the sequence is `start → error`. If a `ready` listener throws, `ready` has already been emitted, so the sequence is `start → ready → error`. If the shutdown itself fails (closing the transport or a shutdown hook), it is `stopping → error → stop`: a failed shutdown still ends with `stop`, and `stop()` rejects with the original error, or with an `AggregateError` when the transport close and a hook both failed (see [Graceful Shutdown](/en/guide/server/graceful-shutdown)). A `stopping` or `stop` listener that throws is not a failed shutdown: it is reported through `error` and `stop()` still resolves.
+
+### Listener Exceptions
+
+What happens when a listener throws depends on the phase:
+
+| Event | A throwing listener |
+|-------|---------------------|
+| `start`, `ready` | Is a startup failure. `start()` rejects with that exception, `error` is emitted, the port, the `autoShutdown` signal handlers and the event bus are released, and the server ends up `stopped`. |
+| `stopping`, `stop` | Is isolated. The remaining listeners of the event still run, the shutdown always reaches `stopped`, and the exception is reported through `error`. `stop()` does not reject because of it. |
+
+If no `error` listener is registered, an exception from a `stopping` or `stop` listener is printed with `console.error` instead of being swallowed. A failed shutdown started by a signal (`autoShutdown`) is reported once through `error` and never becomes an unhandled rejection.
+
+Only synchronous exceptions are covered. An `async` listener that rejects is not awaited by the emitter; handle its errors inside the listener.
 
 ## The shutdownSignal
 
