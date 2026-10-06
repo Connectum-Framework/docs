@@ -153,6 +153,24 @@ const adapter = RedisAdapter({ url: 'redis://localhost:6379' });
 The adapter speaks RESP2 unless you opt into RESP3 through `redisOptions`; see
 [Redis protocol](/en/packages/events-redis#redis-protocol).
 
+### Redelivery of pending entries {#redis-redelivery}
+
+An entry that is not acknowledged stays in the consumer group's pending list:
+`nack(true)` or `nack()` leaves it there, and so does a handler that throws
+before the entry is settled. `nack(false)` acknowledges it, so it is not
+redelivered. The adapter claims pending entries that have been idle for 30
+seconds (`XAUTOCLAIM`) and delivers them again with the delivery count from the
+group.
+
+A handler failure on one redelivered entry is logged with the entry id and
+affects only that entry: it stays pending and is claimed again after another 30
+seconds, while the other entries claimed in the same pass are still delivered.
+`XAUTOCLAIM` inspects a limited number of pending entries per call, so the
+adapter continues each pass where the previous one stopped; entries behind a
+long run of recently delivered ones are therefore reached too.
+
+### Related
+
 - [Module hub](/en/packages/events-redis)
 - [`RedisAdapterOptions`](/en/api/@connectum/events-redis/types/interfaces/RedisAdapterOptions)
 

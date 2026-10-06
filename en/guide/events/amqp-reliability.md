@@ -40,6 +40,19 @@ class tells an at-least-once producer whether to send the message again:
 | `AmqpSerializationError` | Never sent: the `serialization.encode` hook threw | No |
 | `AmqpTopologyError` | Not a publish outcome: fix the topology configuration | No |
 
+A consumer-side `serialization.decode` failure is not in this table: it throws
+nothing. The adapter rejects the message without requeue (the broker drops it, or
+dead-letters it when the queue has a dead-letter exchange) and the handler never sees
+it.
+
+`publish()` is accepted only on a usable connection. While `connect()` is still
+running (including its startup probe) and after a connection loss it rejects with
+`AmqpConnectionError` ("not connected (or recovery in progress)"), never with a raw
+"Channel closed" error. `publishTimeoutMs` must be a finite number of at least 1:
+`NaN`, `Infinity`, `0` or a negative number counts as unset (30 s), a fraction is
+floored, and a value above 2147483647 is capped to it. There is no value that turns the
+deadline off.
+
 ### Retry connection failures in place {#publish-retry}
 
 By default a publish made while the connection is down (or recovering) rejects
@@ -662,6 +675,11 @@ behavior, run integration tests against a broker.
   the hook synchronous and return a finite number greater than or equal to 0.
 - **`AmqpConnectionError: AmqpAdapter: already connected`.** `connect()` was called on
   an adapter that is connected or still recovering. Call `disconnect()` first.
+- **`AmqpConnectionError: AmqpAdapter: connect() already in progress`.** A second
+  `connect()` was called while the first was still running. Wait for the first one, or
+  call `disconnect()` to cancel it: the cancelled `connect()` closes the connection it
+  opened and rejects, and a `connect()` made after `disconnect()` starts a clean
+  attempt.
 - **Events stopped arriving after an outage.** Check for a `reconnect-failed` event:
   recovery gave up and dropped all subscriptions. Restart the bus or the service.
 - **A subscription went quiet but the connection is up.** Look for `consumer-lost`: the
