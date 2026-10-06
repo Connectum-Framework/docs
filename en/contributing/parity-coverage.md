@@ -22,9 +22,9 @@ can be regenerated from the parity test files at any time.
 | 7a | OTEL tracing & metrics (unary spans, streaming events, error spans, metrics labels, trace-context propagation, instrument subset, `connectum.transport` attribute) | `packages/otel/tests/parity/otel.parity.test.ts` | **7** |
 | 8 | Request admission (rejecting `requestGate`, `requestGate` throwing a plain `Error`, admitting `requestGate`, `readMaxBytes` over the limit, `readMaxBytes` at the limit, `server.stop()` aborting an in-flight call) | `packages/testing/tests/parity/requestAdmission.parity.test.ts` | **6** |
 | 9 | gRPC Server Reflection (one bidi stream with every request kind: listing, import closure, per-stream "already sent" state, symbol and extension lookup, error answers) | `packages/testing/tests/parity/reflection.parity.test.ts` | **1** |
-| **Total** | | | **43** |
+| **Total** | | | **45** |
 
-Of these, **32 scenarios** (groups 3, 3a, 3b, 4, 5, 8, 9, except the two
+Of these, **34 scenarios** (groups 3, 3a, 3b, 4, 5, 8, 9, except the two
 no-bypass checks 3a.6 and 3b.6, which are standalone tests) go through the unified
 `transportParityTest()` driver in `@connectum/testing/parity` and produce a
 structural diff between HTTP and local. The 7 OTEL scenarios and 2 coexistence
