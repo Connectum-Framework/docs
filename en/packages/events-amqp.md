@@ -64,6 +64,9 @@ typed error; the error class tells you whether republishing is safe. The opt-in
 for your own retry logic. A retry can duplicate a message whose confirm was lost; dedupe
 on `x-event-id`. See [Reliable publishing](/en/guide/events/amqp-reliability#reliable-publishing)
 and [`AmqpPublishRetryOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpPublishRetryOptions).
+`publishRetry.maxRetries` below 0, including `-Infinity`, means a single attempt, and
+`NaN` means the default of 5; `publishTimeoutMs` below 1 or not finite means the default
+of 30 s.
 
 ## Connection Recovery {#connection-recovery}
 
