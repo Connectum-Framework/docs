@@ -136,9 +136,12 @@ Both `ack()` and `nack()` are idempotent -- calling either multiple times after 
 
 ### Shutdown Drain {#shutdown-drain}
 
-`eventBus.stop()` first closes every subscription, so no new events are
-delivered. It then drains outstanding work and finally disconnects the adapter.
-Two budgets control the drain:
+`eventBus.stop()` closes every subscription, so no new events are delivered,
+and drains outstanding work at the same time. It disconnects the adapter once
+both have finished. Closing a subscription on the Redis, Kafka, and NATS
+adapters waits for the handler that is running, so the handler drain does not
+wait for the close: `drainTimeout` aborts a stuck handler, and that is what lets
+the close finish. Two budgets control the drain:
 
 | Option | Default | Waits for | When the budget runs out |
 |---|---|---|---|

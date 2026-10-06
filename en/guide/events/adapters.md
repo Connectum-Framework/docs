@@ -105,6 +105,26 @@ failing message with the retry and DLQ [middleware](/en/guide/events/middleware)
 
 `attempt` is always `1` on Kafka: the broker does not count deliveries.
 
+### Long-running handlers {#kafka-long-handlers}
+
+While a handler runs, the adapter keeps sending group heartbeats on its behalf, so
+a handler that takes longer than `consumerOptions.sessionTimeout` (default `30000`
+ms) stays a member of its group: its `ack()` is accepted and the message is
+delivered once. The adapter beats every 3 seconds (the KafkaJS default
+`heartbeatInterval`), checking twice per interval, and stops as soon as the handler
+returns, throws, or its turn ends.
+
+If a heartbeat fails (the broker removed the member or started a rebalance) and the
+message was not committed, the adapter hands the error to KafkaJS so the consumer
+rejoins the group instead of redelivering on a membership the broker no longer
+recognises; the message is delivered again after the rejoin. A message whose
+offset was already committed stays committed.
+
+The handler is never cancelled by the adapter: the EventBus only aborts `ctx.signal`
+after `handlerTimeout` (default `30000` ms), and a handler that ignores that signal
+and never returns holds its place in the group indefinitely. Make long handlers
+honour `ctx.signal`.
+
 ### Start position {#kafka-start-position}
 
 A consumer group with no committed offset starts at the end of the topic
@@ -132,6 +152,24 @@ const adapter = RedisAdapter({ url: 'redis://localhost:6379' });
 
 The adapter speaks RESP2 unless you opt into RESP3 through `redisOptions`; see
 [Redis protocol](/en/packages/events-redis#redis-protocol).
+
+### Redelivery of pending entries {#redis-redelivery}
+
+An entry that is not acknowledged stays in the consumer group's pending list:
+`nack(true)` or `nack()` leaves it there, and so does a handler that throws
+before the entry is settled. `nack(false)` acknowledges it, so it is not
+redelivered. The adapter claims pending entries that have been idle for 30
+seconds (`XAUTOCLAIM`) and delivers them again with the delivery count from the
+group.
+
+A handler failure on one redelivered entry is logged with the entry id and
+affects only that entry: it stays pending and is claimed again after another 30
+seconds, while the other entries claimed in the same pass are still delivered.
+`XAUTOCLAIM` inspects a limited number of pending entries per call, so the
+adapter continues each pass where the previous one stopped; entries behind a
+long run of recently delivered ones are therefore reached too.
+
+### Related
 
 - [Module hub](/en/packages/events-redis)
 - [`RedisAdapterOptions`](/en/api/@connectum/events-redis/types/interfaces/RedisAdapterOptions)
