@@ -20,11 +20,11 @@ Configure OpenTelemetry exporters, provider management, and integration with obs
 
 | Variable | Description | Values |
 |----------|-------------|--------|
-| `OTEL_TRACES_EXPORTER` | Trace exporter | `otlp`, `otlp/http`, `otlp/grpc`, `console`, `none` |
-| `OTEL_METRICS_EXPORTER` | Metrics exporter | `otlp`, `otlp/http`, `otlp/grpc`, `console`, `none` |
-| `OTEL_LOGS_EXPORTER` | Logs exporter | `otlp`, `otlp/http`, `otlp/grpc`, `console`, `none` |
+| `OTEL_TRACES_EXPORTER` | Trace exporter | `otlp`, `otlp/http`, `otlp/http-protobuf`, `otlp/grpc`, `console`, `none` |
+| `OTEL_METRICS_EXPORTER` | Metrics exporter | `otlp`, `otlp/http`, `otlp/http-protobuf`, `otlp/grpc`, `console`, `none` |
+| `OTEL_LOGS_EXPORTER` | Logs exporter | `otlp`, `otlp/http`, `otlp/http-protobuf`, `otlp/grpc`, `console`, `none` |
 
-`otlp` takes its transport from the protocol variables below and uses OTLP/HTTP when none is set. `otlp/http` and `otlp/grpc` name the transport explicitly and ignore the protocol variables.
+`otlp` takes its transport and encoding from the protocol variables below and sends protobuf-encoded OTLP/HTTP when none is set, as the OpenTelemetry specification defines. `otlp/http` (JSON), `otlp/http-protobuf` and `otlp/grpc` name the transport explicitly and ignore the protocol variables.
 
 ### OTLP Endpoints
 
@@ -43,11 +43,11 @@ The "overrides base" order holds for OTLP/HTTP. OTLP/gRPC exporters receive a se
 
 | Variable | Description |
 |----------|-------------|
-| `OTEL_EXPORTER_OTLP_PROTOCOL` | Protocol for the `otlp` exporter value: `grpc`, `http/protobuf` or `http/json`. `grpc` selects OTLP/gRPC; the other two select OTLP/HTTP |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | Protocol for the `otlp` exporter value: `grpc`, `http/protobuf` or `http/json`. `grpc` selects OTLP/gRPC; `http/protobuf` sends protobuf-encoded OTLP/HTTP (`Content-Type: application/x-protobuf`); `http/json` sends JSON-encoded OTLP/HTTP (`Content-Type: application/json`) |
 | `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL`, `OTEL_EXPORTER_OTLP_METRICS_PROTOCOL`, `OTEL_EXPORTER_OTLP_LOGS_PROTOCOL` | The same for one signal (overrides the general variable) |
 | `OTEL_EXPORTER_OTLP_HEADERS` | Headers (comma-separated `key=value`) |
 
-An unrecognized protocol value is rejected when a signal set to `otlp` reads it. The OTLP/HTTP exporters send JSON (`Content-Type: application/json`) for every protocol value, including `http/protobuf`.
+An unrecognized protocol value is rejected when a signal set to `otlp` reads it. The explicit `otlp/http` value predates the protocol variables and keeps sending JSON; use `otlp` with `http/protobuf`, or `otlp/http-protobuf`, for the binary encoding.
 
 ### Batch Span Processor
 
