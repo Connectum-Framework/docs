@@ -20,25 +20,34 @@ Configure OpenTelemetry exporters, provider management, and integration with obs
 
 | Variable | Description | Values |
 |----------|-------------|--------|
-| `OTEL_TRACES_EXPORTER` | Trace exporter | `otlp`, `console`, `none` |
-| `OTEL_METRICS_EXPORTER` | Metrics exporter | `otlp`, `console`, `none` |
-| `OTEL_LOGS_EXPORTER` | Logs exporter | `otlp`, `console`, `none` |
+| `OTEL_TRACES_EXPORTER` | Trace exporter | `otlp`, `otlp/http`, `otlp/http-protobuf`, `otlp/grpc`, `console`, `none` |
+| `OTEL_METRICS_EXPORTER` | Metrics exporter | `otlp`, `otlp/http`, `otlp/http-protobuf`, `otlp/grpc`, `console`, `none` |
+| `OTEL_LOGS_EXPORTER` | Logs exporter | `otlp`, `otlp/http`, `otlp/http-protobuf`, `otlp/grpc`, `console`, `none` |
+
+`otlp` takes its transport and encoding from the protocol variables below and sends protobuf-encoded OTLP/HTTP when none is set, as the OpenTelemetry specification defines. `otlp/http` (JSON), `otlp/http-protobuf` and `otlp/grpc` name the transport explicitly and ignore the protocol variables. The bare `otlp` value, the protocol variables below and `otlp/http-protobuf` are available since 1.3.0; earlier versions accept only `otlp/http` and `otlp/grpc`.
 
 ### OTLP Endpoints
 
 | Variable | Description |
 |----------|-------------|
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | Base OTLP endpoint |
-| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | Traces endpoint (overrides base) |
-| `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` | Metrics endpoint (overrides base) |
-| `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | Logs endpoint (overrides base) |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | Base OTLP endpoint. OTLP/HTTP appends `/v1/traces`, `/v1/metrics` or `/v1/logs`. An empty value counts as not set |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | Traces endpoint, used as given (overrides base) |
+| `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` | Metrics endpoint, used as given (overrides base) |
+| `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | Logs endpoint, used as given (overrides base) |
+
+With OTLP/HTTP and no endpoint variable set, the exporter sends to `http://localhost:4318/v1/<signal>`. A value that is not a URL makes the service fail when telemetry is first initialized, rather than exporting elsewhere.
+
+The "overrides base" order holds for OTLP/HTTP. OTLP/gRPC exporters receive a set `OTEL_EXPORTER_OTLP_ENDPOINT` explicitly, so it takes precedence over the per-signal variables.
 
 ### OTLP Settings
 
 | Variable | Description |
 |----------|-------------|
-| `OTEL_EXPORTER_OTLP_PROTOCOL` | Protocol: `http/protobuf` or `grpc` |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | Protocol for the `otlp` exporter value: `grpc`, `http/protobuf` or `http/json`. `grpc` selects OTLP/gRPC; `http/protobuf` sends protobuf-encoded OTLP/HTTP (`Content-Type: application/x-protobuf`); `http/json` sends JSON-encoded OTLP/HTTP (`Content-Type: application/json`) |
+| `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL`, `OTEL_EXPORTER_OTLP_METRICS_PROTOCOL`, `OTEL_EXPORTER_OTLP_LOGS_PROTOCOL` | The same for one signal (overrides the general variable) |
 | `OTEL_EXPORTER_OTLP_HEADERS` | Headers (comma-separated `key=value`) |
+
+An unrecognized protocol value is rejected when a signal set to `otlp` reads it. The explicit `otlp/http` value predates the protocol variables and keeps sending JSON; use `otlp` with `http/protobuf`, or `otlp/http-protobuf`, for the binary encoding.
 
 ### Batch Span Processor
 
