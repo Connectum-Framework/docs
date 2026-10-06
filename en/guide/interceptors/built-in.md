@@ -226,7 +226,7 @@ A call that fails writes `RPC <path> failed with <Code>` before the completion l
 
 ### The logger cannot break a call
 
-Logging never changes the outcome of a call. If the `logger` function you pass throws, the call still returns its response or its original error: the first failure is reported once on the console, and later ones are dropped. A streamed message that cannot be converted to JSON is logged as a marker and the stream continues.
+Logging never changes the outcome of a call. If the `logger` function you pass throws, or returns a promise that rejects, the call still returns its response or its original error: the first failure is reported once on the console, and later ones are dropped. A streamed message that cannot be converted to JSON is logged as a marker and the stream continues.
 
 ## Execution Order
 
