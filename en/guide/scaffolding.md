@@ -31,7 +31,7 @@ Run the CLI with `npx` whatever you use day to day: it reaches a server through 
 Node.js gRPC transport and is exercised on Node.js only. The project it generates has no
 such restriction.
 
-The wizard asks for a project name, runtime, package manager, and which modules to
+The wizard asks for a project name (see [Project path and name](#project-path-and-name)), runtime, package manager, and which modules to
 include. Or pass everything as flags for a non-interactive run:
 
 ```bash
@@ -112,10 +112,47 @@ when a module has made the service unreachable.
 | `--resilience` | comma list of `timeout,bulkhead,circuitBreaker,retry,fallback` | Enable resilience interceptors |
 | `--healthcheck` / `--no-healthcheck` | — | Include the gRPC health protocol (default on) |
 | `--reflection` / `--no-reflection` | — | Include gRPC server reflection (default on) |
-| `--sample` / `--no-sample` | — | Emit the runnable sample Greeter service (default on) |
+| `--sample` / `--no-sample` | — | Emit the runnable sample Greeter service (default on); `--no-sample` is [config-only](#no-sample-a-config-only-project) and cannot be combined with `--auth` or `--events` |
 | `--yes`, `-y` | — | Non-interactive; use flags and defaults |
 | `--force` | — | Overwrite existing files |
 | `--ref` | any git ref | Base example ref to fetch (advanced; defaults to the tag pinned for this CLI release) |
+
+### Project path and name {#project-path-and-name}
+
+The argument of `init` is the **destination path**. The package name written to
+`package.json` is the last segment of that path:
+
+```bash
+npx @connectum/cli init apps/payments   # created in apps/payments, "name": "payments"
+npx @connectum/cli init .               # created in the current directory, named after it
+```
+
+The name must be valid for a **new npm package**. `init` refuses, before anything is
+written and naming the rule, a name that is empty, longer than 214 characters, starts with
+`.`, `_` or `-`, contains whitespace, upper-case letters or a character that is not
+URL-safe (including `~ ' ! ( ) *`), equals `node_modules` or `favicon.ico`, or is the name
+of a Node.js core module. The name is never corrected silently: pick another path, or, for
+`init .`, create the project in a directory with a valid name. A scoped name
+(`@acme/payments`) is not accepted as an argument; edit `package.json` afterwards.
+
+### `--no-sample`: a config-only project {#no-sample-a-config-only-project}
+
+`--no-sample` leaves out the Greeter proto, the Greeter service and its end-to-end test.
+The server starts with an empty service list and the project ships one smoke test that
+builds the real server. Every module that does not depend on the sample (`--otel`,
+`--catalog`, `--resilience`, `--healthcheck`, `--reflection`) is applied as usual.
+
+`--auth` and `--events` build their demonstration on the Greeter service, so combining
+either with `--no-sample` is an error that names both options.
+
+`buf generate` fails on a module that holds no `.proto` file, so a `--no-sample` project
+cannot run `typecheck`, `test` or `start` until it has a first service. Generate it, then
+register it as printed:
+
+```bash
+cd payments
+npx @connectum/cli generate service billing
+```
 
 ### What `--auth` generates
 
@@ -245,6 +282,31 @@ Register the new service in src/server.ts:
   import { billingService } from "#services/billingService.ts";
   // add billingService to the services: [...] array passed to createServer
 ```
+
+## `connectum proto sync`
+
+Generate TypeScript types from a **running** server through gRPC reflection, without
+access to its `.proto` files:
+
+```bash
+npx @connectum/cli proto sync --from localhost:5000 --out ./generated
+# list what would be synced, generate nothing:
+npx @connectum/cli proto sync --from localhost:5000 --out ./generated --dry-run
+```
+
+| Flag | Description |
+|------|-------------|
+| `--from` | Server address, with or without `http://` (required) |
+| `--out` | Output directory for the generated types (required) |
+| `--template` | Path to a custom `buf.gen.yaml` |
+| `--dry-run` | Connect, list the services and files, generate nothing |
+| `--timeout` | Time limit of each reflection request in milliseconds: an integer from 1 to 2147483647 (default `10000`) |
+
+The command either obtains a descriptor for **every** service the server lists or fails
+with a non-zero exit code. If the server lists a service that reflection cannot describe,
+the error names each such service and nothing is generated (this holds for `--dry-run`
+too). A server that accepts the connection but never answers ends with an error naming the
+address and the limit, rather than waiting forever; raise `--timeout` for a slow server.
 
 ## Adding a service by hand
 

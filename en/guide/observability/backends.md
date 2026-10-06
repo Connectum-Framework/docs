@@ -83,6 +83,17 @@ server.onShutdown('otel', async () => {
 });
 ```
 
+### What shutdown guarantees
+
+Since 1.3.0, `shutdownProvider()` always releases the provider, whether stopping succeeds or fails:
+
+- **A failing flush does not block the provider.** If an exporter cannot deliver its last batch (an unreachable collector, for example), the promise rejects with that error, but the next `getProvider()` or `initProvider()` starts from a clean state and a repeated `shutdownProvider()` is a no-op. Earlier versions kept returning the half-stopped provider and repeated the same error.
+- **Every signal is stopped.** Tracing, metrics and logging are stopped independently, so a failure in one does not leave the others running. One failure is rethrown as it is; several arrive together in an `AggregateError`.
+- **Global registrations are released.** The provider unregisters the OpenTelemetry API globals it took (trace, context, propagation, metrics, logs), so a provider created afterwards registers cleanly and delivers metrics. A registration that belonged to other code, such as your own `NodeSDK`, is neither taken over nor removed.
+- **Interceptors keep working.** `createOtelInterceptor()` and `createOtelClientInterceptor()` created before a shutdown record into whichever provider is current.
+
+Earlier versions left the globals registered after a shutdown, so a provider created afterwards was refused as a duplicate and its `meter` became a no-op: RPC metrics disappeared without a message.
+
 `initProvider()` applies its options only when no provider exists yet. Once
 `getProvider()`, `getTracer()`, `getMeter()`, or `getLogger()` has created the
 provider from environment defaults, a later `initProvider()` call does nothing.

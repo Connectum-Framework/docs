@@ -195,7 +195,7 @@ const server = createServer({
 
 The server starts the event bus after transport is ready and stops it during graceful shutdown (via `ShutdownManager`).
 
-During graceful shutdown, the EventBus tracks in-flight message handlers via an `inFlight` Set. The `stop()` method follows a drain sequence: (1) stop accepting new messages (nack with requeue), (2) wait for in-flight handlers up to `drainTimeout` (default: 30s), (3) force-abort remaining via AbortSignal if timeout exceeded, (4) disconnect adapter. The `drainTimeout: 0` option skips the drain for immediate shutdown.
+During graceful shutdown, the EventBus tracks in-flight message handlers via an `inFlight` Set. The `stop()` method follows a drain sequence: (1) stop accepting new messages (nack with requeue), (2) wait for in-flight handlers up to `drainTimeout` (default: 30s), (3) force-abort remaining via AbortSignal if timeout exceeded, (4) disconnect adapter. Steps 1 and 2 run at the same time: closing a subscription on the Redis, Kafka, and NATS adapters only completes after the handler that is running returns, so waiting for the close before starting the drain would leave `handlerTimeout` as the only limit and `drainTimeout` could never release a stuck handler. The adapter is disconnected only after the close and the drain have both finished. The `drainTimeout: 0` option skips the drain for immediate shutdown.
 
 #### 8. MemoryAdapter for Testing
 
