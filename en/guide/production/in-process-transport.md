@@ -126,7 +126,7 @@ Guaranteed identical between in-process and HTTP:
 - **Validation** — proto-declared `buf.validate` / `protovalidate` rules reject invalid requests with `ConnectError(invalid_argument)` and identical violation details on both transports.
 - **Authorization** — proto-declared authz rules and `@connectum/auth` interceptors apply uniformly. Missing/invalid tokens produce `ConnectError(unauthenticated)`; insufficient scope produces `ConnectError(permission_denied)` with identical metadata.
 - **Error mapping** — `ConnectError` (`code`, `message`, `metadata`, `details`) round-trips identically. Plain `Error` becomes `code === internal` on both paths.
-- **Streaming** — unary, server-stream, client-stream, and bidi RPCs preserve message order and respect `AbortSignal` cancellation on both paths.
+- **Streaming** — unary, server-stream, client-stream, and bidi RPCs preserve message order and respect `AbortSignal` cancellation on both paths. A streaming handler parked at `yield` is finished when its call is cancelled (client `AbortSignal`, deadline, `server.stop()`), so its `finally` block runs and resources opened before the `yield` are released (since 1.3.0; earlier versions aborted `context.signal` but never resumed the generator). Leaving a `for await` loop with `break` is not a cancellation on either path: pass an `AbortSignal` and abort it to end the call.
 - **Headers / metadata** — `Headers` objects (including `authorization` and `@connectum/auth` serialized auth headers) round-trip in both directions. Headers are cloned at the boundary to prevent cross-side mutation.
 - **OpenTelemetry tracing and metrics** — see [Observability](#observability) below.
 

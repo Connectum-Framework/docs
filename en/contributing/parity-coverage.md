@@ -16,7 +16,7 @@ can be regenerated from the parity test files at any time.
 | 3 | Server-side interceptor ordering (3.1), client-side interceptor injection (3.2), timeout (3.3a), retry (3.3b), bulkhead (3.3c), circuit-breaker (3.3d), logger (3.3e), serializer (3.3f) | `packages/testing/tests/parity/interceptors.parity.test.ts` | **8** |
 | 3a | `protovalidate` / `buf.validate` (success, single-rule violation, aggregated violations, streaming validation, no-bypass API (3a.6)) | `packages/testing/tests/parity/validation.parity.test.ts` | **5** |
 | 3b | Proto-declared authz (success with scope, unauthenticated, permission denied, public method, no-bypass API (3b.6)) | `packages/testing/tests/parity/authorization.parity.test.ts` | **5** |
-| 4 | Streaming & cancellation (unary, server-stream, client-stream, bidi, unary cancel, stream mid-cancel) | `packages/testing/tests/parity/streaming.parity.test.ts` | **6** |
+| 4 | Streaming & cancellation (unary, server-stream, client-stream, bidi, unary cancel, stream mid-cancel, handler cleanup after abort, handler cleanup after break + abort) | `packages/testing/tests/parity/streaming.parity.test.ts` | **8** |
 | 5 | Error mapping (`ConnectError(NotFound)`, plain `Error` → `internal`, interceptor-thrown error) | `packages/testing/tests/parity/errors.parity.test.ts` | **3** |
 | 6 | HTTP / local coexistence (concurrent observation by one interceptor; `server.start()` not required for local invoke) | `packages/testing/tests/parity/coexistence.parity.test.ts` + `packages/core/tests/integration/localTransport.test.ts` | **2** |
 | 7a | OTEL tracing & metrics (unary spans, streaming events, error spans, metrics labels, trace-context propagation, instrument subset, `connectum.transport` attribute) | `packages/otel/tests/parity/otel.parity.test.ts` | **7** |
@@ -47,6 +47,7 @@ coverage:
 | `ConnectError` metadata / details | ✅ groups 3a / 3b |
 | Streaming message order | ✅ group 4 |
 | Cancellation propagation | ✅ group 4 (5, 6) |
+| Handler-side cleanup after cancellation (`finally`, `context.signal`) | ✅ group 4 (7, 8; Node only — see the note below) |
 | Interceptor chain order | ✅ group 3 |
 | Validation interceptor outcomes | ✅ group 3a |
 | Auth/authz interceptor outcomes | ✅ group 3b |
@@ -94,3 +95,8 @@ coverage clears the 90 % target.
    ```
 3. Run `./scripts/parity-suite.sh` locally.
 4. Update the table above.
+
+The handler-cleanup scenarios of group 4 (7, 8) run on Node only: Bun's HTTP/2
+server does not unwind a handler's generator when the client cancels, so the
+HTTP side has no reference behaviour there. The in-process transport itself is
+checked under Bun by the integration tests of `@connectum/core`.
