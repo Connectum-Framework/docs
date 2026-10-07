@@ -105,6 +105,48 @@ failing message with the retry and DLQ [middleware](/en/guide/events/middleware)
 
 `attempt` is always `1` on Kafka: the broker does not count deliveries.
 
+### Commit strategy {#kafka-commit-strategy}
+
+By default every acknowledged message is committed by its own `OffsetCommit`
+request, so a batch of 20 acknowledged messages costs 20 requests to the group
+coordinator. `consumerOptions.commitStrategy` changes when the commit is sent:
+
+| Value | `OffsetCommit` requests | `await ack()` returns |
+|---|---|---|
+| `"per-message"` (default) | one for every acknowledged message | after the broker accepted the commit |
+| `"per-batch"` | one for the last acknowledged message of the batch | at once, nothing is sent yet |
+
+```typescript
+const adapter = KafkaAdapter({
+  brokers: ['localhost:9092'],
+  consumerOptions: { commitStrategy: 'per-batch' },
+});
+```
+
+With `"per-batch"` the commit is sent when the adapter stops working on the batch,
+and it is sent on every way that can happen: the end of the batch, a message
+that is requeued with `nack(true)` or returned without settling, a handler that
+throws, the consumer being stopped, and a lost group membership (a failed
+heartbeat). What was acknowledged is committed in each of these cases; a message
+that was not acknowledged is never committed, so the ordering rules above are
+the same in both modes. If the commit for a batch that otherwise ended normally
+fails, the failure reaches KafkaJS like any other commit failure. If it fails
+after the batch ended with an error, the original error is the one that reaches
+KafkaJS and the commit failure is logged.
+
+::: warning Wider window of duplicates
+With `"per-batch"` an acknowledgement is not durable until the batch ends. If the
+process dies, or the broker refuses the commit, between an `ack()` and the end of
+the batch, every message acknowledged in that batch is delivered again, up to the
+size of the batch, instead of at most one. Handlers must be idempotent. A
+dead-letter copy published before the original is acknowledged can also be
+published twice. Delivery stays at-least-once.
+:::
+
+How many requests `"per-batch"` saves depends on how many messages KafkaJS returns
+in one fetch, not on a setting of the adapter. When a batch holds a single
+message, both modes send the same one request.
+
 ### Long-running handlers {#kafka-long-handlers}
 
 While a handler runs, the adapter keeps sending group heartbeats on its behalf, so
