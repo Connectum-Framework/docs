@@ -2,7 +2,7 @@
 
 # Interface: BroadcastReactor
 
-Defined in: [packages/events/src/broadcast.ts:24](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L24)
+Defined in: [packages/events/src/broadcast.ts:23](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L23)
 
 One independent broadcast reactor: its consumer group + routes.
 
@@ -12,7 +12,7 @@ One independent broadcast reactor: its consumer group + routes.
 
 > `readonly` **group**: `string`
 
-Defined in: [packages/events/src/broadcast.ts:26](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L26)
+Defined in: [packages/events/src/broadcast.ts:25](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L25)
 
 Consumer group — MUST be DISTINCT per reactor for true fan-out (a shared group load-balances).
 
@@ -22,7 +22,7 @@ Consumer group — MUST be DISTINCT per reactor for true fan-out (a shared group
 
 > `readonly` `optional` **middleware?**: [`MiddlewareConfig`](../types/interfaces/MiddlewareConfig.md)
 
-Defined in: [packages/events/src/broadcast.ts:30](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L30)
+Defined in: [packages/events/src/broadcast.ts:29](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L29)
 
 Optional per-reactor middleware (retry/DLQ/custom).
 
@@ -32,6 +32,6 @@ Optional per-reactor middleware (retry/DLQ/custom).
 
 > `readonly` **routes**: [`EventRoute`](../types/type-aliases/EventRoute.md)[]
 
-Defined in: [packages/events/src/broadcast.ts:28](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L28)
+Defined in: [packages/events/src/broadcast.ts:27](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L27)
 
 The event routes (handlers) this reactor subscribes with.

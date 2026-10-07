@@ -4,6 +4,6 @@
 
 > `const` **MOCK\_RESPONSE\_HEADER**: `"x-connectum-mock"` = `"x-connectum-mock"`
 
-Defined in: [testing/src/mockResolver.ts:19](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L19)
+Defined in: [testing/src/mockResolver.ts:18](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L18)
 
 Response header set on every mock-served response.

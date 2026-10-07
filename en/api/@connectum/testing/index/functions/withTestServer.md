@@ -4,7 +4,7 @@
 
 > **withTestServer**\<`T`\>(`options`, `testFn`): `Promise`\<`T`\>
 
-Defined in: [testing/src/test-server.ts:93](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/test-server.ts#L93)
+Defined in: [testing/src/test-server.ts:92](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/test-server.ts#L92)
 
 Run a test function with an auto-managed test server.
 

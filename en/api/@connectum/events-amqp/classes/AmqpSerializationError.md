@@ -2,7 +2,7 @@
 
 # Class: AmqpSerializationError
 
-Defined in: [packages/events-amqp/src/errors.ts:115](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L115)
+Defined in: [packages/events-amqp/src/errors.ts:116](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L116)
 
 Payload encoding/decoding failed in a custom serialization hook.
 
@@ -16,7 +16,7 @@ Payload encoding/decoding failed in a custom serialization hook.
 
 > **new AmqpSerializationError**(`message`, `options?`): `AmqpSerializationError`
 
-Defined in: [packages/events-amqp/src/errors.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L31)
+Defined in: [packages/events-amqp/src/errors.ts:32](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L32)
 
 #### Parameters
 

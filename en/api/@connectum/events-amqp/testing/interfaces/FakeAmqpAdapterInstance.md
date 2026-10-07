@@ -2,7 +2,7 @@
 
 # Interface: FakeAmqpAdapterInstance
 
-Defined in: [packages/events-amqp/src/testing.ts:147](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L147)
+Defined in: [packages/events-amqp/src/testing.ts:197](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L197)
 
 The fake adapter: a drop-in [EventAdapter](../../../events/types/interfaces/EventAdapter.md) plus its [FakeAmqpControl](FakeAmqpControl.md).
 
@@ -16,7 +16,7 @@ The fake adapter: a drop-in [EventAdapter](../../../events/types/interfaces/Even
 
 > `readonly` **control**: [`FakeAmqpControl`](FakeAmqpControl.md)
 
-Defined in: [packages/events-amqp/src/testing.ts:148](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L148)
+Defined in: [packages/events-amqp/src/testing.ts:198](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L198)
 
 ***
 

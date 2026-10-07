@@ -2,7 +2,7 @@
 
 # Interface: ProviderOptions
 
-Defined in: [provider.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L35)
+Defined in: [provider.ts:40](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L40)
 
 Options for initializing the OpenTelemetry provider
 
@@ -12,7 +12,7 @@ Options for initializing the OpenTelemetry provider
 
 > `optional` **instanceId?**: `string`
 
-Defined in: [provider.ts:45](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L45)
+Defined in: [provider.ts:50](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L50)
 
 Sets `service.instance.id` on the resource (OTel semconv). Lets a fleet of
 same-role processes be told apart in telemetry. Takes precedence over the
@@ -24,7 +24,7 @@ same-role processes be told apart in telemetry. Takes precedence over the
 
 > `optional` **resourceAttributes?**: `Record`\<`string`, `string` \| `number` \| `boolean`\>
 
-Defined in: [provider.ts:51](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L51)
+Defined in: [provider.ts:56](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L56)
 
 Extra resource attributes merged into the resource (e.g. `device.id`,
 `facility`). Applied to traces, metrics, and logs alike. Takes precedence
@@ -36,7 +36,7 @@ over attributes parsed from the `OTEL_RESOURCE_ATTRIBUTES` env var.
 
 > `optional` **serviceName?**: `string`
 
-Defined in: [provider.ts:37](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L37)
+Defined in: [provider.ts:42](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L42)
 
 Override service name (defaults to OTEL_SERVICE_NAME or npm_package_name)
 
@@ -46,7 +46,7 @@ Override service name (defaults to OTEL_SERVICE_NAME or npm_package_name)
 
 > `optional` **serviceVersion?**: `string`
 
-Defined in: [provider.ts:39](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L39)
+Defined in: [provider.ts:44](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L44)
 
 Override service version (defaults to npm_package_version)
 
@@ -56,6 +56,6 @@ Override service version (defaults to npm_package_version)
 
 > `optional` **settings?**: `Partial`\<[`OTLPSettings`](../../interfaces/OTLPSettings.md)\>
 
-Defined in: [provider.ts:53](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L53)
+Defined in: [provider.ts:58](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L58)
 
 Override OTLP exporter settings (defaults to env-based config)

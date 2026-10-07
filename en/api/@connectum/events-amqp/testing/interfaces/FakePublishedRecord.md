@@ -2,7 +2,7 @@
 
 # Interface: FakePublishedRecord
 
-Defined in: [packages/events-amqp/src/testing.ts:68](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L68)
+Defined in: [packages/events-amqp/src/testing.ts:89](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L89)
 
 A recorded successful publish, as the adapter received it from the bus.
 
@@ -12,7 +12,7 @@ A recorded successful publish, as the adapter received it from the bus.
 
 > `readonly` **eventType**: `string`
 
-Defined in: [packages/events-amqp/src/testing.ts:69](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L69)
+Defined in: [packages/events-amqp/src/testing.ts:90](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L90)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [packages/events-amqp/src/testing.ts:69](https://github.com/Connectu
 
 > `readonly` `optional` **options?**: `PublishOptions`
 
-Defined in: [packages/events-amqp/src/testing.ts:71](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L71)
+Defined in: [packages/events-amqp/src/testing.ts:92](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L92)
 
 ***
 
@@ -28,4 +28,4 @@ Defined in: [packages/events-amqp/src/testing.ts:71](https://github.com/Connectu
 
 > `readonly` **payload**: `Uint8Array`
 
-Defined in: [packages/events-amqp/src/testing.ts:70](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L70)
+Defined in: [packages/events-amqp/src/testing.ts:91](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L91)

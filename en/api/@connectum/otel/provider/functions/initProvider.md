@@ -4,7 +4,7 @@
 
 > **initProvider**(`options?`): `void`
 
-Defined in: [provider.ts:379](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L379)
+Defined in: [provider.ts:449](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L449)
 
 Initialize the OpenTelemetry provider with explicit options.
 

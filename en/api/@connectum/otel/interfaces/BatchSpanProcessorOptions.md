@@ -2,7 +2,7 @@
 
 # Interface: BatchSpanProcessorOptions
 
-Defined in: [config.ts:48](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L48)
+Defined in: [config.ts:50](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L50)
 
 Batch span processor options
 
@@ -12,7 +12,7 @@ Batch span processor options
 
 > **exportTimeoutMillis**: `number`
 
-Defined in: [config.ts:52](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L52)
+Defined in: [config.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L54)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [config.ts:52](https://github.com/Connectum-Framework/connectum/blob
 
 > **maxExportBatchSize**: `number`
 
-Defined in: [config.ts:49](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L49)
+Defined in: [config.ts:51](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L51)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [config.ts:49](https://github.com/Connectum-Framework/connectum/blob
 
 > **maxQueueSize**: `number`
 
-Defined in: [config.ts:50](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L50)
+Defined in: [config.ts:52](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L52)
 
 ***
 
@@ -36,4 +36,4 @@ Defined in: [config.ts:50](https://github.com/Connectum-Framework/connectum/blob
 
 > **scheduledDelayMillis**: `number`
 
-Defined in: [config.ts:51](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L51)
+Defined in: [config.ts:53](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L53)

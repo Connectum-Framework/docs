@@ -2,7 +2,7 @@
 
 # Interface: ServerClientOptions
 
-Defined in: [packages/core/src/types.ts:822](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L822)
+Defined in: [packages/core/src/types.ts:827](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L827)
 
 Options for [Server.client](Server.md#client).
 
@@ -12,7 +12,7 @@ Options for [Server.client](Server.md#client).
 
 > `optional` **endpoint?**: `string`
 
-Defined in: [packages/core/src/types.ts:828](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L828)
+Defined in: [packages/core/src/types.ts:833](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L833)
 
 Opaque endpoint hint forwarded to the configured `remoteResolver` when the
 requested service is not mounted locally (polymorphic deployments — one

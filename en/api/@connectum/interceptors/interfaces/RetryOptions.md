@@ -2,7 +2,7 @@
 
 # Interface: RetryOptions
 
-Defined in: [types.ts:106](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L106)
+Defined in: [types.ts:120](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L120)
 
 Retry interceptor options
 
@@ -12,7 +12,7 @@ Retry interceptor options
 
 > `optional` **initialDelay?**: `number`
 
-Defined in: [types.ts:117](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L117)
+Defined in: [types.ts:131](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L131)
 
 Initial delay in milliseconds for exponential backoff
 
@@ -28,7 +28,7 @@ Initial delay in milliseconds for exponential backoff
 
 > `optional` **maxDelay?**: `number`
 
-Defined in: [types.ts:123](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L123)
+Defined in: [types.ts:137](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L137)
 
 Maximum delay in milliseconds for exponential backoff
 
@@ -44,7 +44,7 @@ Maximum delay in milliseconds for exponential backoff
 
 > `optional` **maxRetries?**: `number`
 
-Defined in: [types.ts:111](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L111)
+Defined in: [types.ts:125](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L125)
 
 Maximum number of retries
 
@@ -60,7 +60,7 @@ Maximum number of retries
 
 > `optional` **retryableCodes?**: `Code`[]
 
-Defined in: [types.ts:135](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L135)
+Defined in: [types.ts:149](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L149)
 
 Error codes that trigger a retry
 
@@ -76,7 +76,7 @@ Error codes that trigger a retry
 
 > `optional` **skipStreaming?**: `boolean`
 
-Defined in: [types.ts:129](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L129)
+Defined in: [types.ts:143](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L143)
 
 Skip retry for streaming requests
 

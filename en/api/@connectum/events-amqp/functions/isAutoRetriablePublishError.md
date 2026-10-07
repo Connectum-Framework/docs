@@ -4,9 +4,9 @@
 
 > **isAutoRetriablePublishError**(`err`, `options?`): `boolean`
 
-Defined in: [packages/events-amqp/src/AmqpAdapter.ts:336](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/AmqpAdapter.ts#L336)
+Defined in: [packages/events-amqp/src/AmqpAdapter.ts:391](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/AmqpAdapter.ts#L391)
 
-The publish AUTO-RETRY boundary (#195): which publish failures the opt-in
+The publish AUTO-RETRY boundary: which publish failures the opt-in
 `publishRetry` retries inline.
 
 Deliberately NARROWER than the at-least-once REPUBLISH matrix in the error

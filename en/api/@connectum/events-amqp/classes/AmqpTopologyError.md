@@ -2,7 +2,7 @@
 
 # Class: AmqpTopologyError
 
-Defined in: [packages/events-amqp/src/errors.ts:96](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L96)
+Defined in: [packages/events-amqp/src/errors.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L97)
 
 Topology declaration or verification failed: missing exchange/queue in
 `check`/`skip` mode, or a conflicting redeclare (PRECONDITION_FAILED) in
@@ -24,7 +24,7 @@ failure classification (WHY it failed) stays with the error class and
 
 > **new AmqpTopologyError**(`message`, `options?`): `AmqpTopologyError`
 
-Defined in: [packages/events-amqp/src/errors.ts:102](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L102)
+Defined in: [packages/events-amqp/src/errors.ts:103](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L103)
 
 #### Parameters
 
@@ -92,7 +92,7 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 
 > `readonly` `optional` **object?**: [`AmqpTopologyObject`](../type-aliases/AmqpTopologyObject.md)
 
-Defined in: [packages/events-amqp/src/errors.ts:100](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L100)
+Defined in: [packages/events-amqp/src/errors.ts:101](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L101)
 
 ***
 

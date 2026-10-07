@@ -2,7 +2,7 @@
 
 # Interface: OtelProvider
 
-Defined in: [provider.ts:136](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L136)
+Defined in: [provider.ts:141](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L141)
 
 The process-wide OpenTelemetry provider returned by [getProvider](../functions/getProvider.md).
 
@@ -21,7 +21,7 @@ the value `getProvider()` returns (to store it or pass it on).
 
 > `readonly` **logger**: [`Logger`](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api-logs.Logger.html)
 
-Defined in: [provider.ts:142](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L142)
+Defined in: [provider.ts:147](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L147)
 
 OpenTelemetry Logs API logger bound to the configured service name and version.
 
@@ -31,7 +31,7 @@ OpenTelemetry Logs API logger bound to the configured service name and version.
 
 > `readonly` **meter**: [`Meter`](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.Meter.html)
 
-Defined in: [provider.ts:140](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L140)
+Defined in: [provider.ts:145](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L145)
 
 Meter bound to the configured service name and version.
 
@@ -41,7 +41,7 @@ Meter bound to the configured service name and version.
 
 > `readonly` **tracer**: [`Tracer`](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_api._opentelemetry_api.Tracer.html)
 
-Defined in: [provider.ts:138](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L138)
+Defined in: [provider.ts:143](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L143)
 
 Tracer bound to the configured service name and version.
 
@@ -51,9 +51,15 @@ Tracer bound to the configured service name and version.
 
 > **shutdown**(): `Promise`\<`void`\>
 
-Defined in: [provider.ts:152](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L152)
+Defined in: [provider.ts:163](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L163)
 
 Gracefully shutdown all OTLP providers
+
+Tracing, metrics and logging are stopped independently: a failing signal
+does not keep the others from stopping. Afterwards the OpenTelemetry API
+global registrations this provider took (and only those) are released.
+One failure is rethrown as it is; several are combined in an
+`AggregateError`.
 
 Does not clear the process-wide instance: [getProvider](../functions/getProvider.md) keeps
 returning this (now shut down) provider. Use [shutdownProvider](../functions/shutdownProvider.md) to

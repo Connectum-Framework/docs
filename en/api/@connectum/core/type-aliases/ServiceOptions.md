@@ -4,7 +4,7 @@
 
 > **ServiceOptions** = `NonNullable`\<`Parameters`\<`ConnectRouter`\[`"service"`\]\>\[`2`\]\>
 
-Defined in: [packages/core/src/defineService.ts:28](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L28)
+Defined in: [packages/core/src/defineService.ts:29](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L29)
 
 Per-service handler options forwarded to ConnectRPC's `router.service()` —
 e.g. per-service `interceptors` (applied to every method of this service) and

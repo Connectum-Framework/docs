@@ -15,7 +15,7 @@ Compromising service A's key forges only A.
 
 **Hard security requirement — issuer-bound key selection (verified
 empirically with `jose`).** The keyset is selected by the token's claimed
-`iss` (`issuers[iss].jwksUri`), and `jose.jwtVerify` is pinned to that same
+`iss` (`issuers[iss].jwksUri`), and `jwtVerify` is pinned to that same
 `issuer`. Each issuer gets its OWN `createRemoteJWKSet` — no `jwtVerify` call
 ever receives a keyset containing more than one issuer's keys. A single shared
 JWKS holding multiple services' keys does NOT contain compromise: `jose`

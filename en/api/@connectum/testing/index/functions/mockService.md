@@ -4,7 +4,7 @@
 
 > **mockService**\<`S`\>(`service`, `impl`): [`MockService`](../interfaces/MockService.md)
 
-Defined in: [testing/src/mockResolver.ts:38](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L38)
+Defined in: [testing/src/mockResolver.ts:37](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L37)
 
 Type-safe constructor for a [MockService](../interfaces/MockService.md). Pairs a service descriptor
 with handlers typed against it.

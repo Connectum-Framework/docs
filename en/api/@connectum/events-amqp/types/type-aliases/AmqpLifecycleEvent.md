@@ -2,14 +2,14 @@
 
 # Type Alias: AmqpLifecycleEvent
 
-> **AmqpLifecycleEvent** = \{ `reconnected`: `boolean`; `type`: `"connected"`; \} \| \{ `error`: `Error`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `delay`: `number`; `error`: `Error`; `type`: `"reconnecting"`; \} \| \{ `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `initial`: `boolean`; `type`: `"setup-failed"`; \} \| \{ `reason`: `string`; `type`: `"blocked"`; \} \| \{ `type`: `"unblocked"`; \} \| \{ `action`: [`AmqpSettlementAction`](AmqpSettlementAction.md); `deliveryTag`: `number`; `error`: `Error`; `queue`: `string`; `routingKey`: `string`; `type`: `"settlement-skipped"`; \} \| \{ `callback`: `string`; `error`: `Error`; `event`: `string`; `type`: `"lifecycle-error"`; \}
+> **AmqpLifecycleEvent** = \{ `reconnected`: `boolean`; `type`: `"connected"`; \} \| \{ `error`: `Error`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `delay`: `number`; `error`: `Error`; `type`: `"reconnecting"`; \} \| \{ `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `initial`: `boolean`; `type`: `"setup-failed"`; \} \| \{ `reason`: `string`; `type`: `"blocked"`; \} \| \{ `type`: `"unblocked"`; \} \| \{ `action`: [`AmqpSettlementAction`](AmqpSettlementAction.md); `deliveryTag`: `number`; `error`: `Error`; `queue`: `string`; `routingKey`: `string`; `type`: `"settlement-skipped"`; \} \| \{ `cause`: [`AmqpConsumerLossCause`](AmqpConsumerLossCause.md); `error?`: `Error`; `queue`: `string`; `type`: `"consumer-lost"`; `willRestore`: `boolean`; \} \| \{ `attempt`: `number`; `queue`: `string`; `type`: `"consumer-restored"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `queue`: `string`; `type`: `"consumer-restore-failed"`; `willRetry`: `boolean`; \} \| \{ `callback`: `string`; `error`: `Error`; `event`: `string`; `type`: `"lifecycle-error"`; \}
 
-Defined in: [packages/events-amqp/src/types.ts:567](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L567)
+Defined in: [packages/events-amqp/src/types.ts:583](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L583)
 
 Discriminated connection lifecycle event, delivered to
 [AmqpLifecycleCallbacks.onLifecycle](../interfaces/AmqpLifecycleCallbacks.md#onlifecycle).
 
-Exactly-once guarantees (pinned by integration tests):
+Lifecycle event behavior (covered by integration tests):
 - `connected` fires once per successful (re)connect; `reconnected` is `false`
   for the initial connect and `true` after a recovery.
 - `disconnected` fires once per connection loss (a socket-level cut no longer
@@ -115,6 +115,99 @@ cross-adapter generalization stays non-breaking.
 ### Type Literal
 
 \{ `action`: [`AmqpSettlementAction`](AmqpSettlementAction.md); `deliveryTag`: `number`; `error`: `Error`; `queue`: `string`; `routingKey`: `string`; `type`: `"settlement-skipped"`; \}
+
+***
+
+### Type Literal
+
+\{ `cause`: [`AmqpConsumerLossCause`](AmqpConsumerLossCause.md); `error?`: `Error`; `queue`: `string`; `type`: `"consumer-lost"`; `willRestore`: `boolean`; \}
+
+#### cause
+
+> `readonly` **cause**: [`AmqpConsumerLossCause`](AmqpConsumerLossCause.md)
+
+#### error?
+
+> `readonly` `optional` **error?**: `Error`
+
+#### queue
+
+> `readonly` **queue**: `string`
+
+#### type
+
+> `readonly` **type**: `"consumer-lost"`
+
+The broker ended a subscription's consumer while the connection
+stayed up: its queue was deleted or the consumer was cancelled
+(`cancelled`), or the broker closed the consumer channel with a
+channel exception (`channel-closed`, with that exception as `error`).
+
+Delivered once per loss. Not delivered for a connection loss (the
+connection's own `disconnected` covers it and connection recovery
+restores the subscription), nor for `unsubscribe()` / `disconnect()`.
+
+#### willRestore
+
+> `readonly` **willRestore**: `boolean`
+
+`true` when `recovery` is enabled and the adapter will try to restore the consumer.
+
+***
+
+### Type Literal
+
+\{ `attempt`: `number`; `queue`: `string`; `type`: `"consumer-restored"`; \}
+
+#### attempt
+
+> `readonly` **attempt**: `number`
+
+1-based number of the restoration attempt that succeeded.
+
+#### queue
+
+> `readonly` **queue**: `string`
+
+#### type
+
+> `readonly` **type**: `"consumer-restored"`
+
+A lost consumer is consuming again. For a subscription without a
+group `queue` is the NEW auto-named queue.
+
+***
+
+### Type Literal
+
+\{ `attempt`: `number`; `error`: `Error`; `queue`: `string`; `type`: `"consumer-restore-failed"`; `willRetry`: `boolean`; \}
+
+#### attempt
+
+> `readonly` **attempt**: `number`
+
+1-based number of the failed attempt.
+
+#### error
+
+> `readonly` **error**: `Error`
+
+#### queue
+
+> `readonly` **queue**: `string`
+
+#### type
+
+> `readonly` **type**: `"consumer-restore-failed"`
+
+A restoration attempt failed. `willRetry: false` means this
+subscription's restoration has ended (a failure that cannot heal
+without a configuration or topology change); other subscriptions
+and the connection are unaffected.
+
+#### willRetry
+
+> `readonly` **willRetry**: `boolean`
 
 ***
 

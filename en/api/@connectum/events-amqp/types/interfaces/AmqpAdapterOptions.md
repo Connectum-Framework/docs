@@ -64,7 +64,7 @@ Exchange type.
 
 > `readonly` `optional` **failFastOnInitialSetupError?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:161](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L161)
+Defined in: [packages/events-amqp/src/types.ts:169](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L169)
 
 Fail fast on a DETERMINISTIC setup/topology error on the FIRST connect,
 instead of entering amqplib's infinite recovery loop.
@@ -107,7 +107,7 @@ false
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/types.ts:287](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L287)
+Defined in: [packages/events-amqp/src/types.ts:295](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L295)
 
 Connection lifecycle callbacks. Connection errors are surfaced here —
 not just logged.
@@ -128,7 +128,7 @@ Publisher options.
 
 > `readonly` `optional` **publishRetry?**: `boolean` \| [`AmqpPublishRetryOptions`](AmqpPublishRetryOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:281](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L281)
+Defined in: [packages/events-amqp/src/types.ts:289](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L289)
 
 Opt-in bounded publish retry for CONNECTION-CLASS outcomes (since 1.3.0).
 
@@ -201,12 +201,17 @@ undefined (disabled — behavior unchanged)
 
 > `readonly` `optional` **publishTimeoutMs?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:297](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L297)
+Defined in: [packages/events-amqp/src/types.ts:310](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L310)
 
 Per-publish broker-outcome deadline in milliseconds. A publish whose
 ack/nack/return/connection-loss outcome does not arrive in time
 rejects with `AmqpPublishTimeoutError` (message state UNKNOWN — an
 at-least-once producer should republish).
+
+A value that is not a finite number of at least `1` (`NaN`,
+`Infinity`, `0`, a negative number) counts as unset and the default
+applies; a fraction is floored; a value above `2147483647` (the largest
+delay a timer honors) is capped to it. There is no "no timeout" value.
 
 #### Default
 
@@ -244,7 +249,7 @@ lets a subscription attach to a queue from an external contract
 
 > `readonly` `optional` **recovery?**: `boolean` \| [`AmqpRecoveryOptions`](AmqpRecoveryOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:127](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L127)
+Defined in: [packages/events-amqp/src/types.ts:135](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L135)
 
 Automatic connection recovery (delegated to amqplib's opt-in
 recovery). Enabled by default; pass `false` to restore
@@ -254,6 +259,14 @@ On every (re)connect the adapter re-creates its channels, re-applies
 topology (per `topologyMode`), and replays active subscriptions.
 In-flight publishes at the moment of a connection loss reject with
 `AmqpConnectionError`.
+
+With recovery enabled the adapter also restores a consumer the broker
+ended while the connection stayed up (queue deleted, consumer cancelled,
+channel closed): `consumer-lost`, then `consumer-restored` or
+`consumer-restore-failed`. Attempts wait the same delay formula (the
+numeric knobs; the defaults when `backoff` is set) and have no limit
+except a failure that cannot heal. With `false` the loss is reported
+with `willRestore: false` and the consumer stays dead.
 
 `maxRetries` governs BOTH the initial connect and steady-state recovery
 (counter reset on success); under the default `Infinity`, `connect()`
@@ -345,7 +358,7 @@ How topology is established:
 
 > `readonly` `optional` **treatTopologyErrorAsFatal?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:217](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L217)
+Defined in: [packages/events-amqp/src/types.ts:225](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L225)
 
 Treat DETERMINISTIC topology drift during steady-state recovery as
 fatal: stop the reconnect cycle instead of retrying forever against a

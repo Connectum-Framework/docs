@@ -303,7 +303,7 @@ Error if server is already running
 
 > **client**\<`T`\>(`service`, `options?`): `Client`\<`T`\>
 
-Defined in: [packages/core/src/types.ts:816](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L816)
+Defined in: [packages/core/src/types.ts:821](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L821)
 
 Unified client factory: auto-routes to the in-process transport if the
 service is registered on this `Server`, otherwise to the transport
@@ -492,7 +492,7 @@ v1.0.0
 
 > **hasService**(`desc`): `boolean`
 
-Defined in: [packages/core/src/types.ts:789](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L789)
+Defined in: [packages/core/src/types.ts:794](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L794)
 
 Synchronous registry lookup: returns whether the given proto service
 descriptor is served locally by this `Server`. Triggers route
@@ -611,7 +611,7 @@ v0.1.26
 
 > **localClient**\<`T`\>(`service`): `Client`\<`T`\>
 
-Defined in: [packages/core/src/types.ts:772](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L772)
+Defined in: [packages/core/src/types.ts:777](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L777)
 
 Create a fully-typed ConnectRPC client that dispatches calls directly
 to handlers registered on this server, without opening any TCP socket.
@@ -619,6 +619,11 @@ to handlers registered on this server, without opening any TCP socket.
 Safe to call before `server.start()` — the routes are materialized
 lazily on first access. Once materialized, `addService` / `addInterceptor`
 / `addProtocol` will throw.
+
+Cancellation: a streaming call is cancelled by the `AbortSignal` passed
+in the call options, by its deadline, or by `server.stop()`; the
+handler's `finally` then runs. Leaving a `for await` loop with `break`
+is not a cancellation.
 
 #### Type Parameters
 

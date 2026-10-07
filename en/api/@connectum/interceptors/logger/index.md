@@ -4,7 +4,8 @@
 
 Logger interceptor
 
-Logs all RPC requests and responses for debugging.
+Logs every RPC call: request, response, failure and duration. Message bodies
+are logged only when `includeBodies` is set.
 
 ## Functions
 

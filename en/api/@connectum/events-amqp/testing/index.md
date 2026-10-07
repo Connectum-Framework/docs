@@ -15,6 +15,9 @@ broker and without importing `amqplib` at runtime:
   INCLUDING the deprecated flat-callback shim — events go through the real
   adapter's dispatch, so ordering, shim payloads, and exception isolation
   match the real adapter by construction;
+- the consumer-loss events (`consumer-lost`, `consumer-restored`): the
+  broker ending a consumer on a live connection is driven by
+  [FakeAmqpControl.loseConsumer](interfaces/FakeAmqpControl.md#loseconsumer) / [FakeAmqpControl.restoreConsumers](interfaces/FakeAmqpControl.md#restoreconsumers);
 - the state machine: `connect()` on a live or recovering adapter throws
   `already connected` like the real one, while an adapter whose recovery
   gave up accepts a fresh `connect()` without its old subscriptions;
@@ -25,13 +28,21 @@ broker and without importing `amqplib` at runtime:
 Deliberately NOT modeled (documented divergences):
 - timing: there is no backoff — recovery advances only via explicit
   [FakeAmqpControl.completeRecovery](interfaces/FakeAmqpControl.md#completerecovery) / [FakeAmqpControl.exhaustRecovery](interfaces/FakeAmqpControl.md#exhaustrecovery)
-  calls, and `reconnecting.delay` is always `0`;
+  calls, and `reconnecting.delay` is always `0`; a lost consumer comes back
+  through [FakeAmqpControl.restoreConsumers](interfaces/FakeAmqpControl.md#restoreconsumers) (always attempt 1,
+  never `consumer-restore-failed`, the queue name never changes) or silently
+  through [FakeAmqpControl.completeRecovery](interfaces/FakeAmqpControl.md#completerecovery), as connection recovery does;
+- consumer loss is queue-wide: [FakeAmqpControl.loseConsumer](interfaces/FakeAmqpControl.md#loseconsumer) takes every
+  live subscription on the queue (a `group` shared by several subscriptions
+  loses all of them), whatever the `cause`; a real `channel-closed` ends one
+  subscription's channel only, a deleted queue ends every consumer on it;
 - a queued topology `failSetup` at `connect()` WITHOUT fail-fast reports
   `setup-failed { initial: true }` and then connects anyway (the real
   adapter would keep retrying inside recovery); a NON-topology queued
   failure at `connect()` is consumed silently and the connect proceeds
   (the real adapter treats it as transient and blocks in recovery);
-- broker-driven settlement: handler `ack`/`nack` calls are RECORDED (see
+- broker-driven settlement: handler `ack`/`nack` calls are RECORDED, at most
+  one per delivery per handler (the first wins, as in the real adapter; see
   the [FakeAmqpControl.deliver](interfaces/FakeAmqpControl.md#deliver) result) but do not drive redelivery —
   re-deliver explicitly with a higher `attempt` to model it. Handler
   rejections are swallowed exactly like the real consumer (which nacks for

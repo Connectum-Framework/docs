@@ -4,7 +4,7 @@
 
 > **FakeAmqpAdapter**(`options?`): [`FakeAmqpAdapterInstance`](../interfaces/FakeAmqpAdapterInstance.md)
 
-Defined in: [packages/events-amqp/src/testing.ts:195](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L195)
+Defined in: [packages/events-amqp/src/testing.ts:247](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L247)
 
 Create a programmable AMQP adapter test double.
 

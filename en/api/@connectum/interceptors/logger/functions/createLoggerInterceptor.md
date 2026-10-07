@@ -4,7 +4,7 @@
 
 > **createLoggerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [logger.ts:116](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/logger.ts#L116)
+Defined in: [logger.ts:212](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/logger.ts#L212)
 
 Create logger interceptor
 
@@ -53,6 +53,13 @@ await server.start();
 createLoggerInterceptor({ includeTransport: true });
 // RPC [in-process] /greeter.v1.GreeterService/SayHello request ...   (server.localClient)
 // RPC [http] /greeter.v1.GreeterService/SayHello request ...         (network client)
+```
+
+**Log request and response bodies (opt-in)**
+
+```typescript
+// Bodies can carry credentials and personal data; enable only where the log is protected.
+createLoggerInterceptor({ includeBodies: true });
 ```
 
 **Client-side usage with transport**
