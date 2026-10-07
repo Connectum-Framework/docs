@@ -1,3 +1,9 @@
+---
+title: "ADR-007: Testing Strategy"
+description: Record the testing goals and original node:test strategy.
+docType: adr
+---
+
 # ADR-007: Testing Strategy
 
 ## Status

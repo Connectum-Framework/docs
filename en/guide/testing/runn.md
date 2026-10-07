@@ -47,6 +47,10 @@ docker pull ghcr.io/k1low/runn:latest
 
 Connectum services expose gRPC endpoints. Server reflection can be enabled via `Reflection()` protocol. runn can discover services automatically without proto files.
 
+For the plaintext gRPC runbooks, use `allowHTTP1: false` and `Reflection()`.
+For HTTP/1.1 runbooks, restart with `allowHTTP1: true`. One plaintext listener
+does not serve both protocols; see [Transport Matrix](/en/guide/production/transport-matrix).
+
 Create `tests/grpc-greeter.yml`:
 
 ```yaml
@@ -67,8 +71,10 @@ steps:
 
 Run it:
 
+`--grpc-no-tls` selects plaintext h2c; the tool otherwise attempts TLS.
+
 ```bash
-runn run tests/grpc-greeter.yml
+runn run --grpc-no-tls tests/grpc-greeter.yml
 ```
 
 ::: tip Server Reflection
@@ -122,7 +128,7 @@ steps:
     req:
       /greeter.v1.GreeterService/SayHello:
         post:
-          header:
+          headers:
             Content-Type: application/json
           body:
             application/json:
@@ -138,11 +144,16 @@ Connectum exposes both gRPC and HTTP health check endpoints.
 
 Create `tests/health.yml`:
 
+This combined runbook assumes two running listeners: h2c on port 5000 for gRPC,
+HTTP/1.1 on port 5001 for HTTP. Register `Healthcheck({ httpEnabled: true })` on
+each and mark the application services `SERVING`; include reflection on the gRPC
+listener. With only one listener, run the matching health step separately.
+
 ```yaml
 desc: Health check endpoints
 runners:
   greq: grpc://localhost:5000
-  req: http://localhost:5000
+  req: http://localhost:5001
 steps:
   grpc_health:
     desc: gRPC Health Check
@@ -158,9 +169,12 @@ steps:
     req:
       /healthz:
         get:
-          header:
+          headers:
             Accept: application/json
-    test: current.res.status == 200
+    test: |
+      current.res.status == 200 &&
+      current.res.body.status == 'SERVING' &&
+      current.res.body.service == 'overall'
 ```
 
 ## Validation Testing
@@ -273,12 +287,23 @@ runners:
 
 ### GitHub Actions
 
+This excerpt assumes your checkout has a committed npm lockfile, the scripts
+from the Quickstart, and a server configured for h2c with HTTP health enabled.
+Run HTTP/1.1 runbooks in a separate job with the matching server configuration.
+
 ```yaml
 jobs:
   api-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+
+      - run: npm ci
+      - run: npm run build:proto
 
       - name: Install runn
         run: |
@@ -290,15 +315,23 @@ jobs:
       - name: Wait for service
         run: |
           for i in $(seq 1 30); do
-            curl -sf http://localhost:5000/healthz && break
+            if curl -fsS --http2-prior-knowledge http://localhost:5000/healthz; then
+              exit 0
+            fi
             sleep 1
           done
+          exit 1
 
       - name: Run API tests
-        run: runn run tests/**/*.yml
+        run: runn run --grpc-no-tls tests/grpc-greeter.yml
 ```
 
 ### Docker Compose
+
+Define an application `healthcheck` in the Dockerfile or Compose file before
+using `condition: service_healthy`. Runbooks execute inside the `api-tests`
+container: use `grpc://app:5000` or `http://app:5000` for the matching transport,
+rather than `localhost`.
 
 ```yaml
 services:
@@ -321,10 +354,10 @@ services:
 
 ```bash
 # Run all test scenarios
-runn run tests/**/*.yml
+runn run --grpc-no-tls tests/**/*.yml
 
 # Run with verbose output
-runn run --verbose tests/grpc-greeter.yml
+runn run --grpc-no-tls --verbose tests/grpc-greeter.yml
 
 # List available scenarios
 runn list tests/**/*.yml

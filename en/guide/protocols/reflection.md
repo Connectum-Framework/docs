@@ -49,10 +49,10 @@ Peer dependencies: `@connectum/core`, `@bufbuild/protobuf` `^2.16.0` and
 ```typescript
 import { createServer } from '@connectum/core';
 import { Reflection } from '@connectum/reflection';
-import routes from '#gen/routes.js';
+import { greeterService } from './services/greeterService.ts';
 
 const server = createServer({
-  services: [routes],
+  services: [greeterService],
   port: 5000,
   // grpcurl and buf curl use HTTP/2; plaintext HTTP/1.1 is the default.
   allowHTTP1: false,
@@ -267,6 +267,7 @@ import { orderServiceRoutes } from './services/orderService.ts';
 const server = createServer({
   services: [greeterServiceRoutes, orderServiceRoutes],
   port: 5000,
+  allowHTTP1: false,
   protocols: [
     Healthcheck({ httpEnabled: true }),
     Reflection(),

@@ -109,7 +109,7 @@ const response = await ctx.call(method, request, options?);
 
 `method` is a `"${typeName}/${Method}"` key. **Note the casing:** the key uses the proto method name (PascalCase, e.g. `.../SayHello`), which is distinct from the camelCase handler name (`sayHello`). `request` is the request message; build it with `create(Schema, { ... })`. The return is a `Promise<response>`.
 
-The transport is chosen automatically: an in-process call when the target is mounted locally (proven by the in-process dispatch — no TCP socket is opened), otherwise the transport supplied by the configured `remoteResolver`. Resolved remote transports are cached per `(typeName, endpoint)` so the resolver runs at most once per route.
+The transport is chosen automatically: an in-process call when the target is mounted locally (no TCP socket is opened), otherwise the transport supplied by the configured `remoteResolver`. Successful remote resolutions are cached per `(typeName, endpoint)`; a `null` result or thrown error is retried at the next call.
 
 ```typescript
 async secureEcho(req, ctx) {
@@ -231,7 +231,7 @@ Both `server.localClient` and `server.client` require a `Server` instance. For a
 ```typescript
 import { createCatalogClient, mapResolver } from '@connectum/core';
 import { createGrpcTransport } from '@connectrpc/connect-node';
-import { serviceCatalog } from './gen/catalog.js';
+import { serviceCatalog } from './gen/catalog.gen.js';
 
 const client = createCatalogClient({
   catalog: serviceCatalog,

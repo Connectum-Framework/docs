@@ -7,11 +7,11 @@ outline: deep
 
 # Authorization
 
-The `createAuthzInterceptor` enforces access control after authentication. It supports declarative rules, proto-based options, and a programmatic fallback callback.
+`createAuthzInterceptor` enforces access control after authentication using code-based rules and an optional fallback callback. Use `createProtoAuthzInterceptor` when policy is declared in proto options.
 
 ## Declarative Rules
 
-Define rules as an ordered list. The first matching rule wins:
+Define rules as an ordered list. The first rule whose method pattern and requirements both match wins. A rule whose role or scope requirements fail is skipped; it does not deny the request by itself.
 
 ```typescript
 import { createAuthzInterceptor } from '@connectum/auth';
@@ -19,9 +19,8 @@ import { createAuthzInterceptor } from '@connectum/auth';
 const authz = createAuthzInterceptor({
   defaultPolicy: 'deny',
   rules: [
-    { name: 'public', methods: ['public.v1.PublicService/*'], effect: 'allow' },
     { name: 'admin-only', methods: ['admin.v1.AdminService/*'], requires: { roles: ['admin'] }, effect: 'allow' },
-    { name: 'write-scope', methods: ['data.v1.DataService/Write*'], requires: { scopes: ['write'] }, effect: 'allow' },
+    { name: 'write-scope', methods: ['data.v1.DataService/Write'], requires: { scopes: ['write'] }, effect: 'allow' },
   ],
 });
 ```
@@ -31,7 +30,7 @@ const authz = createAuthzInterceptor({
 | Field | Type | Description |
 |-------|------|-------------|
 | `name` | `string` | Rule name for logging and debugging |
-| `methods` | `string[]` | Method patterns (same syntax as `createMethodFilterInterceptor`) |
+| `methods` | `readonly string[]` | Exact method, `Service/*`, or `*` |
 | `requires` | `{ roles?, scopes? }` | Required roles and/or scopes |
 | `effect` | `'allow' \| 'deny'` | What to do when the rule matches |
 
@@ -39,15 +38,18 @@ const authz = createAuthzInterceptor({
 
 - **Roles** use **any-of** semantics -- the user needs at least one of the listed roles.
 - **Scopes** use **all-of** semantics -- the user needs all listed scopes.
-- Rules without `requires` match all authenticated users (or all requests, if the method is public).
+- Rules without `requires` match all authenticated users for the named methods.
+- This interceptor requires an `AuthContext` before evaluating any rule. A rule named `public` does not bypass authentication. Put intentionally public methods in both authentication and authorization `skipMethods` lists.
 
 ### Method Patterns
 
 | Pattern | Description |
 |---------|-------------|
 | `'public.v1.PublicService/*'` | All methods of the service |
-| `'data.v1.DataService/Write*'` | Methods starting with `Write` |
+| `'*'` | All services and methods |
 | `'admin.v1.AdminService/DeleteUser'` | Exact method match |
+
+Partial wildcards such as `Write*` or `admin.v1.*/*` are not supported by auth interceptors. List exact methods or use a complete `Service/*` pattern.
 
 ## Programmatic Callback
 
@@ -56,12 +58,12 @@ For complex logic that can not be expressed as rules, add an `authorize` callbac
 ```typescript
 const authz = createAuthzInterceptor({
   defaultPolicy: 'deny',
-  rules: [...],
+  rules: [],
   authorize: (context, req) => context.roles.includes('superadmin'),
 });
 ```
 
-If `authorize` returns `true`, the request is allowed. If it returns `false`, the `defaultPolicy` applies.
+If `authorize` returns `true`, the request is allowed. If it returns `false`, the request fails with `Code.PermissionDenied`, including when `defaultPolicy` is `allow`. The default policy applies only when no rule matches and no callback is configured.
 
 ## Proto-Based Authorization
 
@@ -107,17 +109,20 @@ import { createServer } from '@connectum/core';
 import { createDefaultInterceptors, createErrorHandlerInterceptor } from '@connectum/interceptors';
 import { createJwtAuthInterceptor, createAuthzInterceptor } from '@connectum/auth';
 
+const publicMethods = ['public.v1.PublicService/*'];
+
 const jwtAuth = createJwtAuthInterceptor({
   jwksUri: 'https://auth.example.com/.well-known/jwks.json',
   issuer: 'https://auth.example.com/',
+  skipMethods: publicMethods,
 });
 
 const authz = createAuthzInterceptor({
   defaultPolicy: 'deny',
+  skipMethods: publicMethods,
   rules: [
-    { name: 'public', methods: ['public.v1.PublicService/*'], effect: 'allow' },
     { name: 'admin-only', methods: ['admin.v1.AdminService/*'], requires: { roles: ['admin'] }, effect: 'allow' },
-    { name: 'write-scope', methods: ['data.v1.DataService/Write*'], requires: { scopes: ['write'] }, effect: 'allow' },
+    { name: 'write-scope', methods: ['data.v1.DataService/Write'], requires: { scopes: ['write'] }, effect: 'allow' },
   ],
   authorize: (context, req) => {
     // Fallback: superadmins can do anything
@@ -138,6 +143,18 @@ const server = createServer({
 
 await server.start();
 ```
+
+## Verify
+
+Call the admin method with an `admin` role and without it, then repeat without
+credentials. For the example above, the admin succeeds, a caller with neither
+`admin` nor the fallback `superadmin` role receives `Code.PermissionDenied`,
+and the unauthenticated caller receives `Code.Unauthenticated`. Call a public
+method without credentials to check that both skip lists agree.
+
+If an allow rule is never reached, check the exact service/method names and its
+requirements. If a later fallback unexpectedly grants access, remember that
+failing a rule's requirements skips that rule rather than denying immediately.
 
 ## Related
 

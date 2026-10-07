@@ -19,9 +19,13 @@ Configure OpenTelemetry exporters, provider management, and integration with obs
 
 | Variable | Description |
 |----------|-------------|
-| `OTEL_SERVICE_NAME` | Service name (required) |
-| `OTEL_SERVICE_VERSION` | Service version |
-| `OTEL_SERVICE_NAMESPACE` | Service namespace (e.g., `production`) |
+| `OTEL_SERVICE_NAME` | Optional service name; falls back to `npm_package_name`, then `unknown-service` |
+| `OTEL_RESOURCE_ATTRIBUTES` | Comma-separated resource attributes, including `service.version` and `service.namespace` |
+
+Connectum reads `OTEL_SERVICE_NAME`, but does not read dedicated
+`OTEL_SERVICE_VERSION` or `OTEL_SERVICE_NAMESPACE` variables. The version
+defaults to `npm_package_version`, then `0.0.0`. Set additional resource
+attributes with `OTEL_RESOURCE_ATTRIBUTES` or `ProviderOptions.resourceAttributes`.
 
 ### Exporters
 
@@ -73,7 +77,7 @@ no validated spans-per-second capacity threshold.
 
 | Variable | Description |
 |----------|-------------|
-| `OTEL_NODE_DISABLED_INSTRUMENTATIONS` | Comma-separated list of disabled auto-instrumentations |
+| `OTEL_NODE_DISABLED_INSTRUMENTATIONS` | Read by separately configured Node.js auto-instrumentation packages, not by `@connectum/otel` |
 
 ## Provider Management
 
@@ -171,8 +175,7 @@ Export to an OTLP-compatible collector (Jaeger, Grafana Tempo, Datadog):
 
 ```bash
 OTEL_SERVICE_NAME=greeter-service
-OTEL_SERVICE_VERSION=1.0.0
-OTEL_SERVICE_NAMESPACE=production
+OTEL_RESOURCE_ATTRIBUTES=service.version=1.0.0,service.namespace=production
 
 OTEL_TRACES_EXPORTER=otlp
 OTEL_METRICS_EXPORTER=otlp
@@ -181,10 +184,8 @@ OTEL_LOGS_EXPORTER=otlp
 OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
 OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
 
-OTEL_BSP_SCHEDULE_DELAY=5000
-OTEL_BSP_MAX_QUEUE_SIZE=2048
-
-OTEL_NODE_DISABLED_INSTRUMENTATIONS=fs,dns
+OTEL_BSP_SCHEDULE_DELAY=1000
+OTEL_BSP_MAX_QUEUE_SIZE=1000
 ```
 
 ## Integration with Backends
@@ -212,11 +213,17 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
 OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://tempo:4318/v1/traces
 
 # Metrics -> Prometheus (via OTLP)
-OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://prometheus:4318/v1/metrics
+OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://prometheus:9090/api/v1/otlp/v1/metrics
 
 # Logs -> Loki (via OTLP)
-OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://loki:4318/v1/logs
+OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://loki:3100/otlp/v1/logs
 ```
+
+Prometheus accepts OTLP metrics only when its OTLP receiver is enabled with
+`--web.enable-otlp-receiver`; it does not receive traces or logs. The endpoint
+above follows its documented receiver path. Loki's OTLP HTTP endpoint is
+`/otlp`; the exporter appends `/v1/logs`. Configure Loki structured metadata
+before sending OpenTelemetry logs.
 
 ## Related
 

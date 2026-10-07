@@ -19,6 +19,11 @@ This guide walks you through setting up event-driven communication between Conne
 - Proto tooling configured (`buf` for protobuf generation)
 - A message broker (or use `MemoryAdapter` for local development)
 
+The snippets use TypeScript source directly, with `import_extension=.ts` in
+`buf.gen.yaml` and a `#gen/*` import alias for generated files, as in the
+[Quickstart](/en/guide/quickstart). If your project compiles before execution,
+follow its configured import extension instead.
+
 ## Step 1: Install Packages
 
 Install `@connectum/events` plus the adapter for your broker:
@@ -79,11 +84,22 @@ service NotificationEventHandlers {
 }
 ```
 
-Generate the TypeScript code:
+Generate the TypeScript code using your project's protobuf generation script:
 
+::: pm
+== npm
+```bash
+npm run build:proto
+```
+== pnpm
 ```bash
 pnpm run build:proto
 ```
+== bun
+```bash
+bun run build:proto
+```
+:::
 
 ## Step 3: Create an Adapter
 
@@ -141,7 +157,7 @@ Define typed event handlers using the `EventRoute` pattern. This mirrors Connect
 ```typescript
 // src/events/notificationEvents.ts
 import type { EventRoute } from '@connectum/events';
-import { NotificationEventHandlers } from '#gen/notifications/v1/events_pb.js';
+import { NotificationEventHandlers } from '#gen/notifications/v1/events_pb.ts';
 
 export const notificationEvents: EventRoute = (events) => {
   events.service(NotificationEventHandlers, {
@@ -172,7 +188,7 @@ Wire everything together with `createEventBus()`:
 // src/eventBus.ts
 import { createEventBus } from '@connectum/events';
 import { NatsAdapter } from '@connectum/events-nats';
-import { notificationEvents } from './events/notificationEvents.js';
+import { notificationEvents } from './events/notificationEvents.ts';
 
 const adapter = NatsAdapter({
   servers: process.env.NATS_URL ?? 'nats://localhost:4222',
@@ -205,8 +221,8 @@ Pass the EventBus to `createServer()` for automatic lifecycle management:
 // src/index.ts
 import { createServer } from '@connectum/core';
 import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
-import { eventBus } from './eventBus.js';
-import { routes } from './services/routes.js';
+import { eventBus } from './eventBus.ts';
+import { routes } from './services/routes.ts';
 
 const server = createServer({
   services: [routes],
@@ -231,12 +247,14 @@ From another service (e.g., User Service), publish typed events:
 
 ```typescript
 import { createEventBus } from '@connectum/events';
-import { KafkaAdapter } from '@connectum/events-kafka';
-import { UserCreatedSchema } from '#gen/notifications/v1/events_pb.js';
+import { NatsAdapter } from '@connectum/events-nats';
+import { UserCreatedSchema } from '#gen/notifications/v1/events_pb.ts';
 
 const eventBus = createEventBus({
-  adapter: KafkaAdapter({ brokers: ['localhost:9092'], clientId: 'user-service' }),
-  group: 'user-service',
+  adapter: NatsAdapter({
+    servers: process.env.NATS_URL ?? 'nats://localhost:4222',
+    stream: 'notifications',
+  }),
 });
 
 await eventBus.start();
@@ -247,9 +265,31 @@ await eventBus.publish(UserCreatedSchema, {
   email: 'alice@example.com',
   name: 'Alice',
 });
+
+await eventBus.stop();
 ```
 
-The topic defaults to the message's `typeName` (e.g., `notifications.v1.UserCreated`). See [Custom Topics](/en/guide/events/custom-topics) to override this.
+The publisher and subscriber must use the same broker and stream. This publisher
+matches the NATS bus in Step 5; if you chose another adapter, configure both sides
+for that broker. The topic defaults to the message's `typeName` (e.g.,
+`notifications.v1.UserCreated`). See [Custom Topics](/en/guide/events/custom-topics)
+to override this.
+
+## Verify the result
+
+Start the notification service before running the publisher. Its handler should
+print `Sending welcome email to alice@example.com`. A resolved `publish()` alone
+confirms the adapter's publish operation; verify the consumer output as well.
+
+## Troubleshooting
+
+- **No consumer output:** check that both processes use the same broker URL,
+  adapter settings, and topic. With the NATS default `deliverPolicy: 'new'`,
+  start the subscriber before publishing to a new consumer.
+- **The broker is unavailable:** `eventBus.start()` fails or waits according to
+  the selected adapter's connection policy; see [Adapter selection](/en/guide/events/adapters).
+- **Protobuf generation or imports fail:** use the generation command and import
+  extension configured by your project's `buf.gen.yaml`.
 
 ## Full Working Example
 
@@ -261,7 +301,7 @@ import type { EventRoute } from '@connectum/events';
 import {
   NotificationEventHandlers,
   UserCreatedSchema,
-} from '#gen/notifications/v1/events_pb.js';
+} from '#gen/notifications/v1/events_pb.ts';
 
 // Shared in-memory adapter (for testing only)
 const adapter = MemoryAdapter();

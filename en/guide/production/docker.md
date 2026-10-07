@@ -30,14 +30,14 @@ Key highlights:
 == node
 - **Stage 1 (deps)** -- `pnpm install --frozen-lockfile --prod` for reproducible, minimal dependencies
 - **Stage 2 (runtime)** -- non-root `node` user, `curl`-based HEALTHCHECK against `/healthz`, native TypeScript via `node src/index.ts`
-- Environment defaults: `NODE_ENV=production`, `PORT=5000`, `LOG_FORMAT=json`, health and graceful shutdown enabled
+- The image sets `NODE_ENV=production`; the application defaults to port 5000 and explicitly configures health and automatic shutdown.
 == bun
 - **Stage 1 (deps)** -- `bun install --frozen-lockfile` for reproducible dependencies
 - **Stage 2 (runtime)** -- `oven/bun:1-slim`, `curl`-based HEALTHCHECK against `/healthz`, TypeScript executed directly via `bun run src/index.ts`
-- Environment defaults: `NODE_ENV=production`, `PORT=5000`, `LOG_FORMAT=json`, health and graceful shutdown enabled
+- Set `NODE_ENV=production` in the image; configure the application's port, health and shutdown explicitly.
 
-The reference `Dockerfile` in the examples repository targets Node.js; the Bun variant
-above mirrors it stage for stage.
+The reference `Dockerfile` targets Node.js. The Bun bullets describe a layout to
+adapt; they are not a second executable Dockerfile shipped by the example.
 :::
 
 :::: runtime node
@@ -104,8 +104,9 @@ exits with `request to https://registry.npmjs.org/tsx failed`. Moving tsx to
 `connectum init --node-exec tsx` puts tsx in `devDependencies`, which is right for a
 project that runs from source but wrong for a `--prod` image -- move it before
 containerising, or pin the run command to the resolved binary
-(`CMD ["./node_modules/.bin/tsx", "src/index.ts"]`) so a missing dependency fails loudly
-at build time instead of at start-up.
+(`CMD ["./node_modules/.bin/tsx", "src/index.ts"]`) to avoid downloads at startup.
+The direct command still fails at startup if the binary is missing; add
+`RUN test -x ./node_modules/.bin/tsx` in the runtime stage to check it during build.
 :::
 == bun
 ```dockerfile
@@ -113,7 +114,8 @@ FROM oven/bun:1-slim AS runtime
 CMD ["bun", "run", "src/index.ts"]
 ```
 
-Code generation runs the same way inside the image -- `RUN bunx buf generate`. Since
+Run code generation in the build stage after installing the project's development
+tools -- `RUN bunx buf generate`. Copy its output to the runtime stage. Since
 `@connectum/*` packages ship compiled JavaScript, no loader or register hook is needed.
 :::
 
@@ -132,7 +134,10 @@ If you need an Alpine image and your native dependencies support its libc, use `
 
 ## .dockerignore
 
-Keep images clean by excluding dependencies, tests, IDE files, dev configs, and proto sources. A minimal `.dockerignore` excludes `node_modules`, `**/*.test.ts`, `.git`, and editor/CI files so they never enter the build context.
+Exclude local dependencies, tests, IDE files, and Git metadata. Keep proto sources
+in the build context if a build stage generates code; copy the generated output
+into the runtime stage. A minimal `.dockerignore` excludes `node_modules`,
+`**/*.test.ts`, `.git`, and editor/CI files.
 
 ## Docker Compose for Local Development
 
@@ -159,7 +164,9 @@ A minimal collector config declares an OTLP receiver, a `batch` processor, and e
 
 ### 1. Layer Caching
 
-Always copy `package.json` and `pnpm-lock.yaml` before source code. Docker caches the `pnpm install` layer and only re-runs it when dependencies change.
+Copy package-management inputs before source code: `package.json`, `pnpm-lock.yaml`,
+and any required `pnpm-workspace.yaml`. Docker can reuse the install layer while
+its instructions and inputs remain unchanged; see [Docker cache optimization](https://docs.docker.com/build/cache/optimize/).
 
 ### 2. Production Dependencies Only
 

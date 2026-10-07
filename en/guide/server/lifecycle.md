@@ -16,6 +16,7 @@ stateDiagram-v2
     [*] --> created
     created --> starting: server.start() / start
     starting --> running: ready
+    starting --> stopped: startup failure
     running --> stopping: server.stop() or signal / stopping
     stopping --> stopped: stop
     stopped --> [*]
@@ -27,7 +28,7 @@ stateDiagram-v2
 | **starting** | `server.start()` called -- the server binds the port and initializes protocols. |
 | **running** | The server is accepting requests. |
 | **stopping** | `server.stop()` called (or a signal received with `autoShutdown`). Connections are being drained. |
-| **stopped** | All connections closed, shutdown hooks executed, resources released. |
+| **stopped** | Startup failed or shutdown finished. With `forceCloseOnTimeout: false`, existing connections may remain open; a failed hook may leave application cleanup incomplete. |
 
 The transitions are one-directional. A stopped server cannot be restarted -- create a new one instead.
 
@@ -157,15 +158,18 @@ For the shutdown order and available drain time, see
 
 ## Complete Example
 
+Use the service definition from [Quickstart](/en/guide/quickstart#4-service-handler)
+and the `startBackgroundWorker()` implementation above.
+
 ```typescript
 import { createServer } from '@connectum/core';
 import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
 import { Reflection } from '@connectum/reflection';
 import { createDefaultInterceptors } from '@connectum/interceptors';
-import routes from '#gen/routes.js';
+import { greeterService } from './services/greeterService.ts';
 
 const server = createServer({
-  services: [routes],
+  services: [greeterService],
   port: 5000,
   protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
   interceptors: createDefaultInterceptors(),

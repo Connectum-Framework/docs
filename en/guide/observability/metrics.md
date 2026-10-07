@@ -71,14 +71,19 @@ meter.createObservableGauge('memory.heap_used', {
 The OTel interceptors automatically record standard RPC metrics.
 
 **Server metrics** (via `createOtelInterceptor`):
-- `rpc.server.duration` -- request duration histogram
+- `rpc.server.call.duration` -- request duration histogram in seconds
 - `rpc.server.request.size` -- request message size
 - `rpc.server.response.size` -- response message size
 
 **Client metrics** (via `createOtelClientInterceptor`):
-- `rpc.client.duration` -- request duration histogram
+- `rpc.client.call.duration` -- request duration histogram in seconds
 - `rpc.client.request.size` -- request message size
 - `rpc.client.response.size` -- response message size
+
+Request and response size histograms contain estimates for unary RPC messages.
+For streaming RPCs, those aggregate size measurements are recorded as zero;
+setting `recordMessages: true` adds per-message `rpc.message` span events with
+an estimated serialized size. Message events are disabled by default.
 
 ## Related
 

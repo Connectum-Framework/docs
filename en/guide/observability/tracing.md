@@ -76,6 +76,11 @@ const findUser = traced(async (id: string) => {
 const user = await findUser('123');
 ```
 
+`recordArgs: true` serializes argument values into the `function.args` span
+attribute. Arguments can contain credentials or personal data; leave recording
+disabled unless the values are safe to export, or use `argsFilter` to redact
+them. An array passed to `recordArgs` selects zero-based argument positions.
+
 ## Deep Tracing with `traceAll()`
 
 Wrap all methods of an object via Proxy:
@@ -108,6 +113,10 @@ const repository = traceAll(new OrderRepository(), {
 // "OrderRepository.findById", "OrderRepository.create", etc.
 await repository.findById('order-123');
 ```
+
+The same data rule applies to `traceAll`: `recordArgs: true` captures argument
+values, and an array selects zero-based positions. Prefer `argsFilter` when
+values need redaction before they become span attributes.
 
 ::: tip Performance
 `traceAll()` uses ES6 Proxy and creates method wrappers lazily on first access. It prevents double-wrapping automatically.
@@ -151,8 +160,10 @@ const transport = createConnectTransport({
 
 const userClient = createClient(UserService, transport);
 
-// Trace context flows automatically:
-// Service A (server span) -> Service A (client span) -> Service B (server span)
+// By default the receiver does not trust the remote parent: its server span
+// starts a new trace and links to the extracted remote span context. Set
+// trustRemote: true only when remote parentage is trusted and a single
+// parent-child trace across the boundary is intended.
 ```
 
 ## Related

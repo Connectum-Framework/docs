@@ -1,3 +1,9 @@
+---
+title: "ADR-008: Performance Benchmarking"
+description: Record benchmark goals, proposed scenarios, and the original k6 choice.
+docType: adr
+---
+
 # ADR-008: Performance Benchmarking
 
 ## Status

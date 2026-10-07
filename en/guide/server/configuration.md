@@ -7,7 +7,11 @@ outline: deep
 
 # Environment Configuration
 
-Connectum provides type-safe environment configuration using [Zod](https://zod.dev/) schemas, following the [12-Factor App](https://12factor.net/config) methodology. All configuration is read from environment variables with sensible defaults.
+Connectum provides environment validation using [Zod](https://zod.dev/) schemas.
+`parseEnvConfig()` returns configuration values; wire them explicitly into the
+server and modules. `PORT` and `LISTEN` are also read directly when the corresponding
+server options are omitted. The remaining schema fields do not configure modules
+merely by being present in the environment.
 
 ## ConnectumEnvSchema
 
@@ -80,7 +84,7 @@ try {
   const config = parseEnvConfig();
   console.log(`Starting on port ${config.PORT}`);
 } catch (err) {
-  console.error('Invalid configuration:', err.message);
+  console.error('Invalid configuration:', err instanceof Error ? err.message : err);
   process.exit(1);
 }
 ```
@@ -117,22 +121,26 @@ const config = parseEnvConfig({
 
 ## Using Config with createServer()
 
-The env schema defines defaults that align with `CreateServerOptions`. You can wire them together:
+Wire the parsed values explicitly. The schema enables graceful shutdown by
+default, while `createServer()` leaves `autoShutdown` disabled unless you set it:
 
 ```typescript
 import { createServer, parseEnvConfig } from '@connectum/core';
 import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
 import { Reflection } from '@connectum/reflection';
-import routes from '#gen/routes.js';
+import { greeterService } from './services/greeterService.ts';
 
 const env = parseEnvConfig();
 
 const server = createServer({
-  services: [routes],
+  services: [greeterService],
   port: env.PORT,
   host: env.LISTEN,
   protocols: [
-    Healthcheck({ httpEnabled: env.HTTP_HEALTH_ENABLED }),
+    Healthcheck({
+      httpEnabled: env.HTTP_HEALTH_ENABLED,
+      httpPaths: [env.HTTP_HEALTH_PATH, '/health', '/readyz'],
+    }),
     Reflection(),
   ],
   shutdown: {
@@ -153,10 +161,10 @@ await server.start();
 TLS is configured via the `tls` option in `createServer()`. Certificates can be loaded from explicit paths or a directory:
 
 ```typescript
-import { createServer, readTLSCertificates } from '@connectum/core';
+import { createServer } from '@connectum/core';
 
 // Option A: Explicit paths
-const server = createServer({
+const serverWithPaths = createServer({
   services: [routes],
   tls: {
     keyPath: '/etc/ssl/server.key',
@@ -165,7 +173,7 @@ const server = createServer({
 });
 
 // Option B: Directory (looks for server.key and server.crt)
-const server = createServer({
+const serverWithDirectory = createServer({
   services: [routes],
   tls: {
     dirPath: '/etc/ssl/certs',
@@ -204,6 +212,11 @@ const config: AppEnv = AppEnvSchema.parse(process.env);
 
 ## Configuration by Environment
 
+These files show values to supply through your process environment. Load a local
+file explicitly (for example `node --env-file=.env src/index.ts`); `parseEnvConfig()`
+does not read `.env` files. Logging and OpenTelemetry still need their module
+configuration; see [Observability](/en/guide/observability).
+
 ### Development `.env`
 
 ```bash
@@ -236,15 +249,9 @@ TLS_DIR_PATH=/etc/ssl/connectum
 
 ### Dockerfile
 
-```dockerfile
-FROM node:25-slim
-WORKDIR /app
-COPY . .
-RUN corepack enable && pnpm install --frozen-lockfile
-ENV NODE_ENV=production
-EXPOSE 5000
-CMD ["node", "--experimental-strip-types", "src/index.ts"]
-```
+Use the [Docker guide](/en/guide/production/docker) for dependency installation,
+generated contracts, and runtime image selection. Supply the environment values
+above when starting the container.
 
 ### Kubernetes Pod Spec (excerpt)
 
@@ -267,7 +274,9 @@ containers:
 ```
 
 ::: tip
-Set `GRACEFUL_SHUTDOWN_TIMEOUT_MS` to a value lower than the Kubernetes `terminationGracePeriodSeconds` (default 30s) to ensure the application shuts down before the pod is force-killed.
+Budget `terminationGracePeriodSeconds` for the pre-stop delay, connection drain,
+bounded shutdown hooks, and a margin. A lower connection-drain timeout alone
+does not ensure cleanup finishes; see [Graceful shutdown](/en/guide/server/graceful-shutdown#kubernetes-integration).
 :::
 
 ## Related

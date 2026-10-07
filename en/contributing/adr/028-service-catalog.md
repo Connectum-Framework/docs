@@ -1,3 +1,9 @@
+---
+title: "ADR-028: Service Catalog"
+description: Record typed cross-service calls, service registration, and resolver design.
+docType: adr
+---
+
 # ADR-028: Service Catalog
 
 ## Status
@@ -14,7 +20,7 @@ A prior `in-process-transport` change had already delivered the transport primit
 - **meshai** -- 5+ "skill" services behind k8s + a service mesh, where one proto descriptor is reused for N different endpoints. ~60 lines of copy-pasted boilerplate (a gateway-auth interceptor, an env-driven endpoint registry, a hand-rolled `Map<key, Transport>` cache, a custom resolver function) repeated across 3 files.
 - **AnyLabel** -- 8 services over docker/k8s with fixed routing, 18 environment variables (`INGEST_API_URL`, `MALLENOM_BASE_URL`, …) and 5 files with a duplicated `createDefaultInterceptors + createOtelInterceptor` boot section.
 
-The unifying observation: a catalog describes **deployment topology** (what is local, what is remote, and at what address) layered on top of **proto contracts** (which must not know about topology). Therefore all of the catalog / resolver / `enabledServices` description must live exclusively in runtime/boot code, never in proto.
+The unifying observation: a catalog carries **proto service descriptors**, while deployment topology is supplied separately at runtime. The catalog does not say which services are local or remote, or where a remote service is hosted. Therefore resolver and `enabledServices` configuration must live exclusively in runtime/boot code, never in proto.
 
 The goal of this ADR is a single declarative DX layer for cross-service calls that satisfies all three cases without forcing topology into proto and without breaking the catalog-free monolith. Because the framework's first stable release (1.0.0) is not yet published, removals required to land a clean API are pre-publish breaking and do not require a major version bump.
 
@@ -29,7 +35,7 @@ Handlers registered through `defineService` receive a Connectum `Context` (`pack
 - `call<K extends keyof ConnectumCallMap>(method, request, options?)` -- invokes a unary service in the catalog and returns a `Promise`.
 - `stream<K extends keyof ConnectumStreamMap>(method)` -- opens a streaming call, returning a kind-specific factory (server-streaming yields an `AsyncIterable`; client- and bidi-streaming return push handles).
 
-The call/stream key is `"<typeName>/<method>"` (e.g. `"orders.v1.OrdersService/GetOrder"`). The transport is chosen automatically per call: an in-process call when the target is mounted locally, otherwise the resolver-supplied transport.
+The call/stream key is `"<typeName>/<method>"` (e.g. `"orders.v1.OrdersService/GetOrder"`). The transport is chosen automatically per call: an in-process call when the target service is mounted on this `Server` in the same process, otherwise the resolver-supplied transport. Sharing a host or network does not make a service local.
 
 **Rationale.** `Context` is implemented as a thin wrapper over ConnectRPC's `HandlerContext` rather than by stuffing the catalog primitives into ConnectRPC's `ContextValues`. `HandlerContext` is ConnectRPC-owned and effectively read-only -- it is not an extension point the framework can add typed methods to -- and `ContextValues` is a data-only bag with no place for the call dispatch logic. Wrapping keeps the public surface honest: a handler that makes no cross-service calls sees no augmentation, so `keyof ConnectumCallMap` is `never` and `ctx.call` is statically uncallable -- the correct default. The framework performs a single internal cast at mount time (the `wrapHandlers` injection point) to substitute `Context` for `HandlerContext`; this is the only public-surface cast in the design. The positional `ctx.call(method, request, options)` shape mirrors ConnectRPC's `client.method(request, options)` and Moleculer's `ctx.call(action, params, opts)`; the object-argument alternative was rejected as call-site noise.
 
@@ -48,15 +54,22 @@ interface ServiceDefinition {
 
 `createServer({ services })` accepts `readonly ServiceDefinition[]`. The old `ServiceRoute = (router) => void` form is **removed**.
 
-**Rationale.** Pairing the proto `DescService` with the registration closure lets the framework build the catalog, drive `enabledServices` activation, and validate the transport without re-deriving service identity from the router. Crucially, the construction generic `S extends DescService` lives only on the `defineService` / `defineLazyService` boundary; once a service is defined, its handlers are captured inside the `register` closure and nothing generic leaks out. The framework can iterate `ServiceDefinition[]` with no variance problems. The brand-based phantom-type alternative was rejected because it would expose a public generic parameter that users would have to erase (e.g. `ServiceDefinition<DescService>`) on arrays. `ctx.call` type inference is unaffected because `ConnectumCallMap` is a global augmentation independent of `ServiceDefinition` generics. The framework supplies a `RegisterContext` (carrying `wrapHandlers`) to the closure at mount time, so `defineService` needs no server reference. `defineLazyService`'s factory runs only when the service is actually mounted locally (in `enabledServices`, or `enabledServices === undefined`), so a service routed to a remote process never instantiates its local dependencies.
+**Rationale.** Pairing the proto `DescService` with the registration closure lets `createServer` filter service definitions against `enabledServices` and mount the selected definitions. The consumer supplies the separate `catalog` option containing descriptors for typed calls. Local RPC status comes from the services actually registered through each router's `router.service()` call. Crucially, the construction generic `S extends DescService` lives only on the `defineService` / `defineLazyService` boundary; once a service is defined, its handlers are captured inside the `register` closure and nothing generic leaks out. The framework can iterate `ServiceDefinition[]` with no variance problems. The brand-based phantom-type alternative was rejected because it would expose a public generic parameter that users would have to erase (e.g. `ServiceDefinition<DescService>`) on arrays. `ctx.call` type inference is unaffected because `ConnectumCallMap` is a global augmentation independent of `ServiceDefinition` generics. The framework supplies a `RegisterContext` (carrying `wrapHandlers`) to the closure at mount time, so `defineService` needs no server reference. `defineLazyService`'s factory runs only when the service is actually mounted locally (in `enabledServices`, or `enabledServices === undefined`), so a service routed to a remote process never instantiates its local dependencies.
 
 **Consequence.** Removing `ServiceRoute` is a pre-publish breaking change; all existing examples migrate to `defineService(...)`. This is acceptable because nothing is published yet -- the removal would be GA-breaking if deferred past 1.0.0, so it must land before publish.
 
 ### 3. Catalog shape, augmentation maps, and code generation
 
-The catalog is `type ServiceCatalog = Readonly<Record<string, DescService>>` -- a plain registry mapping a proto `typeName` to its descriptor. It carries no topology. Typing for `ctx.call` / `ctx.stream` comes from **two** single, global module-augmentation interfaces in `@connectum/core`: `ConnectumCallMap` (unary RPCs) and `ConnectumStreamMap` (streaming RPCs), both keyed `"<typeName>/<method>"`. Both start empty, so a project with no generated catalog still type-checks (calls are then untyped rather than a hard error).
+The catalog is `type ServiceCatalog = Readonly<Record<string, DescService>>` -- a plain registry mapping a proto `typeName` to its descriptor. It carries no topology. Typing for `ctx.call` / `ctx.stream` comes from **two** global module-augmentation interfaces in `@connectum/core`: `ConnectumCallMap` (unary RPCs) and `ConnectumStreamMap` (streaming RPCs), both keyed `"<typeName>/<method>"`. Both start empty. Applications that do not make catalog calls need no augmentation; applications that do make them must load the generated keys. There is no untyped fallback: an empty map makes the corresponding method-key type `never`.
 
 `@connectum/protoc-gen-catalog` is a buf/protoc plugin that emits **one `catalog.gen.ts` per buf module** containing a runtime `serviceCatalog` object plus the two augmentations in one `declare module "@connectum/core"` block. The plugin classifies methods via `DescMethod.methodKind`: `unary` → `ConnectumCallMap`; `server_streaming` / `client_streaming` / `bidi_streaming` → `ConnectumStreamMap` with a kebab-cased `kind` discriminator (`"server-stream"`, `"client-stream"`, `"bidi"`).
+
+**Revision (2026-10-08).** Generated request entries use protobuf's public
+`MessageInitShape<typeof InputSchema>` type, while response entries remain full
+generated message shapes. Existing `catalog.gen.ts` files retain their previous
+request declarations until regenerated; this refines generated typing without
+changing runtime dispatch. See the [service-catalog migration guide](/en/migration/service-catalog)
+for the upgrade step.
 
 Two code-generation invariants are mandatory:
 
@@ -65,7 +78,7 @@ Two code-generation invariants are mandatory:
 
 The plugin is **not** a cross-package aggregator: each buf module emits its own `catalog.gen.ts`, and cross-package composition is done at runtime by the consumer via `mergeCatalogs(a, b, c)`. `mergeCatalogs` **throws** (a `CatalogConfigError`) on a duplicate `typeName`.
 
-**Rationale.** A plain record keeps the proto contract and the runtime API 1:1 -- no aliases, no proto extensions, no DSL. A single global `ConnectumCallMap` was validated to work across npm packages (per-package maps would break consumer-side `ctx.call` type-safety). The runtime `mergeCatalogs` throw is mandatory, not an optional convenience: TypeScript does **not** catch a duplicate `typeName` when two contracts packages declare an identical-shape entry under the same key (it treats this as a redeclaration of an identical interface property and silently merges). Only a runtime check defends against a silent collision routing calls to the wrong service. Because TypeScript cannot catch identical-shape duplicates, a documented naming convention (`{org}.{team}.{domain}.v{N}.{Service}`) plus a code-review checkpoint is the recommended additional guard.
+**Rationale.** A plain record keeps the proto contract and the runtime API 1:1 -- no aliases, no proto extensions, no DSL. A single global `ConnectumCallMap` was validated to work across npm packages (per-package maps would break consumer-side `ctx.call` type-safety). The runtime `mergeCatalogs` throw is mandatory, not an optional convenience: TypeScript does **not** catch a duplicate `typeName` when two contracts packages declare an identical-shape entry under the same key (it treats this as a redeclaration of an identical interface property and silently merges). Only a runtime check defends against a silent collision routing calls to the wrong service. Because TypeScript cannot catch identical-shape duplicates, a documented naming convention (`{org}.{team}.{domain}.v{N}.{Service}`) plus a code-review checkpoint is the recommended additional guard. The catalog contains descriptors only; which services run locally is determined by the services mounted on each `Server` instance and its `enabledServices` setting.
 
 **Consequence.** Codegen plugs into the existing `buf.gen.yaml` flow and adds no runtime dependency for consumers. The single-object `serviceCatalog` does not tree-shake (a measured ~357–377 bytes per service after minification), which is the accepted cost of the single-catalog design; very large catalogs (>1000 services) should split into per-domain packages. Duplicate-typeName protection is split across a compile-time naming convention and a runtime `mergeCatalogs` throw.
 
@@ -79,9 +92,9 @@ type RemoteResolver = (ctx: { typeName: string; endpoint?: string }) => Transpor
 
 The resolver **must be synchronous** and **must not perform network I/O** (no TCP dial, no DNS lookup at resolution time). It only maps an identity to a lazily-connecting `Transport`. Returning `null` means "no route" → the call fails with `Code.Unavailable`. The framework caches the result per unique `(typeName, endpoint)` key, so the resolver runs once per distinct route. `CallOptions.endpoint` is an opaque hint the core does not interpret -- the resolver decides what it means (URL, k8s service name, sharding key). Built-in resolvers: `singleTransportResolver`, `mapResolver`, `dnsResolver`, `perServiceEnvResolver`.
 
-**Rationale.** The transport already represents a lazy connection, so an async resolver would add an `await` to every call site for no practical gain. Synchronous resolution plus lazy transport keeps DNS and dialing off the boot critical path -- there is no startup network I/O. The object-shaped context (`{ typeName, endpoint }`) makes future field additions non-breaking. Startup validation is a **shape check only**: when a `catalog` is configured, every `enabledServices` entry must be a known catalog key, else `createServer(...).start()` throws `CatalogConfigError`. The framework does **not** probe resolvers at startup -- a resolver is not even invoked until the first `server.client()` / `ctx.call` for a remote service, so route reachability is never validated eagerly.
+**Rationale.** The transport already represents a lazy connection, so an async resolver would add an `await` to every call site for no practical gain. The object-shaped context (`{ typeName, endpoint }`) makes future field additions non-breaking. Startup validation is a **shape check only**: only when both `catalog` and `enabledServices` are supplied does `createServer(...).start()` check that every enabled service name is a catalog key; otherwise this check is skipped. It does not check deployment topology or invoke a resolver. A descriptor included in the catalog but not used by a remote RPC call does not cause route resolution; this also applies to a service descriptor used only by an EventBus handler. EventBus registration does not mount an RPC service on the `Server`. There is no default-route probe. The server-side dispatcher resolves a remote route when `ctx.call` or `ctx.stream` dispatches to a non-local service; `server.client()` resolves its route when the client is requested. Neither route resolution nor transport reachability is part of startup validation.
 
-**Consequence.** Cold start stays fast even with a large catalog. The trade-off is that resolver/route misconfiguration is not caught at startup: a non-local service with no `remoteResolver` surfaces as `CatalogConfigError`, and a resolver returning `null` surfaces as `ConnectError(Code.Unavailable)` -- both at `server.client()` construction (or, for `ctx.call`, at dispatch). Only the catalog/`enabledServices` shape is validated eagerly.
+**Consequence.** Resolver and route misconfiguration is not caught at startup. Requesting `server.client()` for a non-local service without a `remoteResolver` throws `CatalogConfigError`; for `ctx.call` or `ctx.stream`, a missing resolver and a resolver that returns `null` both surface as `ConnectError(Code.Unavailable)` when the remote route is resolved. Only the catalog/`enabledServices` shape is validated eagerly, and only when both options are supplied.
 
 ### 5. Cascade defaults: signal, deadline, trace, headers
 
@@ -108,7 +121,7 @@ The single new client-side cross-cutting field is `outgoingInterceptors?: readon
 
 Catalog failures use two distinct error types depending on whether the fault is a developer mistake or a runtime condition (`packages/core/src/catalogErrors.ts`):
 
-- **`CatalogConfigError extends Error`** -- a configuration mistake, detected eagerly at construction or startup. Examples: `server.client(Desc)` on a non-local service with no resolver, `enabledServices` that is not a subset of the catalog, a duplicate `typeName` during `mergeCatalogs`. It fails loud with a stack trace and a clean prototype chain across compiled targets.
+- **`CatalogConfigError extends Error`** -- a configuration mistake, detected eagerly at construction or startup. Examples: `server.client(Desc)` on a non-local service with no resolver, an `enabledServices` entry missing from a configured catalog (when both options are supplied), or a duplicate `typeName` during `mergeCatalogs`. It fails loud with a stack trace and a clean prototype chain across compiled targets.
 - **`ConnectError`** -- an operational `ctx.call` / `ctx.stream` failure, with the appropriate Connect status code: `FailedPrecondition` (`ctx.call` / `ctx.stream` invoked when no catalog is configured), `Unimplemented` (a genuine runtime dispatch miss -- `ctx.call("unknown.Type/Method")`), `Unavailable` (resolver returned `null`), `Internal` (resolver threw).
 
 **Rationale.** A configuration bug and a runtime RPC failure call for different handling. A stack trace is more useful than a gRPC code for a misconfiguration that should never reach production; conversely, operational failures must flow through the existing `ConnectError`-based interceptor and error-handler machinery. Reserving `Code.Unimplemented` strictly for a runtime dispatch miss keeps the two classes cleanly separable: a configuration mistake fails eagerly as a `CatalogConfigError`, a `ctx.call` against an unconfigured catalog is `FailedPrecondition`, and an unknown `typeName` at dispatch is `Unimplemented`.
@@ -138,7 +151,7 @@ These are explicit limitations of the v1 catalog, not merely "future nice-to-hav
 - **Catalog versioning for mixed deployments.** During a rolling update where a new version adds or removes methods, a method missing on the old version produces `Code.Unimplemented` on the old side. The v1 coordination strategy is **forward/backward-compatible additive changes only** (add methods; do not remove or rename) until a future `catalog-versioning` change ships. This must be documented in the migration guide and the resolver-patterns guide.
 - **Vendor-proto exclusion.** The plugin generates services from buf's `files-to-generate` only, with no selective skip annotation. Vendor protos land in the output if they are part of the input. The v1 workaround is a separate buf module or a manual `pick` via `mergeCatalogs`. Selective exclusion is a future enhancement.
 - **Async resolvers.** The resolver is synchronous by contract (lazy transport covers the vast majority of cases). An async resolver would add an `await` to every call site and is out of v1; if a concrete use case appears, it is a separate change.
-- **Hot-reload of topology.** `enabledServices` and `remoteResolver` configuration are read only at `server.start()`. Changing topology requires a restart.
+- **Hot-reload of topology.** Topology is supplied through a `Server`'s construction options and is not hot-reloaded. Route materialization consumes `enabledServices` on its first build; the remote resolver is consulted only when code requests a remote route. Changing either configuration requires a new server instance.
 
 ## Consequences
 
@@ -163,7 +176,7 @@ These are explicit limitations of the v1 catalog, not merely "future nice-to-hav
 
 - **Identical-shape duplicate typeNames** are invisible to TypeScript across packages -- mitigated by the mandatory runtime `mergeCatalogs` throw plus a documented naming convention and code-review checkpoint.
 - **Mixed-deployment method drift** during rolling updates surfaces as `Code.Unimplemented` -- mitigated by the additive-only coordination strategy until `catalog-versioning`, documented as a v1 limitation.
-- **Endpoint-specific resolver misconfiguration** is not caught at startup (only the default route is probed) -- surfaces lazily on first endpoint-specific call; documented.
+- **Resolver and endpoint-specific route misconfiguration** is not caught at startup because startup does not probe routes -- it surfaces when code requests a remote client or dispatches a remote catalog call.
 
 ## Alternatives Considered
 
@@ -193,3 +206,5 @@ These are explicit limitations of the v1 catalog, not merely "future nice-to-hav
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-06-15 | Software Architect | Initial ADR: service catalog (declarative cross-service calls, `defineService`, resolver, cascade defaults, split error model, buf codegen) |
+| 2026-10-08 | Connectum maintainers | Clarified descriptor-only catalog, per-server locality, conditional startup shape validation, and on-demand remote route resolution. |
+| 2026-10-08 | Connectum maintainers | Recorded generated request initializer types as a typing refinement; runtime dispatch is unchanged. |

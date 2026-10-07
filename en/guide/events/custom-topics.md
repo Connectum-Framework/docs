@@ -151,7 +151,7 @@ flowchart TD
 
 ## Wildcard Topic Matching
 
-The MemoryAdapter and NATS adapter support wildcard patterns for topic matching:
+Memory, NATS, and Kafka adapters accept these wildcard patterns for topic matching:
 
 | Pattern | Matches | Does Not Match |
 |---------|---------|----------------|
@@ -165,7 +165,10 @@ Two wildcard tokens are supported:
 - **`>`** -- matches one or more trailing segments
 
 ::: info Broker Limitations
-Wildcard patterns are natively supported by NATS. Kafka and Redis Streams do not support server-side wildcards -- the adapter subscribes to exact topic names only.
+NATS supports these patterns natively. Kafka converts them to regular expressions
+for KafkaJS topic subscriptions. AMQP maps `>` to the topic exchange's `#`, whose
+broker matching semantics differ; see [AMQP routing](/en/guide/events/amqp-reliability#routing-and-delivery).
+Redis Streams requires exact topics and rejects wildcard patterns.
 :::
 
 ## Best Practices
@@ -186,20 +189,27 @@ events.service(InventoryEventHandlers, {
 
 ### Use custom topics for shared message types
 
-When multiple events share the same message type or when you want domain-oriented naming:
+Custom topics give events domain-oriented names. Use distinct message types when
+registering several such topics on one EventBus:
 
 ```protobuf
 service OrderEventHandlers {
-  // Same OrderStatus message, different business events
-  rpc OnOrderConfirmed(OrderStatus) returns (google.protobuf.Empty) {
+  rpc OnOrderConfirmed(OrderConfirmed) returns (google.protobuf.Empty) {
     option (connectum.events.v1.event).topic = "orders.confirmed";
   }
 
-  rpc OnOrderShipped(OrderStatus) returns (google.protobuf.Empty) {
+  rpc OnOrderShipped(OrderShipped) returns (google.protobuf.Empty) {
     option (connectum.events.v1.event).topic = "orders.shipped";
   }
 }
 ```
+
+The publish lookup maps one message `typeName` to one topic. If `routes` or
+`publishes` register the same message type under different topics on one bus,
+`start()` rejects with `Ambiguous publish topic`, even if later publishes would
+pass an explicit topic. To reuse one payload type across different topics, keep
+those registrations on separate buses. A publisher with no conflicting
+registrations can choose the destination with `PublishOptions.topic`.
 
 ### Keep topic naming consistent
 

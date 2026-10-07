@@ -7,12 +7,14 @@ outline: deep
 
 # TypeScript
 
-Native TypeScript execution via type stripping on Node.js 25+. Packages compile to JS + DTS via tsup for any runtime (Node.js 22+, Bun, tsx).
+Applications can execute erasable TypeScript directly on the documented Node.js
+line. Connectum packages ship compiled ESM JavaScript and declarations; supported
+versions and tested Bun behavior are in [Runtime Compatibility](/en/guide/runtime-compatibility).
 
 ## Quick Start
 
 ```bash
-# Node.js 25+ -- run TypeScript directly
+# Node.js >=25.2.0 -- run erasable TypeScript directly
 node src/index.ts
 
 # Development with auto-reload
@@ -32,7 +34,10 @@ No loaders, no compilation step, no `tsc` required to run your code. TypeScript 
 | **Import extensions** | Relative source imports use `.ts`; generated imports match `buf.gen.yaml` |
 | **`node:` prefix** | Required for Node.js built-in modules |
 
-These constraints come from `erasableSyntaxOnly: true` -- TypeScript syntax must be removable by stripping types, leaving valid JavaScript.
+The syntax restrictions follow `erasableSyntaxOnly: true`: stripping types must
+leave valid JavaScript. Explicit type imports, import extensions, and the `node:`
+prefix are the project's import conventions; the `node:` prefix is not a
+TypeScript type-stripping requirement.
 
 ## Learn More
 

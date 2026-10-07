@@ -70,6 +70,7 @@ Import `buf/validate/validate.proto` and annotate fields with constraints:
 syntax = "proto3";
 import "buf/validate/validate.proto";
 
+// OrderItem and ShippingAddress are application messages defined elsewhere.
 message CreateOrderRequest {
   // String constraints
   string customer_id = 1 [(buf.validate.field).string.min_len = 1];
@@ -147,7 +148,7 @@ When validation fails, the interceptor throws a `ConnectError` with code `INVALI
 
 ```
 Code: INVALID_ARGUMENT
-Message: "customer_id: value length must be at least 1 characters [string.min_len]"
+Message: "customer_id: must be at least 1 characters [string.min_len]"
 ```
 
 Error messages include the field path, the violated constraint, and the constraint identifier. This makes it straightforward for clients to display meaningful validation errors.
@@ -159,7 +160,7 @@ Proto constraints cover structural validation (format, range, presence). For bus
 ```typescript
 import { ConnectError, Code } from '@connectrpc/connect';
 
-async sayHello(request: SayHelloRequest) {
+async createAccount(request: CreateAccountRequest) {
   // Business validation (beyond proto constraints)
   const exists = await db.findByEmail(request.email);
   if (exists) {

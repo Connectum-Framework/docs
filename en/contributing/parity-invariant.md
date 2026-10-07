@@ -1,3 +1,9 @@
+---
+title: Cross-Transport Parity Invariant
+description: Preserve observable RPC behavior when switching between HTTP and in-process calls.
+docType: contributor-guide
+---
+
 # Cross-Transport Parity Invariant
 
 Connectum exposes two transports for ConnectRPC services:
@@ -30,7 +36,7 @@ revised or accompanied by a documented carve-out in the spec.
 2. **Parity suite** — aggregated by `scripts/parity-suite.sh`, covering
    interceptors, validation, authorization, streaming, error mapping,
    coexistence, and OTEL.
-3. **`parity-gate` CI job** (`.github/workflows/parity-gate.yml`) runs the
+3. **`HTTP ↔ in-process parity` CI check** (`.github/workflows/parity-gate.yml`) runs the
    suite on every pull request and every push to `main`.
 
 ## When you MUST add a parity scenario
@@ -93,7 +99,8 @@ Every PR that touches a service-observable surface must:
 - [ ] explicitly mark the change as `parity: N/A` in the PR description and
       justify why.
 
-The `parity-gate` CI job will block merge on any structural diff.
+The parity check fails on a structural diff. Run it locally with
+`bash ./scripts/parity-suite.sh` from the framework root before submitting a change.
 
 ## References
 

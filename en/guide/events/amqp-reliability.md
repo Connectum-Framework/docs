@@ -29,6 +29,73 @@ reference.
 - A RabbitMQ (or other AMQP 0-9-1) broker for integration tests. Unit tests can use
   the [fake adapter](#testing-subpath-exports) instead.
 
+## Routing and delivery {#routing-and-delivery}
+
+::: info Upcoming in 1.3.0
+The wildcard translation and validation described here are planned for the
+upcoming `@connectum/events-amqp` 1.3.0 release. Published 1.2.x packages keep
+their existing routing behavior.
+:::
+
+The EventBus topic becomes the AMQP routing key. By default a named `group`
+subscribes through the queue `<exchange>.<group>`;
+`queueOverrides[group].queue` selects an existing contract name instead. Replicas
+sharing that queue compete for deliveries. Distinct queues receive their own
+copies when their bindings match. Without a group, the adapter creates a
+non-durable auto-delete queue, exclusive by default: it cannot retain events
+while the subscriber is disconnected.
+
+The adapter translates EventBus wildcard patterns for RabbitMQ topic bindings:
+
+| EventBus pattern | RabbitMQ binding | Match |
+|---|---|---|
+| `user.*` | `user.*` | Exactly one segment after `user` |
+| `user.>` | `user.*.#` | One or more segments after `user` |
+
+Only complete dot-separated tokens are wildcards. A complete `>` token is valid
+only at the end of a pattern; a non-terminal `>` is rejected before subscription
+topology is created. Complete `*` and `>` tokens require `exchangeType: 'topic'`;
+direct, fanout, and headers exchanges reject those subscriptions before creating
+or binding a queue. Embedded characters such as `user*` and `user>` remain
+literal. A complete `#` segment is rejected in a topic subscription because
+RabbitMQ treats it as a wildcard while the EventBus matcher treats it as literal
+text. On non-topic exchanges, `#` remains a routing-key literal or is ignored
+according to the exchange type.
+
+These checks apply to subscription patterns. An operator-declared binding such
+as `#` in `topology.bindings` remains under operator control; the adapter does
+not rewrite it. When a named-group queue has an older broad binding, the adapter
+adds the corrected binding but does not remove the old one. Add the new binding
+before removing only the obsolete binding, and preserve the queue and its queued
+messages:
+
+```typescript
+await channel.bindQueue(queue, exchange, 'user.*.#');
+await channel.unbindQueue(queue, exchange, 'user.#');
+```
+
+Check whether other consumers depend on the old binding before removing it.
+Unbinding affects future routing and does not delete messages already queued.
+
+A durable queue and persistent messages are required to retain deliveries across
+broker restarts. Configure the bindings before publishing; with the default
+`publisherOptions.mandatory: false`, an unroutable publish can receive a confirm
+and still reach no queue. Set `mandatory: true` to detect this as
+`AmqpUnroutableError`. Queue TTL, length limits, deletion, and dead-letter policies
+can also remove events, so persistence does not guarantee indefinite retention.
+
+The normal publish envelope uses `x-event-id`, `x-published-at`, `messageId`, and
+`timestamp`. Delivery extracts the identity and timestamp and exposes user
+headers through `ctx.metadata`; it strips the internal envelope headers and
+`x-connectum-publish-id`. `externalContract: true` omits the automatic envelope
+and correlation header; use the exact options in
+[`AmqpAdapterOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpAdapterOptions)
+when integrating with an existing wire contract.
+
+AMQP exposes a redelivery flag, not an exact count: `ctx.attempt` is `1` for a
+first delivery and `2` for any redelivery, including the third or later. Use your
+own durable counter when policy depends on an exact number of deliveries.
+
 ## Reliable publishing {#reliable-publishing}
 
 Every `publish()` waits for the broker's outcome for that one message and either
@@ -80,6 +147,11 @@ const adapter = AmqpAdapter({
 ```
 
 `publishRetry: true` uses the defaults. The option is off unless you set it.
+
+`publishRetry.maxRetries` is normalized to `max(0, floor(N))` for a finite
+number. A negative value, including `-Infinity`, gives one attempt; `NaN` or an
+unset value uses 5 retries. `Infinity` keeps retrying eligible failures until
+`disconnect()` stops the loop.
 
 What is retried, and what is not:
 
@@ -433,7 +505,7 @@ const adapter = AmqpAdapter({
 | `setup-failed` | `initial`, `attempt`, `error` | Topology setup failed: at startup (`initial: true`) or on a reconnect (`initial: false`, `attempt` ≥ 1). Reported for `AmqpTopologyError` failures only. |
 | `blocked` | `reason` | The broker applied flow control (RabbitMQ `connection.blocked`, for example under a memory or disk alarm). |
 | `unblocked` | — | Flow control lifted. |
-| `settlement-skipped` | `action`, `queue`, `routingKey`, `deliveryTag`, `error` | A delivery could not be acknowledged because its channel was already closed; `action` is `ack`, `requeue` or `reject`. The broker returns the delivery to the queue, but on a quorum queue each return counts toward its delivery limit. See [Settling a delivery after the channel closed](#settlement-skipped). |
+| `settlement-skipped` | `action`, `queue`, `routingKey`, `deliveryTag`, `error` | A settlement was skipped on a closed channel, or the adapter's own reject/requeue failed; `action` is `ack`, `requeue` or `reject`. Redelivery depends on the queue and the broker's settlement state; see [Settling a delivery after the channel closed](#settlement-skipped). |
 | `consumer-lost` | `queue`, `cause`, `error?`, `willRestore` | The broker ended one subscription's consumer while the connection stayed up. `cause` is `cancelled` (queue deleted or consumer cancelled) or `channel-closed` (the broker closed the channel; `error` is its exception). `willRestore` is `true` when `recovery` is enabled. See [A consumer the broker ends](#consumer-loss). |
 | `consumer-restored` | `queue`, `attempt` | A lost consumer is consuming again. For a subscription without a group, `queue` is the new auto-named queue. |
 | `consumer-restore-failed` | `queue`, `attempt`, `error`, `willRetry` | A restoration attempt failed. `willRetry: false` means this subscription's restoration has ended. For a subscription without a group, `queue` is the name the lost consumer had, not a queue declared by the failed attempt. |
@@ -504,12 +576,17 @@ the consumer channel.
 A handler can outlive its connection: it rejects, or calls `ack()` or `nack()`, after
 the connection dropped and the consumer channel closed. amqplib throws on a closed
 channel, and the adapter treats that one error as a no-op instead of letting it escape
-as an unhandled rejection. It reports a `settlement-skipped` event. The broker returns
-a delivery that was not acknowledged before the channel closed to the queue, and it
-arrives again with `attempt` greater than 1, so handlers must stay idempotent. The
-return is not unconditional: on a quorum queue each such return counts toward the
+as an unhandled rejection. It reports a `settlement-skipped` event. If the queue
+still exists and the broker had not accepted a settlement, an unacknowledged
+delivery can return to it and arrive again with `attempt: 2`. A deleted or
+auto-delete queue cannot retain that delivery, and an acknowledgement already
+accepted by the broker is not undone. Keep handlers idempotent. On a quorum queue
+each return counts toward the
 queue's delivery limit (default 20 since RabbitMQ 4.0), and past the limit the broker
-drops the message or dead-letters it. Any other settlement error is not hidden.
+drops the message or dead-letters it. A handler's explicit `ack()` or `nack()`
+rejects on other settlement errors. The adapter's own reject after decode failure
+or requeue after handler failure reports such an error as `settlement-skipped`,
+because its consume callback has no caller to reject to.
 
 ## A consumer the broker ends {#consumer-loss}
 
@@ -547,8 +624,13 @@ How it behaves:
 - **One `consumer-lost` per loss.** A connection loss is not a consumer loss: the
   connection's own `disconnected` covers it, and connection recovery re-creates every
   consumer. `unsubscribe()` and `disconnect()` raise no consumer events.
-- **Restoration repeats the subscription's topology step.** In `assert` mode the queue is
-  declared again, so a deleted queue comes back (empty: the messages it held are gone).
+- **Restoration repeats the subscription's topology step.** In `assert` mode a
+  subscription-managed queue is declared again, so a deleted queue comes back
+  empty. A queue listed in `topology.queues` is only rebound during consumer
+  restoration, because it was declared during connection setup with its full
+  arguments. If that queue was deleted, consumer restoration does not recreate
+  it: restore it through the topology owner, or reconnect so connection setup
+  declares it again.
   In `check` mode the check fails with `AmqpTopologyError` when the queue is missing, so
   the adapter reports `consumer-restore-failed { willRetry: false }` and does not create
   it. In `skip` mode the adapter never declares the queue, so it cannot bring a deleted
@@ -564,7 +646,8 @@ How it behaves:
   consumer stays dead. Nothing is restored.
 - **A subscription without a group** gets a new auto-named queue; `consumer-restored.queue`
   is its name. Messages the old queue held, including unacknowledged ones, are gone with
-  it. Use a `group` when messages must survive.
+  it. Use a stable `group` with a durable queue and persistent publishing when
+  messages must survive a subscriber restart.
 - **Handlers that were running keep running.** The adapter closes the lost consumer's
   channel, so a late `ack()` or `nack()` from such a handler is skipped and reported as
   `settlement-skipped`. The broker returns an unacknowledged message to its queue (when the
@@ -658,7 +741,8 @@ behavior, run integration tests against a broker.
 - Stop the broker while the service runs: you should see `disconnected`, then
   `reconnecting` events, then `connected { reconnected: true }` after the broker is
   back, and subscriptions should receive events again.
-- Delete a subscription's queue on a test broker (`rabbitmqctl delete_queue <name>`):
+- Delete a subscription-managed queue in `assert` mode on a test broker
+  (`rabbitmqctl delete_queue <name>`):
   you should see `consumer-lost` with `cause: 'cancelled'`, then `consumer-restored`, and
   a message published afterwards should reach the handler.
 - With `publishRetry` enabled, publishes made during a short outage resolve after
