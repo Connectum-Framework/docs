@@ -2,7 +2,7 @@
 
 # Interface: CircuitBreakerOptions
 
-Defined in: [types.ts:155](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L155)
+Defined in: [types.ts:160](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L160)
 
 Circuit breaker interceptor options
 
@@ -12,7 +12,7 @@ Circuit breaker interceptor options
 
 > `optional` **failurePredicate?**: (`error`, `defaultPredicate`) => `boolean`
 
-Defined in: [types.ts:202](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L202)
+Defined in: [types.ts:207](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L207)
 
 Decides whether an error counts as a circuit failure.
 
@@ -65,7 +65,7 @@ non-ConnectError values count as failures)
 
 > `optional` **halfOpenAfter?**: `number`
 
-Defined in: [types.ts:166](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L166)
+Defined in: [types.ts:171](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L171)
 
 Time in milliseconds to wait before attempting to close circuit
 
@@ -81,7 +81,7 @@ Time in milliseconds to wait before attempting to close circuit
 
 > `optional` **skipStreaming?**: `boolean`
 
-Defined in: [types.ts:172](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L172)
+Defined in: [types.ts:177](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L177)
 
 Skip circuit breaker for streaming calls
 
@@ -97,7 +97,7 @@ true
 
 > `optional` **threshold?**: `number`
 
-Defined in: [types.ts:160](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L160)
+Defined in: [types.ts:165](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L165)
 
 Number of consecutive failures before opening circuit
 

@@ -4,7 +4,7 @@
 
 > **AmqpAdapter**(`options`): `EventAdapter`
 
-Defined in: [packages/events-amqp/src/AmqpAdapter.ts:1266](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/AmqpAdapter.ts#L1266)
+Defined in: [packages/events-amqp/src/AmqpAdapter.ts:1329](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/AmqpAdapter.ts#L1329)
 
 Create an AMQP/RabbitMQ adapter for @connectum/events.
 
@@ -38,12 +38,18 @@ await bus.start();
 **External AMQP contract (AsyncAPI-style)**
 
 ```typescript
+import { AmqpAdapter } from "@connectum/events-amqp";
+
 const adapter = AmqpAdapter({
     url: "amqp://broker:5672",
     exchange: "partner.direct",
     exchangeType: "direct",
     serialization: { contentType: "application/json" },
     topology: {
+        exchanges: [
+            { name: "partner.direct", type: "direct", durable: true },
+            { name: "partner.dlx", type: "direct", durable: true },
+        ],
         queues: [{
             name: "partner.inbound.v1",
             durable: true,
@@ -51,11 +57,21 @@ const adapter = AmqpAdapter({
                 "x-dead-letter-exchange": "partner.dlx",
                 "x-dead-letter-routing-key": "inbound.dead",
             },
+        }, {
+            name: "partner.inbound.dead",
+            durable: true,
         }],
-        bindings: [{ queue: "partner.inbound.v1", source: "partner.direct", routingKey: "inbound" }],
+        bindings: [
+            { queue: "partner.inbound.v1", source: "partner.direct", routingKey: "inbound" },
+            { queue: "partner.inbound.dead", source: "partner.dlx", routingKey: "inbound.dead" },
+        ],
     },
+    // Used when an EventBus subscription has the `partner` group.
     queueOverrides: { partner: { queue: "partner.inbound.v1" } },
     // externalContract: emit only contract-specified properties (no envelope).
     publisherOptions: { persistent: true, mandatory: true, externalContract: true },
 });
+await adapter.connect();
+// Add a subscription with group `partner` before receiving messages.
+await adapter.disconnect();
 ```

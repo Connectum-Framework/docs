@@ -4,7 +4,7 @@
 
 Serializer interceptor
 
-Auto-converts messages to/from JSON for non-gRPC services.
+Converts messages to/from JSON, skipping the `grpc.*` service namespace by default.
 
 ## Functions
 

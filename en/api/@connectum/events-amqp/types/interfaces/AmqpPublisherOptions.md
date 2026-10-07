@@ -2,7 +2,7 @@
 
 # Interface: AmqpPublisherOptions
 
-Defined in: [packages/events-amqp/src/types.ts:835](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L835)
+Defined in: [packages/events-amqp/src/types.ts:838](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L838)
 
 Publisher options.
 
@@ -12,7 +12,7 @@ Publisher options.
 
 > `readonly` `optional` **correlationHeader?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:864](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L864)
+Defined in: [packages/events-amqp/src/types.ts:867](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L867)
 
 How `basic.return` frames are correlated to publishes when
 `mandatory: true`. The return frame carries no deliveryTag, so:
@@ -36,7 +36,7 @@ true
 
 > `readonly` `optional` **externalContract?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:893](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L893)
+Defined in: [packages/events-amqp/src/types.ts:896](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L896)
 
 Publish against an EXTERNAL (non-EventBus) message contract: suppress the
 EventBus envelope so the wire frame carries ONLY contract-specified
@@ -74,7 +74,7 @@ false
 
 > `readonly` `optional` **mandatory?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:849](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L849)
+Defined in: [packages/events-amqp/src/types.ts:852](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L852)
 
 Whether the message should be returned if it cannot be routed.
 Unroutable messages reject the publish with `AmqpUnroutableError`.
@@ -91,7 +91,7 @@ false
 
 > `readonly` `optional` **persistent?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:841](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L841)
+Defined in: [packages/events-amqp/src/types.ts:844](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L844)
 
 Whether messages should be persisted to disk (deliveryMode=2).
 

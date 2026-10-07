@@ -30,7 +30,7 @@ Destination exchange name (exchange-to-exchange binding).
 
 Defined in: [packages/events-amqp/src/types.ts:375](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L375)
 
-Destination queue name (queue binding) — mutually exclusive with `exchange`.
+Destination queue name. If both destination fields are set, runtime uses this queue.
 
 ***
 

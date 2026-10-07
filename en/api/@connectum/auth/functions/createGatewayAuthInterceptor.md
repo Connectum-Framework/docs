@@ -4,13 +4,14 @@
 
 > **createGatewayAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/gateway-auth-interceptor.ts:96](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/gateway-auth-interceptor.ts#L96)
+Defined in: [packages/auth/src/gateway-auth-interceptor.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/gateway-auth-interceptor.ts#L97)
 
 Create a gateway authentication interceptor.
 
 Reads pre-authenticated identity from gateway-injected headers.
 Trust is established by checking a designated header value against
-a list of expected values (shared secrets or trusted IP ranges).
+a list of expected values (shared secrets or CIDR ranges applied to the header value).
+A trusted gateway must overwrite this header; it is not the connection's peer address.
 
 ## Parameters
 

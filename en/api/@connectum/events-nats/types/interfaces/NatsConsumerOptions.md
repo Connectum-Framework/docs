@@ -48,10 +48,12 @@ Deliver policy for new consumers.
 
 > `readonly` `optional` **maxDeliver?**: `number`
 
-Defined in: [types.ts:66](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L66)
+Defined in: [types.ts:68](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L68)
 
-Maximum number of delivery attempts before the message
-is discarded by the server.
+Maximum number of delivery attempts. When the limit is reached,
+JetStream stops redelivering the message and emits a max-deliver
+advisory; the message remains in the stream subject to its retention
+policy.
 
 #### Default
 

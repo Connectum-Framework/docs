@@ -58,4 +58,4 @@ Defined in: [types.ts:152](https://github.com/Connectum-Framework/connectum/blob
 Record method arguments as span attributes.
 - `false` (default): no args recorded
 - `true`: all args recorded
-- `string[]`: whitelist of argument names/indices
+- `string[]`: whitelist of zero-based argument indices encoded as strings

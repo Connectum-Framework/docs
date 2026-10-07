@@ -4,7 +4,7 @@
 
 > **createBulkheadInterceptor**(`options?`): `Interceptor`
 
-Defined in: [bulkhead.ts:56](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/bulkhead.ts#L56)
+Defined in: [bulkhead.ts:57](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/bulkhead.ts#L57)
 
 Create bulkhead interceptor
 
@@ -56,6 +56,7 @@ import { createBulkheadInterceptor } from '@connectum/interceptors';
 
 const transport = createConnectTransport({
   baseUrl: 'http://localhost:5000',
+  httpVersion: '1.1',
   interceptors: [
     createBulkheadInterceptor({ capacity: 5, queueSize: 5 }),
   ],

@@ -4,12 +4,14 @@
 
 > **createSerializerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [serializer.ts:84](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/serializer.ts#L84)
+Defined in: [serializer.ts:87](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/serializer.ts#L87)
 
 Create serializer interceptor
 
 Automatically serializes/deserializes messages to/from JSON.
-Skips gRPC services by default (they use protobuf binary format).
+By default, skips services whose protobuf type name starts with `grpc.`,
+including the standard Health and Reflection services. This checks the
+service namespace, regardless of the wire protocol used for the call.
 
 ## Parameters
 
@@ -56,6 +58,7 @@ import { createSerializerInterceptor } from '@connectum/interceptors';
 
 const transport = createConnectTransport({
   baseUrl: 'http://localhost:5000',
+  httpVersion: '1.1',
   interceptors: [
     createSerializerInterceptor({ alwaysEmitImplicit: true }),
   ],

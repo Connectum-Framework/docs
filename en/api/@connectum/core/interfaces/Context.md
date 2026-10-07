@@ -2,7 +2,7 @@
 
 # Interface: Context
 
-Defined in: [packages/core/src/context.ts:131](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L131)
+Defined in: [packages/core/src/context.ts:138](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L138)
 
 The context object passed to every Connectum service handler.
 
@@ -20,7 +20,7 @@ and adds [Context.call](#call) (unary catalog calls) and [Context.stream](#strea
 
 > **call**: [`CatalogCall`](../type-aliases/CatalogCall.md)
 
-Defined in: [packages/core/src/context.ts:142](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L142)
+Defined in: [packages/core/src/context.ts:149](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L149)
 
 Invoke a unary service in the catalog. The transport is chosen
 automatically: an in-process call when the target is mounted locally,
@@ -161,7 +161,7 @@ The signal can be used to automatically cancel downstream calls.
 
 > **stream**: [`CatalogStream`](../type-aliases/CatalogStream.md)
 
-Defined in: [packages/core/src/context.ts:155](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L155)
+Defined in: [packages/core/src/context.ts:162](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L162)
 
 Open a streaming call to a service in the catalog. Returns a kind-specific
 factory: server-streaming yields an `AsyncIterable`; client- and

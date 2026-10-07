@@ -4,7 +4,7 @@
 
 > **AmqpLifecycleEvent** = \{ `reconnected`: `boolean`; `type`: `"connected"`; \} \| \{ `error`: `Error`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `delay`: `number`; `error`: `Error`; `type`: `"reconnecting"`; \} \| \{ `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `initial`: `boolean`; `type`: `"setup-failed"`; \} \| \{ `reason`: `string`; `type`: `"blocked"`; \} \| \{ `type`: `"unblocked"`; \} \| \{ `action`: [`AmqpSettlementAction`](AmqpSettlementAction.md); `deliveryTag`: `number`; `error`: `Error`; `queue`: `string`; `routingKey`: `string`; `type`: `"settlement-skipped"`; \} \| \{ `cause`: [`AmqpConsumerLossCause`](AmqpConsumerLossCause.md); `error?`: `Error`; `queue`: `string`; `type`: `"consumer-lost"`; `willRestore`: `boolean`; \} \| \{ `attempt`: `number`; `queue`: `string`; `type`: `"consumer-restored"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `queue`: `string`; `type`: `"consumer-restore-failed"`; `willRetry`: `boolean`; \} \| \{ `callback`: `string`; `error`: `Error`; `event`: `string`; `type`: `"lifecycle-error"`; \}
 
-Defined in: [packages/events-amqp/src/types.ts:583](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L583)
+Defined in: [packages/events-amqp/src/types.ts:584](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L584)
 
 Discriminated connection lifecycle event, delivered to
 [AmqpLifecycleCallbacks.onLifecycle](../interfaces/AmqpLifecycleCallbacks.md#onlifecycle).
@@ -39,12 +39,13 @@ Lifecycle event behavior (covered by integration tests):
   `connection.blocked`, e.g. under a memory/disk alarm); they have no flat
   callback equivalent.
 - `settlement-skipped` reports an acknowledge, requeue or reject that the
-  adapter skipped because the consumer channel was already closed. It is a
-  diagnostic, not a failure: the broker requeues every delivery that was not
-  acknowledged before the channel closed, so the message is redelivered. On a
-  quorum queue each such return counts toward the queue's delivery limit
-  (default 20 since RabbitMQ 4.0); past it the broker drops the message or
-  dead-letters it. Union-only (no flat callback).
+  adapter skipped because the consumer channel was already closed. If the
+  broker has not processed the settlement and the queue still exists, the
+  unacknowledged delivery is returned; redelivery is not guaranteed if the
+  queue was deleted or settlement had already completed. On a quorum queue,
+  returns count toward its delivery limit (default 20 since RabbitMQ 4.0);
+  after that limit the broker drops the message or dead-letters it. Union-only
+  (no flat callback).
 - `lifecycle-error` reports a lifecycle callback that threw or returned a
   promise that rejected. The failure is already isolated; the event only
   makes it visible. A failure while handling a `lifecycle-error` is dropped.

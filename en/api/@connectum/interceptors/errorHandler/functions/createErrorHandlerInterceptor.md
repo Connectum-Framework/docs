@@ -4,15 +4,17 @@
 
 > **createErrorHandlerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [errorHandler.ts:47](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/errorHandler.ts#L47)
+Defined in: [errorHandler.ts:49](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/errorHandler.ts#L49)
 
 Create error handler interceptor
 
-Catches all errors and transforms them into ConnectError instances
-with proper error codes. Recognizes SanitizableError for safe
+Catches rejections from awaiting next(req) and transforms them into
+ConnectError instances with proper error codes. Recognizes SanitizableError for safe
 client-facing messages while preserving server details for logging.
 
-IMPORTANT: This interceptor should be FIRST in the chain to catch all errors.
+Place this interceptor first to normalize rejections from downstream interceptors.
+It does not wrap response-stream iteration after next(req) returns, or errors
+from request gates that run before the interceptor chain.
 
 ## Parameters
 

@@ -4,9 +4,13 @@
 
 > **readTLSCertificates**(`options?`): `object`
 
-Defined in: [packages/core/src/TLSConfig.ts:36](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TLSConfig.ts#L36)
+Defined in: [packages/core/src/TLSConfig.ts:40](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TLSConfig.ts#L40)
 
 Read TLS certificates from configuration
+
+Explicit keyPath and certPath are used only when both are non-empty.
+Otherwise both files come from dirPath or getTLSPath(); a lone explicit
+path does not override either directory-based file.
 
 ## Parameters
 

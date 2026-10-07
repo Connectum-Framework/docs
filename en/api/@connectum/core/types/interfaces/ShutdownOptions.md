@@ -2,7 +2,7 @@
 
 # Interface: ShutdownOptions
 
-Defined in: [packages/core/src/types.ts:237](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L237)
+Defined in: [packages/core/src/types.ts:239](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L239)
 
 Graceful shutdown options
 
@@ -12,7 +12,7 @@ Graceful shutdown options
 
 > `optional` **autoShutdown?**: `boolean`
 
-Defined in: [packages/core/src/types.ts:254](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L254)
+Defined in: [packages/core/src/types.ts:256](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L256)
 
 Enable automatic graceful shutdown on signals
 
@@ -28,7 +28,7 @@ false
 
 > `optional` **forceCloseOnTimeout?**: `boolean`
 
-Defined in: [packages/core/src/types.ts:274](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L274)
+Defined in: [packages/core/src/types.ts:276](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L276)
 
 Force close every client connection when the shutdown timeout is exceeded.
 When true, all connections of every transport (HTTP/2 sessions, HTTP/1.1
@@ -58,7 +58,7 @@ true
 
 > `optional` **signals?**: `Signals`[]
 
-Defined in: [packages/core/src/types.ts:248](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L248)
+Defined in: [packages/core/src/types.ts:250](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L250)
 
 Signals to listen for graceful shutdown
 
@@ -74,7 +74,7 @@ Signals to listen for graceful shutdown
 
 > `optional` **timeout?**: `number`
 
-Defined in: [packages/core/src/types.ts:242](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L242)
+Defined in: [packages/core/src/types.ts:244](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L244)
 
 Timeout in milliseconds for graceful shutdown
 

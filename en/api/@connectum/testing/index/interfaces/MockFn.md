@@ -2,7 +2,7 @@
 
 # Interface: MockFn()\<F\>
 
-Defined in: test-fixtures/dist/index.d.ts:125
+Defined in: test-fixtures/dist/index.d.ts:126
 
 A callable spy that records every invocation.
 
@@ -17,7 +17,7 @@ that Connectum testing utilities rely on.
 
 > **MockFn**(...`args`): `ReturnType`\<`F`\>
 
-Defined in: test-fixtures/dist/index.d.ts:126
+Defined in: test-fixtures/dist/index.d.ts:127
 
 A callable spy that records every invocation.
 
@@ -40,7 +40,7 @@ that Connectum testing utilities rely on.
 
 > `readonly` **mock**: `object`
 
-Defined in: test-fixtures/dist/index.d.ts:128
+Defined in: test-fixtures/dist/index.d.ts:129
 
 Spy metadata.
 

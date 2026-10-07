@@ -4,7 +4,7 @@
 
 > **createMockDescField**(`localName`, `options?`): [`DescField`](https://protobufes.com/reference/reflection/descriptors/#field-descriptors)
 
-Defined in: test-fixtures/dist/index.d.ts:182
+Defined in: test-fixtures/dist/index.d.ts:183
 
 Create a mock [DescField](https://protobufes.com/reference/reflection/descriptors/#field-descriptors) descriptor.
 

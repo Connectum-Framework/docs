@@ -135,13 +135,8 @@ OpenTelemetry exporter endpoint
 
 > `optional` **OTEL\_SERVICE\_NAME?**: `string`
 
-OpenTelemetry service name
-
-#### Default
-
-```ts
-'connectum-service'
-```
+Optional OpenTelemetry service name. The core parser leaves it undefined
+when absent; provider defaults belong to the telemetry package.
 
 ### PORT
 

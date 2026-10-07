@@ -4,7 +4,7 @@
 
 > **assertConnectError**(`error`, `expectedCode`, `messagePattern?`): `asserts error is ConnectError`
 
-Defined in: test-fixtures/dist/index.d.ts:44
+Defined in: test-fixtures/dist/index.d.ts:45
 
 Assert that a thrown value is a [ConnectError](https://connectrpc.com/docs/web/errors) with the expected
 gRPC status code and, optionally, a message matching a pattern.
@@ -14,8 +14,9 @@ This is a TypeScript
 after a successful call the compiler narrows `error` to `ConnectError`.
 
 **Note on message format**: ConnectError messages include a code prefix,
-e.g. `[not_found] user not found`. The `messagePattern` is matched against
-the full message string. Use a `RegExp` for flexible matching.
+e.g. `[not_found] user not found`. A supplied `messagePattern` is matched
+against the full message, but matching is refused when it exceeds 1000
+characters. Use a `RegExp` for flexible matching within that limit.
 
 ## Parameters
 

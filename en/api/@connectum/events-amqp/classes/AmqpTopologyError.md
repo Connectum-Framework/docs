@@ -4,9 +4,9 @@
 
 Defined in: [packages/events-amqp/src/errors.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L97)
 
-Topology declaration or verification failed: missing exchange/queue in
-`check`/`skip` mode, or a conflicting redeclare (PRECONDITION_FAILED) in
-`assert` mode.
+Topology declaration or verification failed: a missing configured object in
+`check` mode, a missing queue when consuming in `skip` mode, or a conflicting
+redeclare (PRECONDITION_FAILED) in `assert` mode.
 
 `object` identifies the failing topology object structurally (known at the
 declare/check site — no broker-reply text parsing needed for CI drift

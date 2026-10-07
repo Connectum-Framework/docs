@@ -4,7 +4,7 @@
 
 > **CatalogCall** = \<`K`\>(`method`, `request`, `options?`) => `Promise`\<[`ConnectumCallMap`](../interfaces/ConnectumCallMap.md)\[`K`\]\[`"response"`\]\>
 
-Defined in: [packages/core/src/context.ts:113](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L113)
+Defined in: [packages/core/src/context.ts:120](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L120)
 
 The typed **unary** catalog-call surface: `call(method, request, options?)`
 keyed off [ConnectumCallMap](../interfaces/ConnectumCallMap.md). Shared by the handler [Context](../interfaces/Context.md) and

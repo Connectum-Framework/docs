@@ -4,7 +4,7 @@
 
 > **ConnectumServiceImpl**\<`Desc`\> = `{ [P in keyof Desc["method"]]: ConnectumMethodImpl<Desc["method"][P]> }`
 
-Defined in: [packages/core/src/context.ts:182](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L182)
+Defined in: [packages/core/src/context.ts:189](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L189)
 
 The full implementation of a service: one [ConnectumMethodImpl](ConnectumMethodImpl.md) per
 method. Accepted by [defineService](../functions/defineService.md) / [defineLazyService](../functions/defineLazyService.md).

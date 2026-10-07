@@ -4,14 +4,14 @@
 
 > **createMockRequest**(`options?`): `any`
 
-Defined in: test-fixtures/dist/index.d.ts:337
+Defined in: test-fixtures/dist/index.d.ts:340
 
-Create a mock ConnectRPC [UnaryRequest](https://connectrpc.com/docs/node/interceptors)
-object suitable for testing interceptors.
+Create a simplified ConnectRPC request fixture for interceptor unit tests.
 
-All fields have sensible defaults, so calling `createMockRequest()` with no
-arguments returns a fully valid request that can be passed straight into an
-interceptor under test.
+Provides common request fields and an independent, non-aborted signal.
+Service and method descriptors are minimal mocks. Tests that need
+requestMethod, contextValues or complete protobuf descriptors must supply
+those fields separately, or exercise an actual RPC transport.
 
 ## Parameters
 
@@ -25,7 +25,7 @@ Optional overrides for request fields.
 
 `any`
 
-A plain object matching the ConnectRPC `UnaryRequest` shape.
+A plain object containing simplified request fields.
 
 ## Example
 

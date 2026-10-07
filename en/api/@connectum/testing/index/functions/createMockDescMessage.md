@@ -4,7 +4,7 @@
 
 > **createMockDescMessage**(`typeName`, `options?`): [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: test-fixtures/dist/index.d.ts:210
+Defined in: test-fixtures/dist/index.d.ts:211
 
 Create a mock [DescMessage](https://protobufes.com/reference/reflection/descriptors/#types) descriptor with all required structural
 properties.

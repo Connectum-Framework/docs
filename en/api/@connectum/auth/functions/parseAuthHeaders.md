@@ -12,7 +12,7 @@ Deserializes auth context from standard headers set by an upstream
 service or gateway. Returns undefined if required headers are missing.
 
 WARNING: Only use this in trusted environments (behind mTLS, mesh, etc.).
-For untrusted environments, use createTrustedHeadersReader() instead.
+For gateway requests, use createGatewayAuthInterceptor() with a verified trust header.
 
 ## Parameters
 

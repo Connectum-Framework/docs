@@ -10,7 +10,7 @@ Merge several catalogs into one.
 
 Throws [CatalogConfigError](../classes/CatalogConfigError.md) on a duplicate `typeName`, or on a key that
 does not equal its descriptor's `typeName`. TypeScript cannot catch a duplicate
-whose two descriptors have an identical shape (polyrepo finding F3), so this
+whose two descriptors have an identical shape, so this
 runtime check is mandatory rather than optional — a silent collision would
 route calls to the wrong service.
 

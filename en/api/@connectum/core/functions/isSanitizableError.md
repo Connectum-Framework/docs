@@ -4,12 +4,13 @@
 
 > **isSanitizableError**(`err`): `err is Error & SanitizableError & { code: number }`
 
-Defined in: [packages/core/src/errors.ts:28](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/errors.ts#L28)
+Defined in: [packages/core/src/errors.ts:29](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/errors.ts#L29)
 
 Type guard for SanitizableError.
 
-Checks if the value is an object with clientMessage (string) and
-serverDetails (non-null object) properties, plus a numeric code.
+Requires an Error instance with clientMessage (string), serverDetails
+(non-null object), and code (number). A plain object with these fields
+does not satisfy the guard.
 
 ## Parameters
 

@@ -4,10 +4,12 @@
 
 > **createCatalogClient**(`options`): [`CatalogClient`](../interfaces/CatalogClient.md)
 
-Defined in: [packages/core/src/catalogClient.ts:108](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L108)
+Defined in: [packages/core/src/catalogClient.ts:114](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L114)
 
 Build a standalone [CatalogClient](../interfaces/CatalogClient.md) from a [ServiceCatalog](../type-aliases/ServiceCatalog.md) and a
 [RemoteResolver](../type-aliases/RemoteResolver.md).
+The example assumes a catalog generated from the Quickstart Greeter proto
+and that service running at the configured HTTP/2 endpoint.
 
 ## Parameters
 
@@ -23,15 +25,19 @@ Build a standalone [CatalogClient](../interfaces/CatalogClient.md) from a [Servi
 
 ```ts
 import { createCatalogClient, mapResolver } from "@connectum/core";
-import { serviceCatalog } from "./gen/catalog.ts"; // @connectum/protoc-gen-catalog
+import { createGrpcTransport } from "@connectrpc/connect-node";
+import { serviceCatalog } from "./gen/catalog.gen.ts";
 
 const client = createCatalogClient({
   catalog: serviceCatalog,
   resolver: mapResolver({
-    "fleet.v1.FleetService": createGrpcTransport({ baseUrl: process.env.FLEET_ADDR }),
+    "greeter.v1.GreeterService": createGrpcTransport({
+      baseUrl: process.env.GREETER_URL ?? "http://localhost:5000",
+    }),
   }),
 });
 
 // Fully typed off the generated catalog — same surface as ctx.call:
-const trip = await client.call("trip.v1.TripService/StartTrip", { vehicleId });
+const greeting = await client.call("greeter.v1.GreeterService/SayHello", { name: "Alice" });
+console.log(greeting.message); // "Hello, Alice!"
 ```

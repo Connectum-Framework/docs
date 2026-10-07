@@ -5,7 +5,7 @@
 Defined in: [packages/events-amqp/src/errors.ts:52](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L52)
 
 The broker returned a `mandatory` message as unroutable
-(`basic.return`): no queue is bound for the routing key.
+(`basic.return`): no queue matched the configured exchange bindings.
 
 ## Extends
 

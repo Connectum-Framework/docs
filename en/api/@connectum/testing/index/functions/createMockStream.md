@@ -4,7 +4,7 @@
 
 > **createMockStream**\<`T`\>(`items`, `options?`): [`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols)\<`T`\>
 
-Defined in: test-fixtures/dist/index.d.ts:370
+Defined in: test-fixtures/dist/index.d.ts:373
 
 Create an [AsyncIterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols) that yields `items` sequentially.
 

@@ -4,7 +4,7 @@
 
 Defined in: [packages/events-amqp/src/errors.ts:116](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L116)
 
-Payload encoding/decoding failed in a custom serialization hook.
+Payload encoding failed in a custom serialization hook.
 
 ## Extends
 

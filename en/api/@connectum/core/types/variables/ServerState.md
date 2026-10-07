@@ -4,7 +4,7 @@
 
 > `const` **ServerState**: `object`
 
-Defined in: [packages/core/src/types.ts:201](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L201)
+Defined in: [packages/core/src/types.ts:203](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L203)
 
 Server state constants
 

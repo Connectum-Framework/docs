@@ -4,8 +4,9 @@
 
 Logger interceptor
 
-Logs every RPC call: request, response, failure and duration. Message bodies
-are logged only when `includeBodies` is set.
+Logs RPC requests, responses, failures and duration. By default, calls whose
+service type name contains `grpc.health` are excluded. Message bodies are
+logged only when `includeBodies` is set.
 
 ## Functions
 

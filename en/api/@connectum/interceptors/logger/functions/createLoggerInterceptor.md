@@ -4,11 +4,13 @@
 
 > **createLoggerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [logger.ts:212](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/logger.ts#L212)
+Defined in: [logger.ts:216](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/logger.ts#L216)
 
 Create logger interceptor
 
-Logs all RPC requests and responses with timing information.
+Logs RPC requests and responses with timing information. By default,
+skips calls whose service type name contains `grpc.health`; set
+`skipHealthCheck: false` to include them.
 Supports both unary and streaming RPCs.
 
 ## Parameters
@@ -70,6 +72,7 @@ import { createLoggerInterceptor } from '@connectum/interceptors';
 
 const transport = createConnectTransport({
   baseUrl: 'http://localhost:5000',
+  httpVersion: '1.1',
   interceptors: [
     createLoggerInterceptor({ level: 'debug' }),
   ],
