@@ -124,7 +124,8 @@ Connectum builds on neither API. Everything it *does* use is covered in
 **Takeaway:** the measured limitation applies to `Bun.serve`; it does not apply to a
 Connectum server on Bun: `createServer()` builds on
 `node:http2`, whose server side delivers trailers on Bun as well — including
-plaintext h2c. **Connect + gRPC-Web over HTTP/1.1 work on every runtime.** If you
+plaintext h2c. **Connect over HTTP/1.1 was verified on Node.js and Bun in the tested
+configurations below.** If you
 write your own `Bun.serve` handler and must expose gRPC, terminate it at a
 **sidecar proxy** (Envoy / Caddy) and let the runtime serve Connect / HTTP-1.1.
 This project has not validated equivalent deployments on Deno or Cloudflare Workers.

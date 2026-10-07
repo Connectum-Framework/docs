@@ -42,7 +42,7 @@ graph TB
 
 ## Namespace
 
-Create a dedicated namespace for your Connectum services. The manifest creates a `connectum` namespace with standard labels and an optional Istio sidecar injection annotation.
+Create a dedicated namespace for your Connectum services. The linked example manifest creates the `car-sharing` namespace, labels it for the car-sharing application, and enables Istio sidecar injection.
 
 See [namespace.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/namespace.yaml) for the full manifest.
 
