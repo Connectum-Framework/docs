@@ -39,8 +39,6 @@ initProvider({ serviceName: 'orders-service' });
 const interceptor = createOtelInterceptor({ serverPort: 5000 });
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Key Entry Points
 
 | Entry point | Use it to |
@@ -49,8 +47,6 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `getProvider` / `OtelProvider` | Get the shared provider (`tracer`, `meter`, `logger`, `shutdown()`) and name its type; see [Provider management](/en/guide/observability/backends#provider-management). |
 | `createOtelInterceptor` | Instrument inbound RPCs. |
 | `createOtelClientInterceptor` | Instrument outbound RPCs and propagate context. |
-
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

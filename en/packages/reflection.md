@@ -41,16 +41,12 @@ const server = createServer({
 });
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Key Entry Points
 
 | Entry point | Use it to |
 |---|---|
 | `Reflection` | Register reflection as a server protocol. |
 | `collectFileProtos` | Collect transitive file descriptors for reflection. |
-
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

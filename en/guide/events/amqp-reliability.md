@@ -7,6 +7,10 @@ outline: deep
 
 # Run the AMQP Adapter Reliably
 
+This guide targets the documented `1.3.x` release line. Features marked `Since
+1.3.0` require `@connectum/events-amqp` 1.3.0 or later; they are unavailable
+from the published `1.2.x` package until 1.3.0 is released.
+
 `@connectum/events-amqp` publishes with per-message broker confirms and recovers
 lost connections automatically. This page shows how to tune that behavior for
 production: what a failed publish means, when the adapter retries on its own,

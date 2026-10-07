@@ -35,6 +35,18 @@ Contributor workflow pages are a separate audience. They describe how to work on
 Connectum itself and use the repository's supported Node.js and pnpm toolchain,
 not consumer-facing runtime or package-manager choices.
 
+## Prose and README guidance
+
+- Start with the reader's task or the result the page explains. Prefer concrete verbs and
+  short sentences over greetings, filler, and claims such as “production-ready” or
+  “industry-leading” unless the page defines evidence for them.
+- State technical claims at the level supported by their source. Link to the canonical
+  guide or generated API for full behavior instead of repeating a second explanation.
+- A repository README identifies that repository, gives the commands needed to start or
+  validate its work, and links to the canonical user documentation. Keep task-specific
+  operational instructions where maintainers need them; do not duplicate a guide or an
+  exhaustive API catalog.
+
 ## Page templates
 
 ### Tutorial

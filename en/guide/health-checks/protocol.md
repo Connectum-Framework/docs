@@ -101,6 +101,9 @@ Behavior follows the gRPC specification:
 
 ### Health.List
 
+`List` is part of the [gRPC health protocol](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto),
+alongside `Check` and `Watch`. It returns a snapshot of the tracked service statuses.
+
 Lists all tracked services with their statuses. Healthcheck tracks the services mounted before it in `protocols`; a service that is only declared — for example next to a mounted service in the same `.proto` file — is not tracked, and `Check` answers `NOT_FOUND` for it:
 
 ```bash

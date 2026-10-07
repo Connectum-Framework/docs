@@ -43,8 +43,6 @@ const interceptors = createDefaultInterceptors({
 });
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Key Entry Points
 
 | Entry point | Use it to |
@@ -52,8 +50,6 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `createDefaultInterceptors` | Build the ordered default chain; resilience remains opt-in. |
 | `createMethodFilterInterceptor` | Apply an interceptor to selected methods. |
 | `createErrorHandlerInterceptor` | Normalize and sanitize handler failures. |
-
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

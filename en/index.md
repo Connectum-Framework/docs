@@ -1,7 +1,7 @@
 ---
 layout: home
 title: Connectum — gRPC and ConnectRPC for Node.js
-description: Build production-ready TypeScript microservices with explicit contracts, middleware, security, observability, and operations.
+description: Build TypeScript microservices with gRPC and ConnectRPC using explicit contracts, middleware, and optional modules.
 pageClass: home-page
 docType: landing
 ---

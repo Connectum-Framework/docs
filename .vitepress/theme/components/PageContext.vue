@@ -31,7 +31,7 @@ const context = computed(() => {
         return { section: 'Migration', sectionLink: '/en/migration/', detail: undefined, detailLink: undefined };
     }
     if (path.startsWith('/en/reference/')) {
-        return { section: 'API & reference', sectionLink: '/en/reference/', detail: undefined, detailLink: undefined };
+        return { section: 'API', sectionLink: '/en/reference/', detail: undefined, detailLink: undefined };
     }
     return null;
 });

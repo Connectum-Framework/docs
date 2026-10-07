@@ -1,8 +1,15 @@
 ---
+title: Configure Telemetry Exporters
+description: Set OpenTelemetry resources, exporters, endpoints, and provider lifecycle.
+docType: how-to
 outline: deep
 ---
 
 # Backends & Configuration
+
+This guide targets the documented `1.3.x` release line. Features marked `Since
+1.3.0` are not available in the published `1.2.x` packages until the 1.3.0
+release; check the installed package version before using them.
 
 Configure OpenTelemetry exporters, provider management, and integration with observability backends like Jaeger and Grafana.
 
@@ -53,10 +60,14 @@ An unrecognized protocol value is rejected when a signal set to `otlp` reads it.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `OTEL_BSP_SCHEDULE_DELAY` | `5000` | Schedule delay (ms) |
-| `OTEL_BSP_MAX_QUEUE_SIZE` | `2048` | Max queue size |
-| `OTEL_BSP_MAX_EXPORT_BATCH_SIZE` | `512` | Max batch size |
-| `OTEL_BSP_EXPORT_TIMEOUT` | `30000` | Export timeout (ms) |
+| `OTEL_BSP_SCHEDULE_DELAY` | `1000` | Schedule delay (ms) |
+| `OTEL_BSP_MAX_QUEUE_SIZE` | `1000` | Max queued spans |
+| `OTEL_BSP_MAX_EXPORT_BATCH_SIZE` | `100` | Max spans per export batch |
+| `OTEL_BSP_EXPORT_TIMEOUT` | `10000` | Export timeout (ms) |
+
+Connectum passes these values to the trace provider's `BatchSpanProcessor`.
+Tune them against measurements from your service and collector; Connectum has
+no validated spans-per-second capacity threshold.
 
 ### Instrumentations
 

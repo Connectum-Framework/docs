@@ -23,3 +23,4 @@ Pipeline:
 ## Functions
 
 - [executeProtoSync](functions/executeProtoSync.md)
+- [parseTimeoutOption](functions/parseTimeoutOption.md)

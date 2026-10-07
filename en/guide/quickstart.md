@@ -27,7 +27,7 @@ for that route. Continue here when you want to understand each file yourself.
 ::: runtime
 == node
 - **Node.js >= 25.2.0** -- native TypeScript via [type stripping](https://nodejs.org/api/typescript.html)
-- **pnpm >= 11** -- `corepack enable && corepack prepare pnpm@latest --activate`
+- **pnpm >= 11** -- follow the [pnpm installation instructions](https://pnpm.io/installation)
 - **buf** -- installed automatically via `@bufbuild/buf` npm package
 == bun
 - **Bun >= 1.3.6** -- TypeScript runs natively, no loader needed
@@ -123,7 +123,8 @@ one `@bufbuild/protobuf`. Keep them within `@bufbuild/protobuf` `^2.16.0` and
 `@connectrpc/connect` / `@connectrpc/connect-node` `^2.2.0` — see
 [Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies).
 
-Configure `package.json`:
+Add the following fields to `package.json`, keeping the `dependencies` and
+`devDependencies` installed above:
 
 ::: runtime
 == node
@@ -221,6 +222,8 @@ Create `buf.yaml` to declare the validate dependency:
 
 ```yaml
 version: v2
+modules:
+  - path: proto
 deps:
   - buf.build/bufbuild/protovalidate
 ```
@@ -251,6 +254,7 @@ version: v2
 plugins:
   - local: protoc-gen-es
     out: gen
+    include_imports: true
     opt:
       - target=ts
       - import_extension=.ts
@@ -280,7 +284,9 @@ bun run build:proto
 ```
 :::
 
-This produces `gen/greeter_pb.ts` containing message schemas, types, and the service definition.
+This produces `gen/greeter_pb.ts` containing message schemas, types, and the service
+definition. `include_imports: true` also generates the imported validation
+descriptors under `gen/buf/validate/`, which the service module references.
 
 ::: tip Proto enums and native TypeScript
 With `erasable_syntax=true`, a proto `enum` is generated as an object: `Status.ACTIVE`
@@ -322,6 +328,8 @@ import { greeterService } from './services/greeterService.ts';
 const server = createServer({
   services: [greeterService],
   port: 5000,
+  // grpcurl uses HTTP/2; plaintext HTTP/1.1 is the default transport.
+  allowHTTP1: false,
   protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
   interceptors: createDefaultInterceptors(),
   shutdown: { autoShutdown: true },
@@ -371,15 +379,19 @@ grpcurl -plaintext -d '{"name": "Alice"}' localhost:5000 greeter.v1.GreeterServi
 grpcurl -plaintext localhost:5000 grpc.health.v1.Health/Check
 ```
 
-### HTTP/1.1 (curl)
+### ConnectRPC over HTTP/1.1 {#http11-curl}
+
+The server above uses plaintext h2c so `grpcurl` can call it. To use a browser or
+an HTTP/1.1 client such as `curl`, remove `allowHTTP1: false` (or set it to
+`true`) and restart the server. The default without TLS is HTTP/1.1.
 
 ```bash
-# Call SayHello via ConnectRPC HTTP
+# Call SayHello via ConnectRPC HTTP/1.1
 curl -X POST http://localhost:5000/greeter.v1.GreeterService/SayHello \
   -H "Content-Type: application/json" \
   -d '{"name": "Bob"}'
 
-# Health check
+# HTTP health endpoint
 curl http://localhost:5000/healthz
 ```
 
@@ -397,6 +409,9 @@ Resilience interceptors (timeout, bulkhead, circuit breaker, retry) are **opt-in
 Add them after the first call works by following the [built-in interceptor guide](/en/guide/interceptors/built-in).
 
 ## 7. Verify Validation {#7-test-validation}
+
+Use the h2c server configuration from Step 5 for this `grpcurl` command. If you
+switched to HTTP/1.1 above, restore `allowHTTP1: false` and restart the server first.
 
 The `min_len = 1` rule from Step 2 is enforced automatically by the validation interceptor:
 

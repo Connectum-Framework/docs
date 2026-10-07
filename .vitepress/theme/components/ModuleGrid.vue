@@ -28,7 +28,7 @@ const groups = computed(() => props.categories.map((category) => ({
                     <p class="module-card__symbols">{{ module.entryPoints.join(' · ') }}</p>
                     <div class="module-card__links">
                         <a :href="module.guide">Learn</a>
-                        <a :href="module.hub">Module</a>
+                        <a :href="module.hub">Overview</a>
                         <a v-if="showApi" :href="module.api">API</a>
                     </div>
                 </article>

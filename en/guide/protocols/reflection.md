@@ -54,13 +54,15 @@ import routes from '#gen/routes.js';
 const server = createServer({
   services: [routes],
   port: 5000,
+  // grpcurl and buf curl use HTTP/2; plaintext HTTP/1.1 is the default.
+  allowHTTP1: false,
   protocols: [Reflection()],
 });
 
 await server.start();
 ```
 
-That is all you need. The `Reflection()` factory creates a `ProtocolRegistration` that registers `grpc.reflection.v1.ServerReflection` and `grpc.reflection.v1alpha.ServerReflection` on your server.
+That is all you need for plaintext h2c. The `Reflection()` factory creates a `ProtocolRegistration` that registers `grpc.reflection.v1.ServerReflection` and `grpc.reflection.v1alpha.ServerReflection` on your server.
 
 ## How It Works
 
@@ -102,10 +104,9 @@ Output:
 
 ```
 greeter.v1.GreeterService
-grpc.health.v1.Health
 ```
 
-The reflection service does not list itself: the listing is taken before reflection registers. Clients still reach it, which is how `list` works.
+The reflection service does not list itself: the listing is taken before reflection registers. Clients still reach it, which is how `list` works. If you register `Healthcheck()` before `Reflection()`, the health service is also listed.
 
 ### Describe a Service
 
@@ -165,11 +166,15 @@ grpcurl -plaintext \
 
 ### With TLS
 
+The setup above is plaintext. To use these TLS commands, configure `createServer()`
+with TLS as described in [TLS configuration](/en/guide/security/tls). With TLS,
+the default `allowHTTP1: true` negotiates HTTP/1.1 or HTTP/2 through ALPN.
+
 ```bash
 # Self-signed (development)
 grpcurl -insecure localhost:5000 list
 
-# With CA certificate
+# Trust the self-signed certificate created in the TLS guide
 grpcurl -cacert keys/server.crt localhost:5000 list
 ```
 

@@ -1,4 +1,7 @@
 ---
+title: Route Remote Service Calls
+description: Resolve proto services to remote transports for catalog calls.
+docType: how-to
 outline: deep
 ---
 

@@ -1,11 +1,12 @@
 ---
 title: Kubernetes Deployment
-description: Complete Kubernetes manifests for deploying Connectum gRPC/ConnectRPC microservices with health probes, auto-scaling, and graceful shutdown.
+description: Deploy Connectum services with Kubernetes resources, health probes, autoscaling, and graceful shutdown.
+docType: how-to
 ---
 
 # Kubernetes Deployment
 
-This guide provides production-ready Kubernetes manifests for deploying Connectum services. It covers Deployment, Service, ConfigMap, Secrets, HPA, probes, and graceful shutdown integration.
+This guide explains the Kubernetes resources used to deploy Connectum services. The linked manifests are a multi-service car-sharing example; adapt names, credentials, scaling limits, and resource requests to your application before applying them.
 
 ::: tip Full Example
 Kubernetes manifests for a multi-service deployment are available in the [car-sharing/k8s](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/k8s) directory.
@@ -16,16 +17,16 @@ Kubernetes manifests for a multi-service deployment are available in the [car-sh
 ```mermaid
 graph TB
     subgraph Cluster["Kubernetes Cluster"]
-        subgraph NS["namespace: connectum"]
-            subgraph Deploy["Deployment: order-service"]
+        subgraph NS["namespace: car-sharing"]
+            subgraph Deploy["Deployments: trips, fleet, billing"]
                 POD1["Pod 1<br/>:5000"]
                 POD2["Pod 2<br/>:5000"]
                 POD3["Pod 3<br/>:5000"]
             end
-            SVC["Service: order-service<br/>ClusterIP :5000"]
-            CM["ConfigMap:<br/>order-service-config"]
-            SEC["Secret:<br/>order-service-tls"]
-            HPA["HPA: 2-10 replicas<br/>CPU 70%, Memory 80%"]
+            SVC["Services: trips, fleet, billing"]
+            CM["ConfigMaps: per role"]
+            SEC["Secret: trips internal signing key"]
+            HPA["HPAs: per role"]
         end
         INGRESS["Gateway / Ingress<br/>External Access"]
     end
@@ -63,9 +64,9 @@ For production TLS, consider using [cert-manager](https://cert-manager.io/) to a
 
 ## Deployment
 
-The core manifest. Pay close attention to probes, resource limits, and graceful shutdown configuration. A Deployment configures a rolling update strategy, pod security context, topology spread constraints, startup/liveness/readiness probes against Connectum's HTTP health endpoints, resource limits, and a `preStop` hook for graceful endpoint de-registration.
+The example Deployments configure rolling updates, pod security context, topology spread constraints, startup/liveness/readiness probes against Connectum's HTTP health endpoints, resource limits, and a `preStop` hook for endpoint de-registration.
 
-For full Deployment manifests, see the [car-sharing/k8s](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/k8s) directory — the example ships one Deployment per role (`deployment-fleet.yaml`, `deployment-billing.yaml`, `deployment-trips.yaml`).
+For full manifests, see the [car-sharing/k8s](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/k8s) directory. It ships one Deployment per role: `deployment-trips.yaml`, `deployment-fleet.yaml`, and `deployment-billing.yaml`.
 
 ## Service
 
@@ -96,47 +97,65 @@ See [rbac.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sh
 The canonical shutdown sequence and hook ordering live in [Graceful shutdown](/en/guide/server/graceful-shutdown); probe semantics and status transitions live in [Kubernetes health checks](/en/guide/health-checks/kubernetes). At deployment level, preserve this deadline invariant:
 
 ```
-preStop sleep          : 5s
-shutdown.timeout       : 30s (Connectum)
-terminationGracePeriod : 35s (Kubernetes, must be >= preStop + shutdown.timeout)
+terminationGracePeriodSeconds >= preStop duration
+                               + shutdown.timeout (connection drain)
+                               + maximum application-hook duration
+                               + safety margin
 ```
 
 ::: danger
-If `terminationGracePeriodSeconds` is shorter than the sum of `preStop` delay and `shutdown.timeout`, Kubernetes will SIGKILL the pod before Connectum finishes graceful shutdown, causing dropped requests.
+If `terminationGracePeriodSeconds` is shorter than this sum, Kubernetes can SIGKILL the
+pod before cleanup finishes. The car-sharing `deployment-trips.yaml` currently configures
+a 5-second `preStop` sleep, a 10-second `buildServer()` shutdown timeout, and a 20-second
+grace period. The remaining configured time is available for application cleanup and
+other shutdown overhead; it is not a measured hook duration or a guarantee that cleanup
+will finish. Choose the hook budget and margin from your application's shutdown work.
 :::
 
 The deployment manifest should use `/healthz` for liveness and `/readyz` for readiness, enable the HTTP health handler, and let the application move readiness to `NOT_SERVING` before drain. Do not maintain a second status or shutdown timeline in Kubernetes manifests.
 
 ## Complete Deployment Script
 
-Apply all manifests:
+The following commands mirror the car-sharing example. They create its `car-sharing` namespace and role resources; the trips Deployment also requires the internal signing key file shown below. These manifests are configuration examples, are not exercised by the automated tests, and do not install Istio or Oathkeeper. Install and configure those components separately before applying the Istio resources.
 
 ```bash
 # Create namespace
-kubectl apply -f namespace.yaml
+kubectl apply -f k8s/namespace.yaml
 
 # Deploy configuration
-kubectl apply -f configmap.yaml
-kubectl apply -f secret-tls.yaml     # if using application-level TLS
-kubectl apply -f rbac.yaml
+kubectl apply -f k8s/rbac.yaml
+node src/internalKeygen.ts ./keys trips
+kubectl -n car-sharing create secret generic trips-internal-signing-key \
+  --from-file=trips.pem=./keys/trips.pem
+kubectl apply -f k8s/configmap.yaml
 
 # Deploy service
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
-kubectl apply -f hpa.yaml
+kubectl apply -f k8s/deployment-fleet.yaml
+kubectl apply -f k8s/deployment-billing.yaml
+kubectl apply -f k8s/deployment-trips.yaml
+kubectl apply -f k8s/services.yaml
+kubectl apply -f k8s/hpa.yaml
+
+# Apply the mesh policies after Istio is installed and configured
+kubectl apply -f istio/peer-authentication.yaml
+kubectl apply -f istio/authorization-policy.yaml
+kubectl apply -f istio/destination-rule.yaml
+kubectl apply -f istio/virtual-service.yaml
+kubectl apply -f istio/gateway.yaml
 
 # Verify
-kubectl -n connectum get pods -w
-kubectl -n connectum get svc
+kubectl -n car-sharing get pods -w
+kubectl -n car-sharing get svc
 
 # Check health
-kubectl -n connectum exec -it deploy/order-service -- curl http://localhost:5000/healthz
+kubectl -n car-sharing exec -it deploy/trips -- \
+  curl -fsS --http2-prior-knowledge http://localhost:5000/healthz
 
 # View logs
-kubectl -n connectum logs -f deploy/order-service
+kubectl -n car-sharing logs -f deploy/trips
 
 # Check HPA status
-kubectl -n connectum get hpa order-service
+kubectl -n car-sharing get hpa trips
 ```
 
 ## Namespace Strategy

@@ -39,7 +39,7 @@
 
 ## Decision
 
-**Use [k6](https://k6.io/) load testing tool for comprehensive performance benchmarking of Connectum, with infrastructure for measuring baseline performance, interceptor overhead, and breaking points.**
+**Use [k6](https://k6.io/) to benchmark Connectum, measuring baseline performance, interceptor overhead, and breaking points.**
 
 ### Why k6?
 

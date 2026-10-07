@@ -1,4 +1,7 @@
 ---
+title: Read the Auth Context
+description: Access the authenticated identity within a request scope.
+docType: how-to
 outline: deep
 ---
 
@@ -89,7 +92,10 @@ const sessionAuth = createSessionAuthInterceptor({
 | `x-auth-scopes` | Space-separated scopes |
 | `x-auth-claims` | JSON-encoded filtered claims |
 
-The downstream service can read these headers with `createGatewayAuthInterceptor`, completing the trust chain.
+`createGatewayAuthInterceptor` can map these identity headers, but it still
+requires its configured `trustSource` marker. Forwarded identity headers alone
+do not establish caller trust; see [client auth interceptors](/en/guide/auth/client-interceptors)
+for a client that attaches the gateway marker.
 
 ## Testing
 

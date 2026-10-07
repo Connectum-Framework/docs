@@ -100,11 +100,11 @@ pnpm test:integration
 # Run tests for specific package
 pnpm --filter @connectum/core test
 
-# Run tests with coverage
-pnpm test -- --coverage
+# Run unit tests across packages
+pnpm test:unit
 
-# Watch mode
-pnpm --filter @connectum/core test -- --watch
+# Run integration tests across packages
+pnpm test:integration
 ```
 
 ### Protocol Interop Tests
@@ -417,20 +417,11 @@ openssl req -nodes -x509 -newkey rsa:2048 -days 3650 \
 ### Testing Workflows
 
 ```bash
-# Run tests and generate coverage
-pnpm test -- --coverage
+# Run the tests defined for a package
+pnpm --filter @connectum/core test
 
-# View coverage report
-open coverage/lcov-report/index.html
-
-# Run specific test file
-pnpm --filter @connectum/core test -- tests/Server.test.ts
-
-# Run tests matching pattern
-pnpm test -- --grep "should handle errors"
-
-# Run tests with increased timeout
-pnpm test -- --timeout 10000
+# Run only that package's unit tests
+pnpm --filter @connectum/core test:unit
 ```
 
 ### Debugging
@@ -465,8 +456,8 @@ pnpm typecheck
 # Lint all packages
 pnpm lint
 
-# Run all tests with coverage
-pnpm test -- --coverage
+# Run all tests
+pnpm test
 
 # Build all packages
 pnpm build
@@ -480,9 +471,6 @@ pnpm changeset publish
 ```bash
 # Build Docker image
 docker build -t connectum:latest .
-
-# Build with specific Dockerfile
-docker build -f Dockerfile.alpine -t connectum:alpine .
 
 # Build for specific platform
 docker buildx build --platform linux/amd64,linux/arm64 -t connectum:latest .
@@ -505,9 +493,8 @@ rm -rf node_modules packages/*/node_modules
 # Clean pnpm store
 pnpm store prune
 
-# Fresh install
-rm -rf node_modules pnpm-lock.yaml
-pnpm install
+# Reinstall dependencies without deleting the lockfile
+pnpm install --force
 ```
 
 ### Verify Setup

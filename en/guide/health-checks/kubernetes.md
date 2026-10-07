@@ -1,14 +1,26 @@
 ---
+title: Configure Kubernetes Probes
+description: Connect Kubernetes liveness and readiness probes to Connectum health status.
+docType: how-to
 outline: deep
 ---
 
 # Kubernetes Integration
 
-Configure Kubernetes liveness and readiness probes with Connectum health checks, and integrate with graceful shutdown for zero-downtime deployments.
+Configure Kubernetes liveness and readiness probes with Connectum health checks,
+and report health status during graceful shutdown.
 
 ## HTTP Probes
 
-HTTP probes are the simplest approach and work with all Kubernetes versions:
+The HTTP probe examples below use HTTP/1.1. For a plaintext Connectum server,
+keep `allowHTTP1: true` (the default). A plaintext h2c server uses
+`allowHTTP1: false`; use the gRPC probes below for that configuration.
+
+The built-in `/healthz`, `/health`, and `/readyz` endpoints report the same
+aggregate status. They do not maintain separate liveness and readiness states;
+use them only when the same dependency and service failures should affect both
+probes. See [Health protocol](/en/guide/health-checks/protocol) for the status
+model.
 
 ```yaml
 apiVersion: v1
@@ -41,9 +53,10 @@ Requires `httpEnabled: true` in the Healthcheck protocol:
 protocols: [Healthcheck({ httpEnabled: true })]
 ```
 
-## gRPC Probes (Kubernetes 1.24+)
+## gRPC Probes (Kubernetes 1.27+) {#grpc-probes-kubernetes-124}
 
-Kubernetes 1.24+ supports gRPC health probes natively:
+Built-in gRPC probes are [stable since Kubernetes 1.27](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe).
+The following probes use a plaintext gRPC endpoint:
 
 ```yaml
 livenessProbe:
@@ -62,9 +75,13 @@ readinessProbe:
 
 gRPC probes use the `grpc.health.v1.Health/Check` method directly -- no HTTP endpoint needed.
 
+Configure a plaintext HTTP/2 transport with `allowHTTP1: false` and register
+`Healthcheck()` on the server. The default plaintext HTTP/1.1 transport cannot
+serve these gRPC probes. See [Transport configuration](/en/guide/server/configuration).
+
 ## Graceful Shutdown Integration
 
-Combine health checks with lifecycle events for zero-downtime deployments:
+Report service status through lifecycle events:
 
 ```typescript
 import { createServer } from '@connectum/core';
@@ -88,7 +105,7 @@ server.on('ready', () => {
 });
 
 // When shutdown begins, mark as NOT_SERVING
-// Kubernetes stops routing traffic to this pod
+// Subsequent readiness probes observe NOT_SERVING
 server.on('stopping', () => {
   healthcheckManager.update(ServingStatus.NOT_SERVING);
 });
@@ -122,10 +139,16 @@ spec:
 
 ## Shutdown Timeline
 
-At shutdown, mark the service `NOT_SERVING` before Kubernetes removes the pod from endpoints, then leave enough grace time for request draining and hooks. See the canonical [graceful shutdown timeline](/en/guide/server/graceful-shutdown#shutdown-timeline) for the complete sequence and timing boundaries.
+The `stopping` handler marks health status `NOT_SERVING`. Pod termination and
+readiness updates are managed separately by Kubernetes. Leave enough grace time
+for `preStop`, request draining, and hooks; see the canonical
+[graceful shutdown timeline](/en/guide/server/graceful-shutdown#shutdown-timeline)
+for the complete sequence and timing boundaries.
 
 ::: danger Critical
-Always set `shutdown.timeout` to a value **less than** Kubernetes `terminationGracePeriodSeconds`. Otherwise, Kubernetes may SIGKILL the process before your shutdown hooks complete.
+`terminationGracePeriodSeconds` must cover more than `shutdown.timeout`: it also
+includes `preStop` and shutdown hooks. Use the budget described in the linked
+shutdown guide; otherwise Kubernetes may kill the process before cleanup finishes.
 :::
 
 ## Related

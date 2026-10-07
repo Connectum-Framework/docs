@@ -4,6 +4,10 @@
 
 Accepted -- 2026-06-23 (reference pattern shipped in the `car-sharing` example; a framework-level CLI command is a follow-up)
 
+For the current overlay format and commands, see [OpenAPI generation](/en/guide/openapi).
+The current example uses `x-connectum-internal` and an `internalToken` security scheme
+for internal methods; the mapping below records the original decision.
+
 Extends [ADR-024](./024-auth-authz-strategy.md) (auth/authz strategy) and [ADR-029](./029-internal-service-to-service-auth.md) (the `internal` marker).
 
 ## Context

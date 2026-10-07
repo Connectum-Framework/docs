@@ -1,4 +1,7 @@
 ---
+title: Authenticate Sessions
+description: Verify session credentials with an application-provided callback.
+docType: how-to
 outline: deep
 ---
 

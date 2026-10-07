@@ -2,13 +2,14 @@
 
 # Function: fetchFileDescriptorSetBinary()
 
-> **fetchFileDescriptorSetBinary**(`url`): `Promise`\<`Uint8Array`\<`ArrayBufferLike`\>\>
+> **fetchFileDescriptorSetBinary**(`url`, `options?`): `Promise`\<`Uint8Array`\<`ArrayBufferLike`\>\>
 
-Defined in: [utils/reflection.ts:215](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/utils/reflection.ts#L215)
+Defined in: [utils/reflection.ts:279](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/utils/reflection.ts#L279)
 
 Fetch FileDescriptorSet as binary (.binpb) from a running server via reflection.
 
-The binary output can be passed directly to `buf generate` as input.
+The binary output can be passed directly to `buf generate` as input. The same completeness
+and time-limit rules as [fetchReflectionData](fetchReflectionData.md) apply.
 
 ## Parameters
 
@@ -17,6 +18,12 @@ The binary output can be passed directly to `buf generate` as input.
 `string`
 
 Server URL (e.g., "http://localhost:5000")
+
+### options?
+
+[`ReflectionOptions`](../interfaces/ReflectionOptions.md) = `{}`
+
+Time limit of each request
 
 ## Returns
 
@@ -28,6 +35,6 @@ Binary FileDescriptorSet (.binpb format)
 
 ```typescript
 const binpb = await fetchFileDescriptorSetBinary("http://localhost:5000");
-writeFileSync("/tmp/descriptors.binpb", binpb);
-// Then: buf generate /tmp/descriptors.binpb --output ./gen
+writeFileSync(".tmp/descriptors.binpb", binpb);
+// Then: buf generate .tmp/descriptors.binpb --output ./gen
 ```

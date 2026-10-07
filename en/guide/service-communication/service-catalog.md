@@ -1,4 +1,7 @@
 ---
+title: Call Services Through the Service Catalog
+description: Route typed service calls in-process or through a remote resolver.
+docType: concept
 outline: deep
 ---
 

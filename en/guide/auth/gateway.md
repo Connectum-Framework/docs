@@ -1,4 +1,7 @@
 ---
+title: Trust Gateway Authentication
+description: Map identity headers from a trusted gateway into the request auth context.
+docType: how-to
 outline: deep
 ---
 
@@ -25,8 +28,8 @@ const gatewayAuth = createGatewayAuthInterceptor({
 ```
 
 `headerMapping` describes how trusted gateway headers become an `AuthContext`.
-`trustSource` proves that the caller is the gateway rather than a client spoofing
-identity headers. See
+`trustSource` checks a shared secret header before accepting the identity fields;
+protect that marker from direct clients with TLS or network controls. See
 [`GatewayAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/GatewayAuthInterceptorOptions)
 for the exact nested fields.
 
@@ -38,7 +41,7 @@ The `headerMapping` object maps `AuthContext` fields to the header names your ga
 |-------|----------------------|---------|
 | `subject` | User ID (string) | `x-user-id: user-123` |
 | `name` | Display name (string) | `x-user-name: John Doe` |
-| `roles` | Comma-separated roles | `x-user-roles: admin,editor` |
+| `roles` | JSON array or comma-separated roles | `x-user-roles: ["admin","editor"]` or `x-user-roles: admin,editor` |
 | `scopes` | Space-separated scopes | `x-user-scopes: read write` |
 
 ### trustSource Check
@@ -62,7 +65,7 @@ Mapped headers and the trust header are **always stripped** from the request aft
 
 ```typescript
 import { createServer } from '@connectum/core';
-import { createDefaultInterceptors } from '@connectum/interceptors';
+import { createDefaultInterceptors, createErrorHandlerInterceptor } from '@connectum/interceptors';
 import { createGatewayAuthInterceptor, createAuthzInterceptor } from '@connectum/auth';
 
 const gatewayAuth = createGatewayAuthInterceptor({
@@ -86,7 +89,12 @@ const authz = createAuthzInterceptor({
 
 const server = createServer({
   services: [routes],
-  interceptors: [...createDefaultInterceptors(), gatewayAuth, authz],
+  interceptors: [
+    createErrorHandlerInterceptor(),
+    gatewayAuth,
+    authz,
+    ...createDefaultInterceptors({ errorHandler: false }),
+  ],
 });
 
 await server.start();
