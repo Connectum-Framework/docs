@@ -19,7 +19,7 @@ to the subscriber's connection, so the broker removes it with that
 connection. RabbitMQ 4.3 and later refuse a queue that is neither
 durable nor exclusive, so `false` works only on older brokers or where the
 `transient_nonexcl_queues` deprecated feature is permitted. Subscriptions
-with `group` use a durable shared queue and ignore this option.
+with `group` use a durable shared queue by default and ignore this option.
 
 #### Default
 
