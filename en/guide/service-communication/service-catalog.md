@@ -244,6 +244,12 @@ const stock = await client.call('inventory.v1.InventoryService/CheckStock', { sk
 // ctx.stream mirrors: client.stream('...')(request) for server-streaming, etc.
 ```
 
+The plain-object request requires the upcoming `@connectum/protoc-gen-catalog`
+1.3.0 release and a regenerated `catalog.gen.ts`. With the published 1.2.x
+generator or an existing catalog, pass a full generated protobuf request
+message. See the [service-catalog migration guide](/en/migration/service-catalog)
+for the upgrade boundary.
+
 ## Error model
 
 Connectum splits **configuration mistakes** (programmer errors, thrown eagerly) from **operational failures** (runtime, mapped to RPC status codes).

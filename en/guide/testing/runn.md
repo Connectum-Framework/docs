@@ -328,10 +328,11 @@ jobs:
 
 ### Docker Compose
 
-Define an application `healthcheck` in the Dockerfile or Compose file before
-using `condition: service_healthy`. Runbooks execute inside the `api-tests`
-container: use `grpc://app:5000` or `http://app:5000` for the matching transport,
-rather than `localhost`.
+Runbooks execute inside the `api-tests` container, where `localhost` refers to
+that container. For the plaintext gRPC runbook, override its runner to use the
+Compose `app` service; the runbook's `localhost` default remains usable outside
+Compose. This example runs only the gRPC runbook and assumes the app listens for
+plaintext gRPC on port 5000.
 
 ```yaml
 services:
@@ -343,12 +344,20 @@ services:
   api-tests:
     image: ghcr.io/k1low/runn:latest
     depends_on:
-      app:
-        condition: service_healthy
+      - app
     volumes:
       - ./tests:/books
-    command: run /books/**/*.yml
+    command:
+      - run
+      - --grpc-no-tls
+      - --runner
+      - greq:grpc://app:5000
+      - /books/grpc-greeter.yml
 ```
+
+For the HTTP/1.1 runbook, restart the app with `allowHTTP1: true` and run
+`runn run --runner req:http://app:5000 /books/http-greeter.yml` instead. The
+same plaintext listener does not serve both gRPC and HTTP/1.1 modes.
 
 ## CLI Reference
 
