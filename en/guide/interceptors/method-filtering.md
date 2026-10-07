@@ -13,26 +13,21 @@ Connectum provides three approaches for per-method interceptor routing.
 
 ## Approach 1: ConnectRPC Native Per-Service/Per-Method
 
-ConnectRPC natively supports interceptors at the service and method level through `router.service()` and `router.rpc()` options:
+Connectum's `defineService()` forwards its third argument to ConnectRPC's
+`router.service()` options. Use that argument to scope interceptors to a service:
 
 ```typescript
-import type { ConnectRouter } from '@connectrpc/connect';
-import { GreeterService } from '#gen/greeter_pb.js';
+import { defineService } from '@connectum/core';
+import { GreeterService } from '#gen/greeter_pb.ts';
 
-export default (router: ConnectRouter) => {
-  // Per-service -- applies to all methods of GreeterService
-  router.service(GreeterService, greeterImpl, {
-    interceptors: [requireAuth, auditLog],
-  });
-
-  // Per-method -- applies only to SayHello
-  router.rpc(GreeterService.method.sayHello, sayHelloImpl, {
-    interceptors: [rateLimiter],
-  });
-};
+export const greeterService = defineService(GreeterService, greeterImpl, {
+  interceptors: [requireAuth, auditLog],
+});
 ```
 
-Use this approach when interceptors are tightly coupled to a specific service in your router definition.
+Use this approach when interceptors belong to one service. For one method within
+that service, use the filtering helper below. Raw router callbacks are not
+`ServiceDefinition` values accepted by `createServer({ services })`.
 
 ## Approach 2: createMethodFilterInterceptor
 
@@ -117,10 +112,9 @@ const resilience = createMethodFilterInterceptor({
     createTimeoutInterceptor({ duration: 5_000 }),
   ],
 
-  // Heavy reports: 60 second timeout + circuit breaker
+  // Heavy reports: 60 second timeout
   'report.v1.ReportService/*': [
     createTimeoutInterceptor({ duration: 60_000 }),
-    createCircuitBreakerInterceptor({ threshold: 3 }),
   ],
 
   // Admin mutations: audit logging
@@ -132,8 +126,8 @@ const resilience = createMethodFilterInterceptor({
 const server = createServer({
   services: [routes],
   interceptors: [
-    // Default chain with global timeout as fallback
-    ...createDefaultInterceptors({ timeout: { duration: 30_000 } }),
+    // Structural defaults; avoid a global timeout that would cap the 60s rule
+    ...createDefaultInterceptors(),
     resilience,
   ],
 });
@@ -153,7 +147,7 @@ const conditionalAuth: Interceptor = (next) => async (req) => {
   }
 
   // Check method kind
-  if (req.method.kind === 'server_streaming') {
+  if (req.method.methodKind === 'server_streaming') {
     attachStreamMonitoring(req);
   }
 
@@ -170,7 +164,7 @@ The built-in resilience interceptors have `skip*` options that serve a different
 | Option | Used by | Why |
 |--------|---------|-----|
 | `skipStreaming` | timeout, bulkhead, circuitBreaker, retry, fallback | Resilience patterns wrap the full call. You cannot retry a stream, timeout a long-lived connection, or replace a stream with a fallback value. |
-| `skipGrpcServices` | serializer | JSON serialization is incompatible with gRPC binary protocol. |
+| `skipGrpcServices` | serializer | Skips operational services whose names start with `grpc.`; it does not select by wire protocol. |
 | `skipHealthCheck` | logger | Convenience shortcut to reduce log noise from frequent health checks. |
 
 These options complement `createMethodFilterInterceptor`. Method filtering handles business routing ("which interceptors for which methods"), while `skip*` handles technical limitations ("this interceptor cannot operate on this call type").
@@ -179,7 +173,7 @@ These options complement `createMethodFilterInterceptor`. Method filtering handl
 
 | Scenario | Approach |
 |----------|----------|
-| Interceptor tied to a specific service in router code | ConnectRPC native (`router.service()` / `router.rpc()`) |
+| Interceptor tied to a specific service | `defineService(..., { interceptors })` |
 | Declarative routing by pattern across multiple services | `createMethodFilterInterceptor` |
 | Dynamic logic based on request content or runtime state | Custom interceptor with manual filtering |
 | Technical limitation (streaming, binary protocol) | `skip*` options on built-in interceptors |

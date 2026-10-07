@@ -1,3 +1,9 @@
+---
+title: "ADR-023: Uniform Registration API"
+description: Record explicit composition of services, interceptors, and protocols.
+docType: adr
+---
+
 # ADR-023: Uniform Registration API for Services, Interceptors, and Protocols
 
 ## Status

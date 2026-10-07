@@ -48,10 +48,10 @@ await eventBus.start();
 
 | Entry point | Use it to |
 |---|---|
-| `createEventBus` | Create the lifecycle-managed event bus. |
-| `MemoryAdapter` | Run deterministic in-memory event tests. |
-| `createBroadcastSubscribers` | Create explicit one-to-many reactor subscribers. |
-| `EventAdapterFactory` | Give each broadcast reactor its own broker connection; see [Adapter instances and factories](/en/guide/events/adapters#adapter-factory). |
+| [`createEventBus`](/en/api/@connectum/events/functions/createEventBus) | Create the lifecycle-managed event bus. |
+| [`MemoryAdapter`](/en/api/@connectum/events/functions/MemoryAdapter) | Run deterministic in-memory event tests. |
+| [`createBroadcastSubscribers`](/en/api/@connectum/events/functions/createBroadcastSubscribers) | Create explicit one-to-many reactor subscribers. |
+| [`EventAdapterFactory`](/en/api/@connectum/events/types/type-aliases/EventAdapterFactory) | Give each broadcast reactor its own broker connection; see [Adapter instances and factories](/en/guide/events/adapters#adapter-factory). |
 
 ## Learn / Configure / API Reference {#api-reference}
 

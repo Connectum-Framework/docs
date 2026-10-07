@@ -1,3 +1,9 @@
+---
+title: "ADR-006: Resilience Pattern Implementation"
+description: Record the selection of cockatiel for optional resilience interceptors.
+docType: adr
+---
+
 # ADR-006: Resilience Pattern Implementation
 
 ## Status
@@ -5,6 +11,53 @@
 **Accepted** - 2025-12-24
 
 > **Update (2026-02-06)**: Per [ADR-023](/en/contributing/adr/023-uniform-registration-api), resilience interceptors (circuit breaker, timeout, bulkhead, fallback, retry) are now **optional (opt-in)**. They are not included in the default interceptor chain of createServer(). Users explicitly attach the interceptors they need. For standalone deployments without Envoy/proxy, they are still recommended.
+
+> **Revision (2026-10-08)**: The current retry defaults and factory order below supersede the original retry configuration, chain diagram, and their ordering and retry-code rationale. The original decision is retained as history. The choice of cockatiel and the intention to cancel timed-out work remain in force.
+
+---
+
+## Current Decision (2026-10-08)
+
+`createRetryInterceptor()` uses these defaults:
+
+| Option | Default |
+| --- | --- |
+| `retryableCodes` | `Code.Unavailable`, `Code.ResourceExhausted` |
+| `maxRetries` | `3` retries after the initial attempt |
+| `initialDelay` | `200` ms |
+| `maxDelay` | `5000` ms |
+| `skipStreaming` | `true` |
+
+Backoff uses cockatiel's `ExponentialBackoff` with its default decorrelated jitter generator. `initialDelay` is a backoff parameter, not a fixed wait before every retry; the generated delay varies and is capped by `maxDelay`. Applications can override the retry options.
+
+`createDefaultInterceptors()` preserves this order for whichever interceptors are enabled:
+
+```mermaid
+flowchart TD
+    Error[errorHandler] --> Timeout[timeout]
+    Timeout --> Bulkhead[bulkhead]
+    Bulkhead --> Breaker[circuitBreaker]
+    Breaker --> Retry[retry]
+    Retry --> Fallback[fallback]
+    Fallback --> Validation[validation]
+    Validation --> Serializer[serializer]
+```
+
+Only `errorHandler` and `validation` are enabled by default. Timeout, bulkhead, circuit breaker, retry, and serializer require an explicit option; fallback requires an options object with a handler. Disabled positions are omitted without changing the relative order of the remaining interceptors. `createServer()` itself supplies no interceptors when its `interceptors` option is omitted: applications attach the factory's result explicitly.
+
+The fixed order keeps composition predictable: error handling wraps the policies, and retry is inside the circuit breaker. The factory does not insert the security, redaction, or observability steps shown in the original diagram. See the [built-in interceptor guide](/en/guide/interceptors/built-in) for configuration and the [retry API](/en/api/@connectum/interceptors/retry/functions/createRetryInterceptor) and [factory API](/en/api/@connectum/interceptors/defaults/functions/createDefaultInterceptors) for the option contracts.
+
+### Cancellation decision (2026-10-08)
+
+Timeout forwards its own deadline and caller cancellation to downstream work,
+preserves the first cancellation cause, and keeps caller cancellation effective
+after a streaming response opens. Retry uses Cockatiel's public backoff factory
+with an interruptible native timer. It awaits active attempts so cancellation
+does not release bulkhead capacity while a handler is still running. Handlers
+must observe the signal to stop I/O; cancellation does not promise rollback.
+Streaming policies remain opening-only. See the
+[built-in interceptor guide](/en/guide/interceptors/built-in#cancellation-and-streaming-scope)
+for the contract and migration consequences.
 
 ---
 
@@ -41,7 +94,7 @@
 
 ---
 
-## Decision
+## Original Decision (2025-12-24)
 
 **Use [cockatiel](https://github.com/connor4312/cockatiel) library for resilience pattern implementation in Connectum.**
 
@@ -85,11 +138,15 @@ Graceful degradation when primary service fails. User provides a handler functio
 
 #### 5. Retry
 
+The retry configuration and retry-code rationale in this original section are superseded by the 2026-10-08 decision above.
+
 Recovers from transient failures. **Only retries `ResourceExhausted` errors (Code 8)** -- all other error types are not retried because they are either permanent (InvalidArgument, NotFound) or handled by other patterns (Unavailable by circuit breaker, DeadlineExceeded by timeout).
 
 - **Default config**: `maxRetries: 5`, `timeout: 1000ms` (fixed delay)
 
 ### Interceptor Chain Order
+
+This original diagram and its ordering rationale are superseded by the 2026-10-08 factory-order decision above.
 
 ```mermaid
 flowchart TD

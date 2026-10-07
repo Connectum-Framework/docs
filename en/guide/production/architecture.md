@@ -34,13 +34,15 @@ selected independently.
 
 ## Runtime composition
 
-Every inbound network request follows one shared execution path.
+Inbound RPC requests follow one shared execution path.
 `TransportManager` owns the selected Node transport, `buildRoutes()` composes
 services and protocol registrations, the configured server interceptors run in
 order, and the matched route invokes a typed handler with a Connectum `Context`.
 
-Protocol modules such as Health Check and Reflection register additional routes
-through the same router contract. EventBus and OpenTelemetry are opt-in
+Protocol modules such as Health Check and Reflection register additional RPC routes
+through the same router contract. Optional protocol HTTP handlers, such as
+`/healthz`, run through the adapter fallback rather than the RPC interceptor chain.
+EventBus and OpenTelemetry are opt-in
 capabilities: the server coordinates the supplied EventBus lifecycle, while OTel
 instrumentation attaches through server/client interceptors and its provider.
 
@@ -75,8 +77,9 @@ Routing then depends on where the target service is mounted:
    the process boundary and enters the remote server through its resolver-supplied
    `Transport` and `connectNodeAdapter({ routes, interceptors })`.
 
-The incoming cancellation signal and remaining deadline cascade to catalog
-calls unless the caller supplies a stricter override. Inbound headers are not
+The incoming cancellation signal cascades to catalog calls unless explicitly
+replaced in call options. The timeout is clamped to the remaining incoming
+deadline, so an override can shorten it but cannot extend it. Inbound headers are not
 forwarded implicitly; only configured allow-listed headers and explicit call
 headers are propagated.
 

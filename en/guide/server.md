@@ -16,10 +16,10 @@ import { createServer } from '@connectum/core';
 import { Healthcheck } from '@connectum/healthcheck';
 import { createDefaultInterceptors } from '@connectum/interceptors';
 import { Reflection } from '@connectum/reflection';
-import routes from '#gen/routes.js';
+import { greeterService } from './services/greeterService.ts';
 
 const server = createServer({
-  services: [routes],
+  services: [greeterService],
   port: 5000,
   protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
   interceptors: createDefaultInterceptors(),

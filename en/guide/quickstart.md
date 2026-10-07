@@ -418,7 +418,7 @@ The `min_len = 1` rule from Step 2 is enforced automatically by the validation i
 ```bash
 grpcurl -plaintext -d '{"name": ""}' localhost:5000 greeter.v1.GreeterService/SayHello
 # ERROR: Code: InvalidArgument
-# Message: validation error: name: value length must be at least 1 characters [string.min_len]
+# Message: name: must be at least 1 characters [string.min_len]
 ```
 
 No application code is required: proto constraints are validated before your

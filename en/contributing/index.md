@@ -32,7 +32,7 @@ Connectum is organized as 3 independent repositories under the [Connectum-Framew
 - **Biome** for linting and formatting (`pnpm lint` / `pnpm format`)
 - **Native TypeScript** -- no `enum`, explicit `import type`, `.ts` extensions
 - **Named parameters** -- prefer options objects over positional arguments
-- Node.js `>=25.2.0` for development; published packages require `>=22.13.0`.
+- Node.js `>=26.0.0` for framework development; see [Runtime Compatibility](/en/guide/runtime-compatibility) for application requirements.
 
 ### Commits
 
@@ -50,9 +50,11 @@ Significant design decisions are documented as ADRs in the [ADR index](/en/contr
 cd connectum
 
 pnpm install          # Install dependencies
+pnpm build            # Build package dependencies before type checking
 pnpm typecheck        # Type check all packages
 pnpm test             # Run all tests
 pnpm lint             # Check code style
+pnpm lint:repo        # Check repository files outside package source
 pnpm format           # Auto-fix formatting
 pnpm changeset        # Create a changeset for versioning
 ```

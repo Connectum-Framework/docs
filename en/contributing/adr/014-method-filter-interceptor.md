@@ -1,6 +1,17 @@
+---
+title: "ADR-014: Per-Method Interceptor Routing"
+description: Record the decision to route interceptors by method patterns within one execution model.
+docType: adr
+---
+
 # ADR-014: Per-Method Interceptor Routing (createMethodFilterInterceptor)
 
-**Status:** Accepted - 2026-02-07
+**Status:** Accepted - 2026-02-07; revised - 2026-10-08
+
+**Revision (2026-10-08):** Keep the implemented `MethodFilterMap` API. The
+previously proposed `MethodFilterOptions`, options overload, and filter-wide
+`skipStreaming` are cancelled. Method patterns apply to both unary and streaming
+calls; each nested interceptor owns its call-kind policy.
 
 **Deciders:** Tech Lead, Platform Team
 
@@ -109,19 +120,6 @@ import type { Interceptor } from "@connectrpc/connect";
  */
 type MethodFilterMap = Record<string, Interceptor[]>;
 
-interface MethodFilterOptions {
-  /**
-   * Per-method interceptor routing map.
-   */
-  methods: MethodFilterMap;
-
-  /**
-   * Skip streaming calls for all interceptors in this filter.
-   * @default false
-   */
-  skipStreaming?: boolean;
-}
-
 /**
  * Create a single interceptor that routes to per-method interceptors
  * based on wildcard pattern matching.
@@ -137,11 +135,28 @@ function createMethodFilterInterceptor(
   methods: MethodFilterMap
 ): Interceptor;
 
-// Overload with options
-function createMethodFilterInterceptor(
-  options: MethodFilterOptions
-): Interceptor;
 ```
+
+### Streaming policy
+
+The filter applies the same matching and composition rules to unary and streaming
+calls. It does not inspect or consume stream messages itself. A matching
+interceptor receives the call and decides whether and how to handle streaming.
+
+The timeout, retry, bulkhead, circuit-breaker, and fallback interceptors already
+have their own `skipStreaming` policy, enabled by default. Their guards leave
+other matching middleware, such as authentication and logging, active. Skipping
+the entire filter would also bypass those other interceptors.
+
+The cancelled options form added a convenience for excluding a whole group of
+custom middleware from streaming. No separate need for that group option was
+established in the reviewed framework or examples. A standard custom interceptor
+can compose a call-kind guard when an application needs it. Retaining the map
+keeps the routing API focused; it does not imply that external applications can
+never need such a guard.
+
+See [Per-Method Interceptor Routing](/en/guide/interceptors/method-filtering) for
+the map API and the distinction between method routing and nested `skip*` policies.
 
 ### Execution Order
 
@@ -293,14 +308,13 @@ createTimeoutInterceptor({
 
 **Modified files:**
 - `packages/interceptors/src/index.ts` -- export createMethodFilterInterceptor
-- `packages/interceptors/src/types.ts` -- MethodFilterMap, MethodFilterOptions types
+- `packages/interceptors/src/types.ts` -- MethodFilterMap type
 
 **Tests:**
 - Pattern matching: *, Service/*, Service/Method
 - Execution order: global -> service -> exact
 - Empty pattern array (no-op)
 - Multiple matching patterns
-- skipStreaming option
 - Integration with existing interceptors
 
 ---
@@ -321,3 +335,4 @@ createTimeoutInterceptor({
 |------|--------|--------|
 | 2026-02-07 | Tech Lead | Initial ADR: Per-Method Action Hooks (rejected after review) |
 | 2026-02-07 | Tech Lead | Rewrite: createMethodFilterInterceptor (single interceptor model). Status: Accepted |
+| 2026-10-08 | Maintainer revision | Retain the map API; cancel MethodFilterOptions, the options overload, and filter-wide skipStreaming. Nested interceptors retain their own streaming policies. |

@@ -1,8 +1,19 @@
+---
+title: "ADR-029: Internal Service-to-Service Authentication"
+description: Record internal method markers and issuer-bound service identity verification.
+docType: adr
+---
+
 # ADR-029: Internal (service-to-service) auth, distinct from `public`
 
 ## Status
 
 Accepted -- 2026-06-21 (design ratified; implementation is a follow-up)
+
+The status qualifier and motivating example below describe the decision at that date.
+The current authentication package exports the internal interceptor and trust-source
+factories. Use [Internal Methods](/en/guide/auth/proto-authz#internal-methods)
+for implemented behavior and configuration.
 
 Tracks [#171](https://github.com/Connectum-Framework/connectum/issues/171). Extends [ADR-024](./024-auth-authz-strategy.md) (auth/authz strategy).
 

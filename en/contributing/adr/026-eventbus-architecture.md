@@ -1,3 +1,9 @@
+---
+title: "ADR-026: EventBus Architecture"
+description: Record proto-first event routing, middleware, adapters, and lifecycle integration.
+docType: adr
+---
+
 # ADR-026: EventBus Architecture
 
 ## Status

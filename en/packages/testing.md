@@ -32,13 +32,18 @@ install missing peers automatically; on Yarn, add them yourself — see
 
 ## Start Here {#quick-start}
 
+Use the service and generated `GreeterService` descriptor from
+[Quickstart](/en/guide/quickstart).
+
 ~~~typescript
+import assert from 'node:assert/strict';
 import { createClient } from '@connectrpc/connect';
 import { withTestServer } from '@connectum/testing';
 
 await withTestServer({ services: [greeterService] }, async (server) => {
   const client = createClient(GreeterService, server.transport);
   const response = await client.sayHello({ name: 'Ada' });
+  assert.equal(response.message, 'Hello, Ada!');
 });
 ~~~
 

@@ -30,7 +30,7 @@ service UserService {
     default_policy: "deny"
   };
 
-  // Public endpoint -- skip authentication and authorization
+  // Public endpoint -- authn must also skip this method (see setup below)
   rpc GetProfile(GetProfileRequest) returns (GetProfileResponse) {
     option (connectum.auth.v1.method_auth) = { public: true };
   }
@@ -42,7 +42,7 @@ service UserService {
     };
   }
 
-  // Requires both "users:write" scope
+  // Requires the "users:write" scope
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
     option (connectum.auth.v1.method_auth) = {
       requires: { scopes: ["users:write"] }
@@ -60,16 +60,16 @@ service UserService {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `default_policy` | `string` | `"allow"` or `"deny"` when no rule matches |
+| `default_policy` | `string` | `"allow"` or `"deny"` when no proto requirements apply; precedes programmatic rules |
 | `default_requires` | `AuthRequirements` | Default roles/scopes for all methods |
-| `public` | `bool` | Mark all methods as public (skip authn + authz) |
+| `public` | `bool` | Skip proto authz for all methods; also configure authentication `skipMethods` |
 | `internal` | `bool` | Mark all methods as internal (service-to-service). Skips end-user JWT auth; requires a trust marker from `createInternalAuthInterceptor`. Since 1.1.0. See [ADR-029](/en/contributing/adr/029-internal-service-to-service-auth). |
 
 #### `method_auth` (method-level)
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `public` | `bool` | Skip authentication and authorization |
+| `public` | `bool` | Skip proto authz; also configure authentication `skipMethods` |
 | `requires` | `AuthRequirements` | Required roles and/or scopes |
 | `policy` | `string` | Override service-level default policy |
 | `internal` | `bool` | Mark the method as internal (service-to-service). Distinct from `public`: world-open vs. trusted-caller-only. Since 1.1.0. |
@@ -81,7 +81,9 @@ service UserService {
 | `roles` | `repeated string` | **any-of** -- user needs at least one |
 | `scopes` | `repeated string` | **all-of** -- user needs every scope |
 
-Method-level options always override service-level defaults.
+Explicit method-level fields override their service-level counterparts. An
+omitted field inherits the service setting; for the optional booleans, explicit
+`false` can override service-level `true`.
 
 ### Generating Code for Annotated Protos
 
@@ -128,11 +130,15 @@ import { createProtoAuthzInterceptor } from '@connectum/auth';
 const authz = createProtoAuthzInterceptor();
 ```
 
-That's it -- the interceptor reads proto options at runtime. No explicit rules needed.
+The interceptor reads proto options at runtime. Authentication remains a
+separate interceptor; it does not automatically learn which methods are public
+or internal. Configure the chain and method lists as shown below.
 
 ### With Fallback Rules
 
-Combine proto options with programmatic rules for methods without proto annotations:
+Combine proto options with fallback code-based rules. They run only when the
+resolved proto options make no decision. An inherited service policy counts as
+a proto decision even if a method has no annotation of its own.
 
 ```typescript
 import { createProtoAuthzInterceptor } from '@connectum/auth';
@@ -148,33 +154,24 @@ const authz = createProtoAuthzInterceptor({
 
 ## Decision Flow
 
-The interceptor resolves authorization in this priority:
+The interceptor checks the following stages in order. Every allow passes the
+request to the next interceptor; every deny throws and ends authorization.
 
-```mermaid
-flowchart TD
-    Start[Resolve method authorization] --> Public{Proto public?}
-    Public -->|yes| Allow[Allow · skip authn and authz]
-    Public -->|no| Internal{Proto internal?}
-    Internal -->|yes| Trusted{Auth context exists?}
-    Trusted -->|no| Unauthenticated[Reject · Unauthenticated]
-    Trusted -->|yes| InternalRequires{Proto requires?}
-    InternalRequires -->|no| Allow
-    InternalRequires -->|yes| Requirements[Evaluate roles and scopes]
-    Internal -->|no| Requires{Proto requires?}
-    Requires -->|yes| HasContext{Auth context exists?}
-    HasContext -->|no| Unauthenticated
-    HasContext -->|yes| Requirements
-    Requires -->|no| Policy{Proto policy?}
-    Requirements --> Policy
-    Policy -->|yes| ProtoResult[Apply allow or deny]
-    Policy -->|no| Rules{Programmatic rule matches?}
-    Rules -->|yes| RuleResult[Apply matching rule]
-    Rules -->|no| Callback{authorize callback?}
-    Callback -->|yes| CallbackResult[Apply callback result]
-    Callback -->|no| Default[Apply defaultPolicy · deny by default]
-```
+| Order | Condition | Outcome |
+|---|---|---|
+| 1. Proto `public` | Resolved method is public | Allow through this authorization interceptor without checking context. This does not configure authentication; add the method to authn `skipMethods` separately. |
+| 2. Proto `internal` | Resolved method is internal | A missing `AuthContext` throws `Unauthenticated`. If `requires` is `undefined`, allow any caller whose trusted internal context was established upstream. If `requires` is defined, continue to the requirements check below; internal identity and roles/scopes compose inclusively. |
+| 3. Proto `requires` | Requirements are defined, including for an internal method | Missing context throws `Unauthenticated`. Satisfied roles/scopes allow immediately, even if a resolved proto policy is `deny`. Unsatisfied requirements throw `AuthzDeniedError` (`PermissionDenied`) without checking policy, rules, or callback. |
+| 4. Proto policy | No earlier proto decision; resolved policy is `allow` or `deny` | `allow` passes the request; `deny` throws `AuthzDeniedError` (`PermissionDenied`). An unset policy continues. |
+| 5. Programmatic rules | No proto decision; inspect rules in order | The first method-matching rule with no `requires` matches unconditionally, even without context. A rule with `requires` is skipped if context is missing or its requirements fail; evaluation continues. A matching allow passes the request; a matching deny throws `AuthzDeniedError` (`PermissionDenied`). If no rule matches, continue. |
+| 6. `authorize` callback | No earlier decision and a callback is configured | Missing context throws `Unauthenticated`. The callback receives the context and method. `true` passes the request; `false` throws `ConnectError` (`PermissionDenied`). The callback is terminal and is not followed by `defaultPolicy`. |
+| 7. `defaultPolicy` | No earlier decision and no callback is configured | `allow` passes the request, with or without context. `deny` throws `Unauthenticated` when context is missing and `ConnectError` (`PermissionDenied`) when context exists. |
 
-Proto options take priority over programmatic rules. This means you can define fine-grained access in `.proto` files and use programmatic rules as a safety net.
+For internal methods, `requires === undefined` is distinct from a defined
+requirements object: the former allows a trusted internal caller immediately;
+the latter requires a context and evaluates its roles/scopes. An object with
+empty role and scope lists is still defined and passes the requirements check
+when context exists.
 
 ## Syncing Public Methods with Authentication
 
@@ -182,24 +179,76 @@ Use `getPublicMethods()` to extract public method patterns from proto options an
 
 ```typescript
 import { createJwtAuthInterceptor, createProtoAuthzInterceptor, getPublicMethods } from '@connectum/auth';
-import { UserService } from '#gen/user_pb.js';
-import { HealthService } from '#gen/health_pb.js';
+import { UserService } from '#gen/user/v1/user_pb.ts';
 
-const publicMethods = getPublicMethods([UserService, HealthService]);
-// ["user.v1.UserService/GetProfile", "grpc.health.v1.Health/Check"]
+const publicMethods = getPublicMethods([UserService]);
+// ["user.v1.UserService/GetProfile"] for the proto above
 
 const jwtAuth = createJwtAuthInterceptor({
   jwksUri: 'https://auth.example.com/.well-known/jwks.json',
-  skipMethods: [
-    ...publicMethods,
-    'grpc.reflection.v1.ServerReflection/*',
-  ],
+  skipMethods: publicMethods,
 });
 
 const authz = createProtoAuthzInterceptor({ defaultPolicy: 'deny' });
 ```
 
 This keeps the single source of truth in `.proto` files -- mark a method as `public` once and both authn and authz respect it.
+
+`getPublicMethods` reads Connectum options only. Standard gRPC Health and
+Reflection protos carry no such annotations, so these services are not
+automatically public. If you intentionally expose their RPCs without
+credentials, add their exact service patterns to authentication `skipMethods`
+and add unconditional allow rules to proto authz: `grpc.health.v1.Health/*`,
+`grpc.reflection.v1.ServerReflection/*`, and
+`grpc.reflection.v1alpha.ServerReflection/*`. The proto interceptor has no
+`skipMethods` option. A server-level [request gate](/en/guide/security/request-admission)
+is a separate check and must also admit those requests. HTTP health endpoints
+are outside this RPC chain.
+
+### Internal methods
+
+An `internal` annotation does not authenticate a caller on its own. Skip these
+methods in JWT authentication and install an internal interceptor before proto
+authz. Its trust source must authenticate the calling service:
+
+```typescript
+import {
+  createJwtAuthInterceptor, createInternalAuthInterceptor, createProtoAuthzInterceptor,
+  getInternalMethods, getPublicMethods, meshIdentityTrust,
+} from '@connectum/auth';
+import { createDefaultInterceptors, createErrorHandlerInterceptor } from '@connectum/interceptors';
+
+const descriptors = [UserService];
+const internalMethods = getInternalMethods(descriptors);
+const interceptors = [
+  createErrorHandlerInterceptor(),
+  createJwtAuthInterceptor({
+    jwksUri: 'https://auth.example.com/.well-known/jwks.json',
+    issuer: 'https://auth.example.com/',
+    audience: 'my-api',
+    skipMethods: [...getPublicMethods(descriptors), ...internalMethods],
+  }),
+  createInternalAuthInterceptor({
+    internalMethods,
+    trustSource: meshIdentityTrust({
+      allowlist: [{
+        principal: 'cluster.local/ns/default/sa/worker',
+        roles: ['worker'],
+      }],
+    }),
+  }),
+  createProtoAuthzInterceptor({ defaultPolicy: 'deny' }),
+  ...createDefaultInterceptors({ errorHandler: false }),
+];
+```
+
+This example requires a mesh that authenticates the peer and overwrites
+`x-forwarded-client-principal`; direct callers must not be able to supply it.
+Without a mesh, use [`signedTokenTrust`](/en/api/@connectum/auth/functions/signedTokenTrust)
+with per-issuer keys. `createProtoAuthzInterceptor` consumes the resulting
+`AuthContext`; the upstream internal interceptor establishes the trust boundary.
+See [ADR-029](/en/contributing/adr/029-internal-service-to-service-auth) for the
+deployment requirements. Do not mark a method both public and internal.
 
 ## Resolution Details
 
@@ -224,9 +273,13 @@ Resolved options are cached in a `WeakMap` keyed by method descriptor. After the
 |----------|-------|
 | Unauthenticated + requires roles/scopes | `Code.Unauthenticated` |
 | Authenticated but roles/scopes not met | `Code.PermissionDenied` via `AuthzDeniedError` |
-| Default policy = deny, no match | `Code.PermissionDenied` |
+| Interceptor default policy = deny, no match, authenticated | `Code.PermissionDenied` |
+| Interceptor default policy = deny, no match, unauthenticated | `Code.Unauthenticated` |
 
-`AuthzDeniedError` carries server-side details (rule name, required roles/scopes) while exposing only "Access denied" to clients via the `SanitizableError` protocol.
+`AuthzDeniedError` carries server-side details such as the rule name. Put
+`createErrorHandlerInterceptor()` before authz so it converts this error through
+the `SanitizableError` protocol and exposes only "Access denied". Without that
+handler, the error's original message includes the rule name.
 
 ## Full Example
 
@@ -238,7 +291,7 @@ import {
   createProtoAuthzInterceptor,
   getPublicMethods,
 } from '@connectum/auth';
-import { UserService } from '#gen/user_pb.js';
+import { UserService } from '#gen/user/v1/user_pb.ts';
 
 const publicMethods = getPublicMethods([UserService]);
 

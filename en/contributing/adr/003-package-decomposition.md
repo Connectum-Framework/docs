@@ -1,8 +1,19 @@
+---
+title: "ADR-003: Package Decomposition Strategy"
+description: Record the modular package architecture and its original dependency layers.
+docType: adr
+---
+
 # ADR-003: Package Decomposition Strategy
 
 ## Status
 
 **Accepted** - 2025-12-22
+
+The package lists, dependency snapshots, and templates below record the dated
+decision and its updates. For the complete current module set and dependency graph,
+use [Packages](/en/packages/) and [Architecture](/en/guide/production/architecture).
+Current publication uses compiled JavaScript, as described in [ADR-001](/en/contributing/adr/001-native-typescript-migration).
 
 > **Update (v0.2.0-beta.2, 2026-02-12)**: Package `@connectum/utilities` removed. All utilities (~800 lines) had better alternatives as Node.js built-ins or npm packages: `retry()` replaced by `cockatiel`, `sleep()` by `node:timers/promises`, `withTimeout()` by `AbortSignal.timeout()`, `LRUCache` by `lru-cache` npm. Configuration module (`ConnectumEnvSchema`, `parseEnvConfig`) moved to `@connectum/core/config`.
 >

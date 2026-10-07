@@ -15,14 +15,14 @@ best at.
 | Mechanism | Shape | Use it when | Connectum API |
 |---|---|---|---|
 | **`ctx.call` / `ctx.stream`** | synchronous request → response | you need the **answer now** to continue (validation, a lookup, a pre-check) | built in — the [service catalog](/en/guide/service-communication/service-catalog) |
-| **EventBus** | asynchronous fire-and-forget | you want to **announce a fact** and let any number of consumers react, decoupled in time | built in — [`@connectum/events`](/en/guide/events) |
+| **EventBus** | asynchronous announcement | you want to **announce a fact** and let any number of consumers react, decoupled in time | built in — [`@connectum/events`](/en/guide/events) |
 | **Durable saga** | multi-step durable workflow with compensating actions | a workflow **spans several services** and needs explicit recovery steps for partial progress | the framework serves the RPCs; an external durable engine ([Temporal](https://temporal.io)) owns the orchestration |
 
 The decision is about **coupling in time** and **failure semantics**, not about
 performance. Ask, in order:
 
 1. **Do I need the reply to proceed?** → `ctx.call` (synchronous).
-2. **Am I just announcing that something happened?** → EventBus (fire-and-forget).
+2. **Am I just announcing that something happened?** → EventBus (asynchronous announcement).
 3. **Does this operation span services and need durable progress plus explicit**
    **compensating actions?** → a durable saga.
 
@@ -91,7 +91,10 @@ events.service(PayrollEventHandlers, {
 
 The adapter is pluggable — an in-memory adapter for tests, NATS / Kafka / Redis /
 AMQP in production (see [Adapters](/en/guide/events/adapters)). The publisher and
-subscriber never reference each other; they agree only on the **topic**.
+subscriber never reference each other; they agree on the **topic** and payload
+schema. Await `publish()` to observe publish failures. With a broker, this does
+not wait for a subscriber's business logic; `MemoryAdapter` awaits local handlers
+and therefore has different completion semantics in tests.
 
 **Trade-off:** you gain decoupling and resilience, but lose the immediate answer
 and the simple call-stack. There is **no return value** and **no built-in
@@ -137,10 +140,14 @@ flowchart LR
 
     Failure[Any activity fails] -.-> Reverse[Compensations run in reverse]
     Reverse --> Revoke[revoke access]
-    Revoke --> Teardown[teardown payroll]
+    Revoke --> RevokeTimeOff[revoke time off]
+    RevokeTimeOff --> Teardown[teardown payroll]
     Teardown --> Offboard[offboard employee]
     Offboard --> Failed[FAILED]
 ```
+
+The compensation chain shows the full registered stack; a failure earlier in
+the workflow runs only the actions registered up to that point.
 
 A thin **gateway** RPC starts the workflow and exposes its status, so callers see
 an ordinary service while the durable machinery runs behind it. The gateway can

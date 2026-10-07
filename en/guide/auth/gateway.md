@@ -7,7 +7,7 @@ outline: deep
 
 # Gateway Authentication
 
-`createGatewayAuthInterceptor` reads pre-authenticated identity from headers injected by an API gateway (Kong, Envoy, Traefik, etc.). The gateway has already verified the token -- the service only needs to extract the identity.
+`createGatewayAuthInterceptor` reads identity headers from a gateway that has already authenticated the caller. Before accepting those fields, the interceptor checks a configured trust header. It does not verify the end-user token itself.
 
 ## Configuration
 
@@ -28,8 +28,11 @@ const gatewayAuth = createGatewayAuthInterceptor({
 ```
 
 `headerMapping` describes how trusted gateway headers become an `AuthContext`.
-`trustSource` checks a shared secret header before accepting the identity fields;
-protect that marker from direct clients with TLS or network controls. See
+`trustSource` checks a header value before accepting the identity fields. The
+example uses a shared secret; the matcher also supports IPv4 CIDR values, which
+still rely on a trusted upstream setting the header rather than a socket peer
+check. Remove or overwrite client-supplied identity and trust headers at the
+gateway, restrict direct access to the service, and protect the hop with TLS. See
 [`GatewayAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/GatewayAuthInterceptorOptions)
 for the exact nested fields.
 
@@ -46,7 +49,7 @@ The `headerMapping` object maps `AuthContext` fields to the header names your ga
 
 ### trustSource Check
 
-The `trustSource` check verifies that the request actually came from a trusted gateway, not a direct client spoofing headers:
+The `trustSource` check accepts requests carrying one of the configured values. A caller who knows the shared secret can also satisfy this check, so deployment controls are part of the trust boundary:
 
 ```typescript
 trustSource: {
@@ -59,7 +62,16 @@ If the header is missing or the value does not match any of the `expectedValues`
 
 ## Header Stripping
 
-Mapped headers and the trust header are **always stripped** from the request after extraction. This prevents downstream services or handlers from seeing (and potentially trusting) these headers if the request is forwarded.
+On an admitted request, the interceptor deletes the mapped headers, the trust
+header, and any additional `stripHeaders`. It also deletes them on methods listed
+in `skipMethods`, even though authentication is skipped there. Failed trust or
+subject checks stop the call before downstream interceptors run.
+
+With the default `propagateHeaders: false`, the deleted headers remain absent.
+Enabling `propagateHeaders` writes the verified identity back using the standard
+`x-auth-*` names, including all non-empty claims that fit the header limit. This
+option does not restore the gateway trust secret. Choose it only when the next
+hop needs those fields; gateway authentication has no `propagatedClaims` filter.
 
 ## Full Example
 
@@ -99,6 +111,18 @@ const server = createServer({
 
 await server.start();
 ```
+
+## Verify
+
+Use a local test secret and call the protected method with both that marker and
+the mapped subject. Repeat with no marker, a wrong marker, and no subject; each
+must return `Code.Unauthenticated`. Supplying identity headers alone must not
+authenticate the caller. Inspect the headers seen by the handler to confirm the
+mapped and trust headers are absent with default propagation settings.
+
+If a client gateway interceptor is rejected, compare its fixed `x-auth-subject`
+and `x-auth-roles` names with the server's mapping. A trust header match does
+not compensate for a mismatched subject header.
 
 ## Related
 

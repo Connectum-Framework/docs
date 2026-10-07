@@ -1,3 +1,9 @@
+---
+title: "ADR-030: OpenAPI Generation with Proto Authorization"
+description: Record a generated OpenAPI contract and authorization overlay in the car-sharing example.
+docType: adr
+---
+
 # ADR-030: OpenAPI generation with proto-authz overlay
 
 ## Status

@@ -51,7 +51,7 @@ backoff come from amqplib's built-in recovery. For production settings, continue
 | [`isAutoRetriablePublishError`](/en/api/@connectum/events-amqp/functions/isAutoRetriablePublishError) | Tell whether a publish failure belongs to the error classes `publishRetry` retries. |
 | [`AmqpTopologyError`](/en/api/@connectum/events-amqp/classes/AmqpTopologyError) | Identify a failed declaration through its `object` field. |
 | [`FakeAmqpAdapter`](/en/api/@connectum/events-amqp/testing/functions/FakeAmqpAdapter) | Test failure handling without a broker (`@connectum/events-amqp/testing`). |
-| `AmqpRecoveryOptions` | Bound the initial connect (`initialConnectMaxRetries`) and set the reconnect delay schedule, including a custom `backoff` hook (since 1.3.0). See [Set your own reconnect delay](/en/guide/events/amqp-reliability#custom-backoff-hook). |
+| [`AmqpRecoveryOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpRecoveryOptions) | Bound the initial connect (`initialConnectMaxRetries`) and set the reconnect delay schedule, including a custom `backoff` hook (since 1.3.0). See [Set your own reconnect delay](/en/guide/events/amqp-reliability#custom-backoff-hook). |
 
 ## Reliable Publishing {#reliable-publishing}
 

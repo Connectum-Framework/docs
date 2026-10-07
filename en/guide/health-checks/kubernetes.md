@@ -96,7 +96,7 @@ const server = createServer({
   protocols: [Healthcheck({ httpEnabled: true })],
   shutdown: {
     autoShutdown: true,
-    timeout: 25000,  // Less than Kubernetes terminationGracePeriodSeconds
+    timeout: 25000,  // Connection drain only; budget hooks separately
   },
 });
 
@@ -119,7 +119,8 @@ await server.start();
 apiVersion: v1
 kind: Pod
 spec:
-  terminationGracePeriodSeconds: 30  # Must be > shutdown.timeout
+  # Include preStop, connection drain, bounded hooks, and a safety margin.
+  terminationGracePeriodSeconds: 45
   containers:
     - name: my-service
       image: my-service:latest

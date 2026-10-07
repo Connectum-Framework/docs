@@ -57,6 +57,10 @@ logger.emit({
 });
 ```
 
+If your application imports `@opentelemetry/api-logs` directly, declare it as
+an application dependency; it is an implementation dependency of
+`@connectum/otel`, not a package your application should rely on transitively.
+
 ::: info Trace Correlation
 When an active span exists, the OpenTelemetry SDK automatically includes `trace_id` and `span_id` in log records. No manual correlation needed.
 :::

@@ -11,10 +11,12 @@ for the first time and someone looking up one exact interface or option. Pages
 stay useful when each has one reader outcome, one content type, and one canonical
 owner.
 
-The source code is the technical oracle. Verify public symbols and defaults
-against `packages/<package>/src`, exports, and `package.json`. Generated TypeDoc
-is the canonical exact API reference; hand-written pages teach, explain, and
-route readers to it.
+Verify technical claims against the implementation in `packages/<package>/src`,
+exports, and `package.json`. Documentation and accepted specifications own the
+behavioral contract. If the implementation contradicts an accepted decision,
+record both sources and obtain the contract owner's decision before rewriting
+either side. Generated TypeDoc is the canonical exact API reference;
+hand-written pages teach, explain, and route readers to it.
 
 ## Content types
 
@@ -343,6 +345,11 @@ Documentation contract failures are user-facing defects.
 1. Verify every named symbol, option, field, default, and export against current
    package source and metadata. Do not document removed APIs.
 2. Check code blocks, imports, `.env` examples, and diagrams as carefully as prose.
+   Follow each runnable sequence from its stated working directory with its stated
+   dependencies, generated files, and environment. For conditional behavior, verify
+   the condition and any explicit option that overrides the default. Compare the
+   actual response, log, exported value, or exit status with the promised result;
+   successful parsing or a matching symbol name alone is not verification.
 3. The license is Apache-2.0.
 4. Published packages support Node.js `>=22.13.0`. Consumer projects that execute
    TypeScript source directly follow the higher development/runtime prerequisite
@@ -381,6 +388,8 @@ Do not describe a client-side compatibility page as a permanent HTTP redirect.
 ### Accuracy and duplication
 
 - [ ] Public symbols, options, defaults, imports, and versions were checked against source.
+- [ ] Runnable snippets have explicit prerequisites and working directories, and their real output was compared with the stated result.
+- [ ] Conditional behavior and explicit overrides were exercised; a default was not inferred from an option's name or from an unconditional example.
 - [ ] Exact API detail links to TypeDoc instead of being copied.
 - [ ] Runtime, broker, migration, and architecture facts defer to their canonical owners.
 - [ ] Existing complete explanations were consolidated rather than repeated.

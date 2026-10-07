@@ -70,7 +70,8 @@ plugins:
 
 Pass the option to `protoc-gen-es` only. Other plugins in the same file do not
 necessarily accept it: Connectum's catalog plugin (`protoc-gen-connectum-catalog`)
-rejects every option except `output_file`.
+rejects `erasable_syntax`. It accepts the shared protoplugin options such as
+`import_extension`, plus its custom `output_file` option.
 
 Upstream `protoc-gen-es` labels the option **experimental**; see its
 [plugin options](https://github.com/bufbuild/protobuf-es/blob/main/packages/protoc-gen-es/README.md#plugin-options).

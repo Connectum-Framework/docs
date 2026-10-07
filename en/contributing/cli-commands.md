@@ -1,8 +1,17 @@
+---
+title: Contributor Commands
+description: Run framework builds, checks, code generation, and release tooling from the correct repository.
+docType: contributor-guide
+---
+
 # CLI Commands Reference
 
 ## Overview
 
-Complete reference of CLI commands for working with the Connectum monorepo.
+Commands for working with the Connectum framework repository. Run the examples below
+from its root unless a block explicitly changes directories. Commands that update
+dependencies, version packages, or publish releases change repository or registry state;
+they are maintenance actions, not environment verification.
 
 ::: tip The `connectum` CLI
 This page covers the monorepo development scripts. The published `@connectum/cli` tool
@@ -17,21 +26,21 @@ npx @connectum/cli generate service x   # add a service to an existing project
 
 ## Prerequisites
 
-- **Node.js**: >=25.2.0 (for development), >=22.13.0 (for consumers)
+- **Node.js**: >=26.0.0 for framework development; application requirements are in [Runtime Compatibility](/en/guide/runtime-compatibility)
 - **pnpm**: 11+
-- **Buf**: provided by the `@bufbuild/buf` workspace devDependency (no standalone install); proto generation runs via `pnpm build:proto`
+- **Buf**: provided by package devDependencies (no standalone install); proto generation runs via `pnpm exec turbo run build:proto`
 
 ### Installation Check
 
 ```bash
 # Check Node.js version
-node --version  # Should be >= 25.2.0 for development (>= 22.13.0 for consumers)
+node --version  # Should be >= 26.0.0 for framework development
 
 # Check pnpm version
 pnpm --version  # Should be >= 11.0.0
 
 # Buf is bundled as a workspace devDependency; verify proto generation
-pnpm build:proto
+pnpm exec turbo run build:proto
 ```
 
 ## Root-Level Commands
@@ -64,9 +73,9 @@ pnpm build
 pnpm --filter @connectum/core build
 
 # Build only proto files
-pnpm build:proto
+pnpm exec turbo run build:proto
 
-# Clean all build outputs
+# Remove package build outputs, root node_modules, and the Turbo cache
 pnpm clean
 ```
 
@@ -74,7 +83,13 @@ Each package compiles TypeScript to JavaScript + type declarations (`dist/`) usi
 
 ### Type Checking
 
+Build first: the root `typecheck` script runs `tsc --noEmit` directly and does not
+schedule a build. Filtered package scripts also run directly, bypassing Turbo's
+task dependencies.
+
 ```bash
+pnpm build
+
 # Type check all packages
 pnpm typecheck
 
@@ -141,10 +156,10 @@ pnpm format
 pnpm --filter @connectum/interceptors lint
 
 # Run Biome directly
-biome check src/
+pnpm exec biome check packages/core/src/
 
 # Fix with Biome
-biome check --write src/
+pnpm exec biome check --write packages/core/src/
 ```
 
 ### Development
@@ -156,9 +171,10 @@ pnpm dev
 # Run specific package
 pnpm --filter @connectum/core dev
 
-# Run with environment file
-pnpm --filter @connectum/core dev
 ```
+
+These scripts watch package entry points. They do not start an application server or
+load an environment file; run an example service to exercise requests.
 
 ### Versioning and Release
 
@@ -184,7 +200,22 @@ pnpm changeset publish --tag beta
 pnpm docs:api
 ```
 
-The generated API Reference is output to `docs/en/api/` and integrates with VitePress sidebar automatically via `typedoc-sidebar.json`.
+With sibling framework and documentation checkouts, the generated API Reference is
+written to `../docs/en/api/` and integrated into the sidebar through
+`typedoc-sidebar.json`. TypeDoc warnings fail generation.
+
+After installing and building the framework, optionally execute the Quickstart
+and eight framework README examples against packed candidate packages:
+
+```bash
+pnpm docs:check --docs ../docs --examples ../examples
+```
+
+Run this from the framework repository with sibling `docs` and `examples`
+checkouts, or pass their explicit paths. It installs a temporary consumer project
+and resolves Buf imports, so network access is required. This selected-example
+check complements source review and site validation; it does not cover every
+documentation claim or snippet.
 
 ## Package-Level Commands
 
@@ -202,10 +233,12 @@ pnpm --filter @connectum/core <command>
 
 ### Common Package Scripts
 
-Most packages support:
+Check the target package's `package.json` for its available scripts. Build,
+typecheck, test, lint, format, and clean are common; `start`, `dev`, `test:unit`, and
+`test:integration` are package-specific.
 
 ```bash
-# Start package (production mode)
+# Run the package entry point, where defined (not an application server)
 pnpm start
 
 # Development mode with watch
@@ -234,8 +267,8 @@ pnpm clean
 #### @connectum/core
 
 ```bash
-# Start server example
-pnpm --filter @connectum/core start
+# Check the core package
+pnpm --filter @connectum/core test
 
 # Development with watch
 pnpm --filter @connectum/core dev
@@ -250,18 +283,23 @@ pnpm --filter @connectum/core test:integration
 # Run CLI commands
 pnpm --filter @connectum/cli start
 
-# Development with watch
-pnpm --filter @connectum/cli dev
+# Show CLI help after pnpm build
+pnpm --filter @connectum/cli start --help
 ```
 
 #### examples/ (directory, not a package)
 
-```bash
-# Run basic example
-node examples/getting-started/src/index.ts
+The examples repository is a sibling checkout, not a directory in the monorepo.
+This sequence starts in the framework root:
 
-# Development mode with watch
-node --watch examples/getting-started/src/index.ts
+```bash
+cd ../examples/getting-started
+pnpm install
+pnpm start
+
+# After stopping the service: generate proto files before watch mode
+pnpm buf:generate
+pnpm dev
 ```
 
 ## Turbo Commands
@@ -272,28 +310,28 @@ Turborepo orchestration commands.
 
 ```bash
 # Run task for all packages
-turbo run build
-turbo run test
-turbo run typecheck
+pnpm exec turbo run build
+pnpm exec turbo run test
+pnpm exec turbo run typecheck
 
 # Run task for specific package
-turbo run build --filter=@connectum/core
+pnpm exec turbo run build --filter=@connectum/core
 
 # Run in parallel
-turbo run build --parallel
+pnpm exec turbo run build --parallel
 
 # Force (ignore cache)
-turbo run build --force
+pnpm exec turbo run build --force
 
 # Dry run (show what would run)
-turbo run build --dry-run
+pnpm exec turbo run build --dry-run
 ```
 
 ### Cache Management
 
 ```bash
-# Clear turbo cache
-turbo run build --force
+# Rebuild without reading cached results (does not delete the cache)
+pnpm exec turbo run build --force
 
 # Or manually delete
 rm -rf .turbo
@@ -374,7 +412,9 @@ cat > packages/my-package/package.json <<EOF
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
-    "build": "tsup",
+    "scripts": {
+        "build": "tsup"
+    },
     "engines": {
         "node": ">=22.13.0"
     }
@@ -388,15 +428,18 @@ cat > packages/my-package/tsconfig.json <<EOF
 }
 EOF
 
-# Install dependencies from workspace root
-pnpm install
 ```
+
+This is a metadata skeleton, not a complete package. Add `src/index.ts`,
+`tsup.config.ts`, the package's test and check scripts, and its required dependencies
+(including `tsup` and `typescript`) before installing and building it. Use an existing
+package as the repository-specific template.
 
 ### Proto Generation
 
 ```bash
 # Generate all proto files
-pnpm build:proto
+pnpm exec turbo run build:proto
 ```
 
 ### TLS Keys Generation
@@ -450,6 +493,9 @@ Commands typically used in CI/CD pipelines.
 # Install dependencies (frozen lockfile)
 pnpm install --frozen-lockfile
 
+# Build before checking imports
+pnpm build
+
 # Type check all packages
 pnpm typecheck
 
@@ -459,32 +505,22 @@ pnpm lint
 # Run all tests
 pnpm test
 
-# Build all packages
-pnpm build
-
-# Publish (requires npm token)
+# Publish only as part of the configured release process
 pnpm changeset publish
 ```
 
 ### Docker Build
 
-```bash
-# Build Docker image
-docker build -t connectum:latest .
-
-# Build for specific platform
-docker buildx build --platform linux/amd64,linux/arm64 -t connectum:latest .
-
-# Run container
-docker run -p 5000:5000 connectum:latest
-```
+The framework root `Dockerfile` uses a private base image and does not start a service.
+For application images and runnable container examples, follow
+[Docker Deployment](/en/guide/production/docker) or an example's README.
 
 ## Troubleshooting Commands
 
 ### Clean Everything
 
 ```bash
-# Clean all build outputs and caches
+# Clean package outputs, the root dependencies, and the Turbo cache
 pnpm clean
 
 # Remove node_modules
@@ -503,24 +539,21 @@ pnpm install --force
 # Verify Node.js version
 node --version
 
-# Verify TypeScript can be stripped
-node --eval "import './test.ts'" 2>&1 | grep -q "Error" || echo "Type stripping works!"
-
 # Verify pnpm workspace
 pnpm list --depth 0
 
 # Verify proto generation (Buf via the @bufbuild/buf workspace devDependency)
-pnpm build:proto
+pnpm exec turbo run build:proto
 
 # Verify Biome
-biome --version
+pnpm exec biome --version
 ```
 
 ### Performance Analysis
 
 ```bash
 # Turbo performance analysis
-turbo run build --profile
+pnpm exec turbo run build --profile
 
 # Bundle size analysis
 pnpm --filter @connectum/core exec du -sh node_modules
@@ -559,22 +592,16 @@ pnpm prepare
 # Skip git hooks (not recommended)
 git commit --no-verify -m "message"
 
-# Test commit message
-echo "feat: test message DEV-123" | pnpm commitlint
+# Validate a Conventional Commit message explicitly
+echo "feat: test message" | pnpm exec commitlint
 ```
 
 ### Environment Management
 
-```bash
-# Load environment from file
-export $(cat .env | xargs) && pnpm dev
-
-# Run with environment variables
-PORT=3000 NODE_ENV=production pnpm start
-
-# Use .env file
-pnpm --filter @connectum/core dev  # Automatically loads .env
-```
+The monorepo's `dev` script does not load `.env`, and there is no root `start` script.
+Configure environment loading in the application that calls `createServer()`. See
+[Environment Configuration](/en/guide/server/configuration) for supported framework
+variables and their interaction with explicit options.
 
 ## Quick Reference
 
@@ -584,6 +611,7 @@ pnpm --filter @connectum/core dev  # Automatically loads .env
 # Development workflow
 pnpm install          # Install dependencies
 pnpm dev              # Start development
+pnpm build            # Build before type checking
 pnpm typecheck        # Check types
 pnpm test             # Run tests
 pnpm lint             # Check code style

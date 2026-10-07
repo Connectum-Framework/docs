@@ -7,7 +7,10 @@ docType: how-to
 # Envoy Gateway + OpenAPI
 
 ::: tip Standalone Envoy Gateway pattern
-This guide describes a **standalone Envoy Gateway** for gRPC-JSON transcoding. The Connectum examples repository does not ship a dedicated Envoy Gateway example; the manifests below are illustrative templates you adapt to your cluster. For a service mesh that embeds Envoy as sidecars (mTLS, traffic management), see the [Service Mesh guide](./service-mesh.md) and the [car-sharing/istio](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/istio) example instead.
+This page outlines a **standalone Envoy Gateway** integration. It is a configuration
+plan, not an executable manifest set: the examples repository has no dedicated
+Envoy Gateway example. Follow the linked upstream references for the Gateway
+version installed in your cluster. For mesh sidecars, see [Service Mesh](/en/guide/production/service-mesh).
 :::
 
 Connectum services communicate via gRPC, but many external clients (browsers, mobile apps, third-party integrations) need REST/JSON APIs. Envoy Gateway provides **gRPC-JSON transcoding** -- automatically converting REST requests into gRPC calls and vice versa -- without writing any REST handlers.
@@ -46,6 +49,7 @@ graph LR
 - Kubernetes cluster with [Envoy Gateway](https://gateway.envoyproxy.io/) installed
 - Proto files with `google.api.http` annotations
 - `google/api/annotations.proto` and `google/api/http.proto` are available via buf BSR deps
+- A Connectum backend serving HTTP/2 (`allowHTTP1: false` for plaintext h2c)
 
 ## Step 1: Annotate Proto Files
 
@@ -70,11 +74,14 @@ Envoy's gRPC-JSON transcoder requires a compiled proto descriptor set:
 buf build -o proto-descriptor.pb
 
 # Or with protoc directly:
+# Also make the imported Google API and validation protos available locally.
 protoc \
   --include_imports \
   --include_source_info \
   --descriptor_set_out=proto-descriptor.pb \
   -I proto/ \
+  -I vendor/googleapis/ \
+  -I vendor/protovalidate/proto/protovalidate/ \
   proto/mycompany/orders/v1/orders.proto
 ```
 
@@ -92,11 +99,22 @@ Route native gRPC traffic directly to the `OrderService` backend on port 5000 wi
 
 Map REST paths (`/v1/orders` prefix) to the gRPC backend for transcoding with an `HTTPRoute`, and route `/docs` to the Swagger UI service. Attach the route to both HTTP and HTTPS listeners.
 
+For a route matching the original REST path, set the transcoder's
+`match_incoming_request_route: true`. Otherwise it rewrites the path before
+routing, so routes must match `/<package>.<service>/<method>`. See the
+[Envoy transcoder routing rules](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/grpc_json_transcoder_filter#route-configs-for-transcoded-requests).
+
 ## Step 5: Envoy Filter for gRPC-JSON Transcoding
 
-If your Envoy Gateway version supports `EnvoyPatchPolicy`, configure the transcoder filter directly. The patch injects the `grpc_json_transcoder` HTTP filter into the listener chain, configuring it with the proto descriptor, target services, and JSON print options (whitespace, primitive fields, proto field names).
+Enable `extensionApis.enableEnvoyPatchPolicy` in the controller configuration
+before applying a patch; this API is disabled by default. The patch must insert
+the transcoder before the router filter. Use the installed version's xDS names;
+see [EnvoyPatchPolicy](https://gateway.envoyproxy.io/docs/tasks/extensibility/envoy-patch-policy/).
 
-Alternatively, store the proto descriptor in a ConfigMap: create a ConfigMap holding the base64-encoded proto descriptor binary and mount it into the Envoy pods.
+The descriptor must reach the Envoy data-plane pods independently of the patch.
+For a file mount, create a ConfigMap with `--from-file=proto-descriptor.pb` and
+mount it read-only at the filter's `proto_descriptor` path. A ConfigMap alone
+neither adds a filter nor mounts a volume.
 
 ## Step 6: Swagger UI Deployment
 
@@ -133,7 +151,7 @@ curl https://api.example.com/v1/orders/550e8400-e29b-41d4-a716-446655440000
 
 1. REST request arrives at Envoy Gateway on port 80/443
 2. HTTPRoute matches `/v1/orders` prefix
-3. Envoy's `grpc_json_transcoder` filter converts JSON to gRPC binary using the proto descriptor
+3. The configured transcoder converts JSON to gRPC using the descriptor and preserves the incoming route when `match_incoming_request_route` is enabled
 4. Request is forwarded to `order-service:5000` as a native gRPC call
 5. Connectum service processes the gRPC request through its interceptor chain
 6. gRPC response is converted back to JSON by the transcoder
@@ -165,15 +183,33 @@ Add proto descriptor generation to your CI pipeline so Envoy always has an up-to
   run: buf build -o proto-descriptor.pb
 
 - name: Update ConfigMap
+  env:
+    ENVOY_DATA_PLANE_NAMESPACE: ${{ vars.ENVOY_DATA_PLANE_NAMESPACE }}
   run: |
     kubectl create configmap proto-descriptors \
       --from-file=proto-descriptor.pb \
-      --namespace=connectum \
+      --namespace="$ENVOY_DATA_PLANE_NAMESPACE" \
       --dry-run=client -o yaml | kubectl apply -f -
 
-- name: Restart Gateway (pick up new descriptor)
-  run: kubectl rollout restart deployment envoy-gateway -n connectum
+- name: Restart the data-plane Deployment that mounts the descriptor
+  env:
+    ENVOY_DATA_PLANE_DEPLOYMENT: ${{ vars.ENVOY_DATA_PLANE_DEPLOYMENT }}
+    ENVOY_DATA_PLANE_NAMESPACE: ${{ vars.ENVOY_DATA_PLANE_NAMESPACE }}
+  run: |
+    kubectl rollout restart deployment "$ENVOY_DATA_PLANE_DEPLOYMENT" \
+      -n "$ENVOY_DATA_PLANE_NAMESPACE"
 ```
+
+Set those workflow variables from your Gateway's data-plane Deployment and place
+the ConfigMap in the same namespace. Restarting the `envoy-gateway` controller
+does not reload a descriptor file read by a different Envoy process.
+
+## Verify the integration
+
+Check the accepted Gateway/route/policy conditions, inspect the Envoy configuration
+for the descriptor and HTTP/2 upstream, then exercise both a valid REST call and
+a rejected request. Compare their JSON bodies with the generated OpenAPI contract.
+The templates here have not been applied to a live cluster.
 
 ::: warning
 When you add new services or change HTTP annotations, you must regenerate the proto descriptor and update the Envoy configuration. Automate this in CI to prevent drift between proto definitions and the gateway configuration.

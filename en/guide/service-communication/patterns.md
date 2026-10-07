@@ -30,10 +30,10 @@ sequenceDiagram
 
 ```typescript
 import { defineService } from '@connectum/core';
-import { createClient } from '@connectrpc/connect';
-import { createGrpcTransport } from '@connectrpc/connect-node';
+import { Code, ConnectError, createClient } from '@connectrpc/connect';
 import { InventoryService } from '#gen/inventory/v1/inventory_pb.js';
 import { PaymentService } from '#gen/payment/v1/payment_pb.js';
+import { OrderService } from '#gen/order/v1/order_pb.js';
 
 const inventoryClient = createClient(InventoryService, inventoryTransport);
 const paymentClient = createClient(PaymentService, paymentTransport);
@@ -80,13 +80,15 @@ async createOrder(req) {
 ```
 
 **Benefits:**
-- Total latency = max(individual latencies) instead of sum
-- Each downstream call gets its own OTel client span
-- Circuit breakers operate independently per client
+- The calls overlap, so waiting time follows the slowest call rather than the
+  sum of their individual waits, before local processing overhead.
+- With an OTel client interceptor configured, each downstream call gets a client span.
+- With a separate circuit breaker instance per transport, each downstream service has its own failure budget.
 
 **Considerations:**
 - If one call fails, `Promise.all` rejects immediately -- use `Promise.allSettled` if partial results are acceptable
-- Each parallel call consumes a connection from the HTTP/2 connection pool
+- Parallel calls use separate RPC streams; HTTP/2 transports can multiplex them
+  over a shared connection. Downstream concurrency limits still apply.
 
 ### Partial Failure Handling
 

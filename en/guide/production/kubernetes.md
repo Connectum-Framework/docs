@@ -48,7 +48,10 @@ See [namespace.yaml](https://github.com/Connectum-Framework/examples/blob/main/c
 
 ## ConfigMap
 
-Store non-sensitive configuration in a ConfigMap. This manifest defines environment variables for the service port, logging, graceful shutdown, OpenTelemetry export, and downstream service addresses.
+Store non-sensitive configuration in a ConfigMap. The linked manifests define
+role selection, service ports, identity endpoints, OpenTelemetry export, and
+downstream service addresses. The application sets its shutdown timeout in
+`buildServer()`.
 
 See [configmap.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/configmap.yaml) for the full manifest.
 
@@ -78,11 +81,18 @@ See [services.yaml](https://github.com/Connectum-Framework/examples/blob/main/ca
 
 ### LoadBalancer (External gRPC Access)
 
-For direct external gRPC access (without a gateway), create a LoadBalancer Service on port 443 with cloud provider annotations (e.g., AWS NLB with HTTP/2 backend protocol). The car-sharing example fronts external traffic with an Istio Gateway instead of a LoadBalancer Service — see the [Service Mesh guide](./service-mesh.md) and [car-sharing/istio](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/istio).
+For direct external gRPC access, expose a TLS HTTP/2 listener through your cloud
+provider's supported load balancer configuration. Verify TLS termination and the
+upstream protocol against the [Transport matrix](/en/guide/production/transport-matrix).
+The car-sharing example fronts external traffic with an Istio Gateway instead of
+a LoadBalancer Service — see the [Service Mesh guide](./service-mesh.md) and
+[car-sharing/istio](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/istio).
 
 ## Horizontal Pod Autoscaler (HPA)
 
-Scale based on CPU and memory utilization. This manifest configures an HPA that scales from 2 to 10 replicas based on 70% CPU and 80% memory thresholds, with stabilization windows and rate-limited scale-up/scale-down policies.
+The trips HPA ranges from 3 to 12 replicas and targets 70% CPU and 80% memory
+utilization, with stabilization and scaling policies. Fleet and billing each
+range from 2 to 8 replicas and target 70% CPU utilization.
 
 See [hpa.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/hpa.yaml) for the full manifest.
 
@@ -112,7 +122,12 @@ other shutdown overhead; it is not a measured hook duration or a guarantee that 
 will finish. Choose the hook budget and margin from your application's shutdown work.
 :::
 
-The deployment manifest should use `/healthz` for liveness and `/readyz` for readiness, enable the HTTP health handler, and let the application move readiness to `NOT_SERVING` before drain. Do not maintain a second status or shutdown timeline in Kubernetes manifests.
+Enable the HTTP health handler and let the application move status to
+`NOT_SERVING` before drain. The built-in `/healthz` and `/readyz` report the same
+aggregate state; choose a separate liveness endpoint if dependency failure should
+only remove readiness. Plaintext h2c services also need a probe path that speaks
+HTTP/2, such as a gRPC probe or an exec probe using HTTP/2 curl; rewriting a probe
+through an Istio sidecar does not change the application's accepted protocol.
 
 ## Complete Deployment Script
 

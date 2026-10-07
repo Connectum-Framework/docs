@@ -87,16 +87,17 @@ bun-installed project runs on Node.js and an npm-installed one runs on Bun. Both
 crossings are exercised in CI.
 :::
 
-`buf generate` is wired into the `start`, `test`, and `typecheck` scripts, so the
-generated code under `gen/` is always current — you never hit a "cannot find module
-`#gen/...`" wall.
+`buf generate` runs before `start`, `test`, and `typecheck`, so those scripts use
+freshly generated code when generation succeeds. The `dev` script does not
+generate code first; run `build:proto` before the first watch session and after
+changing a proto contract.
 
 The generated scripts match the runtime you picked:
 
 ::: runtime
 == node
-- `start` — `buf generate && node src/index.ts` (raw `.ts` execution; Node >= 25.2, or `tsx` on Node >= 22.13)
-- `test` — `buf generate && node --test tests/**/*.test.ts`
+- `start` — `buf generate && node src/index.ts` for raw `.ts` execution (Node >= 25.2.0); with `--node-exec tsx`, `buf generate && tsx src/index.ts` (Node >= 22.13.0)
+- `test` — `buf generate && node --test tests/**/*.test.ts`; the tsx model adds `--import tsx` before `--test`
 == bun
 - `start` — `buf generate && bun src/index.ts`
 - `test` — `buf generate && bun test tests/`
@@ -144,8 +145,9 @@ written and naming the rule, a name that is empty, longer than 214 characters, s
 `.`, `_` or `-`, contains whitespace, upper-case letters or a character that is not
 URL-safe (including `~ ' ! ( ) *`), equals `node_modules` or `favicon.ico`, or is the name
 of a Node.js core module. The name is never corrected silently: pick another path, or, for
-`init .`, create the project in a directory with a valid name. A scoped name
-(`@acme/payments`) is not accepted as an argument; edit `package.json` afterwards.
+`init .`, create the project in a directory with a valid name. `@acme/payments`
+is interpreted as a directory path and produces the unscoped name `payments`;
+edit `package.json` afterwards if you need a scoped package name.
 
 ### `--no-sample`: a config-only project {#no-sample-a-config-only-project}
 
@@ -246,9 +248,13 @@ the full comparison with TypeScript enums: [Proto Enums](/en/guide/typescript/pr
 ### Interceptor order
 
 When multiple interceptor-adding modules are selected, `init` emits a single, consistent
-order (outermost → innermost): **OpenTelemetry → error handler → auth → validation →
-resilience → your custom interceptors**. OpenTelemetry is outermost so a span always
+order (outermost → innermost): **OpenTelemetry → error handler → auth →
+enabled resilience → validation**. OpenTelemetry is outermost so a span always
 covers the whole request, including errors.
+
+The resilience entries follow the [built-in chain order](/en/guide/interceptors/built-in).
+`--resilience fallback` alone emits `fallback: true`, which does not create a
+fallback interceptor: configure an explicit handler in `src/server.ts`.
 
 ### Dependency build scripts under pnpm
 
@@ -301,6 +307,10 @@ Register the new service in src/server.ts:
 
 Generate TypeScript types from a **running** server through gRPC reflection, without
 access to its `.proto` files:
+
+Enable `Reflection()` on an HTTP/2 server. For generation, run in a project with
+`buf` available on `PATH`, a `buf.gen.yaml` (or `--template`), and the code-generation
+plugins referenced by that template installed. `--dry-run` only fetches descriptors.
 
 ```bash
 npx @connectum/cli proto sync --from localhost:5000 --out ./generated
