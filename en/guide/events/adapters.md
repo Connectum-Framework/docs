@@ -68,8 +68,21 @@ every instance is upgraded, list them with `nats consumer ls <stream>` and
 remove the ones named `{group}--{pattern}--{hash}` for the dropped patterns
 (`nats consumer rm <stream> <name>`). Until then their pending count grows with
 every event, and on a stream with `interest` retention they keep every message
-in the stream. No events are lost by the upgrade: the consumer that stays was one
-of the old ones and resumes from its position.
+in the stream.
+
+When the consumer that stays was one of the old ones (`orders.>` above), it
+resumes from its position and receives everything the dropped ones would have.
+When the covering pattern had no consumer before, its consumer is new and starts
+at `consumerOptions.deliverPolicy` (`"new"` by default). That happens when a
+broader route is added to a service that had only the narrower one, and for the
+wider pattern that replaces two partly overlapping ones. Events published but
+not yet consumed by the dropped consumers when the subscription restarts are
+then not delivered. For such a service let the old consumers drain
+(`num_pending` is `0` in `nats consumer info <stream> <name>`) before upgrading,
+or accept that window. Rolling back is possible: the old consumers still exist
+unless you removed them and resume where they stopped, so events the new version
+already handled are delivered to the old one again; if they were removed, the old
+version creates them anew.
 
 ## Kafka or Redpanda {#kafka-adapter}
 
