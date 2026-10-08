@@ -53,36 +53,43 @@ const adapter = NatsAdapter({ servers: 'nats://localhost:4222' });
 ### Overlapping patterns {#nats-overlapping-patterns}
 
 A subscription that lists patterns matching the same subject (`orders.created`,
-`orders.*`, `orders.>`) runs its handler once per event. The adapter creates
-consumers for the patterns that remain after dropping every pattern another one
-contains, so the three patterns above share the consumer of `orders.>`. Patterns
-that overlap with nothing keep their own consumer and name. Two patterns that
-overlap only in part (`a.*.c` and `a.b.*`) are replaced by one wider pattern
-(`a.>`), and the adapter acknowledges and skips events that match none of the
-patterns you asked for.
+`orders.*`, `orders.>`) runs its handler once per event. Every pattern keeps its
+own durable consumer, so the server still sends the event once per matching
+pattern; the adapter runs your handler for one of those deliveries and
+acknowledges the others without running it.
 
-Upgrading from a version that created one consumer per pattern leaves the
-consumers of the dropped patterns on the broker. The adapter does not delete
-them, because other instances of the group may still run the old version. Once
-every instance is upgraded, list them with `nats consumer ls <stream>` and
-remove the ones named `{group}--{pattern}--{hash}` for the dropped patterns
-(`nats consumer rm <stream> <name>`). Until then their pending count grows with
-every event, and on a stream with `interest` retention they keep every message
-in the stream.
+The delivery that runs the handler is the one of the most specific pattern among
+those whose consumer delivers the event: fewer `>` first, then fewer `*`, then
+more tokens, then the pattern text. The order comes from the pattern text alone,
+so every instance of a group picks the same delivery, and patterns that overlap
+only in part (`a.*.c` and `a.b.*`) need no special case.
 
-When the consumer that stays was one of the old ones (`orders.>` above), it
-resumes from its position and receives everything the dropped ones would have.
-When the covering pattern had no consumer before, its consumer is new and starts
-at `consumerOptions.deliverPolicy` (`"new"` by default). That happens when a
-broader route is added to a service that had only the narrower one, and for the
-wider pattern that replaces two partly overlapping ones. Events published but
-not yet consumed by the dropped consumers when the subscription restarts are
-then not delivered. For such a service let the old consumers drain
-(`num_pending` is `0` in `nats consumer info <stream> <name>`) before upgrading,
-or accept that window. Rolling back is possible: the old consumers still exist
-unless you removed them and resume where they stopped, so events the new version
-already handled are delivered to the old one again; if they were removed, the old
-version creates them anew.
+- **Existing consumers keep their backlog.** Consumers left by earlier versions
+  or by earlier runs of the service keep their position. Events published while
+  the service was down are delivered once, whichever of the overlapping patterns
+  holds them. A pattern added later starts at `consumerOptions.deliverPolicy`
+  (`"new"` by default) like any new route. Upgrading or rolling back needs no
+  action.
+- **Start sequence record.** The first stream sequence a consumer delivers is
+  written once into the consumer's metadata under `connectum.start_seq`, so that
+  every instance skips the same deliveries. nats-server 2.9 has no consumer
+  metadata: there nothing is written, the adapter logs one warning per process
+  and works from the position it reads from the consumer.
+- **Instances with different route sets.** While a service is rolled out with a
+  route added to a broader pattern, instances with and without that route run
+  side by side. Nothing is lost, but an event can be handled by both kinds of
+  instance, so a handler may see it twice. This is the at-least-once contract;
+  the window lasts as long as the rollout. Handlers should tolerate redelivery.
+- **Network traffic.** The server sends one copy per matching pattern. Prefer
+  patterns that do not overlap on a hot subject.
+- **Consumers of removed routes.** Consumers of patterns you stopped
+  subscribing to stay on the broker, and their pending count grows with every
+  matching event (on a stream with `interest` retention they keep every message).
+  Once no instance runs the old route set, list them with
+  `nats consumer ls <stream>` and remove the ones named
+  `{group}--{pattern}--{hash}` (`nats consumer rm <stream> <name>`). Do not remove
+  the consumer of a pattern a running instance still subscribes: it stops
+  delivering without an error.
 
 ## Kafka or Redpanda {#kafka-adapter}
 
@@ -215,22 +222,35 @@ committed, messages published while it is stopped are delivered on restart. Set
 properties differ from NATS:
 
 - A pattern that **opens with a wildcard** never matches topics whose name starts
-  with `__`, the prefix Kafka uses for its own topics (`__consumer_offsets`,
-  `__transaction_state`). Without that, a catch-all `>` would feed the broker's
-  binary bookkeeping records to your handler. A pattern that spells the prefix
-  out (`__audit.>`), a literal topic name and names with a single leading
-  underscore are unaffected.
+  with `__`. That is the set of topics the brokers mark as internal (Kafka:
+  `__consumer_offsets`, `__transaction_state`; Redpanda: `__consumer_offsets`).
+  Without it, a catch-all `>` would feed the broker's binary bookkeeping records
+  to your handler. The rule has no switch. A pattern that spells the prefix out
+  (`__audit.>`), a literal topic name and names with a single leading underscore
+  are unaffected. Other topics a platform keeps are ordinary names, and `>`
+  receives them: Redpanda's Schema Registry topic `_schemas` is one, so use a
+  narrower pattern such as `orders.>` when you do not want it.
 - The topics a wildcard stands for are fixed when `subscribe()` runs. A matching
   topic created afterwards is not consumed by that subscription. Create the topics
   before the service starts, restart the service after creating them, or set
-  `consumerOptions.topicDiscoveryInterval` (milliseconds): the adapter then lists
-  the broker's topics at that interval and, when a matching topic has appeared,
-  restarts the subscription's consumer to include it. The restart rebalances the
-  consumer group, so consumption pauses for a few seconds and messages being
-  handled at that moment are delivered again; it happens only when there is a new
-  topic, and an unchanged topic list costs one metadata request per wildcard
-  subscription per interval. A discovered topic is read from its first message,
-  whatever `fromBeginning` says.
+  `consumerOptions.topicDiscoveryInterval` (milliseconds; off unless you set it):
+  the adapter then lists the broker's topics at that interval and, when a
+  matching topic has appeared, restarts the subscription's consumer to include
+  it. The restart rebalances the consumer group, so consumption pauses for a few
+  seconds and messages being handled at that moment are delivered again; it
+  happens only when there is a new topic, and an unchanged topic list costs one
+  metadata request per wildcard subscription per interval. A discovered topic is
+  read from its first message, whatever `fromBeginning` says. A check that fails
+  is logged and repeated at the next interval.
+
+In a group of several members the delay before a new topic is read completely is
+the longest interval among the members: KafkaJS assigns partitions only from the
+topic list of the group's leader, and a member drops assigned topics it has not
+subscribed to itself, so every member has to discover the topic first. Nothing
+is lost meanwhile. In a measurement with two members at 1 s and 20 s, all 12
+messages sent to the new topic arrived, the last one 15.3 s after the topic was
+created (15.1 s on Redpanda; the exact delay depends on where the 20 s check
+falls). Give the members of a group the same interval.
 
 ### Related
 
