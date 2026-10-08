@@ -30,6 +30,33 @@ attributes, signal toggles, or data recording that the service requires; use
 for the exact fields. Keep message recording disabled unless its privacy and volume
 impact has been reviewed.
 
+### Spans in streaming handlers
+
+The server span is the active span for the whole handler of a unary, client-streaming, server-streaming, or bidirectional call. In a generator handler this holds at the start, after every `await` and `yield`, and in `finally`, so a span started with `traced()` or `tracer.startActiveSpan()` there is a child of the call's server span:
+
+```typescript
+import { traced } from '@connectum/otel';
+
+const loadPage = traced(async (cursor: string) => db.items.page(cursor), {
+  name: 'ItemRepository.page',
+});
+
+async function* listItems(req: ListItemsRequest) {
+  let cursor: string | undefined = req.cursor;
+  while (cursor !== undefined) {
+    const page = await loadPage(cursor); // child of the server span, on every iteration
+    yield* page.items;
+    cursor = page.next;
+  }
+}
+```
+
+The span is active only while the handler runs. Code that consumes the response stream keeps its own active span, and the generator that produces the request messages of a client-streaming or bidirectional call runs in the caller's context (under the client span when the client interceptor is used), over HTTP and in-process alike.
+
+::: info Since 1.3.0
+Before 1.3.0 the active span inside a server-streaming or bidirectional handler was empty over HTTP, and in-process it was the caller's span, so spans started there were not children of the server span.
+:::
+
 ## Client Interceptor
 
 For outgoing RPC calls, use `createOtelClientInterceptor()` to propagate trace context:
