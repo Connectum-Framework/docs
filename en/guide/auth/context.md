@@ -42,6 +42,33 @@ function updateProfile(req: UpdateProfileRequest) {
 }
 ```
 
+### Streaming Handlers
+
+The identity follows the whole call, not just the moment it was verified. A server-streaming or bidirectional handler is usually an `async function*`, and its code runs in pieces: before the first `yield`, after each `yield`, after every `await`, and in `finally`. Every one of those pieces sees the identity of the call it belongs to, over HTTP/2 and over the in-process `localClient()` alike:
+
+```typescript
+async function* watchOrders(req: WatchOrdersRequest) {
+  const auth = requireAuthContext();       // the verified caller
+  const cursor = await openCursor(auth.subject);
+  try {
+    for await (const order of cursor) {
+      yield order;
+      requireAuthContext();                // still the same caller after the consumer resumed us
+    }
+  } finally {
+    await cursor.close({ owner: requireAuthContext().subject }); // runs after a cancel, a deadline or a server shutdown too
+  }
+}
+```
+
+A few details are worth knowing:
+
+- The identity is scoped to the call, not to the process or the caller. When code calls a local client while holding its own identity, the handler sees the identity that was verified for *that* call, and the caller's own identity is unchanged after the call returns.
+- Cleanup that is triggered by a cancellation, a deadline, or the server shutting down runs under the identity of the call it belongs to, even though the signal that triggered it comes from elsewhere.
+- The identity scope replaces only the identity itself. Other `AsyncLocalStorage` values (a trace context, a tenant) are left as the surrounding code set them, so the in-process caller's own scopes stay visible to the handler.
+- Leaving a consumer loop early with `break` is still not a cancellation: the handler stays suspended at its last `yield` until the call ends in another way, as it did before.
+- A custom interceptor that opens an identity scope itself with `authContextStorage.run(context, () => next(req))` covers only the call that opens the stream. For streaming responses it must also scope every operation on the returned iterator (`next`, `return` and `throw`), as the built-in interceptors do.
+
 ### AuthContext Shape
 
 The `AuthContext` object contains the following fields:
