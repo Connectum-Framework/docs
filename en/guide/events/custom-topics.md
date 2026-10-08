@@ -147,7 +147,7 @@ flowchart TD
 
 ## Wildcard Topic Matching
 
-The MemoryAdapter and NATS adapter support wildcard patterns for topic matching:
+A subscription can use wildcard patterns for topic matching:
 
 | Pattern | Matches | Does Not Match |
 |---------|---------|----------------|
@@ -160,8 +160,18 @@ Two wildcard tokens are supported:
 - **`*`** -- matches exactly one dot-separated segment
 - **`>`** -- matches one or more trailing segments
 
-::: info Broker Limitations
-Wildcard patterns are natively supported by NATS. Kafka and Redis Streams do not support server-side wildcards -- the adapter subscribes to exact topic names only.
+Support and caveats differ by adapter:
+
+| Adapter | Wildcards | What to know |
+|---------|-----------|--------------|
+| `MemoryAdapter` | Yes | Same matcher as above. |
+| `NatsAdapter` | Yes, native | The server evaluates the filter for every message, so subjects first used after the subscription are delivered. When several patterns of one subscription match the same subject (`orders.created`, `orders.*`, `orders.>`), the handler still runs once per event; see [overlapping patterns](/en/guide/events/adapters#nats-overlapping-patterns). |
+| `KafkaAdapter` | Yes, as a regex over topic names | The topic list is fixed when `subscribe()` runs; a matching topic created later is picked up only with `consumerOptions.topicDiscoveryInterval`. A pattern that opens with a wildcard never matches topics starting with `__` (Kafka's internal topics). |
+| `AmqpAdapter` | Yes, on a topic exchange only | See the [AMQP module page](/en/packages/events-amqp). |
+| `RedisAdapter` | No | A pattern containing `*` or `>` is rejected when the subscription is made, so `bus.start()` fails with `RedisAdapter: wildcard pattern "..." is not supported. Redis Streams requires explicit topic names.` Subscribe to exact topic names; see [Redis wildcards](/en/guide/events/adapters#redis-wildcards). |
+
+::: warning Kafka: topics created after the subscription
+Kafka expands a wildcard into the topics that exist when the subscription starts. Create the topics before the service starts, restart the service after creating them, or set `consumerOptions.topicDiscoveryInterval` to have the adapter check periodically. A discovered topic is read from its first message; each discovery rebalances the consumer group, so consumption pauses for a few seconds. Details: [Kafka wildcard subscriptions](/en/guide/events/adapters#kafka-wildcards).
 :::
 
 ## Best Practices

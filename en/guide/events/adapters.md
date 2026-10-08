@@ -50,6 +50,27 @@ const adapter = NatsAdapter({ servers: 'nats://localhost:4222' });
 - [Module hub](/en/packages/events-nats)
 - [`NatsAdapterOptions`](/en/api/@connectum/events-nats/types/interfaces/NatsAdapterOptions)
 
+### Overlapping patterns {#nats-overlapping-patterns}
+
+A subscription that lists patterns matching the same subject (`orders.created`,
+`orders.*`, `orders.>`) runs its handler once per event. The adapter creates
+consumers for the patterns that remain after dropping every pattern another one
+contains, so the three patterns above share the consumer of `orders.>`. Patterns
+that overlap with nothing keep their own consumer and name. Two patterns that
+overlap only in part (`a.*.c` and `a.b.*`) are replaced by one wider pattern
+(`a.>`), and the adapter acknowledges and skips events that match none of the
+patterns you asked for.
+
+Upgrading from a version that created one consumer per pattern leaves the
+consumers of the dropped patterns on the broker. The adapter does not delete
+them, because other instances of the group may still run the old version. Once
+every instance is upgraded, list them with `nats consumer ls <stream>` and
+remove the ones named `{group}--{pattern}--{hash}` for the dropped patterns
+(`nats consumer rm <stream> <name>`). Until then their pending count grows with
+every event, and on a stream with `interest` retention they keep every message
+in the stream. No events are lost by the upgrade: the consumer that stays was one
+of the old ones and resumes from its position.
+
 ## Kafka or Redpanda {#kafka-adapter}
 
 Choose Kafka-compatible infrastructure for partitioned ordering, retained logs,
@@ -175,6 +196,29 @@ before the group first commits an offset are not delivered. Once the group has
 committed, messages published while it is stopped are delivered on restart. Set
 `fromBeginning: true` to read a topic's history with a new group.
 
+### Wildcard subscriptions {#kafka-wildcards}
+
+`*` and `>` are converted to a regular expression over topic names. Two
+properties differ from NATS:
+
+- A pattern that **opens with a wildcard** never matches topics whose name starts
+  with `__`, the prefix Kafka uses for its own topics (`__consumer_offsets`,
+  `__transaction_state`). Without that, a catch-all `>` would feed the broker's
+  binary bookkeeping records to your handler. A pattern that spells the prefix
+  out (`__audit.>`), a literal topic name and names with a single leading
+  underscore are unaffected.
+- The topics a wildcard stands for are fixed when `subscribe()` runs. A matching
+  topic created afterwards is not consumed by that subscription. Create the topics
+  before the service starts, restart the service after creating them, or set
+  `consumerOptions.topicDiscoveryInterval` (milliseconds): the adapter then lists
+  the broker's topics at that interval and, when a matching topic has appeared,
+  restarts the subscription's consumer to include it. The restart rebalances the
+  consumer group, so consumption pauses for a few seconds and messages being
+  handled at that moment are delivered again; it happens only when there is a new
+  topic, and an unchanged topic list costs one metadata request per wildcard
+  subscription per interval. A discovered topic is read from its first message,
+  whatever `fromBeginning` says.
+
 ### Related
 
 - [Module hub](/en/packages/events-kafka)
@@ -210,6 +254,14 @@ seconds, while the other entries claimed in the same pass are still delivered.
 `XAUTOCLAIM` inspects a limited number of pending entries per call, so the
 adapter continues each pass where the previous one stopped; entries behind a
 long run of recently delivered ones are therefore reached too.
+
+### Wildcards are not supported {#redis-wildcards}
+
+Redis Streams has no pattern subscription. A topic containing `*` or `>` is
+rejected when the subscription is made, so `bus.start()` fails with
+`RedisAdapter: wildcard pattern "..." is not supported. Redis Streams requires explicit topic names.`
+Subscribe to each topic by its exact name, or use the NATS, Kafka or AMQP adapter
+when you need wildcard routing.
 
 ### Related
 
