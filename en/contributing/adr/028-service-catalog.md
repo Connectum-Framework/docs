@@ -66,7 +66,9 @@ The catalog is `type ServiceCatalog = Readonly<Record<string, DescService>>` -- 
 
 **Revision (2026-10-08).** Generated request entries use protobuf's public
 `MessageInitShape<typeof InputSchema>` type, while response entries remain full
-generated message shapes. Existing `catalog.gen.ts` files retain their previous
+generated message shapes. This ships in 1.3.0
+([connectum#331](https://github.com/Connectum-Framework/connectum/pull/331));
+1.2.0 generators emit the previous request declarations. Existing `catalog.gen.ts` files retain their previous
 request declarations until regenerated; this refines generated typing without
 changing runtime dispatch. See the [service-catalog migration guide](/en/migration/service-catalog)
 for the upgrade step.
@@ -206,5 +208,5 @@ These are explicit limitations of the v1 catalog, not merely "future nice-to-hav
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-06-15 | Software Architect | Initial ADR: service catalog (declarative cross-service calls, `defineService`, resolver, cascade defaults, split error model, buf codegen) |
-| 2026-10-08 | Connectum maintainers | Clarified descriptor-only catalog, per-server locality, conditional startup shape validation, and on-demand remote route resolution. |
-| 2026-10-08 | Connectum maintainers | Recorded generated request initializer types as a typing refinement; runtime dispatch is unchanged. |
+| 2026-10-08 | Connectum maintainers | Corrected statements that contradicted the ADR itself or the implementation: startup does not probe any route (the earlier "only the default route is probed" sentence contradicted the startup-validation rationale); the catalog/`enabledServices` shape check runs only when both options are supplied; an empty augmentation map makes `ctx.call` keys `never` (no untyped fallback, as the `ctx.call` section already stated); topology is supplied through construction options and consumed on the first route build, which can precede `server.start()`; local means mounted on this `Server` in the same process. |
+| 2026-10-08 | Connectum maintainers | Recorded generated request initializer types (`MessageInitShape`) as a 1.3.0 typing refinement; runtime dispatch is unchanged. |

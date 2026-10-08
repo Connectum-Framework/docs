@@ -105,6 +105,8 @@ const server = createServer({
 
 ### createMethodFilterInterceptor Signature
 
+The `MethodFilterOptions` interface and the options overload below were part of the original decision; they were cancelled by the 2026-10-08 revision and were never implemented.
+
 ```typescript
 import type { Interceptor } from "@connectrpc/connect";
 
@@ -119,6 +121,19 @@ import type { Interceptor } from "@connectrpc/connect";
  * Key format: service.typeName + "/" + method.name (full protobuf path)
  */
 type MethodFilterMap = Record<string, Interceptor[]>;
+
+interface MethodFilterOptions {
+  /**
+   * Per-method interceptor routing map.
+   */
+  methods: MethodFilterMap;
+
+  /**
+   * Skip streaming calls for all interceptors in this filter.
+   * @default false
+   */
+  skipStreaming?: boolean;
+}
 
 /**
  * Create a single interceptor that routes to per-method interceptors
@@ -135,6 +150,10 @@ function createMethodFilterInterceptor(
   methods: MethodFilterMap
 ): Interceptor;
 
+// Overload with options
+function createMethodFilterInterceptor(
+  options: MethodFilterOptions
+): Interceptor;
 ```
 
 ### Streaming policy
@@ -308,13 +327,14 @@ createTimeoutInterceptor({
 
 **Modified files:**
 - `packages/interceptors/src/index.ts` -- export createMethodFilterInterceptor
-- `packages/interceptors/src/types.ts` -- MethodFilterMap type
+- `packages/interceptors/src/types.ts` -- MethodFilterMap, MethodFilterOptions types (`MethodFilterOptions` cancelled 2026-10-08, never implemented)
 
 **Tests:**
 - Pattern matching: *, Service/*, Service/Method
 - Execution order: global -> service -> exact
 - Empty pattern array (no-op)
 - Multiple matching patterns
+- skipStreaming option (cancelled 2026-10-08)
 - Integration with existing interceptors
 
 ---

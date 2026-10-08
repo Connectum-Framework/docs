@@ -1,3 +1,9 @@
+---
+title: "ADR-024: Auth/Authz Strategy"
+description: Record the authentication and authorization package, its interceptors, context propagation, and chain position.
+docType: adr
+---
+
 # ADR-024: Auth/Authz Strategy
 
 ## Status
@@ -30,7 +36,7 @@ Create a new `@connectum/auth` package (Layer 1) with interceptor factories, aut
 
 ### 1. Package Architecture
 
-**Layer 1** package. The current manifest declares `jose` as a runtime dependency and the following peer dependencies:
+**Layer 1** package. The original decision declared ConnectRPC, core, and protobuf as regular dependencies; since 1.3 they are peer dependencies (see [Peer dependencies](/en/migration/peer-dependencies)), and `jose` remains the runtime dependency:
 
 | Dependency | Type | Purpose |
 |---|---|---|
@@ -257,7 +263,7 @@ Two complementary mechanisms:
 
 #### 3.1 AsyncLocalStorage (In-Process)
 
-Primary mechanism for in-process context access. It provides typed access through the current async request scope; this ADR makes no performance claim because no corresponding benchmark is recorded here.
+Primary mechanism for in-process context access. Zero-overhead, type-safe.
 
 ```typescript
 export const authContextStorage: AsyncLocalStorage<AuthContext>;
@@ -329,14 +335,18 @@ but does not provide equivalent peer-certificate or socket-address inspection.
 
 ### 6. OpenTelemetry Integration
 
-There is no built-in auth-to-OpenTelemetry enrichment option in `@connectum/auth`.
-The separate `@connectum/otel` package provides `createOtelInterceptor()` for
-RPC, transport, tracing, and metrics instrumentation, but it does not read
-`AuthContext` or add `enduser.*` attributes. A custom OTel interceptor can call
-`getAuthContext()` when it runs inside the authenticated request scope and add
-attributes according to the application's data policy. When that custom
-enrichment is needed, place it after authentication; the standard OTel
-interceptor's existence alone does not add auth attributes.
+**Not implemented** — the `otelEnrichment` option and `@connectum/otel` dependency are absent from the current implementation. Planned for future.
+
+The `getAuthContext()` API makes auth context available for custom OTel interceptors to enrich spans with `enduser.*` attributes if needed.
+
+> **Update (1.0.0; corrected 2026-10-08):** `@connectum/otel` ships `createOtelInterceptor()`
+> for RPC, transport, tracing, and metrics instrumentation. It does not read `AuthContext`
+> and does not add `enduser.*` attributes. A custom OTel interceptor can call
+> `getAuthContext()` when it runs inside the authenticated request scope and add
+> attributes according to the application's data policy; place such enrichment after
+> auth/authz (`errorHandler → auth → authz → custom otel → validation`), which keeps the
+> §4 rule intact. The earlier form of this note claimed that the standard interceptor
+> records `enduser.*`; that claim was wrong.
 
 ### 7. ext_authz: NOT Included
 
@@ -512,26 +522,26 @@ sequenceDiagram
 ### Positive
 
 1. **Pluggable auth primitives** — generic `createAuthInterceptor()` verifies credentials provided to its extractor; peer-certificate access is not part of the current interceptor surface
-2. **JWT support** — `createJwtAuthInterceptor()` uses `jose` for JWKS, HMAC/public-key verification, and configured issuer, audience, and claim mapping
-3. **Declarative authorization** — ordered RBAC rules and an optional callback provide code-based policies alongside proto options
-4. **Context propagation choices** — `AsyncLocalStorage` provides in-process access, while opt-in headers carry selected identity fields across service boundaries
+2. **JWT best practices out-of-the-box** — JWKS caching, key rotation, standard claim validation via `jose`
+3. **Declarative authorization** — rule-based RBAC eliminates boilerplate; rules are auditable
+4. **Standard context propagation** — dual mechanism covers in-process and cross-service
 5. **Separate auth package** — uses the `@connectum/core` `SanitizableError` type protocol and declares core, ConnectRPC, and protobuf as peers; `jose` is its runtime dependency
 6. **Composable** — standard ConnectRPC `Interceptor`, works with `createMethodFilterInterceptor()`
-7. **Test helpers** — `@connectum/auth/testing` exports mock-context, JWT, RS256/JWKS, and async-context helpers
-8. **OTel-composable** — `getAuthContext()` is available to custom instrumentation; the standard `@connectum/otel` interceptor does not add auth attributes
+7. **Testable** — built-in test utilities eliminate test boilerplate
+8. **OTel-composable** — `getAuthContext()` makes auth data available for custom OTel interceptors to enrich spans
 
 ### Negative
 
-1. **Additional package** — users who need authentication install `@connectum/auth` separately
-2. **jose dependency** — JWT support adds a dependency. Package size and tree-shaking impact are not quantified by this ADR; measure the published consumer bundle before making a size claim.
+1. **Additional package** — 7th package in monorepo. Mitigation: modular pattern, install only what's needed
+2. **jose dependency** — ~50KB for JWT. Mitigation: tree-shakeable if only using generic auth
 3. **Chain order is user's responsibility**. Mitigation: clear documentation and examples
-4. **AsyncLocalStorage overhead** — not measured in this ADR. Benchmark representative unary and streaming workloads before making a latency claim.
+4. **AsyncLocalStorage overhead** — <1us per context switch. Mitigation: Node.js ALS is mature
 5. **No built-in token refresh** — client-side concern, out of scope
 
 ### Risks
 
 1. **jose breaking changes** — Mitigation: pin `jose@^6`, wrap API internally
-2. **Security vulnerabilities** — Mitigation: rely on `jose` for crypto, security review, tests
+2. **Security vulnerabilities** — Mitigation: rely on `jose` for crypto, security review, comprehensive tests
 3. **Overlap with infrastructure auth** — Mitigation: document when to use app-level vs infra-level auth
 4. **Header spoofing** — Mitigation: `createGatewayAuthInterceptor()` verifies a trust header fail-closed, while the trusted gateway overwrites client-supplied trust and identity headers and direct service access is restricted. CIDR checks use the forwarded header, not the socket peer address.
 5. **ALS fragility in streams** — Mitigation: context set at stream creation, documented
@@ -542,17 +552,25 @@ sequenceDiagram
 
 ### Alternative 1: Extend `@connectum/interceptors`
 
+**Rating:** 4/10
+
 Forces `jose` dependency on all interceptor users; violates SRP. Auth has different dependencies and lifecycle than resilience patterns.
 
 ### Alternative 2: JWT-only interceptor
+
+**Rating:** 5/10
 
 JWT-only authentication cannot cover API keys or opaque tokens. mTLS peer-certificate inspection remains deferred because the interceptor surface has no peer-certificate access; deployments can pass identity through a trusted gateway or mesh.
 
 ### Alternative 3: Include Envoy ext_authz
 
+**Rating:** 3/10
+
 Infrastructure-level concern, Envoy-specific. Document as example instead.
 
 ### Alternative 4: ConnectRPC `contextValues`
+
+**Rating:** 6/10
 
 ConnectRPC exposes per-call `contextValues` on requests passed to interceptors
 and handlers. The auth package uses `AsyncLocalStorage` so shared helpers can
@@ -562,6 +580,8 @@ access available across the async request scope; `contextValues` remains a
 valid explicit alternative for application-specific data.
 
 ### Alternative 5: Policy-as-code (OPA/Rego)
+
+**Rating:** 5/10
 
 Too heavy for embedded devices. Declarative rules + callback cover same use cases lighter. Users needing OPA can implement as `authorize` callback.
 
@@ -579,7 +599,7 @@ Too heavy for embedded devices. Declarative rules + callback cover same use case
 1. Create `packages/auth/` package structure
 2. Implement `createAuthInterceptor()` with AsyncLocalStorage context
 3. Implement `getAuthContext()`, `requireAuthContext()`, `parseAuthHeaders()`
-4. Unit tests (proposed target: >90% coverage; this ADR does not assert current coverage)
+4. Unit tests (>90% coverage)
 
 ### Phase 2: JWT + Authorization
 5. Implement `createJwtAuthInterceptor()` with jose integration
@@ -593,7 +613,7 @@ Too heavy for embedded devices. Declarative rules + callback cover same use case
 
 ### Phase 4: Documentation & Examples
 11. README.md, authentication guide, authorization guide
-12. Example: `with-jwt-auth/` (proposed example name; not an assertion that this path exists today)
+12. Example: `with-jwt-auth/`
 
 ---
 
@@ -617,4 +637,4 @@ Too heavy for embedded devices. Declarative rules + callback cover same use case
 | 2026-02-15 | Software Architect | Initial ADR: Auth/Authz Strategy |
 | 2026-02-17 | Software Architect | v0.2.0 Revision: Gateway/Session interceptors, LRU cache, Security fixes (SEC-001, SEC-002, SEC-005) |
 | 2026-02-20 | Software Architect | v0.3.0 Revision: Proto-based authorization (`createProtoAuthzInterceptor`, `@connectum/auth/proto`), corrected dependencies (`@connectum/core`, `@bufbuild/protobuf`), removed deleted `trusted-headers.ts`, marked OTel as unimplemented |
-| 2026-10-08 | Documentation review | Reconciled current exports, dependency types, trust boundaries, error and OTel scope, and unsupported performance claims; accepted architectural decisions unchanged |
+| 2026-10-08 | Documentation review | Reconciled with the implementation: peer-dependency kinds (since 1.3), header-only credential surface (no peer certificate), terminal proto-authz decision flow, `contextValues` availability in interceptors, `getInternalMethods` and RS256/JWKS test helpers, corrected the 1.0.0 OTel note (no `enduser.*` enrichment). Ratings, estimates, and accepted decisions unchanged. |
