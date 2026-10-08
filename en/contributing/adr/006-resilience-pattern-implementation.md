@@ -8,7 +8,7 @@ docType: adr
 
 ## Status
 
-**Accepted** - 2025-12-24
+**Accepted** - 2025-12-24; revised - 2026-10-08
 
 > **Update (2026-02-06)**: Per [ADR-023](/en/contributing/adr/023-uniform-registration-api), resilience interceptors (circuit breaker, timeout, bulkhead, fallback, retry) are now **optional (opt-in)**. They are not included in the default interceptor chain of createServer(). Users explicitly attach the interceptors they need. For standalone deployments without Envoy/proxy, they are still recommended.
 
@@ -48,6 +48,9 @@ Only `errorHandler` and `validation` are enabled by default. Timeout, bulkhead, 
 The fixed order keeps composition predictable: error handling wraps the policies, and retry is inside the circuit breaker. The factory does not insert the security, redaction, or observability steps shown in the original diagram. See the [built-in interceptor guide](/en/guide/interceptors/built-in) for configuration and the [retry API](/en/api/@connectum/interceptors/retry/functions/createRetryInterceptor) and [factory API](/en/api/@connectum/interceptors/defaults/functions/createDefaultInterceptors) for the option contracts.
 
 ### Cancellation decision (2026-10-08)
+
+Ships in 1.3.0 ([connectum#330](https://github.com/Connectum-Framework/connectum/pull/330));
+1.2.0 interceptors do not forward cancellation as described here.
 
 Timeout forwards its own deadline and caller cancellation to downstream work,
 preserves the first cancellation cause, and keeps caller cancellation effective
@@ -190,8 +193,8 @@ flowchart TD
 ### Negative
 
 1. **Configuration Complexity** -- requires correct threshold tuning; incorrect config can reduce availability. Mitigated by sensible defaults.
-2. **Debugging Complexity** -- circuit breaker errors can obscure root cause; fallback can hide production issues. Mitigated by logging state changes.
-3. **Testing Complexity** -- requires chaos testing (fault injection, latency injection). Mitigated by tests covering those failures.
+2. **Debugging Complexity** -- circuit breaker errors can obscure root cause; fallback can hide production issues. Mitigated by comprehensive logging of state changes.
+3. **Testing Complexity** -- requires chaos testing (fault injection, latency injection). Mitigated by comprehensive test suite.
 4. **Latency Overhead** -- interceptor chain adds ~1-2ms per request. Acceptable for embedded devices (target p95 < 100ms).
 5. **Retry Amplification Risk** -- retry can amplify load on failing services. Mitigated by only retrying ResourceExhausted errors.
 
@@ -221,3 +224,12 @@ flowchart TD
 - [Azure Resilience Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/category/resiliency)
 - [ADR-005: Input Validation Strategy](./005-input-validation-strategy.md)
 - ADR-010: Framework vs Infrastructure (internal planning document)
+
+## Changelog
+
+| Date | Author | Change |
+|------|--------|--------|
+| 2025-12-24 | Software Architect | Initial ADR: cockatiel-based resilience interceptors |
+| 2026-02-06 | Software Architect | Update: resilience interceptors become opt-in (ADR-023) |
+| 2026-10-08 | Maintainer revision | Current Decision: retry defaults and `createDefaultInterceptors()` order; `## Decision` renamed to `## Original Decision (2025-12-24)`; original retry configuration and chain diagram marked superseded and retained |
+| 2026-10-08 | Maintainer revision | Cancellation decision for timeout and retry (1.3.0, connectum#330) |
