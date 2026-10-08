@@ -141,6 +141,8 @@ handle.send(create(ItemSchema, { value: 'b', sequence: 1 }));
 const count = await handle.close(); // Promise<Res>
 ```
 
+`close()` settles when the call has finished, not when the response arrives: it resolves with the response only after the server's final status, and rejects if the call ends without a response, carries more than one, or fails after the response (the failure is what the call reports). A server that delays its final status therefore holds `close()` until that status arrives, the call is canceled through `CallOptions.signal` or its deadline passes. Versions before 1.3.0 resolved at the first response and silently dropped a later failure; the catalog now follows the same client-streaming contract as a standard Connect client. An OpenTelemetry client interceptor on the call finishes its span once the call has finished.
+
 **Bidi-streaming** → factory returns a `BidiStreamHandle`: `send()` requests while iterating `responses`; `close()` ends **only** the request (send) half — the response half keeps yielding until the server completes:
 
 ```typescript
