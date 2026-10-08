@@ -13,6 +13,10 @@ examples, and performance estimates are not current runtime guarantees. Follow t
 [guides](/en/guide/about) and [runtime compatibility](/en/guide/runtime-compatibility)
 pages for current setup; measure performance with your service and workload.
 
+Status is `Proposed`, `Accepted -- YYYY-MM-DD`, or `Accepted -- YYYY-MM-DD; revised -- YYYY-MM-DD`
+when a later dated decision in the same ADR supersedes part of the original. The
+amendment rules are in the [documentation style guide](/en/contributing/documentation-style#adr).
+
 ## Accepted ADRs
 
 | # | Title | Date | Summary |
@@ -60,4 +64,6 @@ What did we decide?
 ### Negative
 
 ## Alternatives Considered
+
+## Changelog
 ```

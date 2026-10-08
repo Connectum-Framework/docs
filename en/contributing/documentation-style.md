@@ -158,6 +158,32 @@ Use Status, Context, Decision, Consequences, Alternatives, and References. An AD
 records rationale; link to current guides rather than turning the ADR into a
 second operational manual.
 
+An accepted ADR is a dated record. Its Context, Decision, Consequences, and
+Alternatives (including ratings, estimates, diagrams, and checklists) describe
+the decision at its date and are not rewritten. Amend an ADR only in these ways:
+
+- **The decision changed.** Add `## Current Decision (YYYY-MM-DD)` directly after
+  Status, rename the original `## Decision` to `## Original Decision (YYYY-MM-DD)`,
+  and mark each superseded passage in place with one sentence that points to the
+  current decision. Keep the original text. A decision on a new subject is a new
+  ADR that names the ADR it extends.
+- **A statement was wrong when it was written** (it contradicts the ADR itself,
+  or describes behavior the code never had). Correct it in place and name the
+  correction in the Changelog.
+- **A statement became outdated later** (code, versions, package inventory,
+  dependency kinds). Add a dated `> **Update (YYYY-MM-DD):**` note under Status
+  or at the sentence; do not rewrite the sentence. Historical counts and
+  estimates stay; the ADR index states that they are not current guarantees.
+- **Headings are anchors.** Do not remove sections or headings. Rename a heading
+  only when no page in the three repositories links to its anchor, and record
+  the old heading in the Changelog.
+- **Every amendment adds a Changelog row** (add the table if the ADR has none)
+  and updates the Status line and the index row: `Accepted -- YYYY-MM-DD;
+  revised -- YYYY-MM-DD`.
+- **A Current Decision that depends on an unreleased runtime change** names the
+  release and the framework pull request, so readers of the published version
+  can tell which behavior they have.
+
 ## Canonical ownership
 
 When information could appear in several places, these locations win:
