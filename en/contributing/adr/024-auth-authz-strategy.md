@@ -271,6 +271,8 @@ export function getAuthContext(): AuthContext | undefined;
 export function requireAuthContext(): AuthContext; // throws ConnectError(Unauthenticated)
 ```
 
+> **Update (2026-10-08):** The store covers the whole life of a call, including every resumption of a generator handler (after `await`, after `yield`, in `finally`) and the cleanup that follows a cancellation, a deadline or a server shutdown, on HTTP/2 and on the in-process transport alike; a handler never observes the identity held by the caller of an in-process client. Before 1.3.0 ([connectum#PR_NUMBER](https://github.com/Connectum-Framework/connectum/pull/PR_NUMBER)) only the call that opened the stream was covered. An `abort` listener registered by the handler on `ctx.signal` still runs in the context of whatever raised the abort; capture the identity before registering it.
+
 #### 3.2 Request Headers (Cross-Service)
 
 Secondary mechanism for service-to-service propagation, following the Envoy credential injection pattern.
@@ -544,7 +546,7 @@ sequenceDiagram
 2. **Security vulnerabilities** — Mitigation: rely on `jose` for crypto, security review, comprehensive tests
 3. **Overlap with infrastructure auth** — Mitigation: document when to use app-level vs infra-level auth
 4. **Header spoofing** — Mitigation: `createGatewayAuthInterceptor()` verifies a trust header fail-closed, while the trusted gateway overwrites client-supplied trust and identity headers and direct service access is restricted. CIDR checks use the forwarded header, not the socket peer address.
-5. **ALS fragility in streams** — Mitigation: context set at stream creation, documented
+5. **ALS scope and generator handlers** — a server-streaming or bidirectional handler is advanced by the transport after the interceptor has returned, so a single `run()` around `next(req)` does not cover its body. Mitigation: the authentication interceptors scope the identity around the creation of the response iterator and each of its `next`, `return` and `throw` (no `enterWith`), and `@connectum/core` binds the cleanup it triggers on cancellation to the context in which the call's iterator was created. (Corrected 2026-10-08: the original text claimed creation-time scoping was sufficient; it never was.)
 
 ---
 
@@ -638,3 +640,4 @@ Too heavy for embedded devices. Declarative rules + callback cover same use case
 | 2026-02-17 | Software Architect | v0.2.0 Revision: Gateway/Session interceptors, LRU cache, Security fixes (SEC-001, SEC-002, SEC-005) |
 | 2026-02-20 | Software Architect | v0.3.0 Revision: Proto-based authorization (`createProtoAuthzInterceptor`, `@connectum/auth/proto`), corrected dependencies (`@connectum/core`, `@bufbuild/protobuf`), removed deleted `trusted-headers.ts`, marked OTel as unimplemented |
 | 2026-10-08 | Documentation review | Reconciled with the implementation: peer-dependency kinds (since 1.3), header-only credential surface (no peer certificate), terminal proto-authz decision flow, `contextValues` availability in interceptors, `getInternalMethods` and RS256/JWKS test helpers, corrected the 1.0.0 OTel note (no `enduser.*` enrichment). Ratings, estimates, and accepted decisions unchanged. |
+| 2026-10-08 | Connectum maintainers | Corrected Risk 5: creation-time ALS scoping never covered generator handlers; recorded the 1.3.0 identity lifetime for streaming calls and cancellation cleanup (connectum#PR_NUMBER) as a dated note in §3.1. |
