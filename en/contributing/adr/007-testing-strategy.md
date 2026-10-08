@@ -10,7 +10,7 @@ docType: adr
 
 **Accepted** - 2025-12-24
 
-> **Update (2026-02-14)**: Added `@connectum/testing` package specification — mock factories, assertion helpers, and test server utility to eliminate test boilerplate (135+ duplicates identified). Design influenced by [connect-es](https://github.com/connectrpc/connect-es) and [protobuf-es](https://github.com/bufbuild/protobuf-es) testing patterns. See [Testing Utilities](#testing-utilities-connectumtesting) section.
+> **Update (2026-02-14)**: Added `@connectum/testing` package specification — mock factories, assertion helpers, and test server utility to eliminate test boilerplate (135+ duplicates identified). Design influenced by [connect-es](https://github.com/connectrpc/connect-es) and [protobuf-es](https://github.com/bufbuild/protobuf-es) testing patterns. See [Testing Utilities](#testing-utilities-connectum-testing) section.
 
 ---
 

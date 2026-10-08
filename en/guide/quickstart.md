@@ -294,7 +294,7 @@ works as usual, but there is no reverse mapping (`Status[1]`). See
 [Proto Enums](/en/guide/typescript/proto-enums).
 :::
 
-## 4. Service Handler
+## 4. Service Handler {#service-handler}
 
 Create `src/services/greeterService.ts`:
 
