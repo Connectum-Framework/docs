@@ -158,7 +158,7 @@ For the shutdown order and available drain time, see
 
 ## Complete Example
 
-Use the service definition from [Quickstart](/en/guide/quickstart#4-service-handler)
+Use the service definition from [Quickstart](/en/guide/quickstart#service-handler)
 and the `startBackgroundWorker()` implementation above.
 
 ```typescript
