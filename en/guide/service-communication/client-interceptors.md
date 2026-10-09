@@ -9,6 +9,8 @@ outline: deep
 
 Interceptors for outgoing gRPC client calls -- observability, resilience, and custom logic.
 
+Mount application-wide client interceptors once in `createServer({ outgoingInterceptors })` (or `createCatalogClient({ outgoingInterceptors })` outside a server): the chain then runs on every catalog route -- `ctx.call`, `ctx.stream`, and `server.client()` -- see [Outgoing interceptors](./service-catalog#outgoing-interceptors). The per-transport examples below are for transport-specific middleware, or for clients built without the catalog.
+
 ## OTel Client Interceptor
 
 `createOtelClientInterceptor()` instruments outgoing RPC calls with OpenTelemetry tracing and metrics:

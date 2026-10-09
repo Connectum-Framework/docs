@@ -68,8 +68,8 @@ as described in [Observability](#observability).
 
 Auto-routing client factory. Resolves the transport via the server's internal **service registry**:
 
-- If the service is registered on this `Server` (`server.hasService(service)` returns `true`) — returns an in-process client that dispatches directly to the registered handler.
-- Otherwise, if a `remoteResolver` is configured on the server — returns a standard ConnectRPC client over the `Transport` the resolver maps the service to. A resolver that returns `null` for the service yields `ConnectError(Code.Unavailable)` at client construction — the resolver runs inside `server.client()`, before any RPC is invoked.
+- If the service is registered on this `Server` (`server.hasService(service)` returns `true`) — returns an in-process client that dispatches directly to the registered handler and runs the server's `outgoingInterceptors` (unlike `server.localClient()`, which stays plain).
+- Otherwise, if a `remoteResolver` is configured on the server — returns a standard ConnectRPC client over the `Transport` the resolver maps the service to, wrapped in the server's `outgoingInterceptors`. A resolver that returns `null` for the service yields `ConnectError(Code.Unavailable)` at client construction — the resolver runs inside `server.client()`, before any RPC is invoked.
 - Otherwise (not local and no `remoteResolver` configured) — throws `CatalogConfigError` immediately at client construction (fail-fast), naming the service `typeName`.
 
 ```typescript

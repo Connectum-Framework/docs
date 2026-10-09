@@ -7,7 +7,7 @@ outline: deep
 
 # Remote Resolvers
 
-A **remote resolver** is the service-catalog routing layer: it maps a proto service identity to the `Transport` used to reach that service. Three APIs consult it: the unified client factory (`server.client(Desc)`), the catalog primitive (`ctx.call(...)`), and the standalone catalog client (`createCatalogClient(...)`). For the first two, locally-mounted services dispatch in-process and never touch the resolver; everything else is resolved through it. `createCatalogClient` has no local server, so every call goes through the resolver unconditionally.
+A **remote resolver** is the service-catalog routing layer: it maps a proto service identity to the `Transport` used to reach that service. Three APIs consult it: the unified client factory (`server.client(Desc)`), the catalog primitive (`ctx.call(...)`), and the standalone catalog client (`createCatalogClient(...)`). For the first two, locally-mounted services dispatch in-process and never touch the resolver; everything else is resolved through it. `createCatalogClient` has no local server, so every call goes through the resolver unconditionally. The server's `outgoingInterceptors` run on every route the resolver returns; a standalone client applies its own `outgoingInterceptors` option.
 
 You pass a resolver to `createServer({ remoteResolver })` for server-side routing, or directly to `createCatalogClient({ resolver })` for out-of-process workers, schedulers, and CLIs. The framework calls it lazily, on the first route to a given service, and caches the result.
 
@@ -242,7 +242,15 @@ const ctx = createMockContext({
 const res = await orderHandler(create(CreateOrderSchema, { sku: 'x' }), ctx);
 ```
 
-`CreateMockContextOptions` also accepts `outgoingInterceptors`, `requestHeader`, `timeoutMs`, and `propagateHeaders` to reproduce production header propagation and the deadline cascade.
+`CreateMockContextOptions` also accepts `outgoingInterceptors`, `requestHeader`, `timeoutMs`, and `propagateHeaders` to reproduce production header propagation and the deadline cascade. The chain runs on mock routes exactly as on resolver routes; an interceptor that tags the transport kind (such as the OpenTelemetry client interceptor) observes a mock route as `http`.
+
+## Transport-owned vs application-owned interceptors
+
+The server's `outgoingInterceptors` own application policy: identity (a bearer signer), tracing (the OpenTelemetry client interceptor), and resilience (retry). They run once per call on every route, outside the interceptors of the transport the resolver returns, so the call's deadline budget starts before them and the transport receives the remaining budget.
+
+The transport the resolver returns owns transport-specific middleware only: TLS and client certificates, compression, and a header that only one upstream understands. The framework cannot look inside a `Transport`, so it cannot detect or remove a policy you configured in both places; the policy simply runs twice (two client spans, two token-factory calls, retry amplification). If you decorated resolver transports with a signer or tracing interceptor to make remote routes work before 1.3.0, remove that copy — see [section 6 of the migration guide](/en/migration/service-catalog).
+
+Two things differ from a chain mounted on a transport. An interceptor in `outgoingInterceptors` sees `req.url` as `https://catalog/<typeName>/<Method>`, `requestMethod: "POST"`, and none of the protocol headers (`content-type`, `connect-timeout-ms`), because a `Transport` does not expose its address and adds those itself; it also cannot see the transport's `defaultTimeoutMs` when it passes no `timeoutMs`. Policy that needs the wire request — signing over headers, an audience derived from the host — belongs on the resolver's transport, whose own interceptors see the real request.
 
 ## Kubernetes, Istio, and service meshes
 
