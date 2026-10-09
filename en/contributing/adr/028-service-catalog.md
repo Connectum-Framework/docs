@@ -8,7 +8,9 @@ docType: adr
 
 ## Status
 
-Accepted -- 2026-06-15
+Accepted -- 2026-06-15; revised -- 2026-10-09
+
+> **Update (2026-10-09):** In 1.0.0-1.2.0 the chain configured in `outgoingInterceptors` ran only on `ctx.call` / `ctx.stream` to services mounted on the same `Server`; `server.client()`, resolver routes, and `createMockContext` routes received no chain. In 1.3.0 the chain runs on every catalog route: the resolver's transport is wrapped (Connect's `runUnaryCall` / `runStreamingCall` around it), the deadline budget starts before the chain, and the transport's own interceptors run inside it. `server.localClient()` stays plain. Application policy has one owner -- this chain -- and transport-specific middleware stays on the resolver's transports. The decision text below is unchanged.
 
 ## Context
 
@@ -210,3 +212,4 @@ These are explicit limitations of the v1 catalog, not merely "future nice-to-hav
 | 2026-06-15 | Software Architect | Initial ADR: service catalog (declarative cross-service calls, `defineService`, resolver, cascade defaults, split error model, buf codegen) |
 | 2026-10-08 | Connectum maintainers | Corrected statements that contradicted the ADR itself or the implementation: startup does not probe any route (the earlier "only the default route is probed" sentence contradicted the startup-validation rationale); the catalog/`enabledServices` shape check runs only when both options are supplied; an empty augmentation map makes `ctx.call` keys `never` (no untyped fallback, as the `ctx.call` section already stated); topology is supplied through construction options and consumed on the first route build, which can precede `server.start()`; local means mounted on this `Server` in the same process. |
 | 2026-10-08 | Connectum maintainers | Recorded generated request initializer types (`MessageInitShape`) as a 1.3.0 typing refinement; runtime dispatch is unchanged. |
+| 2026-10-09 | Connectum maintainers | Update: `outgoingInterceptors` applied on every catalog route in 1.3.0; ownership rule recorded (application policy in the chain, transport-specific middleware on the resolver transport) |

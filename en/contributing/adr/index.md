@@ -36,7 +36,7 @@ amendment rules are in the [documentation style guide](/en/contributing/document
 | 025 | [Package Versioning Strategy](/en/contributing/adr/025-package-versioning-strategy) | 2026-02-20; revised 2026-10-08 | Two-phase plan (Fixed for rc, Hybrid after 1.0.0); Phase 2 cancelled -- all packages share one version |
 | 026 | [EventBus Architecture](/en/contributing/adr/026-eventbus-architecture) | 2026-03-07 | Proto-first EventBus with pluggable broker adapters |
 | 027 | [External Contracts vs EventBus](/en/contributing/adr/027-external-contracts-vs-eventbus) | 2026-06-12 | External contracts at adapter layer; EventBus stays protobuf-only; remove `sync` |
-| 028 | [Service Catalog](/en/contributing/adr/028-service-catalog) | 2026-06-15 | Declarative `ctx.call`/`ctx.stream`, `defineService`, sync `RemoteResolver`, split error model, buf codegen |
+| 028 | [Service Catalog](/en/contributing/adr/028-service-catalog) | 2026-06-15; revised 2026-10-09 | Declarative `ctx.call`/`ctx.stream`, `defineService`, sync `RemoteResolver`, split error model, buf codegen |
 | 029 | [Internal Service-to-Service Auth](/en/contributing/adr/029-internal-service-to-service-auth) | 2026-06-21 | First-class `internal` marker distinct from `public`; per-service trust-source interceptor (mesh identity / issuer-bound JWKS) for worker/out-of-process callers |
 | 030 | [OpenAPI generation with proto-authz overlay](/en/contributing/adr/030-openapi-authz-generation) | 2026-06-23 | Generate OpenAPI v3.1 (buf remote plugin) + overlay reading the same `resolveMethodAuth` the runtime uses → contract reflects authz, no drift; reference pattern in `car-sharing`, framework CLI deferred |
 
