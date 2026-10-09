@@ -10,7 +10,7 @@ docType: adr
 
 Accepted -- 2026-06-15; revised -- 2026-10-09
 
-> **Update (2026-10-09):** In 1.0.0-1.2.0 the chain configured in `outgoingInterceptors` ran only on `ctx.call` / `ctx.stream` to services mounted on the same `Server`; `server.client()`, resolver routes, and `createMockContext` routes received no chain. In 1.3.0 the chain runs on every catalog route: the resolver's transport is wrapped (Connect's `runUnaryCall` / `runStreamingCall` around it), the deadline budget starts before the chain, and the transport's own interceptors run inside it. `server.localClient()` stays plain. Application policy has one owner -- this chain -- and transport-specific middleware stays on the resolver's transports. The decision text below is unchanged.
+> **Update (2026-10-09):** In 1.0.0-1.2.0 the chain configured in `outgoingInterceptors` ran only on `ctx.call` / `ctx.stream` to services mounted on the same `Server`; `server.client()`, resolver routes, and `createMockContext` routes received no chain. In 1.3.0 ([connectum#339](https://github.com/Connectum-Framework/connectum/pull/339)) the chain runs on every catalog route: the resolver's transport is wrapped (Connect's `runUnaryCall` / `runStreamingCall` around it), the deadline budget starts before the chain, and the transport's own interceptors run inside it. `server.localClient()` stays plain. Application policy has one owner -- this chain -- and transport-specific middleware stays on the resolver's transports. The decision text below is unchanged.
 
 ## Context
 
