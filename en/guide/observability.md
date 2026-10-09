@@ -12,7 +12,9 @@ outline: deep
 ## Minimal RPC instrumentation
 
 ```typescript
+import { createServer } from '@connectum/core';
 import { createOtelInterceptor } from '@connectum/otel';
+import routes from '#gen/routes.js'; // Generated from this service's protobuf definitions
 
 const server = createServer({
   services: [routes],

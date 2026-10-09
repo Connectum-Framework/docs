@@ -1,8 +1,80 @@
+---
+title: "ADR-025: Package Versioning Strategy"
+description: Record the original two-phase versioning plan and the 2026-10-08 decision to keep one shared version for every package.
+docType: adr
+---
+
 # ADR-025: Package Versioning Strategy
 
 ## Status
 
-Accepted -- 2026-02-20
+Accepted -- 2026-02-20; revised -- 2026-10-08 (Phase 2 cancelled; see Current Decision).
+
+> **Update (2026-10-08):** The Hybrid transition planned below as Phase 2 was never
+> implemented and is cancelled: every `@connectum/*` package keeps one shared
+> version. The historical body below -- dependency graph, phase plan, migration
+> checklist, and rated alternatives -- is preserved unchanged. Its package inventory
+> is historical: the text names 12 and 13 packages (a partial update on 2026-03-22),
+> `@connectum/testing` has been published since 2026-03-05 (`private: false`), and
+> the monorepo has 15 packages today; see [Packages](/en/packages/).
+
+## Current Decision (2026-10-08)
+
+Keep every `@connectum/*` package in the same Changesets fixed group for stable
+releases as well as prereleases. Do not introduce a separate independently
+versioned extension group. This adopts the option assessed below as
+[Alternative 1: Stay Fixed Forever](#alternative-1-stay-fixed-forever).
+
+Connectum consists of modular packages in one pnpm monorepo. Users install the
+capabilities they need, while maintainers release those packages together through
+Changesets. Optional installation does not imply independent versioning. At the
+date of this decision every package manifest carries version `1.2.0` and 1.3.0 is
+under review.
+
+A shared version gives maintainers and consumers one release identifier for the
+framework, including its optional modules, broker adapters, CLI, catalog generator,
+and testing packages. The cost is that an unchanged package can receive a new
+version when another member changes. This is an accepted release-policy trade-off.
+
+The versioning configuration is unchanged from Phase 1 below
+(`"fixed": [["@connectum/*"]]` in `.changeset/config.json`). Contributors describe
+the packages they changed in a changeset; Changesets determines the shared version
+for the group; maintainers do not split package versions by hand.
+
+### Scope
+
+The group includes all framework modules and tools, including `@connectum/testing`
+and `@connectum/test-fixtures`. `@connectum/testing` is a public package
+(`private: false`) with main and `/parity` exports; it is not an unpublished
+exception to this policy. Package inventories and dependency layers belong in
+[Packages](/en/packages/) and [Architecture](/en/guide/production/architecture).
+A dependency layer does not define a version group.
+
+### Release identity
+
+The release workflow reads the common version from `packages/core/package.json`
+for the framework's `v<version>` GitHub release tag. That file is a representative
+of the shared group, not an independently versioned core release. The
+`release.yml` change planned under Phase 2 below is not needed.
+
+Release notes should distinguish package-specific behavior changes from version
+alignment. A new shared version does not mean that every package's implementation
+changed. Consumers still review the migration instructions and dependency ranges
+for the modules they install.
+
+### Consequences of the 2026-10-08 decision
+
+- One framework version identifies the complete release set.
+- Consumers do not need a separately maintained matrix of independent Connectum
+  module versions for each release.
+- New `@connectum/*` packages belong to the same existing fixed group.
+- The existing Changesets configuration and release workflow already implement
+  the chosen policy; this revision requires no runtime or release-tool changes.
+- Packages can receive version bumps for group alignment without code changes, and
+  changelogs may include dependency or version-alignment entries -- the cost that
+  the original Phase 2 plan tried to avoid.
+
+---
 
 ## Context
 
@@ -87,7 +159,7 @@ While this is acceptable during the pre-release phase (simplicity > precision), 
 
 Connectum is closest to the **NestJS model**: a tightly coupled core group with independently versioned optional extensions.
 
-## Decision
+## Original Decision (2026-02-20)
 
 **Adopt a two-phase versioning strategy: Fixed during pre-release, Hybrid after 1.0.0 stable.**
 
@@ -112,6 +184,8 @@ During the pre-release phase, **keep the current fixed strategy unchanged**.
 ```
 
 ### Phase 2: After 1.0.0 stable -- Transition to Hybrid
+
+Phase 2 and its migration checklist were cancelled by the 2026-10-08 decision above; they are retained as the original plan.
 
 After the `1.0.0` stable release, split packages into two groups:
 
@@ -248,6 +322,8 @@ When transitioning from Phase 1 to Phase 2 (after `1.0.0` stable release):
 
 ## Consequences
 
+The consequences and alternatives below assess the original two-phase plan. The 2026-10-08 decision adopts Alternative 1.
+
 ### Positive
 
 1. **Phase 1: Zero risk** -- proven strategy for the rc phase, no changes needed
@@ -321,6 +397,8 @@ Use `"linked"` instead of `"fixed"` for the core group. With `linked`, packages 
 3. [Changesets documentation: Fixed packages](https://github.com/changesets/changesets/blob/main/docs/fixed-packages.md)
 4. [Changesets documentation: Linked packages](https://github.com/changesets/changesets/blob/main/docs/linked-packages.md)
 5. [NestJS versioning strategy](https://github.com/nestjs/nest) -- similar hybrid approach
+6. [Framework versioning configuration](https://github.com/Connectum-Framework/connectum/blob/main/.changeset/config.json)
+7. [Release workflow](https://github.com/Connectum-Framework/connectum/blob/main/.github/workflows/release.yml)
 
 ---
 
@@ -329,3 +407,4 @@ Use `"linked"` instead of `"fixed"` for the core group. With `linked`, packages 
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-20 | Software Architect | Initial ADR: two-phase versioning strategy (Fixed for rc, Hybrid after 1.0.0) |
+| 2026-10-08 | Maintainer revision | Cancel the Phase 2 Hybrid transition; keep all packages at one shared version (Current Decision). Historical body retained; `## Decision` renamed to `## Original Decision (2026-02-20)`. |

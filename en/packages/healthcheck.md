@@ -32,11 +32,19 @@ missing peers automatically; on Yarn, add them yourself — see
 
 ## Start Here {#quick-start}
 
+Use the `greeterService` definition from [Quickstart](/en/guide/quickstart).
+
 ~~~typescript
+import { createServer } from '@connectum/core';
 import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
 
-const protocols = [Healthcheck({ httpEnabled: true })];
-healthcheckManager.update(ServingStatus.SERVING);
+const server = createServer({
+  services: [greeterService],
+  protocols: [Healthcheck({ httpEnabled: true })],
+});
+server.on('ready', () => healthcheckManager.update(ServingStatus.SERVING));
+server.on('stopping', () => healthcheckManager.update(ServingStatus.NOT_SERVING));
+await server.start();
 ~~~
 
 ## Key Entry Points

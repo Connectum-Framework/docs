@@ -9,7 +9,10 @@ outline: deep
 
 Configure TLS for secure gRPC/ConnectRPC communication in Connectum services.
 
-**Outcome:** the server starts with a trusted key/certificate pair and clients verify it. Client-certificate enforcement is a separate [mTLS task](/en/guide/security/mtls); exact loading fields live in [`TLSOptions`](/en/api/@connectum/core/types/interfaces/TLSOptions).
+**Outcome:** the server loads a key/certificate pair and serves TLS. Clients must
+trust its issuer and verify its hostname. Client-certificate enforcement is a
+separate [mTLS task](/en/guide/security/mtls); exact loading fields live in
+[`TLSOptions`](/en/api/@connectum/core/types/interfaces/TLSOptions).
 
 ## TLS Options
 
@@ -33,6 +36,8 @@ const server = createServer({
 ```
 
 Paths are resolved relative to the current working directory.
+Supply `keyPath` and `certPath` together. If either is missing, the loader uses
+`dirPath` or its default directory for both files.
 
 ### Directory-Based Configuration
 
@@ -110,19 +115,28 @@ openssl req -x509 -newkey rsa:4096 \
   -out keys/server.crt \
   -days 365 \
   -nodes \
+  -addext "subjectAltName=DNS:localhost,IP:127.0.0.1" \
   -subj "/C=US/ST=Local/L=Local/O=Dev/CN=localhost"
 ```
 
 Use in your service:
 
 ```typescript
+import { createServer } from '@connectum/core';
+import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
+import { Reflection } from '@connectum/reflection';
+
 const server = createServer({
   services: [routes],
   port: 5000,
+  protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
   tls: {
     dirPath: './keys',
   },
 });
+
+server.on('ready', () => healthcheckManager.update(ServingStatus.SERVING));
+await server.start();
 ```
 
 ::: warning Development only
@@ -132,6 +146,11 @@ Self-signed certificates should only be used in development. For production, use
 ## Testing with TLS
 
 When testing with grpcurl against a TLS-enabled server using self-signed certificates:
+
+The local server above mounts Reflection for `grpcurl list` and HTTP health for
+`/healthz`. TLS configuration alone does not add either endpoint. The
+certificate includes a localhost Subject Alternative Name so the verified
+commands can match the server's hostname.
 
 ```bash
 # Skip certificate verification (development only)

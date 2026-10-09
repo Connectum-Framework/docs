@@ -27,6 +27,36 @@ are opt-in. They are described in
 
 ## Required changes
 
+### Terminal `>` excludes the base routing key {#terminal-wildcard}
+
+In the published 1.2.0 adapter, `user.>` was bound as RabbitMQ's `user.#`, so
+the broker also routed the base key `user` to that subscription. The upcoming
+1.3.0 adapter binds `user.*.#`: RabbitMQ's `*` requires one segment and `#`
+then accepts zero or more additional segments.
+
+The adapter rejects a complete `>` segment outside the terminal position. It
+also rejects subscriptions containing complete `*` or `>` wildcard tokens on
+direct, fanout, or headers exchanges before creating subscription topology.
+Embedded characters such as `user*` and `user>` remain literal. A complete `#`
+segment is rejected in topic subscriptions, where RabbitMQ would treat it as a
+wildcard even though EventBus treats it as literal. Non-topic exchanges continue
+to accept `#` as a routing-key literal or ignore it according to their exchange
+type. Operator-declared bindings in `topology.bindings`, including a `#` topic
+binding, are not rewritten by the adapter.
+
+**Action:** inspect named-group and externally managed queues for bindings
+created by the old adapter. The adapter adds the new binding but does not remove
+an old broad binding. Add the new binding first, then remove only the obsolete
+binding; keep the queue and its queued messages:
+
+```typescript
+await channel.bindQueue(queue, exchange, 'user.*.#');
+await channel.unbindQueue(queue, exchange, 'user.#');
+```
+
+Check whether other consumers depend on the old binding before removing it.
+Unbinding changes future routing and does not delete messages already queued.
+
 ### `onDisconnected` fires once per drop {#disconnect-once}
 
 In 1.2, a socket-level connection cut reported the loss twice: once from the raw

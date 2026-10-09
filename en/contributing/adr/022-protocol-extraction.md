@@ -1,8 +1,19 @@
+---
+title: "ADR-022: Protocol Extraction"
+description: Record the extraction of health and reflection protocols into optional modules.
+docType: adr
+---
+
 # ADR-022: Protocol Extraction to Separate Packages
 
 ## Status
 
 **Accepted** - 2026-02-11
+
+The original interface and backward-compatibility period below are historical.
+Current `ProtocolRegistration` separates one-time `setup(context)` from
+`register(router)`; see [Custom Protocols](/en/guide/protocols/custom) and the
+[setup/register migration](/en/migration/protocol-setup).
 
 ## Context
 
@@ -120,17 +131,21 @@ Extract only TypeScript types, leaving implementations in core.
 
 ### Package Layer Changes
 
-```
-Before:
-  Layer 0: proto, utilities, otel
-  Layer 1: interceptors
-  Layer 2: core (+ healthcheck + reflection)
-  Layer 3: testing
-
-After:
-  Layer 0: core
-  Layer 1: interceptors, healthcheck, reflection
-  Layer 2: otel, testing
+```mermaid
+flowchart TD
+    subgraph Before[Before extraction · historical layers]
+        Before0["Layer 0: proto, utilities, otel"]
+        Before1["Layer 1: interceptors"]
+        Before2["Layer 2: core, healthcheck, reflection"]
+        Before3["Layer 3: testing"]
+        Before3 --> Before2 --> Before1 --> Before0
+    end
+    subgraph After[After extraction · historical layers]
+        After0["Layer 0: core"]
+        After1["Layer 1: interceptors, healthcheck, reflection"]
+        After2["Layer 2: otel, testing"]
+        After2 --> After1 --> After0
+    end
 ```
 
 ## Migration Guide

@@ -88,7 +88,7 @@ const inspector: Interceptor = (next) => async (req) => {
   // Service and method information
   const serviceName = req.service.typeName;   // e.g. "user.v1.UserService"
   const methodName = req.method.name;          // e.g. "GetUser"
-  const methodKind = req.method.kind;          // "unary", "server_streaming", etc.
+  const methodKind = req.method.methodKind;    // "unary", "server_streaming", etc.
 
   // Request headers
   const contentType = req.header.get('content-type');
@@ -148,7 +148,10 @@ function createRateLimitInterceptor(options: {
 ```
 
 ::: warning
-When the built-in `errorHandler` interceptor is active (enabled by default), it will catch any uncaught errors from your interceptors and normalize them to `ConnectError`. If you throw a `ConnectError`, its code is preserved. Non-`ConnectError` exceptions are mapped to `Code.Internal`.
+When `errorHandler` wraps your interceptor, it normalizes thrown errors to
+`ConnectError`. Existing Connect errors preserve their code; other errors with a
+numeric `code` use that value, and errors without one use `Code.Internal`.
+Errors implementing `SanitizableError` use their explicit client message and code.
 :::
 
 ## Composing with Built-in Interceptors
@@ -180,21 +183,24 @@ Auth interceptors must be placed **immediately after** `errorHandler`, before ti
 import {
   createErrorHandlerInterceptor,
   createTimeoutInterceptor,
-  createSerializerInterceptor,
 } from '@connectum/interceptors';
 import { createJwtAuthInterceptor, createAuthzInterceptor } from '@connectum/auth';
+import { createValidateInterceptor } from '@connectrpc/validate';
 
 const server = createServer({
   services: [routes],
   interceptors: [
     createErrorHandlerInterceptor({ logErrors: true }),
-    createJwtAuthInterceptor({ jwksUri: '...', issuer: '...' }),
-    createAuthzInterceptor({ defaultPolicy: 'deny', rules: [...] }),
+    createJwtAuthInterceptor({ jwksUri, issuer }),
+    createAuthzInterceptor({ defaultPolicy: 'deny', rules: authzRules }),
     createTimeoutInterceptor({ duration: 5_000 }),
-    createSerializerInterceptor(),
+    createValidateInterceptor(),
   ],
 });
 ```
+
+Supply your identity provider's `jwksUri` and `issuer`, and the application's
+`authzRules`; see [Authorization](/en/guide/auth/authorization) for rule configuration.
 
 To replace the built-in chain entirely, provide only your own interceptors:
 
@@ -202,7 +208,6 @@ To replace the built-in chain entirely, provide only your own interceptors:
 import {
   createErrorHandlerInterceptor,
   createTimeoutInterceptor,
-  createSerializerInterceptor,
 } from '@connectum/interceptors';
 
 const server = createServer({
@@ -210,7 +215,6 @@ const server = createServer({
   interceptors: [
     createErrorHandlerInterceptor({ logErrors: true }),
     createTimeoutInterceptor({ duration: 5_000 }),
-    createSerializerInterceptor(),
   ],
 });
 ```
@@ -255,18 +259,16 @@ do not depend on `node:test`.
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { ConnectError, Code } from '@connectrpc/connect';
+import { createMockRequest, createMockNext } from '@connectum/testing';
 
 describe('createAuthInterceptor', () => {
   const interceptor = createAuthInterceptor({
     validateToken: async (token) => token === 'valid-token',
   });
-  const mockReq = (headers: Record<string, string>) => ({
-    header: new Headers(headers),
-    service: { typeName: 'test.v1.TestService' },
-    method: { name: 'Test', kind: 'unary' },
-    stream: false,
+  const mockReq = (headers: Record<string, string>) => createMockRequest({
+    headers: new Headers(headers),
   });
-  const mockNext = async () => ({ header: new Headers(), trailer: new Headers() });
+  const mockNext = createMockNext();
 
   it('should pass with valid token', async () => {
     const handler = interceptor(mockNext);

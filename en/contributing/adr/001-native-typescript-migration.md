@@ -1,10 +1,20 @@
+---
+title: "ADR-001: Compile-Before-Publish TypeScript Strategy"
+description: Record the decision to develop in TypeScript and publish compiled JavaScript.
+docType: adr
+---
+
 # ADR-001: Compile-Before-Publish TypeScript Strategy
 
 ## Status
 
 **Accepted** -- 2026-02-16 (supersedes original ADR-001 from 2025-12-22)
 
-> **Update**: The consumer Node.js floor referenced below as `>=18.0.0` was later raised to **`>=22.13.0`** (Node.js 20 reached end-of-life on 2026-04-30). See the [migration guide](/en/migration/) ("Minimum Node.js raised to 22.13.0"). The historical decision body is preserved unchanged.
+> **Current requirements:** The consumer floor below was later raised to `>=22.13.0`,
+> and the framework development floor is now `>=26.0.0`. See
+> [Runtime Compatibility](/en/guide/runtime-compatibility) and
+> [Migrating to 1.0](/en/migration/1.0#upgrade-nodejs). The historical decision body,
+> including its estimates and original requirements, is preserved below.
 
 ## Context
 

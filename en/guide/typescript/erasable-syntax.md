@@ -107,14 +107,16 @@ class Server {
 
 ### No Legacy Decorators
 
-Legacy (experimental) decorators are not erasable. TC39 stage 3 decorators are supported in newer Node.js versions:
+Decorators are not converted by type stripping. Do not use decorator syntax on
+the native execution path unless your selected runtime supports it directly;
+otherwise use an application build step:
 
 ```typescript
 // WRONG: legacy decorator
 @Injectable()
 class UserService {}
 
-// OK: TC39 stage 3 decorators (if supported by your Node.js version)
+// Check the selected runtime before using standard decorators as JavaScript.
 ```
 
 ## Import Rules
@@ -126,27 +128,29 @@ With `verbatimModuleSyntax: true`, you must separate type imports from value imp
 ```typescript
 // CORRECT: explicit type import
 import type { ConnectRouter } from '@connectrpc/connect';
-import type { SayHelloRequest } from '#gen/greeter_pb.js';
+import type { SayHelloRequest } from '#gen/greeter_pb.ts';
 
 // CORRECT: value import
 import { create } from '@bufbuild/protobuf';
-import { GreeterService } from '#gen/greeter_pb.js';
+import { GreeterService } from '#gen/greeter_pb.ts';
 
 // CORRECT: mixed import with inline type
-import { GreeterService, type SayHelloRequest } from '#gen/greeter_pb.js';
+import { GreeterService, type SayHelloRequest } from '#gen/greeter_pb.ts';
 
 // WRONG: type imported as value (caught by verbatimModuleSyntax)
-import { SayHelloRequest } from '#gen/greeter_pb.js';
+import { SayHelloRequest } from '#gen/greeter_pb.ts';
 //       ^ This is a type, must use 'import type'
 ```
 
 ### File Extensions in Imports
 
-Use `.ts` extensions in relative imports of source files. The `rewriteRelativeImportExtensions` option handles module resolution:
+Use `.ts` extensions in relative imports of source files. During compilation,
+`rewriteRelativeImportExtensions` rewrites these extensions in emitted JavaScript;
+native execution does not rewrite paths and requires the actual source extension:
 
 ```typescript
 // CORRECT: .ts extension for source files
-import { greeterServiceRoutes } from './services/greeterService.ts';
+import { greeterService } from './services/greeterService.ts';
 import type { Config } from './config.ts';
 
 // CORRECT: no extension for package imports
@@ -154,10 +158,10 @@ import { createServer } from '@connectum/core';
 import { create } from '@bufbuild/protobuf';
 
 // WRONG: .js extension for source files (outdated convention)
-import { greeterServiceRoutes } from './services/greeterService.js';
+import { greeterService } from './services/greeterService.js';
 
 // WRONG: no extension for relative imports
-import { greeterServiceRoutes } from './services/greeterService';
+import { greeterService } from './services/greeterService';
 ```
 
 ### Generated Code (`#gen/`) Imports
@@ -170,7 +174,6 @@ For a run-directly project (`import_extension=.ts`):
 // CORRECT: .ts for generated protobuf files (import_extension=.ts)
 import { GreeterService } from '#gen/greeter_pb.ts';
 import type { SayHelloRequest } from '#gen/greeter_pb.ts';
-import routes from '#gen/routes.ts';
 
 // WRONG: extension that does not match buf.gen.yaml import_extension
 import { GreeterService } from '#gen/greeter_pb.js';

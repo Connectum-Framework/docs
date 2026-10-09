@@ -1,10 +1,16 @@
+---
+title: "ADR-007: Testing Strategy"
+description: Record the testing goals and original node:test strategy.
+docType: adr
+---
+
 # ADR-007: Testing Strategy
 
 ## Status
 
 **Accepted** - 2025-12-24
 
-> **Update (2026-02-14)**: Added `@connectum/testing` package specification — mock factories, assertion helpers, and test server utility to eliminate test boilerplate (135+ duplicates identified). Design influenced by [connect-es](https://github.com/connectrpc/connect-es) and [protobuf-es](https://github.com/bufbuild/protobuf-es) testing patterns. See [Testing Utilities](#testing-utilities-connectumtesting) section.
+> **Update (2026-02-14)**: Added `@connectum/testing` package specification — mock factories, assertion helpers, and test server utility to eliminate test boilerplate (135+ duplicates identified). Design influenced by [connect-es](https://github.com/connectrpc/connect-es) and [protobuf-es](https://github.com/bufbuild/protobuf-es) testing patterns. See [Testing Utilities](#testing-utilities-connectum-testing) section.
 
 ---
 
@@ -43,7 +49,7 @@
 
 ## Decision
 
-**Use [node:test](https://nodejs.org/api/test.html) (native Node.js test runner) to test all Connectum packages with a target coverage of 90%+.**
+**Use [node:test](https://nodejs.org/api/test.html) (native Node.js test runner) for comprehensive testing of all Connectum packages with a target coverage of 90%+.**
 
 ### Why node:test?
 

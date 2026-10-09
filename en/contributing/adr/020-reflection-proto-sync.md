@@ -1,3 +1,9 @@
+---
+title: "ADR-020: Reflection-Based Proto Synchronization"
+description: Record the reflection and binary-descriptor strategy for synchronizing client types.
+docType: adr
+---
+
 # ADR-020: Reflection-based Proto Synchronization
 
 **Status:** Accepted - 2026-02-11 (Phase 1 DONE, Phase 2 DONE)
@@ -179,17 +185,13 @@ connectum proto sync --from localhost:5000 --config ./buf.gen.yaml
 
 CLI pipeline architecture:
 
-```
-+--------------+    +----------------------+    +-----------------+    +------------+
-| Running      |    | ServerReflectionClient|    | FileDescriptorSet|    | buf        |
-| Connectum    |--->| (@lambdalisue/       |--->| .binpb file     |--->| generate   |
-| Server       |    |  connectrpc-         |    | (binary proto)  |    | (codegen)  |
-|              |    |  grpcreflect/client)  |    |                 |    |            |
-+--------------+    +----------------------+    +-----------------+    +------------+
-       |                   |                        |                    |
-  gRPC Reflection    listServices() +         toBinary() ->         TypeScript
-  Protocol           buildFileRegistry()      FileDescriptorSet    stubs in
-  (auto v1/v1alpha)  (ConnectRPC native)      -> .binpb file       --out dir
+```mermaid
+flowchart LR
+    Server["Running Connectum server<br/>gRPC Reflection v1 / v1alpha"]
+    Client["Historical reflection client<br/>listServices + buildFileRegistry"]
+    Descriptors["FileDescriptorSet<br/>toBinary → .binpb"]
+    Buf["buf generate<br/>TypeScript output"]
+    Server --> Client --> Descriptors --> Buf
 ```
 
 Key advantages:

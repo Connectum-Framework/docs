@@ -1,3 +1,9 @@
+---
+title: Parity Coverage Report
+description: Inventory the scenarios that compare HTTP and in-process service behavior.
+docType: contributor-guide
+---
+
 # Parity Coverage Report
 
 This page reports the current coverage of the
@@ -5,16 +11,15 @@ This page reports the current coverage of the
 manually when parity scenarios are added or removed; the underlying numbers
 can be regenerated from the parity test files at any time.
 
-> **Last updated:** Phase 7 of OpenSpec change `in-process-transport`.
-> **Target coverage:** ≥ 90 % of observable behaviour exercised through the
-> `transportParityTest()` driver.
+This is a source inventory, not a record of a successful test run. Run the parity
+suite on the revision you intend to validate.
 
 ## Scenarios by group
 
 | Group | Surface | File | Scenarios |
 |------:|---------|------|----------:|
-| 3 | Server-side interceptor ordering (3.1), client-side interceptor injection (3.2), timeout (3.3a), retry (3.3b), bulkhead (3.3c), circuit-breaker (3.3d), logger (3.3e), serializer (3.3f) | `packages/testing/tests/parity/interceptors.parity.test.ts` | **8** |
-| 3a | `protovalidate` / `buf.validate` (success, single-rule violation, aggregated violations, streaming validation, no-bypass API (3a.6)) | `packages/testing/tests/parity/validation.parity.test.ts` | **5** |
+| 3 | Server-side interceptor ordering (3.1), header injection through a symmetric server interceptor (3.2), successful-call smoke checks for timeout (3.3a), retry (3.3b), bulkhead (3.3c), circuit-breaker (3.3d), logger (3.3e), serializer (3.3f) | `packages/testing/tests/parity/interceptors.parity.test.ts` | **8** |
+| 3a | An inline validation interceptor reading `buf.validate` descriptors (success, single-rule violation, aggregated violations, streaming validation, no-bypass API (3a.6)) | `packages/testing/tests/parity/validation.parity.test.ts` | **5** |
 | 3b | Proto-declared authz (success with scope, unauthenticated, permission denied, public method, no-bypass API (3b.6)) | `packages/testing/tests/parity/authorization.parity.test.ts` | **5** |
 | 4 | Streaming & cancellation (unary, server-stream, client-stream, bidi, unary cancel, stream mid-cancel, handler cleanup after abort, handler cleanup after break + abort) | `packages/testing/tests/parity/streaming.parity.test.ts` | **8** |
 | 5 | Error mapping (`ConnectError(NotFound)`, plain `Error` → `internal`, interceptor-thrown error) | `packages/testing/tests/parity/errors.parity.test.ts` | **3** |
@@ -68,15 +73,12 @@ real-host `req.url`, gzip — these are wire-only and have no in-process
 analogue. The diagnostic text of a `readMaxBytes` rejection is the one
 documented message exception; group 8 still compares its code and limit.
 
-**Coverage estimate:** of 19 distinct observable behaviour categories above,
-all 19 are exercised through the parity mechanism. The 4 explicitly
-out-of-scope categories (TLS, HTTP/2 framing, content-encoding, real
-`req.url` host) are wire-specific and excluded by spec.
-
-Observable coverage: **19 / 19 = 100 %** of in-scope behaviours;
-**19 / 23 = 83 %** if wire-only behaviours are counted as denominator.
-By the spec's "observable behaviour" definition (wire-only is excluded),
-coverage clears the 90 % target.
+The table names the surfaces exercised by these scenarios; it does not measure the
+fraction of all possible service behavior covered. In particular, the interceptor
+smoke cases compare successful response payloads, not timeout, retry, breaker, or
+bulkhead failure behavior. The logger case does not compare sink output, and the
+validation cases use an inline interceptor rather than `@connectrpc/validate`.
+Use the scenario implementations and the latest suite output to assess a change.
 
 ## How to add a scenario
 
@@ -93,5 +95,5 @@ coverage clears the 90 % target.
      },
    });
    ```
-3. Run `./scripts/parity-suite.sh` locally.
+3. From the framework repository root, run `bash ./scripts/parity-suite.sh` locally.
 4. Update the table above.

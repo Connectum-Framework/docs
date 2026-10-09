@@ -93,7 +93,8 @@ await server.start();
 ```
 
 ::: warning
-Protocols must be added before calling `server.start()`. Adding a protocol after the server is running will throw an error.
+Add protocols before `server.start()` and before creating an in-process client:
+either action materializes routes and prevents later `addProtocol()` calls.
 :::
 
 ## Creating a Custom Protocol
@@ -227,7 +228,7 @@ setup(context): void {
   for (const service of context.services) {
     console.log(`Mounted: ${service.typeName}`);
     for (const method of service.methods) {
-      console.log(`  - ${method.name} (${method.kind})`);
+      console.log(`  - ${method.name} (${method.methodKind})`);
     }
   }
 }

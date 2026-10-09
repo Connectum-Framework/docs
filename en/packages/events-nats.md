@@ -39,8 +39,8 @@ const adapter = NatsAdapter({
 
 | Entry point | Use it to |
 |---|---|
-| `NatsAdapter` | Connect EventBus to NATS JetStream. |
-| `NatsAdapterOptions` | Configure servers, stream, connection, and consumer behavior. |
+| [`NatsAdapter`](/en/api/@connectum/events-nats/functions/NatsAdapter) | Connect EventBus to NATS JetStream. |
+| [`NatsAdapterOptions`](/en/api/@connectum/events-nats/types/interfaces/NatsAdapterOptions) | Configure servers, stream, connection, and consumer behavior. |
 
 ## Learn / Configure / API Reference {#api-reference}
 

@@ -7,36 +7,60 @@ outline: deep
 
 # Session Authentication
 
-`createSessionAuthInterceptor` verifies session tokens using a pluggable `verifySession` callback. It is designed for frameworks like [better-auth](https://www.better-auth.com/), [lucia](https://lucia-auth.com/), or custom session stores.
+`createSessionAuthInterceptor` verifies session credentials through an application-provided `verifySession` callback, then maps the result to an `AuthContext`.
+
+## Before you begin
+
+Provide a session backend and a mapper that validates its returned data. The
+bearer examples below use your `verifySessionToken(token, headers)` callback.
+The cookie example uses your `auth.api.getSession({ headers })` callback. Both
+return a session with `user.id`, an optional `user.name`, and optional `user.roles`.
+The interceptor has no built-in integration with a session provider.
 
 ## Configuration
 
 ```typescript
 import { createSessionAuthInterceptor } from '@connectum/auth';
+import type { AuthContext } from '@connectum/auth';
+
+function mapSession(session: unknown): AuthContext {
+  if (!session || typeof session !== 'object' || !('user' in session)) {
+    throw new Error('Invalid session');
+  }
+  const user = session.user;
+  if (!user || typeof user !== 'object' || !('id' in user)
+    || typeof user.id !== 'string' || user.id.length === 0) {
+    throw new Error('Invalid session identity');
+  }
+  return {
+    subject: user.id,
+    name: 'name' in user && typeof user.name === 'string' ? user.name : undefined,
+    roles: 'roles' in user && Array.isArray(user.roles)
+      ? user.roles.filter((role): role is string => typeof role === 'string') : [],
+    scopes: [],
+    claims: { ...user },
+    type: 'session',
+  };
+}
 
 const sessionAuth = createSessionAuthInterceptor({
-  verifySession: (token, headers) => auth.api.getSession({ headers }),
-  mapSession: (session) => ({
-    subject: session.user.id,
-    name: session.user.name,
-    roles: [],
-    scopes: [],
-    claims: session.user,
-    type: 'session',
-  }),
-  cache: { ttl: 60_000 },
+  verifySession: verifySessionToken,
+  mapSession,
 });
 ```
 
 The two application-owned callbacks are `verifySession`, which talks to the session
-backend, and `mapSession`, which creates the stable `AuthContext`. Override token
-extraction only when the framework cannot read your credential shape. The full cache
+backend, and `mapSession`, which creates the stable `AuthContext`. The default
+extractor reads only `Authorization: Bearer <token>` and rejects a missing token
+before calling `verifySession`. Cookie-only requests need a custom extractor. The full cache
 and callback contract lives in
 [`SessionAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/SessionAuthInterceptorOptions).
 
 ## How It Works
 
-Unlike `createJwtAuthInterceptor`, the session interceptor receives the **full request `Headers`** in its `verifySession` callback. This enables cookie-based auth flows where the session token is sent as a cookie rather than an `Authorization` header.
+The session callback receives request `Headers`, including cookies, after the
+interceptor removes incoming `x-auth-*` identity headers. Passing headers lets
+the backend verify cookies; it does not replace token extraction.
 
 ```mermaid
 flowchart LR
@@ -48,24 +72,21 @@ flowchart LR
 
 ## Cookie-Based Auth
 
-When your session framework reads cookies directly from headers:
+When your session backend reads cookies directly from headers, extract the actual
+credential cookie first. This example assumes its name is `session`; use the
+cookie name and encoding your backend defines:
 
 ```typescript
 const sessionAuth = createSessionAuthInterceptor({
+  extractToken: ({ header }) =>
+    /(?:^|;\s*)session=([^;]+)/.exec(header.get('cookie') ?? '')?.[1] ?? null,
   verifySession: async (_token, headers) => {
     // The session framework reads the cookie from headers
     const session = await auth.api.getSession({ headers });
     if (!session) throw new Error('Invalid session');
     return session;
   },
-  mapSession: (session) => ({
-    subject: session.user.id,
-    name: session.user.name,
-    roles: session.user.roles ?? [],
-    scopes: [],
-    claims: session.user,
-    type: 'session',
-  }),
+  mapSession,
 });
 ```
 
@@ -75,41 +96,55 @@ Enable caching to avoid calling the session backend on every request:
 
 ```typescript
 const sessionAuth = createSessionAuthInterceptor({
-  verifySession: (token, headers) => auth.api.getSession({ headers }),
-  mapSession: (session) => ({ /* ... */ }),
+  verifySession: verifySessionToken,
+  mapSession,
   cache: { ttl: 60_000 },  // Cache for 60 seconds
 });
 ```
 
-Cached sessions are keyed by the session token. When the TTL expires, the next request triggers a fresh `verifySession` call.
+Here `verifySessionToken` is your backend callback that verifies the supplied
+token. Cached identities are keyed only by that extracted token; do not cache a
+header-dependent verifier unless the key uniquely identifies the session it
+verifies. The cache is bypassed when the mapped `expiresAt` has passed, or when
+its TTL expires. Revoking a session in the backend does not invalidate an already
+cached identity, so choose the TTL to fit your revocation policy.
 
 ## Full Example
 
 ```typescript
 import { createServer } from '@connectum/core';
-import { createDefaultInterceptors } from '@connectum/interceptors';
-import { createSessionAuthInterceptor, createAuthzInterceptor } from '@connectum/auth';
+import { createDefaultInterceptors, createErrorHandlerInterceptor } from '@connectum/interceptors';
+import { createSessionAuthInterceptor } from '@connectum/auth';
 
 const sessionAuth = createSessionAuthInterceptor({
-  verifySession: (token, headers) => auth.api.getSession({ headers }),
-  mapSession: (session) => ({
-    subject: session.user.id,
-    name: session.user.name,
-    roles: session.user.roles ?? [],
-    scopes: [],
-    claims: session.user,
-    type: 'session',
-  }),
-  cache: { ttl: 60_000 },
+  verifySession: verifySessionToken,
+  mapSession,
 });
 
 const server = createServer({
   services: [routes],
-  interceptors: [...createDefaultInterceptors(), sessionAuth],
+  interceptors: [
+    createErrorHandlerInterceptor(),
+    sessionAuth,
+    ...createDefaultInterceptors({ errorHandler: false }),
+  ],
 });
 
 await server.start();
 ```
+
+## Verify
+
+Call a protected method with a valid session credential and confirm its
+`AuthContext.subject` in the handler. Repeat with no credential, an invalid
+session, and a backend response missing `user.id`; the examples reject all
+three with `Code.Unauthenticated`. For the cookie configuration, also check a
+cookie-only request and an unrelated cookie: only the configured credential
+cookie should reach verification.
+
+If cookie-only calls fail before the backend runs, check `extractToken`. If a
+revoked session still works, check whether its identity remains cached and
+whether your mapper supplies `expiresAt`.
 
 ## Related
 

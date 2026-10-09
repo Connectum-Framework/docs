@@ -25,9 +25,12 @@ published `1.2.x` packages until 1.3.0 is released.
 | Redis Streams / Valkey | Configurable by Redis | Consumer groups | Stream | Teams already operating Redis-compatible infrastructure |
 | AMQP / RabbitMQ / LavinMQ | Durable queues/exchanges when configured | Competing consumers | Queue | Routing topologies and external AMQP contracts |
 
-All production adapters implement at-least-once delivery semantics. Handlers must
-be idempotent and acknowledge only after their side effects are complete. Broker
-configuration determines actual durability and retention.
+Production adapters support broker redelivery of unacknowledged events, so
+handlers must be idempotent and acknowledge only after their side effects are
+complete. Delivery and retention still depend on broker configuration, start
+position, stable consumer groups, and settlement policy. For AMQP, a broker
+confirm alone does not prove that any queue accepted the message; see
+[Routing and delivery](/en/guide/events/amqp-reliability#routing-and-delivery).
 
 ## Memory {#memory-adapter}
 
@@ -153,10 +156,11 @@ message, both modes send the same one request.
 
 ### Long-running handlers {#kafka-long-handlers}
 
-While a handler runs, the adapter keeps sending group heartbeats on its behalf, so
-a handler that takes longer than `consumerOptions.sessionTimeout` (default `30000`
-ms) stays a member of its group: its `ack()` is accepted and the message is
-delivered once. The adapter beats every 3 seconds (the KafkaJS default
+While a handler runs, the adapter keeps sending group heartbeats on its behalf,
+so processing longer than `consumerOptions.sessionTimeout` (default `30000` ms)
+does not by itself expire the group membership. Successful heartbeats allow the
+handler to commit; a rebalance or connection failure can still cause redelivery.
+The adapter beats every 3 seconds (the KafkaJS default
 `heartbeatInterval`), checking twice per interval, and stops as soon as the handler
 returns, throws, or its turn ends.
 
@@ -185,6 +189,18 @@ committed, messages published while it is stopped are delivered on restart. Set
 - [`KafkaAdapterOptions`](/en/api/@connectum/events-kafka/types/interfaces/KafkaAdapterOptions)
 - [Redpanda example](https://github.com/Connectum-Framework/examples/tree/main/with-events-redpanda)
 
+### Partition keys and metadata {#kafka-publish-metadata}
+
+Pass `PublishOptions.key` to set the Kafka record key used by the broker client's
+partitioner. Without it, the adapter sends a null key. Ordering is scoped to a
+partition; selecting a key does not make ordering global across the topic.
+
+`PublishOptions.metadata` becomes UTF-8 Kafka headers. The adapter writes its own
+`x-event-id` and `x-published-at` after user metadata, so those values cannot be
+overridden. Consumers extract those fields and remove them from `ctx.metadata`;
+other headers remain available to the handler. Exact publish fields are in
+[`PublishOptions`](/en/api/@connectum/events/types/interfaces/PublishOptions).
+
 ## Redis Streams or Valkey {#redis-streams-adapter}
 
 Choose Redis Streams when the team already operates Redis-compatible
@@ -206,7 +222,9 @@ An entry that is not acknowledged stays in the consumer group's pending list:
 before the entry is settled. `nack(false)` acknowledges it, so it is not
 redelivered. The adapter claims pending entries that have been idle for 30
 seconds (`XAUTOCLAIM`) and delivers them again with the delivery count from the
-group.
+group. Thirty seconds is the minimum idle eligibility, not a delivery deadline:
+claiming runs every fifth consume-loop iteration, so reads and handlers can add
+delay.
 
 A handler failure on one redelivered entry is logged with the entry id and
 affects only that entry: it stays pending and is claimed again after another 30
@@ -219,6 +237,20 @@ long run of recently delivered ones are therefore reached too.
 
 - [Module hub](/en/packages/events-redis)
 - [`RedisAdapterOptions`](/en/api/@connectum/events-redis/types/interfaces/RedisAdapterOptions)
+
+### Stream names and retention {#redis-stream-retention}
+
+The topic `orders.created` maps to the Redis stream key `events:orders.created`.
+The adapter stores the protobuf payload as base64 alongside `eventId`,
+`eventType`, and `publishedAt`; user metadata is stored as `meta:<name>` fields
+and restored as `ctx.metadata` when consumed.
+
+`brokerOptions.maxLen` adds approximate `XADD MAXLEN ~` trimming. It bounds
+retention, not the number of pending deliveries: trimming can remove entries
+that a consumer has not processed, so choose it from your retention needs. A new
+consumer group is created at `$` and starts with events published after its
+creation. Use the same explicit group across restarts to retain its consumption
+state; omitting `group` creates a new random group.
 
 ## AMQP or RabbitMQ {#amqp--rabbitmq-adapter}
 

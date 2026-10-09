@@ -6,7 +6,11 @@ docType: concept
 
 # In-Process Transport
 
-The **in-process transport** lets you invoke services that are registered on the same `Server` instance in memory — without HTTP/2, TLS, or sockets — while preserving 1-to-1 behavioural parity with the HTTP/Connect/gRPC transport (interceptors, validation, authorization, request admission, error mapping, streaming semantics, OpenTelemetry spans and metrics). Messages still cross an in-memory Connect protocol boundary in binary protobuf form, so the handler receives its own decoded copy of each request, exactly as over the network.
+The **in-process transport** invokes services registered on the same `Server`
+instance in memory, without HTTP/2, TLS, or sockets. It uses the configured server
+interceptors and request admission, with the parity guarantees and limits below.
+Messages cross an in-memory Connect protocol boundary in binary protobuf form,
+so the handler receives its own decoded copy of each request.
 
 ::: tip Full API Reference
 TypeScript API documentation: [@connectum/core API Reference](/en/api/@connectum/core/).
@@ -14,7 +18,10 @@ TypeScript API documentation: [@connectum/core API Reference](/en/api/@connectum
 
 ## Overview
 
-A typical Connectum service-to-service call goes over HTTP/2 loopback even when both endpoints live in the same Node.js process. That adds TLS handshakes, h2 framing, JSON/protobuf wire encoding, and a port binding — overhead that is pure waste for co-located services.
+A network call between services in the same process still requires a listener,
+protocol framing, and message encoding; a TLS connection also performs a handshake.
+The in-process transport removes the network connection while retaining protobuf
+encoding and decoding.
 
 The in-process transport reuses the `ConnectRouter` that `createServer()` has already built and dispatches client calls directly to the registered handlers. The client API is identical to a remote ConnectRPC client (`createClient(Service, transport)`), so the same caller code works whether the callee is local or remote.
 
@@ -49,7 +56,11 @@ const { message } = await greeter.sayHello({ name: 'world' });
 console.log(message); // "Hello, world!"
 ```
 
-The call above executes the full server-side interceptor chain (including validation and authorization) and emits the same OpenTelemetry CLIENT and SERVER spans as an equivalent HTTP call — only the `connectum.transport` attribute differs.
+The call executes the interceptors configured on this server. The minimal example
+does not configure validation, authorization, or telemetry. Add those modules
+explicitly; configure client telemetry on `createLocalTransport()` when both
+CLIENT and SERVER spans are required. Their topology can differ across transports,
+as described in [Observability](#observability).
 
 ## API Reference
 
@@ -119,14 +130,20 @@ Useful for conditional routing in user code (e.g. when you build a custom transp
 
 ## Behavioural Parity Guarantees
 
-The in-process transport is validated by a cross-transport contract test suite (`transportParityTest` driver in `@connectum/testing/parity`). For every covered scenario, the observed result over `createLocalTransport(server)` is structurally identical to the result over `createGrpcTransport({ baseUrl })` — modulo a single allow-listed attribute / label (`connectum.transport` / `transport`).
+The cross-transport suite uses `transportParityTest` from `@connectum/testing/parity`.
+The driver compares each scenario over `createLocalTransport(server)` and
+`createGrpcTransport({ baseUrl })`, normalizing telemetry transport labels and
+random span identifiers. It also normalizes one read-limit diagnostic: a
+`ResourceExhausted` message may include the observed byte count on HTTP and omit
+it locally, for the same configured `readMaxBytes`. Other reported error fields
+are compared literally.
 
 Guaranteed identical between in-process and HTTP:
 
 - **Server-side interceptor chain** — same interceptors, same order. There is no API to bypass interceptors on the local path.
 - **Validation** — proto-declared `buf.validate` / `protovalidate` rules reject invalid requests with `ConnectError(invalid_argument)` and identical violation details on both transports.
 - **Authorization** — proto-declared authz rules and `@connectum/auth` interceptors apply uniformly. Missing/invalid tokens produce `ConnectError(unauthenticated)`; insufficient scope produces `ConnectError(permission_denied)` with identical metadata.
-- **Error mapping** — `ConnectError` (`code`, `message`, `metadata`, `details`) round-trips identically. Plain `Error` becomes `code === internal` on both paths.
+- **Error mapping** — `ConnectError` (`code`, `message`, `metadata`, `details`) round-trips identically. With the default error handler configured, an error without a numeric code becomes `Code.Internal` on both paths.
 - **Streaming** — unary, server-stream, client-stream, and bidi RPCs preserve message order. In the upcoming 1.3.0 release, cancellation also resumes a streaming handler parked at `yield` on both transports so its `finally` block can release resources. **Version 1.3.0 is not yet published to npm.** Earlier releases abort `context.signal`, but do not resume a parked in-process generator; over HTTP/2 the handler also remains parked on some tested runtime versions. Leaving a `for await` loop with `break` is not a cancellation on either path: pass an `AbortSignal` and abort it to end the call.
 - **Headers / metadata** — `Headers` objects (including `authorization` and `@connectum/auth` serialized auth headers) round-trip in both directions. Headers are cloned at the boundary to prevent cross-side mutation.
 - **OpenTelemetry tracing and metrics** — see [Observability](#observability) below.
@@ -135,12 +152,13 @@ Guaranteed identical between in-process and HTTP:
 
 `@connectum/otel` instruments the in-process path through the same hooks as HTTP:
 
-- **Client span**: `SpanKind.CLIENT`, name `${rpc.service}/${rpc.method}`, attributes `rpc.system`, `rpc.service`, `rpc.method`, `rpc.connect_rpc.status_code`, plus `connectum.transport="in-process"`.
+- **Client span**: when a client interceptor is configured, `SpanKind.CLIENT`, name `${rpc.service}/${rpc.method}`, base attributes including `rpc.system`, `rpc.service`, and `rpc.method`, plus `connectum.transport="in-process"`. `rpc.connect_rpc.status_code` is added for a `ConnectError`.
 - **Server span**: `SpanKind.SERVER` with the same attribute set. On the in-process path the server handler runs in the **same async context** as the client call, so the server span is established as a **child of the client span**: the parent comes from the active context (propagated directly in memory, no header round-trip), while a **Link** to the client span is also recorded from the extracted remote context. This is the in-process behaviour under the default `trustRemote: false`. On the HTTP path no async context is shared, so the same default yields a **root span with only the Link** (no parent) — pass `trustRemote: true` to `createOtelInterceptor` to make the server span adopt the extracted context as its parent on both paths, aligning them.
-- **Stream events**: `message.sent` and `message.received` are recorded on streaming spans identically to HTTP.
-- **Metrics**: `rpc.client.call.duration`, `rpc.server.call.duration`, `rpc.client.request.size`, `rpc.client.response.size`, `rpc.server.request.size`, `rpc.server.response.size`, and error counters are emitted with the same instrument names and label keys. Payload sizes are computed on the serialized protobuf form so they are directly comparable with HTTP. The only difference is an extra label `transport=in-process` (vs `transport=http`).
+- **Stream events**: with `recordMessages: true`, `rpc.message` events record `rpc.message.type` as `SENT` or `RECEIVED`, as on HTTP.
+- **Metrics**: the configured interceptors emit `rpc.client.call.duration`, `rpc.server.call.duration`, `rpc.client.request.size`, `rpc.client.response.size`, `rpc.server.request.size`, and `rpc.server.response.size` histograms. Errors add attributes to those measurements, rather than separate counters. The transport label is `transport=in-process` versus `transport=http`. Size estimation calls a message's `toBinary()` method when available and otherwise records zero; ordinary protobuf-es v2 messages do not provide that method. Streaming call-size histograms also record zero, so these are not wire-byte measurements.
 
-Dashboards, alerts, and SLOs built over HTTP metrics continue to work after a service migrates to in-process invocation.
+Review transport-label filters and span-parent assumptions when migrating dashboards
+or alerts from HTTP to in-process calls.
 
 ## Limitations
 
@@ -170,7 +188,7 @@ const server = createServer({ services: [routes] });
 const local = server.client(MyService);
 await local.doWork({ /* ... */ });
 
-// Bind HTTP/2 socket for external clients.
+// Bind the configured network transport for external clients.
 await server.start();
 
 // HTTP and in-process clients can be used concurrently.
@@ -233,10 +251,12 @@ transports for each scenario you test:
 
 ```typescript
 import { ConnectError, createClient } from '@connectrpc/connect';
+import { createDefaultInterceptors } from '@connectum/interceptors';
 import { transportParityTest } from '@connectum/testing/parity';
 
 transportParityTest('greeter.sayHello rejects empty name', {
   services: [greeterRoutes],
+  interceptors: createDefaultInterceptors(),
   scenario: async ({ transport }) => {
     const client = createClient(GreeterService, transport);
     try {
@@ -247,8 +267,7 @@ transportParityTest('greeter.sayHello rejects empty name', {
     }
   },
   // `compare` is optional; omitted here, the default structural diff asserts
-  // both transports produce an identical response/error/headers/spans/metrics
-  // (modulo the `connectum.transport` attribute and `transport` metric label).
+  // both transports produce the same reported fields after documented normalization.
 });
 ```
 

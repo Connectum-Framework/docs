@@ -137,7 +137,7 @@ server.onShutdown('cache', async () => {
 Specify dependencies to control execution order. Dependencies execute **first**:
 
 ```typescript
-// Database must shut down before the server's HTTP layer
+// Release the database before the dependent cleanup hooks below
 server.onShutdown('database', async () => {
   await db.close();
 });
@@ -235,9 +235,11 @@ process.on('SIGTERM', async () => {
 Manual shutdown is useful when you need to perform actions **before** calling `server.stop()`, such as waiting for load balancer drain or notifying external services.
 :::
 
-### Idempotent stop()
+### Concurrent stop() calls {#idempotent-stop}
 
-`server.stop()` is safe to call multiple times. Concurrent calls return the same Promise:
+Concurrent `server.stop()` calls while shutdown is in progress await the same
+shutdown operation. A call before startup or after the server has stopped rejects;
+`stop()` is not a no-op in those states:
 
 ```typescript
 // Both resolve when the single shutdown completes
@@ -351,16 +353,20 @@ With `forceCloseOnTimeout: false`, the process may not exit if a client holds a 
 
 ## Complete Production Example
 
+Use the Quickstart's `greeterService` and supply your connected `db` and `redis`
+clients. Initialize the OTel provider before starting this server; the hook below
+only shuts it down.
+
 ```typescript
 import { createServer } from '@connectum/core';
 import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
 import { Reflection } from '@connectum/reflection';
 import { createDefaultInterceptors } from '@connectum/interceptors';
 import { shutdownProvider } from '@connectum/otel';
-import routes from '#gen/routes.js';
+import { greeterService } from './services/greeterService.ts';
 
 const server = createServer({
-  services: [routes],
+  services: [greeterService],
   port: 5000,
   protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
   interceptors: createDefaultInterceptors(),

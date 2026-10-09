@@ -13,7 +13,10 @@ All authentication interceptors in `@connectum/auth` store the verified identity
 
 ### Optional Access
 
-Use `getAuthContext()` when authentication is optional (e.g. public endpoints that show extra data for logged-in users):
+Use `getAuthContext()` when the handler can work without an identity. This helper
+only reads the current scope; it does not verify credentials. A method skipped by
+the authentication interceptor does not gain an identity merely because a token
+is present:
 
 ```typescript
 import { getAuthContext } from '@connectum/auth';
@@ -53,15 +56,19 @@ The `AuthContext` object contains the following fields:
 |-------|------|-------------|
 | `subject` | `string` | User identifier (from JWT `sub`, gateway header, or session) |
 | `name` | `string \| undefined` | Display name |
-| `roles` | `string[]` | User roles |
-| `scopes` | `string[]` | OAuth scopes or permissions |
-| `claims` | `Record<string, unknown>` | Raw claims from the token or session |
-| `type` | `string` | Auth type (`'jwt'`, `'gateway'`, `'session'`, `'custom'`) |
+| `roles` | `readonly string[]` | User roles |
+| `scopes` | `readonly string[]` | OAuth scopes or permissions |
+| `claims` | `Readonly<Record<string, unknown>>` | Raw claims from the token or session |
+| `type` | `string` | Credential type chosen by the verifier; not a closed enumeration |
 | `expiresAt` | `Date \| undefined` | Credential expiration time, when available |
 
 ## Cross-Service Propagation
 
-Enable `propagateHeaders` to forward auth context to downstream services via HTTP headers. This is useful in microservice architectures where the downstream service trusts the upstream caller:
+Enable the authentication interceptor's `propagateHeaders` to write the verified
+identity into the current request's headers. It does not send a downstream
+request itself. To carry those fields on `ctx.call` or `ctx.stream`, also list the
+chosen headers in the server's [header propagation](/en/guide/service-communication/service-catalog#header-propagation)
+configuration; independent clients need an outgoing interceptor.
 
 ```typescript
 const jwtAuth = createJwtAuthInterceptor({
@@ -70,12 +77,16 @@ const jwtAuth = createJwtAuthInterceptor({
 });
 ```
 
-To filter which claims are propagated in the `x-auth-claims` header, use the `propagatedClaims` option. It is available on `createAuthInterceptor` (generic) and `createSessionAuthInterceptor` -- not on `createJwtAuthInterceptor`:
+To filter which claims are written into `x-auth-claims`, use `propagatedClaims` on
+`createAuthInterceptor` (generic) or `createSessionAuthInterceptor`. It is not an
+option of `createJwtAuthInterceptor` or `createGatewayAuthInterceptor`; enabling
+their propagation writes all claims that fit the header limit. The session
+snippet uses the validated `mapSession` helper from the [session guide](/en/guide/auth/session):
 
 ```typescript
 const sessionAuth = createSessionAuthInterceptor({
-  verifySession: (token, headers) => auth.api.getSession({ headers }),
-  mapSession: (session) => ({ /* ... */ }),
+  verifySession: verifySessionToken,
+  mapSession,
   propagateHeaders: true,
   propagatedClaims: ['email', 'org_id'], // optional: filter sensitive claims
 });
@@ -123,7 +134,8 @@ import { createTestJwt, TEST_JWT_SECRET } from '@connectum/auth/testing';
 
 const token = await createTestJwt({ sub: 'user-1', roles: ['admin'] });
 
-// Use with createJwtAuthInterceptor({ secret: TEST_JWT_SECRET })
+// Map the roles claim explicitly when verifying this token.
+// createJwtAuthInterceptor({ secret: TEST_JWT_SECRET, claimsMapping: { roles: 'roles' } })
 ```
 
 ### Full Test Example
@@ -136,6 +148,7 @@ Everything else is identical -- `node:assert` works under Bun.
 ```typescript
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
+import { Code, ConnectError } from '@connectrpc/connect';
 import { createMockAuthContext, withAuthContext } from '@connectum/auth/testing';
 
 describe('updateProfile', () => {
@@ -153,10 +166,10 @@ describe('updateProfile', () => {
     assert.strictEqual(result.name, 'Alice Updated');
   });
 
-  it('should reject unauthenticated requests', async () => {
-    await assert.rejects(
+  it('should reject unauthenticated requests', () => {
+    assert.throws(
       () => updateProfile({ name: 'Nope' }),
-      (err) => err.code === 'UNAUTHENTICATED',
+      (err: unknown) => err instanceof ConnectError && err.code === Code.Unauthenticated,
     );
   });
 });

@@ -1,3 +1,9 @@
+---
+title: "ADR-026: EventBus Architecture"
+description: Record proto-first event routing, middleware, adapters, and lifecycle integration.
+docType: adr
+---
+
 # ADR-026: EventBus Architecture
 
 ## Status
@@ -182,7 +188,7 @@ interface EventBusLike {
 }
 ```
 
-`createEventBus()` returns `EventBus & EventBusLike` for integration with the server:
+`createEventBus()` returns `EventBus & EventBusLike`, allowing seamless integration with the server:
 
 ```typescript
 const bus = createEventBus({ adapter: NatsAdapter({ servers: "nats://localhost:4222" }), routes });
@@ -273,7 +279,7 @@ graph TB
 
 - **Proto-first routing may not cover all event patterns** -- mitigated by custom topic proto option and direct adapter access for advanced use cases
 - **Broker-specific tuning may require escape hatches** -- each adapter's constructor options provide full broker-level configuration; the adapter interface intentionally does not restrict this
-- **Wildcard translation across brokers** -- NATS-style wildcards (`*`, `>`) must be translated to broker-native equivalents; tested per adapter with pattern matching tests
+- **Wildcard translation across brokers** -- NATS-style wildcards (`*`, `>`) must be translated to broker-native equivalents; tested per adapter with comprehensive pattern matching tests
 
 ## Alternatives Considered
 

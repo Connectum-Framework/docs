@@ -65,8 +65,8 @@ and reply mapping. RESP3 support is available since 1.3.0.
 
 | Entry point | Use it to |
 |---|---|
-| `RedisAdapter` | Connect EventBus to Redis Streams or Valkey. |
-| `RedisAdapterOptions` | Configure connection, broker, and stream behavior. |
+| [`RedisAdapter`](/en/api/@connectum/events-redis/functions/RedisAdapter) | Connect EventBus to Redis Streams or Valkey. |
+| [`RedisAdapterOptions`](/en/api/@connectum/events-redis/types/interfaces/RedisAdapterOptions) | Configure connection, broker, and stream behavior. |
 
 ## Learn / Configure / API Reference {#api-reference}
 

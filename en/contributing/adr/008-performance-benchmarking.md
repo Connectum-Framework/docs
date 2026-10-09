@@ -1,3 +1,9 @@
+---
+title: "ADR-008: Performance Benchmarking"
+description: Record benchmark goals, proposed scenarios, and the original k6 choice.
+docType: adr
+---
+
 # ADR-008: Performance Benchmarking
 
 ## Status
@@ -39,7 +45,7 @@
 
 ## Decision
 
-**Use [k6](https://k6.io/) to benchmark Connectum, measuring baseline performance, interceptor overhead, and breaking points.**
+**Use [k6](https://k6.io/) load testing tool for comprehensive performance benchmarking of Connectum, with infrastructure for measuring baseline performance, interceptor overhead, and breaking points.**
 
 ### Why k6?
 

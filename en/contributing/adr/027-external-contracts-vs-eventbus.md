@@ -1,3 +1,9 @@
+---
+title: "ADR-027: External Contracts and the EventBus"
+description: Record the boundary between protobuf event routing and external adapter contracts.
+docType: adr
+---
+
 # ADR-027: External Message Contracts vs the Internal EventBus
 
 ## Status

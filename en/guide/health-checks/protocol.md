@@ -71,6 +71,10 @@ healthcheckManager.update(ServingStatus.NOT_SERVING);
 
 The package implements three gRPC methods on the `grpc.health.v1.Health` service:
 
+The `grpcurl` commands below require `Reflection()` and a plaintext HTTP/2
+listener (`allowHTTP1: false`). See [Server reflection](/en/guide/protocols/reflection)
+for setup. Use the HTTP examples with the default plaintext HTTP/1.1 listener.
+
 ### Health.Check
 
 Returns the current health status:
@@ -120,7 +124,7 @@ When `httpEnabled: true`, the following HTTP endpoints are available:
 |------|-------------|
 | `/healthz` | Overall health status |
 | `/health` | Overall health status (alias) |
-| `/readyz` | Readiness status |
+| `/readyz` | Overall health status (alias; no separate readiness state) |
 
 ### Response Format
 
@@ -163,20 +167,18 @@ Monitor downstream dependencies (databases, external APIs) alongside your servic
 ```typescript
 import { healthcheckManager, ServingStatus } from '@connectum/healthcheck';
 
-// Initialize tracking for your dependencies
-healthcheckManager.initialize([
-  'my.service.v1.MyService',
-  'dependency.database',
-  'dependency.cache',
-]);
+// Application components survive the protocol's RPC-service initialization.
+// Component names must be non-empty and contain no dots.
+healthcheckManager.register('database');
+healthcheckManager.register('cache');
 
 // Periodically check database health
 setInterval(async () => {
   try {
     await db.ping();
-    healthcheckManager.update(ServingStatus.SERVING, 'dependency.database');
+    healthcheckManager.set('database', ServingStatus.SERVING);
   } catch {
-    healthcheckManager.update(ServingStatus.NOT_SERVING, 'dependency.database');
+    healthcheckManager.set('database', ServingStatus.NOT_SERVING);
   }
 }, 10000);
 
@@ -184,12 +186,17 @@ setInterval(async () => {
 setInterval(async () => {
   try {
     await redis.ping();
-    healthcheckManager.update(ServingStatus.SERVING, 'dependency.cache');
+    healthcheckManager.set('cache', ServingStatus.SERVING);
   } catch {
-    healthcheckManager.update(ServingStatus.NOT_SERVING, 'dependency.cache');
+    healthcheckManager.set('cache', ServingStatus.NOT_SERVING);
   }
 }, 10000);
 ```
+
+Start these checks only when the dependencies are connected, and clear their
+intervals in a shutdown hook. Mark each RPC service `SERVING` separately in the
+`ready` listener: an unqualified `update(SERVING)` also marks dependency components
+healthy, even before their checks succeed.
 
 Use `areAllHealthy()` for aggregate health status:
 
