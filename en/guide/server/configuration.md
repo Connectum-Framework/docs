@@ -237,7 +237,7 @@ TLS_DIR_PATH=/etc/ssl/connectum
 ### Dockerfile
 
 ```dockerfile
-FROM node:25-slim
+FROM node:26-slim
 WORKDIR /app
 COPY . .
 RUN corepack enable && pnpm install --frozen-lockfile
