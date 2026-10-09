@@ -70,16 +70,24 @@ only in part (`a.*.c` and `a.b.*`) need no special case.
   holds them. A pattern added later starts at `consumerOptions.deliverPolicy`
   (`"new"` by default) like any new route. Upgrading or rolling back needs no
   action.
-- **Start sequence record.** The first stream sequence a consumer delivers is
-  written once into the consumer's metadata under `connectum.start_seq`, so that
-  every instance skips the same deliveries. nats-server 2.9 has no consumer
-  metadata: there nothing is written, the adapter logs one warning per process
-  and works from the position it reads from the consumer.
+- **Existing consumers are never modified.** The adapter reads an existing
+  consumer and attaches to it; it does not update its configuration, so an
+  earlier version of the adapter can create the same consumer again after a
+  rollback, and consumers provisioned by an operator need only read and pull
+  permissions (`$JS.API.CONSUMER.INFO.>`, `$JS.API.CONSUMER.MSG.NEXT.>`,
+  `$JS.ACK.>`). Each instance works out from where every consumer delivers from
+  what the server reports; nothing is written to the broker. When an existing
+  consumer was configured with another `ackWait`, `maxDeliver` or `deliverPolicy`
+  than the subscription asks for, the adapter keeps the existing one and logs one
+  warning per consumer.
 - **Instances with different route sets.** While a service is rolled out with a
   route added to a broader pattern, instances with and without that route run
   side by side. Nothing is lost, but an event can be handled by both kinds of
   instance, so a handler may see it twice. This is the at-least-once contract;
   the window lasts as long as the rollout. Handlers should tolerate redelivery.
+  The same can happen on any server when instances attach at different times
+  while a wider consumer still lags behind a narrower one, and when the consumer
+  of a pattern holds a delivery that was never acknowledged.
 - **Network traffic.** The server sends one copy per matching pattern. Prefer
   patterns that do not overlap on a hot subject.
 - **Consumers of removed routes.** Consumers of patterns you stopped
@@ -89,7 +97,9 @@ only in part (`a.*.c` and `a.b.*`) need no special case.
   `nats consumer ls <stream>` and remove the ones named
   `{group}--{pattern}--{hash}` (`nats consumer rm <stream> <name>`). Do not remove
   the consumer of a pattern a running instance still subscribes: it stops
-  delivering without an error.
+  delivering without an error. A `subscribe()` that fails half-way leaves the
+  consumers of a named group in place for the next start; only the consumers of
+  an auto-generated group are removed.
 
 ## Kafka or Redpanda {#kafka-adapter}
 
@@ -230,18 +240,25 @@ properties differ from NATS:
   are unaffected. Other topics a platform keeps are ordinary names, and `>`
   receives them: Redpanda's Schema Registry topic `_schemas` is one, so use a
   narrower pattern such as `orders.>` when you do not want it.
-- The topics a wildcard stands for are fixed when `subscribe()` runs. A matching
-  topic created afterwards is not consumed by that subscription. Create the topics
-  before the service starts, restart the service after creating them, or set
-  `consumerOptions.topicDiscoveryInterval` (milliseconds; off unless you set it):
-  the adapter then lists the broker's topics at that interval and, when a
+- The topics a wildcard stands for are expanded when `subscribe()` runs and
+  refreshed every `consumerOptions.topicDiscoveryInterval` (default five
+  minutes): the adapter lists the broker's topics at that interval and, when a
   matching topic has appeared, restarts the subscription's consumer to include
   it. The restart rebalances the consumer group, so consumption pauses for a few
   seconds and messages being handled at that moment are delivered again; it
   happens only when there is a new topic, and an unchanged topic list costs one
   metadata request per wildcard subscription per interval. A discovered topic is
   read from its first message, whatever `fromBeginning` says. A check that fails
-  is logged and repeated at the next interval.
+  is logged and repeated at the next interval, and each discovery is logged with
+  the names of the topics, so a rebalance it causes can be told from one caused
+  by a failing member.
+- Set `consumerOptions.topicDiscoveryInterval` to `false` to keep the topic list
+  fixed (the behaviour of earlier versions). Then a matching topic created later
+  is not consumed until the service restarts, and the restart reads it from its
+  end unless `fromBeginning` is set: what was published to the topic before the
+  restart is never handled by the group. The same window exists with the checks
+  on when the service restarts before a check has seen the topic; it is at most
+  one interval long.
 
 In a group of several members the delay before a new topic is read completely is
 the longest interval among the members: KafkaJS assigns partitions only from the
