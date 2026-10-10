@@ -1,4 +1,7 @@
 ---
+title: Transport Matrix
+description: Compare RPC support and limitations across Connectum server transports.
+docType: reference
 outline: deep
 ---
 
@@ -90,19 +93,18 @@ a gateway that downgrades to HTTP/1.1 works for them with no extra setup.
 
 ## Runtime support for native gRPC
 
-Native gRPC depends on **HTTP/2 response trailers** (`grpc-status`). The
-fetch-style `Response` used by `Bun.serve`, `Deno.serve`, and Cloudflare Workers
-carries no trailers, so those `serve()` APIs **cannot serve native gRPC at all** —
-they serve Connect and gRPC-Web (which fold trailers into the body) over HTTP/1.1.
-Connectum does not use them: `createServer()` builds on `node:http2`.
+Native gRPC depends on **HTTP/2 response trailers** (`grpc-status`). The Bun
+`Bun.serve` API does not provide the HTTP/2 server behavior required by native gRPC
+in the measurements recorded below. Connectum does not use `Bun.serve`:
+`createServer()` builds on `node:http2`.
 
 | Runtime | Native gRPC server | Connect / gRPC-Web | gRPC + HTTP/1.1 on one plaintext port |
 |---|---|---|---|
 | **Node** (`node:http2` — what Connectum uses) | ✅ | ✅ | ❌ — use a sidecar proxy or TLS + ALPN |
 | **Bun** (`node:http2` — what Connectum uses) | ✅ | ✅ | ❌ |
 | **Bun** (`Bun.serve`) | ❌ (no HTTP/2 at all)* | ✅ | ❌ |
-| **Deno** (`Deno.serve`) | ❌ (no HTTP/2 trailers)† | ✅ | ❌ |
-| **Cloudflare Workers** | ❌ (edge-terminated, no raw ports) | ✅ (Connect / gRPC-Web) | ❌ (n/a) |
+| **Deno** (`Deno.serve`) | Not tested | Not tested | Not tested |
+| **Cloudflare Workers** | Not tested | Not tested | Not tested |
 
 \* **Measured on Bun 1.3.13 and 1.3.14**, and the reason is stronger than the missing
 trailers: `Bun.serve` has **no HTTP/2 server at all**. Offered `["h2","http/1.1"]` over
@@ -113,20 +115,20 @@ enable -- `Bun.serve` silently ignores unknown keys, so passing one proves nothi
 1.3.14 adds an HTTP/3 server and an experimental HTTP/2 client for `fetch()`; neither is
 an HTTP/2 *server*.
 
-† `Deno.serve` is marked from its documented fetch-style `Response` API. **This project
-has not executed that case** -- unlike the Bun row above it.
+This project has not tested the Deno or Cloudflare Workers rows. They are left
+unclassified rather than inferred from a response API shape.
 
 Connectum builds on neither API. Everything it *does* use is covered in
 [Verified behaviour by runtime](#verified).
 
-**Takeaway:** the fetch-style `serve()` APIs cannot host native gRPC, but that
-does not apply to a Connectum server on Bun: `createServer()` builds on
+**Takeaway:** the measured limitation applies to `Bun.serve`; it does not apply to a
+Connectum server on Bun: `createServer()` builds on
 `node:http2`, whose server side delivers trailers on Bun as well — including
-plaintext h2c. **Connect + gRPC-Web over HTTP/1.1 work on every runtime.** If you
-deploy on Deno / Workers, or write your own `Bun.serve` handler, and must expose
-gRPC, terminate it at a **sidecar proxy** (Envoy / Caddy) and let the runtime
-serve Connect / HTTP-1.1 — the proxy owns the protocol multiplexing the runtime
-cannot do.
+plaintext h2c. **Connect over HTTP/1.1 was verified on Node.js and Bun in the tested
+configurations below.** If you
+write your own `Bun.serve` handler and must expose gRPC, terminate it at a
+**sidecar proxy** (Envoy / Caddy) and let the runtime serve Connect / HTTP-1.1.
+This project has not validated equivalent deployments on Deno or Cloudflare Workers.
 
 ::: tip Bun client versions
 Serving is unaffected on every Bun version, but Bun's `node:http2` **client** only
@@ -171,7 +173,7 @@ The Bun boundary was located by bisection over 1.1.38, 1.2.0, 1.2.5, 1.2.6, 1.2.
 1.2.9, 1.2.10, 1.2.15, 1.2.21, 1.3.0, 1.3.13 and 1.3.14: **1.2.5 hangs, 1.2.6 passes**, and
 every later version passes. Bun 1.2.6 rewrote the `node:http2` client.
 
-Re-checked on **Bun 1.3.14** (the latest release at the time of writing) with no
+Re-checked on **Bun 1.3.14** with no
 regressions, in-process and cross-process in both directions -- a Connectum server hosted
 by Bun answering a Node.js gRPC client, and the reverse. The cross-process runs captured a
 real DATA-then-TRAILERS frame sequence carrying `grpc-status`, so the trailer claim is a

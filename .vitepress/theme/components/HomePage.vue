@@ -37,14 +37,14 @@ const goals = [
     {
         label: 'Building a capability',
         title: 'Solve a service task',
-        description: 'Add validation, communication, events, authentication, or testing without reading the whole framework.',
+        description: 'Add validation, service calls, events, authentication, or testing with a guide for the task at hand.',
         link: '/en/guide/about#choose-your-path',
         action: 'Browse guides',
     },
     {
         label: 'Operating services',
-        title: 'Prepare for production',
-        description: 'Connect health, observability, graceful shutdown, containers, Kubernetes, and gateways.',
+        title: 'Deploy and operate services',
+        description: 'Configure health checks, observability, shutdown, containers, Kubernetes, or a gateway.',
         link: '/en/guide/production/kubernetes',
         action: 'Explore operations',
     },
@@ -72,10 +72,10 @@ const lifecycle = [
         <section class="home-hero" aria-labelledby="home-title">
             <div class="home-hero__copy">
                 <p class="home-eyebrow">gRPC + ConnectRPC for Node.js</p>
-                <h1 id="home-title">A clear path from your first RPC to production</h1>
+                <h1 id="home-title">From your first RPC to operating a service</h1>
                 <p class="home-hero__lead">
-                    Connectum gives TypeScript teams a consistent service runtime for contracts,
-                    middleware, security, observability, and operations—without hiding the controls.
+                    Connectum provides a TypeScript service runtime for proto contracts, request
+                    middleware, security, observability, and operations.
                 </p>
                 <div class="home-actions">
                     <a class="home-button home-button--primary" href="/en/guide/quickstart">Build your first service</a>
@@ -95,7 +95,7 @@ const lifecycle = [
         <section class="home-section home-intents" aria-labelledby="start-by-goal">
             <div class="home-section__heading">
                 <p class="home-eyebrow">Start by goal</p>
-                <h2 id="start-by-goal">Use the shortest route to your outcome.</h2>
+                <h2 id="start-by-goal">Choose a path for the task at hand.</h2>
             </div>
             <div class="home-goal-grid">
                 <a v-for="goal in goals" :key="goal.title" class="home-goal-card" :href="goal.link">
@@ -111,7 +111,7 @@ const lifecycle = [
             <div class="home-section__heading home-section__heading--split">
                 <div>
                     <p class="home-eyebrow">One service lifecycle</p>
-                    <h2 id="lifecycle-title">Compose only the capabilities you need.</h2>
+                    <h2 id="lifecycle-title">Add capabilities through explicit modules.</h2>
                 </div>
                 <p>
                     The framework keeps lifecycle and registration predictable while modules remain
@@ -131,11 +131,11 @@ const lifecycle = [
             <div class="home-section__heading home-section__heading--split">
                 <div>
                     <p class="home-eyebrow">Fits your stack</p>
-                    <h2 id="ecosystem-title">One runtime across your service ecosystem.</h2>
+                    <h2 id="ecosystem-title">Choose a runtime for each service.</h2>
                 </div>
                 <p>
-                    Build on ConnectRPC and gRPC, operate with cloud-native tooling, and choose the
-                    brokers and runtimes that fit each service.
+                    Use ConnectRPC or gRPC, connect to supported brokers, and choose Node.js or
+                    Bun for each service.
                 </p>
             </div>
             <EcosystemRail />
@@ -144,7 +144,7 @@ const lifecycle = [
         <section class="home-section home-example" aria-labelledby="example-title">
             <div class="home-example__copy">
                 <p class="home-eyebrow">The central primitive</p>
-                <h2 id="example-title">A server whose production behavior stays visible.</h2>
+                <h2 id="example-title">Compose a service with an explicit lifecycle.</h2>
                 <p>
                     Services, protocols, middleware, and shutdown policy meet at
                     <code>createServer()</code>. The full tutorial defines the proto, implements the
@@ -167,9 +167,9 @@ const lifecycle = [
             <div class="home-section__heading home-section__heading--split">
                 <div>
                     <p class="home-eyebrow">Explore modules</p>
-                    <h2 id="modules-title">Navigate by capability, not dependency graph.</h2>
+                    <h2 id="modules-title">Find modules by capability.</h2>
                 </div>
-                <p>Each module links learning material, focused configuration, and its generated API surface.</p>
+                <p>Each module links to its guide, configuration help, and generated API reference.</p>
             </div>
             <ModuleGrid />
             <p class="home-section__more"><a href="/en/packages/">Compare all packages →</a></p>

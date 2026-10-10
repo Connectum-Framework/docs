@@ -133,8 +133,8 @@ flowchart TD
 ### Negative
 
 1. **Configuration Complexity** -- requires correct threshold tuning; incorrect config can reduce availability. Mitigated by sensible defaults.
-2. **Debugging Complexity** -- circuit breaker errors can obscure root cause; fallback can hide production issues. Mitigated by comprehensive logging of state changes.
-3. **Testing Complexity** -- requires chaos testing (fault injection, latency injection). Mitigated by comprehensive test suite.
+2. **Debugging Complexity** -- circuit breaker errors can obscure root cause; fallback can hide production issues. Mitigated by logging state changes.
+3. **Testing Complexity** -- requires chaos testing (fault injection, latency injection). Mitigated by tests covering those failures.
 4. **Latency Overhead** -- interceptor chain adds ~1-2ms per request. Acceptable for embedded devices (target p95 < 100ms).
 5. **Retry Amplification Risk** -- retry can amplify load on failing services. Mitigated by only retrying ResourceExhausted errors.
 

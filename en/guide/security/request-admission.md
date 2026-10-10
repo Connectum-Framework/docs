@@ -16,7 +16,7 @@ Both are unset by default; a server that does not set them behaves exactly as be
 
 ## Before you begin
 
-- `@connectum/core` 1.3.0 or later (it requires `@connectrpc/connect` 2.2.0, which introduced `requestGate`).
+- `@connectum/core` 1.3.0 or later. **Version 1.3.0 is not yet published to npm.** The current-main implementation requires `@connectrpc/connect` 2.2.0, which introduced `requestGate`.
 - Decide what the gate may check. It sees only the call's `HandlerContext`: the service and method descriptors, the request headers, the deadline signal, and context values. It cannot see the request message.
 
 ## Configure a gate

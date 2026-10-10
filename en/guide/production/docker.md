@@ -1,23 +1,28 @@
 ---
 title: Docker Containerization
 description: Multi-stage Dockerfile, docker-compose, and image optimization for Connectum gRPC/ConnectRPC microservices.
+docType: how-to
 ---
 
 # Docker Containerization
 
-Connectum packages ship **compiled JavaScript** (`.js` + `.d.ts` + source maps), so they work on any Node.js version >= 22.13.0. If your own application code is written in TypeScript, you can either use Node.js 25+ (native type stripping for `.ts` files) or compile your code with a build tool before containerizing.
+Connectum packages ship **compiled JavaScript** (`.js` + `.d.ts` + source maps) and declare Node.js `>=22.13.0`. If your application runs TypeScript directly, use Node.js `>=25.2.0`; otherwise compile it before containerizing. The framework repository itself requires Node.js `>=26.0.0` for development.
+
+Choose a maintained Node.js release for the image. [Node.js recommends Active or Maintenance LTS for production](https://nodejs.org/en/about/previous-releases): `node:24-slim` fits compiled applications or the `tsx` setup below. For the native-TypeScript mode described here, `node:26-slim` meets the `>=25.2.0` floor. On October 7, 2026, Node.js 26 is still Current; check the release schedule when choosing an image.
 
 ::: tip Full Example
-A production `Dockerfile` is available in the [car-sharing example](https://github.com/Connectum-Framework/examples/tree/main/car-sharing).
+The [car-sharing example](https://github.com/Connectum-Framework/examples/tree/main/car-sharing) includes a Dockerfile for that application.
 :::
 
 ## Multi-Stage Dockerfile
 
 ### Recommended Layout
 
-Two-stage build: install dependencies in an isolated stage, then copy only production `node_modules` into a slim runtime image (`node:25-slim` on Node.js, `oven/bun:1-slim` on Bun) with a non-root user and health check.
+Two-stage build: install dependencies in an isolated stage, then copy only production `node_modules` into a slim runtime image (`node:26-slim` for native TypeScript, `oven/bun:1-slim` on Bun) with a non-root user and health check.
 
 See [Dockerfile](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/Dockerfile) for the full listing.
+
+That example currently uses `node:25-slim`, an EOL release. When adapting its native-TypeScript layout, change both Node base stages to `node:26-slim`.
 
 Key highlights:
 
@@ -37,7 +42,7 @@ above mirrors it stage for stage.
 
 :::: runtime node
 ::: tip Base image selection
-If your own application code is compiled to JavaScript (e.g., via tsup or tsx), you can use any Node.js 22+ base image instead of `node:25-slim`. Use `node:25-slim` only when you want to run your own `.ts` files natively via Node.js type stripping.
+If your application code is compiled to JavaScript, use a Node.js base image at or above the package floor (`22.13.0`). Use Node.js `>=25.2.0` when running `.ts` files natively. The Bun block below is an illustrative command; the linked example's Dockerfile targets Node.js.
 :::
 ::::
 
@@ -77,14 +82,14 @@ postures, chain the two probes with `||`.
 ::: runtime
 == node
 ```dockerfile
-# Node.js 25+ (native TypeScript for your own .ts files)
+# Node.js >=25.2.0 (native TypeScript for your own .ts files)
 CMD ["node", "src/index.ts"]
 
-# tsx (works on Node.js 22+)
+# tsx (works on Node.js >=22.13.0)
 CMD ["npx", "tsx", "src/index.ts"]
 ```
 
-When using **tsx**, you can use any Node.js 22+ base image (e.g., `node:22-slim`, `node:24-slim`). Since `@connectum/*` packages ship compiled JavaScript, no special loader is needed for any runtime.
+When using **tsx**, the consumer Node.js floor is `>=22.13.0`. Since `@connectum/*` packages ship compiled JavaScript, no special loader is needed to load the framework packages.
 
 ::: danger tsx must be a regular dependency, not a devDependency
 A production image installs with `--omit=dev` (or `--prod`), so a tsx left in
@@ -114,15 +119,16 @@ Code generation runs the same way inside the image -- `RUN bunx buf generate`. S
 
 ### Alpine Variant (Node.js Images)
 
-If you need a smaller image and do not depend on native modules requiring glibc, use the Alpine variant: swap both `FROM node:25-slim` lines in the [Dockerfile](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/Dockerfile) for `node:25-alpine`, and install `curl` with `apk add --no-cache curl` instead of `apt-get`. Alpine's BusyBox applets differ from the GNU builds, so re-verify the HEALTHCHECK actually reports `unhealthy` for a bad URL rather than only checking that it passes for a good one.
+If you need an Alpine image and your native dependencies support its libc, use `node:26-alpine` for both Node base stages, and install `curl` with `apk add --no-cache curl` instead of `apt-get`. Alpine's BusyBox applets differ from the GNU builds, so verify that the health check reports `unhealthy` for an invalid URL.
 
-### Image Size Comparison (Node.js Images)
+### Node.js Base Image Choices {#image-size-comparison-nodejs-images}
 
-| Base Image | Approximate Size | Use Case |
-|---|---|---|
-| `node:25-slim` | ~200 MB | General production (recommended) |
-| `node:25-alpine` | ~140 MB | Size-optimized, no native glibc modules |
-| `node:25` | ~1 GB | Development only, avoid in production |
+| Base Image | Use Case |
+|---|---|
+| `node:24-slim` | LTS runtime for compiled JavaScript or the production `tsx` setup |
+| `node:26-slim` | Native TypeScript under the documented `>=25.2.0` floor |
+| `node:26-alpine` | Native TypeScript on Alpine; check native dependencies for libc compatibility |
+| `node:26` | Development or build stages that need the full image contents |
 
 ## .dockerignore
 
@@ -157,7 +163,7 @@ Always copy `package.json` and `pnpm-lock.yaml` before source code. Docker cache
 
 ### 2. Production Dependencies Only
 
-Use `pnpm install --frozen-lockfile --prod` to exclude devDependencies. This can reduce `node_modules` size by 50-70%.
+Use `pnpm install --frozen-lockfile --prod` to exclude devDependencies from the runtime image.
 
 ### 3. Prune Unnecessary Files
 
@@ -177,11 +183,11 @@ Every file not needed at runtime should be in `.dockerignore`. This speeds up th
 For reproducible builds, pin to a specific image digest:
 
 ```dockerfile
-FROM node:25-slim@sha256:<digest> AS runtime
+FROM node:26-slim@sha256:<digest> AS runtime
 ```
 
 ::: warning
-Never use the `latest` tag in production Dockerfiles. Always pin to a specific Node.js version (e.g., `node:25.2.0-slim`) to avoid unexpected breaking changes.
+Pin the selected maintained image to a verified digest rather than using `latest`. Update that digest deliberately when applying runtime security fixes.
 :::
 
 ## Runtime Configuration

@@ -50,6 +50,10 @@ pnpm test
 pnpm dev
 ```
 
+## Upgrading OpenTelemetry dependencies
+
+The `@connectum/otel` package declares its OpenTelemetry dependencies through the workspace catalog in `pnpm-workspace.yaml`. Update the catalog entries together when the SDK or exporters require a coordinated version change; then review the package's public exports and run its tests. For changes to a serializer or exporter path, compare representative telemetry output and performance before and after the upgrade.
+
 ## Further Resources
 
 - [CLI Commands](./cli-commands) -- full command reference

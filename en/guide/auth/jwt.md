@@ -1,4 +1,7 @@
 ---
+title: Authenticate JWTs
+description: Verify bearer tokens with JWKS, an HMAC secret, or a public key.
+docType: how-to
 outline: deep
 ---
 
@@ -25,7 +28,7 @@ const jwtAuth = createJwtAuthInterceptor({
 });
 ```
 
-Choose exactly one key source (`jwksUri`, `publicKey`, or `secret`), then constrain the
+Prefer one key source (`jwksUri`, `publicKey`, or `secret`), then constrain the
 expected issuer, audience, age, and algorithms for your identity provider. Use
 `claimsMapping` only for the claims that become application identity. See
 [`JwtAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/JwtAuthInterceptorOptions)
@@ -60,7 +63,8 @@ const jwtAuth = createJwtAuthInterceptor({ publicKey });
 
 ## Key Resolution Priority
 
-When multiple key sources are provided, resolution follows this priority:
+If more than one key source is set, the interceptor selects the first available
+source in this order:
 
 ```mermaid
 flowchart LR
@@ -74,7 +78,7 @@ At least one must be provided. If `jwksUri` is set, `publicKey` and `secret` are
 
 ```typescript
 import { createServer } from '@connectum/core';
-import { createDefaultInterceptors } from '@connectum/interceptors';
+import { createDefaultInterceptors, createErrorHandlerInterceptor } from '@connectum/interceptors';
 import { createJwtAuthInterceptor, createAuthzInterceptor } from '@connectum/auth';
 
 const jwtAuth = createJwtAuthInterceptor({
@@ -90,7 +94,11 @@ const jwtAuth = createJwtAuthInterceptor({
 
 const server = createServer({
   services: [routes],
-  interceptors: [...createDefaultInterceptors(), jwtAuth],
+  interceptors: [
+    createErrorHandlerInterceptor(),
+    jwtAuth,
+    ...createDefaultInterceptors({ errorHandler: false }),
+  ],
 });
 
 await server.start();

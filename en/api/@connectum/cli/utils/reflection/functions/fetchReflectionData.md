@@ -2,13 +2,14 @@
 
 # Function: fetchReflectionData()
 
-> **fetchReflectionData**(`url`): `Promise`\<[`ReflectionResult`](../interfaces/ReflectionResult.md)\>
+> **fetchReflectionData**(`url`, `options?`): `Promise`\<[`ReflectionResult`](../interfaces/ReflectionResult.md)\>
 
-Defined in: [utils/reflection.ts:192](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/utils/reflection.ts#L192)
+Defined in: [utils/reflection.ts:255](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/utils/reflection.ts#L255)
 
 Fetch service and file descriptor information from a running server via reflection.
 
-Uses gRPC Server Reflection Protocol (v1 with v1alpha fallback).
+Uses gRPC Server Reflection Protocol (v1 with v1alpha fallback). Fails, naming them,
+when the server lists a service it cannot describe, and when a request exceeds the time limit.
 
 ## Parameters
 
@@ -17,6 +18,12 @@ Uses gRPC Server Reflection Protocol (v1 with v1alpha fallback).
 `string`
 
 Server URL (e.g., "http://localhost:5000")
+
+### options?
+
+[`ReflectionOptions`](../interfaces/ReflectionOptions.md) = `{}`
+
+Time limit of each request
 
 ## Returns
 

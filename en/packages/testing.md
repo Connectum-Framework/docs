@@ -42,8 +42,6 @@ await withTestServer({ services: [greeterService] }, async (server) => {
 });
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Key Entry Points
 
 | Entry point | Use it to |
@@ -51,8 +49,6 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `createTestServer` | Create an isolated Connectum server for a test. |
 | `withTestServer` | Manage test-server setup and teardown. |
 | `createLocalClient` | Exercise handlers through the in-process transport. |
-
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

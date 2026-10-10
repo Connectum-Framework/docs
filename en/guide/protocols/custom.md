@@ -48,7 +48,9 @@ The optional `HttpHandler` is called for raw HTTP requests that do not match any
 /**
  * @returns true if the request was handled, false otherwise
  */
-type HttpHandler = (req: Http2ServerRequest, res: Http2ServerResponse) => boolean;
+import type { NodeRequest, NodeResponse } from '@connectum/core';
+
+type HttpHandler = (req: NodeRequest, res: NodeResponse) => boolean;
 ```
 
 ## How Protocols Are Registered
@@ -135,11 +137,10 @@ function ServerInfo(): ProtocolRegistration {
 
 ### With HTTP Handler
 
-Add a raw HTTP endpoint alongside the gRPC service. The `httpHandler` function receives HTTP/2 requests that do not match any ConnectRPC route. Return `true` if you handled the request, `false` to pass it along:
+Add a raw HTTP endpoint alongside the RPC service. The `httpHandler` function receives the active transport's HTTP request, either HTTP/1.1 or HTTP/2, when it does not match a ConnectRPC route. Return `true` if you handled the request, `false` to pass it along:
 
 ```typescript
-import type { Http2ServerRequest, Http2ServerResponse } from 'node:http2';
-import type { ProtocolRegistration } from '@connectum/core';
+import type { NodeRequest, NodeResponse, ProtocolRegistration } from '@connectum/core';
 
 function CustomHealthEndpoint(): ProtocolRegistration {
   const protocol: ProtocolRegistration = {
@@ -149,7 +150,7 @@ function CustomHealthEndpoint(): ProtocolRegistration {
       // No gRPC service needed -- HTTP-only protocol
     },
 
-    httpHandler(req: Http2ServerRequest, res: Http2ServerResponse): boolean {
+    httpHandler(req: NodeRequest, res: NodeResponse): boolean {
       if (req.url === '/healthz' && req.method === 'GET') {
         res.writeHead(200, { 'content-type': 'application/json' });
         res.end(JSON.stringify({ status: 'ok', timestamp: Date.now() }));
@@ -185,8 +186,7 @@ The message names the requested path, cut to 200 characters. Any other request k
 A protocol that exposes a `/metrics` HTTP endpoint for Prometheus scraping:
 
 ```typescript
-import type { Http2ServerRequest, Http2ServerResponse } from 'node:http2';
-import type { ProtocolRegistration } from '@connectum/core';
+import type { NodeRequest, NodeResponse, ProtocolRegistration } from '@connectum/core';
 
 function Metrics(options: {
   path?: string;
@@ -201,7 +201,7 @@ function Metrics(options: {
       // HTTP-only protocol, no gRPC service registration needed
     },
 
-    httpHandler(req: Http2ServerRequest, res: Http2ServerResponse): boolean {
+    httpHandler(req: NodeRequest, res: NodeResponse): boolean {
       if (req.url === path && req.method === 'GET') {
         res.writeHead(200, { 'content-type': 'text/plain; version=0.0.4; charset=utf-8' });
         res.end(collect());

@@ -1,4 +1,7 @@
 ---
+title: Server Lifecycle
+description: Understand server states, lifecycle events, and shutdown signals.
+docType: concept
 outline: deep
 ---
 
@@ -147,7 +150,10 @@ server.on('stopping', () => {
 await server.start();
 ```
 
-The `stopping` handler ensures that readiness probes fail immediately, giving the load balancer time to remove the pod before connections are drained.
+The `stopping` handler sets the reported status to `NOT_SERVING`. Probes observe the
+change on their next request; endpoint withdrawal also depends on the orchestrator.
+For the shutdown order and available drain time, see
+[Graceful Shutdown](/en/guide/server/graceful-shutdown#kubernetes-integration).
 
 ## Complete Example
 

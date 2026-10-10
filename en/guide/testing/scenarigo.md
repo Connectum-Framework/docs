@@ -1,4 +1,7 @@
 ---
+title: Test Connectum Services with scenarigo
+description: Write gRPC and HTTP API scenarios with scenarigo.
+docType: how-to
 outline: deep
 ---
 

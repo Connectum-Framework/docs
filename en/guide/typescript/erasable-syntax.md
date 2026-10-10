@@ -1,10 +1,13 @@
 ---
+title: Erasable Syntax
+description: Write TypeScript that Node.js can execute through native type stripping.
+docType: how-to
 outline: deep
 ---
 
 # Erasable Syntax
 
-Node.js 25+ executes `.ts` files directly by **stripping type annotations** at load time. This is **not** full TypeScript compilation -- it only removes type syntax, leaving the remaining JavaScript intact. Your TypeScript code must be valid JavaScript after type annotations are removed.
+Node.js 25.2.0 and later can execute `.ts` files directly by **stripping type annotations** at load time. This is **not** full TypeScript compilation -- it only removes type syntax, leaving the remaining JavaScript intact. Your TypeScript code must be valid JavaScript after type annotations are removed. The framework repository's contributor environment separately requires Node.js 26 or later.
 
 ## How Native TypeScript Works
 

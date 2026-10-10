@@ -1,4 +1,7 @@
 ---
+title: Attach Credentials to Client Calls
+description: Add authentication headers to outgoing ConnectRPC requests.
+docType: how-to
 outline: deep
 ---
 

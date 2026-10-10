@@ -1,4 +1,7 @@
 ---
+title: Test Connectum Services with runn
+description: Define gRPC and HTTP API scenarios as runn runbooks.
+docType: how-to
 outline: deep
 ---
 

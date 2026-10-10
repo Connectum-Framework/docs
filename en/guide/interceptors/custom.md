@@ -1,4 +1,7 @@
 ---
+title: Creating Custom Interceptors
+description: Implement, compose, and test custom ConnectRPC interceptors.
+docType: how-to
 outline: deep
 ---
 
@@ -30,7 +33,7 @@ const myInterceptor: Interceptor = (next) => async (req) => {
 Connectum follows the factory pattern for all interceptors -- a function that accepts an options object and returns an `Interceptor`. This is the recommended approach for reusable interceptors:
 
 ::: tip
-The **[@connectum/auth](/en/packages/auth)** package provides production-ready authentication and authorization interceptors. Use it instead of building custom auth interceptors from scratch.
+The **[@connectum/auth](/en/packages/auth)** package provides authentication and authorization interceptors. Use it when its policies fit your service instead of implementing those concerns from scratch.
 :::
 
 ```typescript

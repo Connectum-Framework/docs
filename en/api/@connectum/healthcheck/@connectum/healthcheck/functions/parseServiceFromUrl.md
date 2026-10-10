@@ -4,9 +4,12 @@
 
 > **parseServiceFromUrl**(`url`, `host`): `string` \| `undefined`
 
-Defined in: [httpHandler.ts:111](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/httpHandler.ts#L111)
+Defined in: [httpHandler.ts:116](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/httpHandler.ts#L116)
 
-Parse service name from URL query string
+Read the optional `service` query parameter from a request URL.
+
+Returns `undefined` when the URL is absent, malformed, or has no `service`
+parameter. The host is used only to resolve relative URLs.
 
 ## Parameters
 

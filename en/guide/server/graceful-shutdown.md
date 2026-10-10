@@ -1,4 +1,7 @@
 ---
+title: Graceful Shutdown
+description: Configure connection draining, shutdown hooks, and process termination behavior.
+docType: how-to
 outline: deep
 ---
 
@@ -86,7 +89,7 @@ Steps 6 and 7 run even if closing the transport fails before the timeout, so you
 
 ### In-process calls
 
-Since 1.3.0, step 2 also aborts `context.signal` of calls made through `server.localClient()`, `server.client()` for a local service, `createLocalTransport()`, and `ctx.call` / `ctx.stream` to a local service — every hop of a local `ctx.call` chain sees it directly. A handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP.
+The upcoming 1.3.0 release adds in-process cancellation to step 2. **This release is not yet published to npm.** In its current-main implementation, `context.signal` is aborted for calls made through `server.localClient()`, `server.client()` for a local service, `createLocalTransport()`, and `ctx.call` / `ctx.stream` to a local service; every hop of a local `ctx.call` chain sees it directly. A handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP.
 
 Steps 4 and 5 act on connections, and an in-process call has none: `stop()` neither waits for it nor destroys it, so a handler that ignores the signal keeps running and still completes its call. A local call made after `stop()` starts with an already-aborted signal. Upgrading from 1.2: see [In-process calls on shutdown](/en/migration/in-process-shutdown).
 
@@ -256,7 +259,7 @@ const server = createServer({
   protocols: [Healthcheck({ httpEnabled: true })],
   shutdown: {
     autoShutdown: true,
-    timeout: 25000,  // Less than Kubernetes terminationGracePeriodSeconds
+    timeout: 25000,  // Connection-drain budget; hooks need separate time
   },
 });
 
@@ -275,7 +278,7 @@ server.on('stopping', () => {
 apiVersion: v1
 kind: Pod
 spec:
-  terminationGracePeriodSeconds: 30  # Must be > shutdown.timeout
+  # Set terminationGracePeriodSeconds from the shutdown budget below.
   containers:
     - name: my-service
       image: my-service:latest
@@ -297,17 +300,23 @@ spec:
 
 ```mermaid
 flowchart TD
-    Signal["0s · SIGTERM received"] --> NotServing["0s · stopping → NOT_SERVING"]
-    NotServing --> Endpoints["0–5s · Pod removed from service endpoints"]
-    Endpoints --> Drain["5–25s · In-flight requests drain"]
-    Drain --> Timeout["25s · Shutdown timeout boundary"]
-    Timeout --> Hooks["25s · Shutdown hooks execute"]
-    Hooks --> Stop["25s · stop event"]
-    Stop --> Grace["30s · Kubernetes hard-kill boundary"]
+    Delete["Termination starts; grace countdown begins"] --> PreStop["preStop runs; endpoint withdrawal begins"]
+    PreStop --> Signal["SIGTERM; stopping → NOT_SERVING"]
+    Signal --> Drain["Connection drain up to shutdown.timeout"]
+    Drain --> Hooks["Shutdown hooks run"]
+    Hooks --> Stop["stop event"]
+    Stop --> Grace["Kubernetes grace-period boundary"]
 ```
 
 ::: danger Critical
-Always set `shutdown.timeout` to a value **less than** Kubernetes `terminationGracePeriodSeconds`. Otherwise, Kubernetes may SIGKILL the process before your shutdown hooks complete.
+Kubernetes runs `preStop` before sending the termination signal, and the grace-period
+countdown includes the hook. See the Kubernetes
+[container lifecycle hook documentation](https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/).
+Set `terminationGracePeriodSeconds` to cover the `preStop` delay, `shutdown.timeout`,
+the maximum time your hooks can take, and a safety margin:
+`preStop + connection-drain timeout + maximum hook duration + margin`. The value of
+`shutdown.timeout` bounds the connection-drain phase; it does not bound shutdown hooks.
+Keep hooks bounded so Kubernetes does not SIGKILL the process before they finish.
 :::
 
 ## Timeout and Force Close Behavior

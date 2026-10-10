@@ -1,4 +1,7 @@
 ---
+title: Record OpenTelemetry Metrics
+description: Create application instruments and understand RPC metrics emitted by Connectum.
+docType: how-to
 outline: deep
 ---
 

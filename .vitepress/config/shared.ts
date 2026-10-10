@@ -40,7 +40,7 @@ const restorePackageManagerScript = restoreSelection(
 
 export const sharedConfig = defineConfig({
     title: 'Connectum',
-    description: 'Production-ready gRPC/ConnectRPC framework for Node.js',
+    description: 'gRPC and ConnectRPC framework for TypeScript services on Node.js',
     head: [
         /* Favicons, generated from public/assets/favicon.svg by scripts/generate-favicons.mjs.
            The SVG is listed first for browsers that take it; the 32px PNG is the fallback,
@@ -54,7 +54,7 @@ export const sharedConfig = defineConfig({
         ['meta', { name: 'theme-color', content: '#1b1b1f', media: '(prefers-color-scheme: dark)' }],
         ['meta', { property: 'og:type', content: 'website' }],
         ['meta', { property: 'og:title', content: 'Connectum' }],
-        ['meta', { property: 'og:description', content: 'Production-ready gRPC/ConnectRPC framework for Node.js' }],
+        ['meta', { property: 'og:description', content: 'gRPC and ConnectRPC framework for TypeScript services on Node.js' }],
         ['meta', { property: 'og:image', content: 'https://connectum.dev/assets/splash.png' }],
         ['meta', { property: 'og:url', content: 'https://connectum.dev' }],
         ['meta', { property: 'og:site_name', content: 'Connectum' }],
@@ -78,7 +78,7 @@ export const sharedConfig = defineConfig({
         },
         footer: {
             message: 'Released under the Apache License 2.0. · <a href="/llms.txt">llms.txt</a> · <a href="/llms-full.txt">llms-full.txt</a>',
-            copyright: 'Copyright <a href="https://highload.zone" target="_blank"><img src="https://highload.zone/images/favicon/favicon-32x32.png" alt="" style="display:inline;height:1em;vertical-align:middle;margin-right:4px">Highload.Zone</a>',
+            copyright: 'Copyright <a href="https://highload.zone" target="_blank">Highload.Zone</a>',
         },
     },
     markdown: {
@@ -123,14 +123,11 @@ export const sharedConfig = defineConfig({
             rollupOptions: {
                 output: {
                     manualChunks(id) {
-                        /* ELK's layout engine is reached through a dynamic import inside the
-                           tiny descriptor `theme/index.ts` registers, so it can stay out of
-                           the chunk every page loads and arrive only when a diagram is first
-                           rendered. It has to be matched before the mermaid rule below --
-                           `@mermaid-js/layout-elk` contains "mermaid", and folding it in
-                           there costs every page roughly half a megabyte, diagrams or not. */
+                        /* The descriptor registered by the theme loads ELK dynamically.
+                           Keep its renderer separate so pages load it when a diagram needs
+                           it. Let Rollup split the remaining Mermaid modules at their own
+                           dynamic imports instead of grouping every diagram into one chunk. */
                         if (id.includes('elkjs') || /layout-elk\/dist\/chunks\/.*\/render-/.test(id)) return 'mermaid-layout-elk';
-                        if (id.includes('mermaid')) return 'mermaid';
                     },
                 },
             },

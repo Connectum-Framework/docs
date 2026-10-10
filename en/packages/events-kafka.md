@@ -36,16 +36,12 @@ const adapter = KafkaAdapter({
 });
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Key Entry Points
 
 | Entry point | Use it to |
 |---|---|
 | `KafkaAdapter` | Connect EventBus to Kafka or Redpanda. |
 | `KafkaAdapterOptions` | Configure brokers, client, producer, and consumer behavior. |
-
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

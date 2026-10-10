@@ -53,68 +53,34 @@ backoff come from amqplib's built-in recovery. For production settings, continue
 | [`FakeAmqpAdapter`](/en/api/@connectum/events-amqp/testing/functions/FakeAmqpAdapter) | Test failure handling without a broker (`@connectum/events-amqp/testing`). |
 | `AmqpRecoveryOptions` | Bound the initial connect (`initialConnectMaxRetries`) and set the reconnect delay schedule, including a custom `backoff` hook (since 1.3.0). See [Set your own reconnect delay](/en/guide/events/amqp-reliability#custom-backoff-hook). |
 
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
-
 ## Reliable Publishing {#reliable-publishing}
 
-Each `publish()` resolves on the broker's confirm for that message or rejects with a
-typed error; the error class tells you whether republishing is safe. The opt-in
-`publishRetry` option retries connection failures in place with a bounded budget
-(5 retries by default), and `isAutoRetriablePublishError` exposes its error-class rule
-for your own retry logic. A retry can duplicate a message whose confirm was lost; dedupe
-on `x-event-id`. See [Reliable publishing](/en/guide/events/amqp-reliability#reliable-publishing)
-and [`AmqpPublishRetryOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpPublishRetryOptions).
-`publishRetry.maxRetries` below 0, including `-Infinity`, means a single attempt, and
-`NaN` means the default of 5; `publishTimeoutMs` below 1 or not finite means the default
-of 30 s.
+`publish()` resolves on broker confirmation. A retry after a lost confirmation can
+duplicate a message; see [Reliable publishing](/en/guide/events/amqp-reliability#reliable-publishing)
+for retry policy and deduplication guidance.
 
 ## Connection Recovery {#connection-recovery}
 
-Recovery is on by default: the adapter reconnects, re-applies topology, and restarts
-subscriptions. `recovery.maxRetries` (default `Infinity`) bounds every outage and the
-initial connect; `recovery.initialConnectMaxRetries` bounds only startup.
-`treatTopologyErrorAsFatal` stops recovery on deterministic topology drift (a missing
-queue or exchange, or a redeclare with different or invalid arguments, judged by the
-broker's reply code and message text); the stop is quiet, so observe
-`reconnect-failed`. When
-recovery gives up, the adapter drops the connection and **all subscriptions**: a later
-`connect()` starts clean and you must subscribe again. See
-[Connection recovery](/en/guide/events/amqp-reliability#connection-recovery) and
-[`AmqpRecoveryOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpRecoveryOptions).
+The adapter reconnects and restores topology and subscriptions by default. Recovery
+limits, fatal topology errors, and the behavior after recovery stops are documented in
+[Connection recovery](/en/guide/events/amqp-reliability#connection-recovery).
 
 ## Tuning the Reconnect Backoff {#tuning-the-reconnect-backoff}
 
-Reconnect delays follow amqplib 2.2's formula: exponential growth from `initialDelay`
-by `factor`, symmetric `jitter`, and a base capped at `maxDelay / (1 + jitter)`, so no
-delay exceeds `maxDelay`. With the defaults a saturated delay is 20–30 s. The startup
-attempts and `publishRetry` use the same formula. See
+The `backoff` option customizes reconnect delays; see
 [Tuning the reconnect backoff](/en/guide/events/amqp-reliability#tuning-the-reconnect-backoff)
-for the formula and a full-jitter recipe.
+for its parameters and examples.
 
 ## Adapter Lifecycle {#adapter-lifecycle}
 
-`lifecycle.onLifecycle` receives one event per adapter lifecycle change, connection or consumer: `connected`,
-`disconnected`, `reconnecting`, `reconnect-failed`, `setup-failed`, `blocked`,
-`unblocked`, `settlement-skipped` (a delivery could not be settled because its channel
-had closed; the broker returns it to the queue, and on a quorum queue each return
-counts toward the delivery limit), `consumer-lost`, `consumer-restored` and
-`consumer-restore-failed` (the broker ended one subscription's consumer on a live
-connection; with `recovery` enabled the adapter restores it, see
-[A consumer the broker ends](/en/guide/events/amqp-reliability#consumer-loss)), and
-`lifecycle-error` (a callback threw or rejected). The flat callbacks (`onConnected`, `onDisconnected`, and the others) are
-deprecated since 1.3 and kept until at least 2.0. Callbacks should not throw: the
-adapter isolates a thrown exception or a rejected returned promise, does not await a
-promise, and reports the failure as `lifecycle-error`. See
-[Adapter lifecycle](/en/guide/events/amqp-reliability#adapter-lifecycle) and
-[`AmqpLifecycleCallbacks`](/en/api/@connectum/events-amqp/types/interfaces/AmqpLifecycleCallbacks).
+The `lifecycle.onLifecycle` callback reports connection and consumer events. Flat
+callbacks are deprecated; see [Adapter lifecycle](/en/guide/events/amqp-reliability#adapter-lifecycle)
+for event names, callback behavior, and migration guidance.
 
 ## Testing {#testing-subpath-exports}
 
-The `@connectum/events-amqp/testing` subpath exports `FakeAmqpAdapter`, an in-memory
-adapter with a `control` object that injects publish outcomes, connection drops,
-recovery results, setup failures, and flow control. It needs no broker. See
-[Testing](/en/guide/events/amqp-reliability#testing-subpath-exports) and
-[`FakeAmqpControl`](/en/api/@connectum/events-amqp/testing/interfaces/FakeAmqpControl).
+The `@connectum/events-amqp/testing` subpath exports the in-memory `FakeAmqpAdapter`;
+see [Testing](/en/guide/events/amqp-reliability#testing-subpath-exports).
 
 ## Learn / Configure / API Reference {#api-reference}
 
