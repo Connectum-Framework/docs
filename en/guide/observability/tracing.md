@@ -51,10 +51,12 @@ async function* listItems(req: ListItemsRequest) {
 }
 ```
 
-The span is active only while the handler runs. Code that consumes the response stream keeps its own active span, and the generator that produces the request messages of a client-streaming or bidirectional call runs in the caller's context (under the client span when the client interceptor is used), over HTTP and in-process alike.
+The span is active only while the handler runs. Code that consumes the response stream keeps its own active span.
+
+The request stream is pulled by the code below `createOtelInterceptor()` (the handler, or an interceptor placed after it), so a wrapper of the request stream runs under the server span wherever it is placed relative to the OpenTelemetry interceptor. A wrapper of the response stream runs under the server span only when it is placed after `createOtelInterceptor()`: put `createLoggerInterceptor()` after it if the response and completion records must carry the span's `trace_id` and `span_id`.
 
 ::: info Since 1.3.0
-Before 1.3.0 the active span inside a server-streaming or bidirectional handler was empty over HTTP, and in-process it was the caller's span, so spans started there were not children of the server span.
+Before 1.3.0 the active span inside a server-streaming or bidirectional handler was empty over HTTP, and in-process it was the caller's span, so spans started there were not children of the server span. In-process, the generator that produces the request messages of a bidirectional call now also runs under the server span, as it already did for a client-streaming call.
 :::
 
 ## Client Interceptor
