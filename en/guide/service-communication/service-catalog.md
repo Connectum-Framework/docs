@@ -192,6 +192,30 @@ const server = createServer({
 
 Explicit `CallOptions.headers` always win over a propagated value.
 
+### Outgoing interceptors
+
+`createServer({ outgoingInterceptors })` is the client-side chain of catalog routing. It runs exactly once per call on every route — `ctx.call` / `ctx.stream` and `server.client()`, all four RPC kinds, whether the target is mounted on this server (in-process), reached through the `remoteResolver`, or served by `mockResolver` in a test. The first element is the outermost; the chain runs outside the interceptors of the resolver's own transport, and the call's deadline budget is already running when it starts (the transport receives what is left). `server.localClient()` and `createLocalTransport()` stay plain, and `createCatalogClient({ outgoingInterceptors })` takes its own explicit chain (default empty; it never inherits one from a server).
+
+Mount application policy here once — identity and tracing for every route:
+
+```typescript
+import { createClientBearerInterceptor } from '@connectum/auth';
+import { createServer, dnsResolver } from '@connectum/core';
+import { createOtelClientInterceptor } from '@connectum/otel';
+
+const server = createServer({
+  services: [orders],
+  catalog,
+  outgoingInterceptors: [
+    createClientBearerInterceptor({ token: () => fetchServiceToken() }),
+    createOtelClientInterceptor({ serverAddress: 'catalog' }),
+  ],
+  remoteResolver: dnsResolver({ template: 'http://{shortName}.internal:5000' }),
+});
+```
+
+Keep only transport-specific middleware (TLS, compression, a per-upstream gateway header) on the resolver's transports: the framework cannot see inside a `Transport`, so the same policy configured in both places runs twice. On a resolver route an interceptor in the chain reads `req.url` as `https://catalog/<typeName>/<Method>` with `requestMethod: "POST"` and sees no protocol headers; policy that needs the wire request — signing over headers, an audience derived from the host — belongs on the resolver's transport. See [Transport-owned vs application-owned interceptors](./resolvers#transport-owned-vs-application-owned-interceptors).
+
 ## Single-image, multiple roles — `enabledServices`
 
 `enabledServices` is a list of full proto `typeName`s a process mounts **locally**. Any service in `services` whose `typeName` is not listed is treated as remote and reached via the `remoteResolver`. `undefined` mounts every provided service locally. This lets one image play different roles depending on configuration — a modular monolith in one deployment, split processes in another, with no code change.
