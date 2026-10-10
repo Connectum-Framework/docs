@@ -325,6 +325,16 @@ token-factory calls, retry amplification. The identity the receiver sees does no
 change (the inner bearer interceptor overwrites the header), so nothing fails
 loudly.
 
+**Action — credentials now reach every target of the resolver.** Before 1.3.0 a
+signer in `outgoingInterceptors` never ran on a `remoteResolver` route, so its
+token never left the process on those calls. Now the chain runs for **every**
+target the resolver returns, including one in another trust domain (a partner
+API, a third-party service). A bearer signer there sends your internal token to
+that host. Check each resolver target: restrict the signer by
+`req.service.typeName` (return `next(req)` untouched for services that must not
+receive the credential), or keep that credential on the transport of the one
+target that needs it and leave it out of `outgoingInterceptors`.
+
 **Before**
 
 ```typescript
