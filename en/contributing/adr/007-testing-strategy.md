@@ -245,3 +245,4 @@ All tests passing (100% pass rate). Test execution time ~15s.
 |------|--------|--------|
 | 2025-12-24 | Claude | Initial ADR -- testing strategy with node:test |
 | 2026-02-14 | Claude | Added @connectum/testing package specification (mock factories, assertions, test server) |
+| 2026-10-08 | Documentation review | Restored the original wording of the Decision sentence that an earlier editorial pass had changed; added page metadata. Decision unchanged. |

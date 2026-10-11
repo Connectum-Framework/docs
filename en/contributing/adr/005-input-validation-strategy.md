@@ -332,3 +332,4 @@ const interceptors = createDefaultInterceptors(); // validation enabled by defau
 |------|--------|--------|
 | 2025-12-24 | Claude | Initial ADR — custom createValidationInterceptor, validation-first chain order |
 | 2026-02-14 | Claude | Replaced custom interceptor with @connectrpc/validate; updated chain order (7th, not 1st); added migration guide; real proto examples from production-ready example |
+| 2026-10-08 | Documentation review | Added a pointer to the current validation and interceptor guides for setup and enabled defaults; added page metadata. Decision text unchanged. |

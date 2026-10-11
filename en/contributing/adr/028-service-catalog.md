@@ -8,7 +8,7 @@ docType: adr
 
 ## Status
 
-Accepted -- 2026-06-15
+Accepted -- 2026-06-15; revised -- 2026-10-08
 
 ## Context
 

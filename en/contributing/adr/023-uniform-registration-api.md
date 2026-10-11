@@ -304,3 +304,4 @@ await server.start();
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-11 | Claude | Initial ADR -- Uniform Registration API |
+| 2026-10-08 | Documentation review | Restored the original wording of a code comment in the Decision example that an earlier editorial pass had changed; added page metadata. Decision unchanged. |

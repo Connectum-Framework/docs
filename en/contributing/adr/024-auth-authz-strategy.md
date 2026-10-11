@@ -10,7 +10,7 @@ docType: adr
 Accepted -- 2026-02-15
 Revised -- 2026-02-17 (v0.2.0: Gateway, Session interceptors, Security fixes)
 Revised -- 2026-02-20 (v0.3.0: Proto-based authorization, corrected dependencies, removed deleted trusted-headers, marked OTel as unimplemented)
-Implementation reconciled -- 2026-10-08 (clarifies current package surface and limits; accepted decisions unchanged)
+Revised -- 2026-10-08 (reconciled with the implemented package surface and its limits, and with the identity lifetime in streaming calls; accepted decisions unchanged)
 
 ## Context
 
@@ -36,14 +36,16 @@ Create a new `@connectum/auth` package (Layer 1) with interceptor factories, aut
 
 ### 1. Package Architecture
 
-**Layer 1** package. The original decision declared ConnectRPC, core, and protobuf as regular dependencies; since 1.3 they are peer dependencies (see [Peer dependencies](/en/migration/peer-dependencies)), and `jose` remains the runtime dependency:
+**Layer 1** package with zero internal dependencies:
 
 | Dependency | Type | Purpose |
 |---|---|---|
 | `jose` | dependency | JWT verification, JWKS, signing |
-| `@connectrpc/connect` | peer dependency | Interceptor type, ConnectError, Code |
-| `@connectum/core` | peer dependency | `SanitizableError` type protocol |
-| `@bufbuild/protobuf` | peer dependency | Proto reflection for proto-based authz |
+| `@connectrpc/connect` | dependency | Interceptor type, ConnectError, Code |
+| `@connectum/core` | dependency | SanitizableError protocol |
+| `@bufbuild/protobuf` | dependency | Proto reflection for proto-based authz |
+
+> **Update (2026-10-08):** Since 1.3 `@connectrpc/connect`, `@connectum/core`, and `@bufbuild/protobuf` are peer dependencies of `@connectum/auth` (see [Peer dependencies](/en/migration/peer-dependencies)); `jose` remains the runtime dependency. The table above records the decision at its date.
 
 ### 2. Interceptor Factories
 

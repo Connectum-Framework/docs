@@ -44,22 +44,6 @@ Run these commands from the repository root after installing dependencies.
 `docs:validate:built` checks the generated routes, search index, sitemap, and LLM
 outputs. Open the preview URL printed by VitePress and stop it with Ctrl+C.
 
-For an optional executable check of the Quickstart and eight framework README
-examples, place the `connectum`, `docs`, and `examples` repositories in sibling
-directories. From the framework repository, install and build its packages, then
-run its acceptance script:
-
-```bash
-cd ../connectum
-pnpm install --frozen-lockfile
-pnpm build
-pnpm docs:check --docs ../docs --examples ../examples
-```
-
-This check runs the selected examples against packed local packages and checks
-their responses. It requires network access for dependencies and Buf imports;
-it does not verify every claim or snippet in the documentation.
-
 ## Structure
 
 ```

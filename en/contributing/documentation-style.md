@@ -177,9 +177,14 @@ the decision at its date and are not rewritten. Amend an ADR only in these ways:
 - **Headings are anchors.** Do not remove sections or headings. Rename a heading
   only when no page in the three repositories links to its anchor, and record
   the old heading in the Changelog.
-- **Every amendment adds a Changelog row** (add the table if the ADR has none)
-  and updates the Status line and the index row: `Accepted -- YYYY-MM-DD;
-  revised -- YYYY-MM-DD`.
+- **Diagrams.** Converting a text diagram to Mermaid without changing what it
+  shows is allowed and is recorded in the Changelog; every name in the original
+  diagram stays.
+- **Every amendment adds a Changelog row** (add the table if the ADR has none).
+  A new or changed decision, or a correction of a wrong statement, also updates
+  the Status line and the index row: `Accepted -- YYYY-MM-DD; revised --
+  YYYY-MM-DD`. A pointer or an Update note that leaves the decision as it was
+  needs the Changelog row only.
 - **A Current Decision that depends on an unreleased runtime change** names the
   release and the framework pull request, so readers of the published version
   can tell which behavior they have.

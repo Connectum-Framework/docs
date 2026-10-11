@@ -35,9 +35,11 @@ the broker also routed the base key `user` to that subscription. The upcoming
 then accepts zero or more additional segments.
 
 The adapter rejects a complete `>` segment outside the terminal position. It
-also rejects subscriptions containing complete `*` or `>` wildcard tokens on
-direct, fanout, or headers exchanges before creating subscription topology.
-Embedded characters such as `user*` and `user>` remain literal. A complete `#`
+also rejects subscriptions containing complete `*` or `>` wildcard tokens on a
+direct exchange when `topologyMode` is `assert`, before creating subscription
+topology, because the binding would be a literal key that never matches; fanout
+and headers exchanges accept any pattern and deliver every message to the
+queue. Embedded characters such as `user*` and `user>` remain literal. A complete `#`
 segment is rejected in topic subscriptions, where RabbitMQ would treat it as a
 wildcard even though EventBus treats it as literal. Non-topic exchanges continue
 to accept `#` as a routing-key literal or ignore it according to their exchange

@@ -268,3 +268,4 @@ The following conventions remain unchanged:
 |------|--------|--------|
 | 2025-12-22 | Claude | Original ADR: Native TypeScript (raw .ts publishing) |
 | 2026-02-16 | Claude | Revised: Compile-before-publish with tsup (this version) |
+| 2026-10-08 | Documentation review | Replaced the Update note about the consumer Node.js floor with a pointer to the current requirements (consumer `>=22.13.0`, framework development `>=26.0.0`); added page metadata. Decision text unchanged. |

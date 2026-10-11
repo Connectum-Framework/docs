@@ -290,6 +290,7 @@ pnpm --filter @connectum/proto clean
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-06 | Claude | Initial ADR -- Buf CLI v2 migration |
+| 2026-10-08 | Documentation review | Added a note that the removed `@connectum/proto` package and its fallback commands are historical, with pointers to the proto enums guide and the contributor commands; added page metadata. Decision text unchanged. |
 
 ---
 

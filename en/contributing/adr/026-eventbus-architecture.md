@@ -351,3 +351,4 @@ Use the CloudEvents specification as the event envelope instead of raw protobuf.
 | 2026-03-07 | Software Architect | Initial ADR: EventBus architecture with pluggable adapter pattern |
 | 2026-03-09 | Software Architect | Added typed error classes (#48) and graceful drain (#47) |
 | 2026-03-22 | Software Architect | Added AdapterContext for automatic broker-level client identification |
+| 2026-10-08 | Documentation review | Restored the original wording of a sentence in the Decision section that an earlier editorial pass had changed; added page metadata. Decision unchanged. |

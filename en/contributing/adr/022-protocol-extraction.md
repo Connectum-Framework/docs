@@ -201,3 +201,9 @@ const server = createServer({
 `@connectum/reflection` no longer depends on `@lambdalisue/connectrpc-grpcreflect`: it implements the gRPC Server Reflection Protocol itself, on code generated from the upstream `grpc.reflection` protos. The extraction rationale above stands; the reflection package's only external dependencies are now `@bufbuild/protobuf` and `@connectrpc/connect`.
 
 In the same release `ProtocolContext` gained `services` — the services mounted before the protocol, as a frozen snapshot next to `registry`. Healthcheck and Reflection read service names from it, because a file in `registry` may declare services that are not mounted.
+
+## Changelog
+
+| Date | Author | Change |
+|------|--------|--------|
+| 2026-10-08 | Documentation review | Added a note that the original interface and backward-compatibility period are historical, with pointers to the current `setup`/`register` split; converted the text layer diagram to a Mermaid flowchart with the same layers; added page metadata. Decision text unchanged. |

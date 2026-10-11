@@ -204,19 +204,6 @@ With sibling framework and documentation checkouts, the generated API Reference 
 written to `../docs/en/api/` and integrated into the sidebar through
 `typedoc-sidebar.json`. TypeDoc warnings fail generation.
 
-After installing and building the framework, optionally execute the Quickstart
-and eight framework README examples against packed candidate packages:
-
-```bash
-pnpm docs:check --docs ../docs --examples ../examples
-```
-
-Run this from the framework repository with sibling `docs` and `examples`
-checkouts, or pass their explicit paths. It installs a temporary consumer project
-and resolves Buf imports, so network access is required. This selected-example
-check complements source review and site validation; it does not cover every
-documentation claim or snippet.
-
 ## Package-Level Commands
 
 Commands for working with individual packages.

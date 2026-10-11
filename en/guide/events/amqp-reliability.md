@@ -54,10 +54,15 @@ The adapter translates EventBus wildcard patterns for RabbitMQ topic bindings:
 
 Only complete dot-separated tokens are wildcards. A complete `>` token is valid
 only at the end of a pattern; a non-terminal `>` is rejected before subscription
-topology is created. Complete `*` and `>` tokens require `exchangeType: 'topic'`;
-direct, fanout, and headers exchanges reject those subscriptions before creating
-or binding a queue. Embedded characters such as `user*` and `user>` remain
-literal. A complete `#` segment is rejected in a topic subscription because
+topology is created. Complete `*` and `>` tokens match only on a topic exchange.
+A direct exchange matches binding keys literally, so with
+`topologyMode: 'assert'` a subscription containing such a token is rejected
+before a queue is created or bound, because the queue would never receive a
+message; with `check` or `skip` the binding is the operator's. A fanout or
+headers exchange delivers every message to the queue whatever the pattern (the
+adapter's headers binding carries no arguments), so the subscription is
+accepted and `EventBus` drops events that have no matching handler. Embedded
+characters such as `user*` and `user>` remain literal. A complete `#` segment is rejected in a topic subscription because
 RabbitMQ treats it as a wildcard while the EventBus matcher treats it as literal
 text. On non-topic exchanges, `#` remains a routing-key literal or is ignored
 according to the exchange type.
