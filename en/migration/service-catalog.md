@@ -298,6 +298,74 @@ const client = server.client(PaymentService); // throws ConnectError(Code.Unavai
 Catch `CatalogConfigError` only in tooling/tests; in normal operation it should crash
 the process so the misconfiguration is fixed, not swallowed.
 
+## 6. 1.3.0 — `outgoingInterceptors` run on every route
+
+> Applies to 1.3.0.
+
+`createServer({ outgoingInterceptors })` is documented as the client-side chain of
+every catalog call. Before 1.3.0 it ran only on `ctx.call` / `ctx.stream` to a
+service mounted on the same `Server`. From 1.3.0 it runs exactly once per call on
+every route, and the standalone client takes its own chain.
+
+| Surface and route | 1.0 - 1.2 | 1.3.0 |
+|-------------------|-----------|-------|
+| `ctx.call` / `ctx.stream`, service mounted on this server | chain runs | chain runs |
+| `ctx.call` / `ctx.stream`, service behind the `remoteResolver` | chain **skipped** | chain runs, outside the transport's own interceptors |
+| `ctx.call` / `ctx.stream` on `createMockContext` mock routes | chain **skipped** | chain runs |
+| `server.client(Desc)`, service mounted on this server | plain `localClient()` (no chain) | in-process client **with** the chain |
+| `server.client(Desc)`, service behind the `remoteResolver` | resolver transport only | chain runs, outside the transport's own interceptors |
+| `server.localClient()`, `createLocalTransport()` | plain | plain (unchanged) |
+| `createCatalogClient(...)` | no chain option | optional `outgoingInterceptors`, default empty |
+
+**Action — only if you worked around the gap.** If you mounted the same signer,
+OpenTelemetry client interceptor or retry on the resolver's transports so that
+remote calls were signed or traced, remove that copy and keep the policy in
+`outgoingInterceptors`. Left in place it runs twice: two client spans, two
+token-factory calls, retry amplification. The identity the receiver sees does not
+change (the inner bearer interceptor overwrites the header), so nothing fails
+loudly.
+
+**Action — credentials now reach every target of the resolver.** Before 1.3.0 a
+signer in `outgoingInterceptors` never ran on a `remoteResolver` route, so its
+token never left the process on those calls. Now the chain runs for **every**
+target the resolver returns, including one in another trust domain (a partner
+API, a third-party service). A bearer signer there sends your internal token to
+that host. Check each resolver target: restrict the signer by
+`req.service.typeName` (return `next(req)` untouched for services that must not
+receive the credential), or keep that credential on the transport of the one
+target that needs it and leave it out of `outgoingInterceptors`.
+
+**Before**
+
+```typescript
+const server = createServer({
+  services: [orders],
+  catalog,
+  remoteResolver: singleTransportResolver(
+    createGrpcTransport({ baseUrl, interceptors: [bearer, otelClient, gatewayHeader] }),
+  ),
+});
+```
+
+**After**
+
+```typescript
+const server = createServer({
+  services: [orders],
+  catalog,
+  outgoingInterceptors: [bearer, otelClient], // application policy, once, every route
+  remoteResolver: singleTransportResolver(
+    createGrpcTransport({ baseUrl, interceptors: [gatewayHeader] }), // transport-specific only
+  ),
+});
+```
+
+Two behaviors to know. On a resolver route an interceptor in the chain reads
+`req.url` as `https://catalog/<typeName>/<Method>` and sees no protocol headers; keep
+wire-level policy (request signing over headers, an audience derived from the host)
+on the resolver's transport. And a `server.client()` call to a local service now runs
+the chain; call `server.localClient()` for a plain in-process client.
+
 ## Migration checklist
 
 - [ ] Replace every `(router) => { router.service(...) }` callback with
@@ -319,3 +387,6 @@ the process so the misconfiguration is fixed, not swallowed.
 - [ ] During rolling upgrades, add methods compatibly; do not remove or rename a
       method while callers still use it. An older service answers an unknown method
       with `Code.Unimplemented`.
+- [ ] On 1.3.0, remove any signer, OpenTelemetry client or retry interceptor you
+      copied onto the resolver's transports; keep that policy only in
+      `outgoingInterceptors` (see section 6).
