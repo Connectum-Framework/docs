@@ -64,6 +64,7 @@ async function* watchOrders(req: WatchOrdersRequest) {
 A few details are worth knowing:
 
 - The identity is scoped to the call, not to the process or the caller. When code calls a local client while holding its own identity, the handler sees the identity that was verified for *that* call, and the caller's own identity is unchanged after the call returns.
+- The generator that produces the request messages of a client-streaming or bidirectional call belongs to the caller and runs under the caller's own identity (or none), in-process and over HTTP alike; it never observes the identity that was verified for the callee. Its `finally` after a cancellation runs in the context that raised the abort.
 - Cleanup that is triggered by a cancellation, a deadline, or the server shutting down runs under the identity of the call it belongs to, even though the signal that triggered it comes from elsewhere.
 - The identity scope replaces only the identity itself. Other `AsyncLocalStorage` values (a trace context, a tenant) are left as the surrounding code set them during iteration, so the in-process caller's own scopes stay visible to the handler; cleanup after a cancellation runs under the values that were active when the stream was created.
 - A listener that the handler registers with `ctx.signal.addEventListener("abort", ...)` runs in the context of whatever raised the abort, not under the call's identity. Capture the identity (`const auth = requireAuthContext()`) before registering the listener and use that variable inside it.
