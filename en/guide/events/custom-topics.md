@@ -147,7 +147,7 @@ flowchart TD
 
 ## Wildcard Topic Matching
 
-The MemoryAdapter and NATS adapter support wildcard patterns for topic matching:
+A subscription can use wildcard patterns for topic matching:
 
 | Pattern | Matches | Does Not Match |
 |---------|---------|----------------|
@@ -160,8 +160,18 @@ Two wildcard tokens are supported:
 - **`*`** -- matches exactly one dot-separated segment
 - **`>`** -- matches one or more trailing segments
 
-::: info Broker Limitations
-Wildcard patterns are natively supported by NATS. Kafka and Redis Streams do not support server-side wildcards -- the adapter subscribes to exact topic names only.
+Support and caveats differ by adapter:
+
+| Adapter | Wildcards | What to know |
+|---------|-----------|--------------|
+| `MemoryAdapter` | Yes | Same matcher as above. |
+| `NatsAdapter` | Yes, native | The server evaluates the filter for every message, so subjects first used after the subscription are delivered. When several patterns of one subscription match the same subject (`orders.created`, `orders.*`, `orders.>`), the handler still runs once per event; see [overlapping patterns](/en/guide/events/adapters#nats-overlapping-patterns). |
+| `KafkaAdapter` | Yes, as a regex over topic names | A matching topic created later is picked up at `consumerOptions.topicDiscoveryInterval` (default 5 min; `false` keeps the list fixed; in a group, after the longest interval among its members). A pattern that opens with a wildcard never matches topics starting with `__` (Kafka's internal topics). |
+| `AmqpAdapter` | Yes, on a topic exchange | `>` becomes `*.#`, so `user.>` needs at least one more segment. Other exchange types do not match patterns: a direct exchange binds the pattern as a literal key (rejected with `topologyMode: "assert"`), and a fanout or headers exchange delivers every key to the queue, so `EventBus` drops events with no matching handler. See the [AMQP module page](/en/packages/events-amqp). |
+| `RedisAdapter` | No | A pattern containing `*` or `>` is rejected when the subscription is made, so `bus.start()` fails with `RedisAdapter: wildcard pattern "..." is not supported. Redis Streams requires explicit topic names.` Subscribe to exact topic names; see [Redis wildcards](/en/guide/events/adapters#redis-wildcards). |
+
+::: warning Kafka: topics created after the subscription
+Kafka expands a wildcard when the subscription starts, and the adapter refreshes it every five minutes by default (`consumerOptions.topicDiscoveryInterval`). A discovered topic is read from its first message; each discovery rebalances the consumer group, so consumption pauses for a few seconds. A restart before the next check reads a new topic from its end unless `fromBeginning` is set. Details: [Kafka wildcard subscriptions](/en/guide/events/adapters#kafka-wildcards).
 :::
 
 ## Best Practices

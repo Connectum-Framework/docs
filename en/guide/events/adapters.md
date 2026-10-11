@@ -50,6 +50,57 @@ const adapter = NatsAdapter({ servers: 'nats://localhost:4222' });
 - [Module hub](/en/packages/events-nats)
 - [`NatsAdapterOptions`](/en/api/@connectum/events-nats/types/interfaces/NatsAdapterOptions)
 
+### Overlapping patterns {#nats-overlapping-patterns}
+
+A subscription that lists patterns matching the same subject (`orders.created`,
+`orders.*`, `orders.>`) runs its handler once per event. Every pattern keeps its
+own durable consumer, so the server still sends the event once per matching
+pattern; the adapter runs your handler for one of those deliveries and
+acknowledges the others without running it.
+
+The delivery that runs the handler is the one of the most specific pattern among
+those whose consumer delivers the event: fewer `>` first, then fewer `*`, then
+more tokens, then the pattern text. The order comes from the pattern text alone,
+so every instance of a group picks the same delivery, and patterns that overlap
+only in part (`a.*.c` and `a.b.*`) need no special case.
+
+- **Existing consumers keep their backlog.** Consumers left by earlier versions
+  or by earlier runs of the service keep their position. Events published while
+  the service was down are delivered once, whichever of the overlapping patterns
+  holds them. A pattern added later starts at `consumerOptions.deliverPolicy`
+  (`"new"` by default) like any new route. Upgrading or rolling back needs no
+  action.
+- **Existing consumers are never modified.** The adapter reads an existing
+  consumer and attaches to it; it does not update its configuration, so an
+  earlier version of the adapter can create the same consumer again after a
+  rollback, and consumers provisioned by an operator need only read and pull
+  permissions (`$JS.API.CONSUMER.INFO.>`, `$JS.API.CONSUMER.MSG.NEXT.>`,
+  `$JS.ACK.>`). Each instance works out from where every consumer delivers from
+  what the server reports; nothing is written to the broker. When an existing
+  consumer was configured with another `ackWait`, `maxDeliver` or `deliverPolicy`
+  than the subscription asks for, the adapter keeps the existing one and logs one
+  warning per consumer.
+- **Instances with different route sets.** While a service is rolled out with a
+  route added to a broader pattern, instances with and without that route run
+  side by side. Nothing is lost, but an event can be handled by both kinds of
+  instance, so a handler may see it twice. This is the at-least-once contract;
+  the window lasts as long as the rollout. Handlers should tolerate redelivery.
+  The same can happen on any server when instances attach at different times
+  while a wider consumer still lags behind a narrower one, and when the consumer
+  of a pattern holds a delivery that was never acknowledged.
+- **Network traffic.** The server sends one copy per matching pattern. Prefer
+  patterns that do not overlap on a hot subject.
+- **Consumers of removed routes.** Consumers of patterns you stopped
+  subscribing to stay on the broker, and their pending count grows with every
+  matching event (on a stream with `interest` retention they keep every message).
+  Once no instance runs the old route set, list them with
+  `nats consumer ls <stream>` and remove the ones named
+  `{group}--{pattern}--{hash}` (`nats consumer rm <stream> <name>`). Do not remove
+  the consumer of a pattern a running instance still subscribes: it stops
+  delivering without an error. A `subscribe()` that fails half-way leaves the
+  consumers of a named group in place for the next start; only the consumers of
+  an auto-generated group are removed.
+
 ## Kafka or Redpanda {#kafka-adapter}
 
 Choose Kafka-compatible infrastructure for partitioned ordering, retained logs,
@@ -175,6 +226,49 @@ before the group first commits an offset are not delivered. Once the group has
 committed, messages published while it is stopped are delivered on restart. Set
 `fromBeginning: true` to read a topic's history with a new group.
 
+### Wildcard subscriptions {#kafka-wildcards}
+
+`*` and `>` are converted to a regular expression over topic names. Two
+properties differ from NATS:
+
+- A pattern that **opens with a wildcard** never matches topics whose name starts
+  with `__`. That is the set of topics the brokers mark as internal (Kafka:
+  `__consumer_offsets`, `__transaction_state`; Redpanda: `__consumer_offsets`).
+  Without it, a catch-all `>` would feed the broker's binary bookkeeping records
+  to your handler. The rule has no switch. A pattern that spells the prefix out
+  (`__audit.>`), a literal topic name and names with a single leading underscore
+  are unaffected. Other topics a platform keeps are ordinary names, and `>`
+  receives them: Redpanda's Schema Registry topic `_schemas` is one, so use a
+  narrower pattern such as `orders.>` when you do not want it.
+- The topics a wildcard stands for are expanded when `subscribe()` runs and
+  refreshed every `consumerOptions.topicDiscoveryInterval` (default five
+  minutes): the adapter lists the broker's topics at that interval and, when a
+  matching topic has appeared, restarts the subscription's consumer to include
+  it. The restart rebalances the consumer group, so consumption pauses for a few
+  seconds and messages being handled at that moment are delivered again; it
+  happens only when there is a new topic, and an unchanged topic list costs one
+  metadata request per wildcard subscription per interval. A discovered topic is
+  read from its first message, whatever `fromBeginning` says. A check that fails
+  is logged and repeated at the next interval, and each discovery is logged with
+  the names of the topics, so a rebalance it causes can be told from one caused
+  by a failing member.
+- Set `consumerOptions.topicDiscoveryInterval` to `false` to keep the topic list
+  fixed (the behaviour of earlier versions). Then a matching topic created later
+  is not consumed until the service restarts, and the restart reads it from its
+  end unless `fromBeginning` is set: what was published to the topic before the
+  restart is never handled by the group. The same window exists with the checks
+  on when the service restarts before a check has seen the topic; it is at most
+  one interval long.
+
+In a group of several members the delay before a new topic is read completely is
+the longest interval among the members: KafkaJS assigns partitions only from the
+topic list of the group's leader, and a member drops assigned topics it has not
+subscribed to itself, so every member has to discover the topic first. Nothing
+is lost meanwhile. In a measurement with two members at 1 s and 20 s, all 12
+messages sent to the new topic arrived, the last one 15.3 s after the topic was
+created (15.1 s on Redpanda; the exact delay depends on where the 20 s check
+falls). Give the members of a group the same interval.
+
 ### Related
 
 - [Module hub](/en/packages/events-kafka)
@@ -210,6 +304,14 @@ seconds, while the other entries claimed in the same pass are still delivered.
 `XAUTOCLAIM` inspects a limited number of pending entries per call, so the
 adapter continues each pass where the previous one stopped; entries behind a
 long run of recently delivered ones are therefore reached too.
+
+### Wildcards are not supported {#redis-wildcards}
+
+Redis Streams has no pattern subscription. A topic containing `*` or `>` is
+rejected when the subscription is made, so `bus.start()` fails with
+`RedisAdapter: wildcard pattern "..." is not supported. Redis Streams requires explicit topic names.`
+Subscribe to each topic by its exact name, or use the NATS, Kafka or AMQP adapter
+when you need wildcard routing.
 
 ### Related
 

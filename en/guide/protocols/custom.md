@@ -167,6 +167,19 @@ function CustomHealthEndpoint(): ProtocolRegistration {
 The built-in `Healthcheck` protocol already provides HTTP health endpoints at `/healthz`, `/health`, and `/readyz` when `httpEnabled: true` is set. Use a custom HTTP handler only when you need non-standard behavior.
 :::
 
+### Unknown procedures
+
+A request that matches no ConnectRPC route and that no `httpHandler` claims reaches the server's fallback. If it is an RPC call -- a `POST` to a path of the form `/<service>/<method>` whose `content-type` is one the server serves -- the fallback answers `unimplemented` in the encoding of that protocol, so the client receives the error it expects instead of a bare 404:
+
+| Request content type | Answer |
+|---|---|
+| Connect unary (`application/json`, `application/proto`) | HTTP 501, JSON body `{"code":"unimplemented","message":"procedure not found: /<service>/<method>"}` |
+| Connect streaming (`application/connect+json`, `application/connect+proto`) | HTTP 200, one end-of-stream envelope carrying the same error |
+| gRPC (`application/grpc`, `+proto`, `+json`) | HTTP 200, `grpc-status: 12` and a percent-encoded `grpc-message`, no body |
+| gRPC-Web (`application/grpc-web`, `+proto`, `+json`) | HTTP 200, one trailers frame with `grpc-status: 12` and `grpc-message` |
+
+The message names the requested path, cut to 200 characters. Any other request keeps `404 Not Found`: a method other than `POST`, a path that is not `/<service>/<method>`, `application/grpc-web-text`, and any other content type.
+
 ## Example: Prometheus Metrics Endpoint
 
 A protocol that exposes a `/metrics` HTTP endpoint for Prometheus scraping:
@@ -245,7 +258,7 @@ setup(context): void {
 
 4. **Keep setup() and register() synchronous** -- Both signatures are synchronous. If you need async setup, do it before creating the protocol or inside the service handlers.
 
-5. **Return `false` from httpHandler for unmatched routes** -- This allows other protocols and the default 404 handler to process the request.
+5. **Return `false` from httpHandler for unmatched routes** -- This allows other protocols and the default fallback to process the request. When no handler claims it, a `POST` to `/<service>/<method>` with a Connect, gRPC or gRPC-Web content type is answered with `unimplemented` in the protocol of the request (see [Unknown procedures](#unknown-procedures)); every other request gets a plain `404 Not Found`.
 
 6. **Use ProtocolContext for service discovery** -- Do not hardcode service names. Use `context.services` in `setup()` to discover what services are mounted.
 
