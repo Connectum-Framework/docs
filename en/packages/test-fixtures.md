@@ -39,8 +39,6 @@ const request = createMockRequest();
 const next = createMockNext({ message: { ok: true } });
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Key Entry Points
 
 | Entry point | Use it to |
@@ -48,8 +46,6 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `createMockRequest` | Build a ConnectRPC request fixture. |
 | `createFakeService` | Build descriptor-compatible fake services. |
 | `createMockStream` | Create deterministic streaming inputs. |
-
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

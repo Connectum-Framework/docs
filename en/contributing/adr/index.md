@@ -7,6 +7,11 @@ description: Index of all accepted Architecture Decision Records (ADRs) for the 
 
 Architecture Decision Records (ADRs) capture important design decisions with their context, rationale, and consequences. Each ADR follows a standard format: Status, Context, Decision, Consequences, Alternatives.
 
+ADRs retain the context of each dated decision. Historical dependency versions,
+examples, and performance estimates are not current runtime guarantees. Follow the
+[guides](/en/guide/about) and [runtime compatibility](/en/guide/runtime-compatibility)
+pages for current setup; measure performance with your service and workload.
+
 ## Accepted ADRs
 
 | # | Title | Date | Summary |

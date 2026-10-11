@@ -35,8 +35,6 @@ const adapter = RedisAdapter({
 });
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Redis Protocol {#redis-protocol}
 
 The adapter connects with RESP2 by default, so upgrading `ioredis` does not
@@ -69,8 +67,6 @@ and reply mapping. RESP3 support is available since 1.3.0.
 |---|---|
 | `RedisAdapter` | Connect EventBus to Redis Streams or Valkey. |
 | `RedisAdapterOptions` | Configure connection, broker, and stream behavior. |
-
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

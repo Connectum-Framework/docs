@@ -39,8 +39,6 @@ const protocols = [Healthcheck({ httpEnabled: true })];
 healthcheckManager.update(ServingStatus.SERVING);
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Key Entry Points
 
 | Entry point | Use it to |
@@ -48,8 +46,6 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `Healthcheck` | Register gRPC health and optional HTTP endpoints. |
 | `healthcheckManager` | Update overall or per-service serving state. |
 | `ServingStatus` | Use protocol-defined readiness values. |
-
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

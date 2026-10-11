@@ -42,8 +42,6 @@ const jwtAuth = createJwtAuthInterceptor({
 });
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Key Entry Points
 
 | Entry point | Use it to |
@@ -51,8 +49,6 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `createJwtAuthInterceptor` | Verify bearer tokens with JWKS, public keys, or a shared secret. |
 | `createAuthzInterceptor` | Apply explicit allow and deny rules. |
 | `requireAuthContext` | Read the verified identity in a handler. |
-
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

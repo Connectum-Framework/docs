@@ -1,4 +1,7 @@
 ---
+title: Choose a Service Communication Pattern
+description: Match synchronous and asynchronous communication patterns to service needs.
+docType: concept
 outline: deep
 ---
 

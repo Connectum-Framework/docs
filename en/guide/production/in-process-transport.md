@@ -1,6 +1,7 @@
 ---
 title: In-Process Transport
-description: Call locally registered Connectum services in memory — no HTTP/2, TLS, or sockets — with behavioural parity to the HTTP transport, apart from documented differences in diagnostic text.
+description: Understand in-memory service calls, their parity guarantees, and their transport-specific limits.
+docType: concept
 ---
 
 # In-Process Transport
@@ -126,7 +127,7 @@ Guaranteed identical between in-process and HTTP:
 - **Validation** — proto-declared `buf.validate` / `protovalidate` rules reject invalid requests with `ConnectError(invalid_argument)` and identical violation details on both transports.
 - **Authorization** — proto-declared authz rules and `@connectum/auth` interceptors apply uniformly. Missing/invalid tokens produce `ConnectError(unauthenticated)`; insufficient scope produces `ConnectError(permission_denied)` with identical metadata.
 - **Error mapping** — `ConnectError` (`code`, `message`, `metadata`, `details`) round-trips identically. Plain `Error` becomes `code === internal` on both paths.
-- **Streaming** — unary, server-stream, client-stream, and bidi RPCs preserve message order and respect `AbortSignal` cancellation on both paths. A streaming handler parked at `yield` is finished when its call is cancelled (client `AbortSignal`, deadline, `server.stop()`), so its `finally` block runs and resources opened before the `yield` are released (since 1.3.0, on both transports and on every supported runtime; earlier versions aborted `context.signal` but never resumed the generator in-process, and over HTTP/2 the handler stayed parked on some runtimes, for example Node 26.10.0 and Bun). Leaving a `for await` loop with `break` is not a cancellation on either path: pass an `AbortSignal` and abort it to end the call.
+- **Streaming** — unary, server-stream, client-stream, and bidi RPCs preserve message order. In the upcoming 1.3.0 release, cancellation also resumes a streaming handler parked at `yield` on both transports so its `finally` block can release resources. **Version 1.3.0 is not yet published to npm.** Earlier releases abort `context.signal`, but do not resume a parked in-process generator; over HTTP/2 the handler also remains parked on some tested runtime versions. Leaving a `for await` loop with `break` is not a cancellation on either path: pass an `AbortSignal` and abort it to end the call.
 - **Headers / metadata** — `Headers` objects (including `authorization` and `@connectum/auth` serialized auth headers) round-trip in both directions. Headers are cloned at the boundary to prevent cross-side mutation.
 - **OpenTelemetry tracing and metrics** — see [Observability](#observability) below.
 
@@ -149,7 +150,7 @@ By design, the in-process transport bypasses HTTP-wire concerns:
 - **No cross-process / IPC** — for cross-process communication (Unix sockets, separate hosts, worker_threads) use HTTP transports.
 - **Streaming back-pressure** is provided by `AsyncIterable` semantics and is best-effort rather than HTTP/2 flow control. For very high-throughput streaming, prefer HTTP/2.
 - **Messages are serialized, not shared** — the transport encodes each message to binary protobuf and decodes it on the other side, so the handler and the caller never share a message object. You pay the encode/decode cost, but not the network. `Headers` are cloned at the boundary.
-- **Shutdown does not wait for in-process calls** — `server.stop()` aborts `context.signal` of in-flight in-process calls exactly as it does for HTTP calls (since 1.3.0), but the shutdown timeout and `forceCloseOnTimeout` act on connections, and an in-process call has none: `stop()` neither waits for it nor kills it. A handler that ignores the signal keeps running. See [Graceful shutdown](/en/guide/server/graceful-shutdown).
+- **Shutdown does not wait for in-process calls** — in the upcoming 1.3.0 release, `server.stop()` aborts `context.signal` of in-flight in-process calls as it does for HTTP calls. **Version 1.3.0 is not yet published to npm.** The shutdown timeout and `forceCloseOnTimeout` act on connections, and an in-process call has none: `stop()` neither waits for it nor kills it. A handler that ignores the signal keeps running. See [Graceful shutdown](/en/guide/server/graceful-shutdown).
 
 ## Security Considerations
 
@@ -227,7 +228,8 @@ For the full set of resolver factories (`singleTransportResolver`, `mapResolver`
 - **`transportParityTest(name, options)`** — driver that runs a single declarative scenario against both `createGrpcTransport({ baseUrl })` and `createLocalTransport(server)` and structurally diffs the observable outcome (response payload, headers, `ConnectError` fields, OTEL spans modulo `connectum.transport`, metrics modulo `transport` label). Any divergence fails the test.
 - **In-memory OTEL collectors** — `SpanExporter` and `MetricReader` helpers used by the parity driver for assertion on tracing and metrics output.
 
-Use the parity driver to guarantee that custom interceptors and proto-declared rules behave identically across transports:
+Use the parity driver to compare custom interceptors and proto-declared rules across
+transports for each scenario you test:
 
 ```typescript
 import { ConnectError, createClient } from '@connectrpc/connect';

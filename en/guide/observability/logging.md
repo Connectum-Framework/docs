@@ -1,4 +1,7 @@
 ---
+title: Write Structured Logs
+description: Emit structured OpenTelemetry log records with optional trace correlation.
+docType: how-to
 outline: deep
 ---
 

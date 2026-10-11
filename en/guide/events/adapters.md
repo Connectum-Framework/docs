@@ -11,6 +11,10 @@ Every Connectum EventBus uses the same `EventAdapter` contract. Choose a broker
 from workload and operational requirements, then keep broker-specific tuning in
 that adapter's generated API reference.
 
+This guide targets the documented `1.3.x` release line. Features marked `Since
+1.3.0` require the corresponding package release; they are unavailable from the
+published `1.2.x` packages until 1.3.0 is released.
+
 ## Broker Selection Matrix {#adapter-comparison}
 
 | Adapter | Persistence | Consumer coordination | Ordering scope | Best starting fit |

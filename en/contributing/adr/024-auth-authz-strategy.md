@@ -483,7 +483,7 @@ sequenceDiagram
 ### Risks
 
 1. **jose breaking changes** — Mitigation: pin `jose@^6`, wrap API internally
-2. **Security vulnerabilities** — Mitigation: rely on `jose` for crypto, security review, comprehensive tests
+2. **Security vulnerabilities** — Mitigation: rely on `jose` for crypto, security review, tests
 3. **Overlap with infrastructure auth** — Mitigation: document when to use app-level vs infra-level auth
 4. **Header spoofing** — Mitigation: `createGatewayAuthInterceptor()` with `trustSource` verification (shared secret or CIDR), fail-closed
 5. **ALS fragility in streams** — Mitigation: context set at stream creation, documented

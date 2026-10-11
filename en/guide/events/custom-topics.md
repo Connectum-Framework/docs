@@ -7,6 +7,10 @@ outline: deep
 
 # Custom Topics
 
+This guide targets the documented `1.3.x` release line. Features marked `Since
+1.3.0` require `@connectum/events` 1.3.0 or later; they are unavailable from
+the published `1.2.x` package until 1.3.0 is released.
+
 By default, the EventBus routes events using the protobuf message's `typeName` (e.g., `orders.v1.OrderCreated`). You can override this with a custom topic name using proto options or publish-time overrides.
 
 **Outcome:** choose one canonical topic source and verify publishers and handlers resolve the same name. Delivery and broker semantics remain in [Events](/en/guide/events) and [Adapter selection](/en/guide/events/adapters).

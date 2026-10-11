@@ -35,16 +35,12 @@ const adapter = NatsAdapter({
 });
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Key Entry Points
 
 | Entry point | Use it to |
 |---|---|
 | `NatsAdapter` | Connect EventBus to NATS JetStream. |
 | `NatsAdapterOptions` | Configure servers, stream, connection, and consumer behavior. |
-
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

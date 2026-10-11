@@ -207,7 +207,7 @@ const packagesSidebar: DefaultTheme.SidebarItem[] = [
 
 export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
     title: 'Connectum',
-    description: 'Production-ready gRPC/ConnectRPC framework for Node.js',
+    description: 'gRPC and ConnectRPC framework for TypeScript services on Node.js',
     themeConfig: {
         nav: [
             { text: 'Get started', link: '/en/guide/quickstart' },

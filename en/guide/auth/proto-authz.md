@@ -1,8 +1,15 @@
 ---
+title: Define Authorization in Proto
+description: Attach method access policy to proto options and resolve it at runtime.
+docType: how-to
 outline: deep
 ---
 
 # Proto-Based Authorization
+
+This guide targets the documented `1.3.x` release line. Features marked `Since
+1.3.0` require `@connectum/auth` 1.3.0 or later; they are unavailable from the
+published `1.2.x` package until 1.3.0 is released.
 
 Define authorization rules directly in `.proto` files using custom options. The `createProtoAuthzInterceptor()` reads these options at runtime via protobuf reflection -- no code changes when access rules evolve.
 
@@ -225,7 +232,7 @@ Resolved options are cached in a `WeakMap` keyed by method descriptor. After the
 
 ```typescript
 import { createServer } from '@connectum/core';
-import { createDefaultInterceptors } from '@connectum/interceptors';
+import { createDefaultInterceptors, createErrorHandlerInterceptor } from '@connectum/interceptors';
 import {
   createJwtAuthInterceptor,
   createProtoAuthzInterceptor,
@@ -249,7 +256,12 @@ const authz = createProtoAuthzInterceptor({
 
 const server = createServer({
   services: [userServiceRoutes],
-  interceptors: [...createDefaultInterceptors(), jwtAuth, authz],
+  interceptors: [
+    createErrorHandlerInterceptor(),
+    jwtAuth,
+    authz,
+    ...createDefaultInterceptors({ errorHandler: false }),
+  ],
 });
 
 await server.start();

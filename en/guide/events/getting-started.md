@@ -7,6 +7,10 @@ outline: deep
 
 # Getting Started with Events
 
+This guide targets the documented `1.3.x` release line. The `drainPublishTimeout`
+option in the example requires `@connectum/events` 1.3.0 or later; it is
+unavailable from the published `1.2.x` package until 1.3.0 is released.
+
 This guide walks you through setting up event-driven communication between Connectum microservices using the EventBus. You finish with one published event handled successfully; broker selection and middleware tuning are optional next steps.
 
 ## Prerequisites

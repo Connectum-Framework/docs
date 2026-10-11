@@ -1,6 +1,7 @@
 ---
 title: Istio Service Mesh
 description: Deploying Connectum gRPC services with Istio for automatic mTLS, traffic management, observability, and resilience.
+docType: concept
 ---
 
 # Istio Service Mesh
@@ -23,9 +24,7 @@ A service mesh adds value when your deployment has:
 | Access policies | Implement in application code | Declarative AuthorizationPolicy |
 | Rate limiting | Application-level only | Mesh-wide + application-level |
 
-::: tip
-**Rule of thumb:** If you run 3+ Connectum services that communicate with each other, a service mesh pays for itself in reduced operational complexity. For 1-2 services, Connectum's built-in features are sufficient.
-:::
+Choose a mesh based on the operational capabilities you need, such as workload identity, traffic policy, or network telemetry. Service count alone does not determine whether the added mesh components are useful.
 
 ## Enabling Istio Sidecar Injection
 
@@ -38,11 +37,11 @@ After applying, every new pod in the namespace will automatically receive an Ist
 ### Verify Injection
 
 ```bash
-kubectl -n connectum get pods
+kubectl -n car-sharing get pods
 
 # Expected output:
 # NAME                            READY   STATUS    RESTARTS
-# order-service-7b9f8c6d4-abc12   2/2     Running   0
+# trips-7b9f8c6d4-abc12           2/2     Running   0
 #                                  ^^^
 #                                  2 containers: app + istio-proxy
 ```
@@ -81,7 +80,7 @@ If a specific service needs to accept non-mTLS traffic (e.g., from external clie
 
 ### VirtualService
 
-Control how traffic flows to your Connectum services. This manifest configures timeouts, retry policies, and routing for the order-service.
+Control traffic among the `trips`, `fleet`, and `billing` services in the example. The manifests configure routing and resilience policies for these roles.
 
 See [virtual-service.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/istio/virtual-service.yaml) for the full manifest.
 
@@ -107,11 +106,11 @@ Route specific users or test traffic to the canary by adding an HTTP `match` blo
 
 ### Istio Telemetry + @connectum/otel
 
-Istio sidecars automatically generate metrics, traces, and access logs. Connectum's `@connectum/otel` package provides application-level traces and metrics. Together, they offer complete observability.
+Istio sidecars can generate network metrics, traces, and access logs when telemetry is configured. Connectum's `@connectum/otel` package provides application-level telemetry; together they expose different parts of a request path.
 
 ```mermaid
 graph TB
-    subgraph Pod["Pod: order-service"]
+    subgraph Pod["Pod: trips"]
         APP["Connectum Service<br/>@connectum/otel traces"]
         SIDECAR["Istio Sidecar<br/>Network-level metrics + traces"]
     end
@@ -141,7 +140,7 @@ Configure Istio to export telemetry to the same OTel Collector used by Connectum
 
 ### Trace Propagation
 
-For end-to-end traces that span both Istio sidecars and application code, Connectum's `@connectum/otel` interceptor automatically propagates W3C Trace Context headers (`traceparent`, `tracestate`). Istio's sidecar reads these same headers, creating a unified trace.
+For traces that span Istio sidecars and application code, Connectum's `@connectum/otel` interceptor propagates W3C Trace Context headers (`traceparent`, `tracestate`). Istio can use the same headers when tracing is configured.
 
 The `createOtelInterceptor()` from `@connectum/otel` handles this automatically:
 
@@ -150,12 +149,12 @@ import { initProvider } from '@connectum/otel';
 
 // Initialize OTel before creating the server
 initProvider({
-  serviceName: 'order-service',
+  serviceName: 'trips',
   serviceVersion: '1.0.0',
 });
 ```
 
-No additional configuration is needed -- both `@connectum/otel` and Istio use OpenTelemetry-compatible trace context propagation.
+Configure the collector and Istio telemetry resource for your deployment; both sides use W3C Trace Context propagation.
 
 ## Circuit Breaking: Mesh vs Application
 
@@ -204,7 +203,7 @@ When using both Istio retries and Connectum retries, be careful about **retry am
 
 ## Authorization Policies
 
-Control which services can communicate with each other. This policy allows traffic only from the API gateway service account and from pods within the `connectum` namespace, denying everything else.
+Control which services can communicate with each other. In the linked example, fleet and billing admit requests from the `trips` service account; the policy is scoped to the `car-sharing` namespace.
 
 See [authorization-policy.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/istio/authorization-policy.yaml) for the full manifest.
 

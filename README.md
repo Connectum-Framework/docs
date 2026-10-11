@@ -10,15 +10,10 @@
 
 # Connectum Documentation
 
-> Minimalist framework for building production-ready gRPC/ConnectRPC microservices on Node.js 22.13+
+English VitePress documentation for Connectum. The site source lives in `en/`; the API
+reference under `en/api/` is generated from the framework repository's JSDoc.
 
-**Modular packages** across dependency layers
-
-## Documentation Site
-
-This directory contains the VitePress documentation for the Connectum framework.
-
-### Development
+## Development
 
 ```bash
 cd docs
@@ -26,14 +21,18 @@ pnpm install
 pnpm docs:dev
 ```
 
-The documentation site will be available at `http://localhost:5173`.
+The local site opens at `http://localhost:5173`.
 
-### Build
+## Build
 
 ```bash
 pnpm docs:build
 pnpm docs:preview
 ```
+
+Check authored pages and links with `pnpm docs:validate`. After a successful build,
+`pnpm docs:validate:built` checks the generated routes, search index, sitemap, and LLM
+outputs.
 
 ## Structure
 
@@ -49,7 +48,7 @@ docs/
 │   ├── packages/        # Per-package guides
 │   ├── api/             # Auto-generated API Reference (TypeDoc)
 │   ├── migration/       # Migration & changelog
-│   └── contributing/    # Contributing (ADR, architecture)
+│   └── contributing/    # Contributor guides and ADRs
 ├── public/              # Static assets (assets/, CNAME, robots.txt)
 └── package.json         # VitePress dependency
 ```

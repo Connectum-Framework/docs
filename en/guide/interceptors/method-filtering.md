@@ -1,4 +1,7 @@
 ---
+title: Per-Method Interceptor Routing
+description: Apply interceptors to services and methods with router options or matching rules.
+docType: how-to
 outline: deep
 ---
 

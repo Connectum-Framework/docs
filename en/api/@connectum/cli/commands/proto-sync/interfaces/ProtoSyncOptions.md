@@ -45,3 +45,13 @@ Output directory for generated types
 Defined in: [commands/proto-sync.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L31)
 
 Path to custom buf.gen.yaml template
+
+***
+
+### timeoutMs?
+
+> `optional` **timeoutMs?**: `number`
+
+Defined in: [commands/proto-sync.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L35)
+
+Time limit of each reflection request in ms (positive integer; default 10 000).

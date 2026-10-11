@@ -43,7 +43,7 @@
 
 ## Decision
 
-**Use [node:test](https://nodejs.org/api/test.html) (native Node.js test runner) for comprehensive testing of all Connectum packages with a target coverage of 90%+.**
+**Use [node:test](https://nodejs.org/api/test.html) (native Node.js test runner) to test all Connectum packages with a target coverage of 90%+.**
 
 ### Why node:test?
 

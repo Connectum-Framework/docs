@@ -9,7 +9,7 @@ outline: deep
 
 Connectum services speak gRPC/Connect, but their contract often has to reach audiences that do not: REST/HTTP clients, API gateways, Swagger UI, SDK generators, and API catalogs. The common denominator for those is an **OpenAPI** document.
 
-Connectum's authorization lives in `.proto` options ([Proto-Based Authz](/en/guide/auth/proto-authz)). The pattern on this page generates an OpenAPI v3.1 contract that **reflects that authz** -- the same options the `createProtoAuthzInterceptor` enforces at runtime also drive the published spec, so the two cannot drift.
+Connectum's authorization lives in `.proto` options ([Proto-Based Authz](/en/guide/auth/proto-authz)). The pattern on this page generates an OpenAPI v3.1 contract from those options with the same `resolveMethodAuth` function used by the runtime interceptor. Regenerate the artifact when the proto policy changes so the published spec stays current.
 
 **Outcome:** a reproducible OpenAPI artifact whose operation security is resolved through [`resolveMethodAuth`](/en/api/@connectum/auth/functions/resolveMethodAuth), not a second hand-maintained policy table.
 
@@ -54,6 +54,7 @@ import { OrderService } from '#gen/order/v1/order_pb.ts';
 
 // One JWT bearer scheme, matching createJwtAuthInterceptor at the edge.
 const bearerAuth = { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' };
+const internalTokenAuth = { type: 'apiKey', in: 'header', name: 'x-internal-token' };
 
 const path = 'openapi/order/v1/order.openapi.yaml';
 const doc: any = parse(readFileSync(path, 'utf8'));
@@ -71,7 +72,13 @@ for (const method of OrderService.methods) {
     op['x-connectum-public'] = true;
     continue;
   }
-  op.security = [{ bearerAuth: [] }];
+  if (auth.internal) {
+    doc.components.securitySchemes.internalToken = internalTokenAuth;
+    op.security = [{ internalToken: [] }];
+    op['x-connectum-internal'] = true;
+  } else {
+    op.security = [{ bearerAuth: [] }];
+  }
   if (auth.requires?.roles.length) op['x-connectum-required-roles'] = [...auth.requires.roles];
   if (auth.requires?.scopes.length) op['x-connectum-required-scopes'] = [...auth.requires.scopes];
 }
@@ -97,7 +104,7 @@ Wire both steps into one command:
 | gated (default / `requires` / `policy`) | `auth.public === false` | `security: [{ bearerAuth: [] }]` |
 | `requires { roles: [...] }` | `auth.requires.roles` | `x-connectum-required-roles: [...]` |
 | `requires { scopes: [...] }` | `auth.requires.scopes` | `x-connectum-required-scopes: [...]` |
-| `internal: true` | `auth.internal === true` | `x-internal: true` |
+| `internal: true` | `auth.internal === true` | `security: [{ internalToken: [] }]` + `x-connectum-internal: true` |
 
 `security` and the `bearerAuth` scheme are standard OpenAPI that off-the-shelf tooling already understands. The `x-connectum-*` entries are **vendor extensions** -- advisory metadata for humans, gateways, and catalogs. They document intent; the wire enforcement remains the interceptor's job ([Proto-Based Authz](/en/guide/auth/proto-authz)).
 
@@ -105,7 +112,7 @@ Wire both steps into one command:
 
 - **Streaming RPCs** (server-, client-, or bidi-streaming) get no operation in the base spec unless the plugin's `with-streaming` opt is set -- OpenAPI's request/response model does not fit streaming. The plugin leaves an empty path entry, and the overlay skips any method that has no generated operation. (In `car-sharing`, `FleetService.ListVehicles` is server-streaming and is therefore skipped.)
 - **Network dependency.** `pnpm openapi` invokes a buf *remote* plugin, so generation is not fully offline. Commit the generated `openapi/*.yaml` so consumers and CI have the spec without regenerating.
-- **The `internal` marker** (`x-internal: true`) requires `@connectum/auth` >= 1.1.0 (see [ADR-029](/en/contributing/adr/029-internal-service-to-service-auth)). On 1.0.0, `internal` methods resolve as gated.
+- **The `internal` marker** (`x-connectum-internal: true`) requires `@connectum/auth` >= 1.1.0 (see [ADR-029](/en/contributing/adr/029-internal-service-to-service-auth)). On 1.0.0, `internal` methods resolve as gated.
 - **Reference pattern, not a CLI (yet).** This is example code plus codegen config; it does not modify any published package. A first-class `connectum openapi` command is a [planned follow-up](/en/contributing/adr/030-openapi-authz-generation).
 
 ## Related

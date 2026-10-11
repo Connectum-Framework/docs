@@ -1,8 +1,14 @@
+---
+title: Scaffolding a New Service
+description: Create a Connectum project, add services, and generate proto client types with the CLI.
+docType: tutorial
+---
+
 # Scaffolding a New Service
 
-The `connectum` CLI scaffolds a production-ready Connectum project and adds services to
-an existing one. It fetches the dogfooded `getting-started` example as the base — so the
-starter layout comes from a real, tested example rather than a template copy — and
+The `connectum` CLI scaffolds a starter Connectum project and adds services to
+an existing one. It fetches the `getting-started` example as the base, so the starter
+layout follows an example maintained in the examples repository. The CLI then
 composes the modules you select on top.
 
 ::: tip Requirements
@@ -17,6 +23,12 @@ Each CLI release fetches a **fixed tag** of the examples repository, not its def
 branch, so the same CLI version always scaffolds the same base. Pass `--ref` to fetch a
 different one (`--ref main` for the latest example). Drift between the pinned base and
 the live example is caught by CI on the framework repository, not by your `init`.
+:::
+
+::: info Release availability
+The `@connectum/*` descriptor exports described below are planned for the upcoming
+1.3.0 release and are not yet published to npm. The published CLI cannot generate those
+imports until the corresponding package exports are released.
 :::
 
 ## `connectum init`
@@ -195,7 +207,8 @@ plugins:
       - map_imports=connectum/events/v1/:@connectum/events/gen
 ```
 
-Those package exports first ship in 1.3.0, so `init` sets every `@connectum/*`
+Those package exports are planned for the upcoming 1.3.0 release, which is not yet
+published to npm. The current-main `init` implementation therefore sets every `@connectum/*`
 dependency of such a project to one range — the highest `@connectum/*` requirement of the
 fetched base, or `^1.3.0` if that is higher, so no base entry is lowered (also with
 `--ref`). One range for the whole set matters: mixed
@@ -203,7 +216,8 @@ fetched base, or `^1.3.0` if that is higher, so no base entry is lowered (also w
 auth or events keeps the base's ranges. In a project scaffolded with `--events`,
 `generate service --with-events` writes the events option proto to the same excluded
 path, so a new event-handler service also imports the descriptor from
-`@connectum/events`. Projects scaffolded before 1.3.0 can adopt this by
+`@connectum/events`. Projects scaffolded with an earlier published CLI cannot use this
+generated import path until the required package exports are published; they can adopt it by
 hand: [Option descriptors from the packages](/en/migration/option-descriptor-imports).
 
 ### Enums in generated code

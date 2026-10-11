@@ -47,8 +47,6 @@ const server = createServer({
 await server.start();
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Key Entry Points
 
 | Entry point | Use it to |
@@ -56,8 +54,6 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `createServer` | Compose services, protocols, interceptors, and shutdown policy. |
 | `defineService` | Bind a generated service descriptor to typed handlers. |
 | `createCatalogClient` | Call catalog services outside a server handler. |
-
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

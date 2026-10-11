@@ -1,4 +1,7 @@
 ---
+title: Configure Outgoing Client Interceptors
+description: Add tracing, resilience, and custom behavior to outgoing RPC calls.
+docType: how-to
 outline: deep
 ---
 

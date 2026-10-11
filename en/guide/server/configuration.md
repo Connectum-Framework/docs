@@ -1,4 +1,7 @@
 ---
+title: Environment Configuration
+description: Configure and validate Connectum server environment variables, defaults, and TLS paths.
+docType: reference
 outline: deep
 ---
 
@@ -174,7 +177,7 @@ The `TLS_DIR_PATH` environment variable sets the default directory for `getTLSPa
 
 | Variable | Default (dev) | Default (prod) |
 |----------|--------------|----------------|
-| `TLS_DIR_PATH` | `../../keys` (relative to cwd) | cwd |
+| `TLS_DIR_PATH` | `../../../keys` (relative to cwd) | cwd |
 
 ::: warning
 In production, always set `TLS_DIR_PATH` explicitly or provide `keyPath`/`certPath` in the `tls` option.
@@ -234,7 +237,7 @@ TLS_DIR_PATH=/etc/ssl/connectum
 ### Dockerfile
 
 ```dockerfile
-FROM node:25-slim
+FROM node:26-slim
 WORKDIR /app
 COPY . .
 RUN corepack enable && pnpm install --frozen-lockfile

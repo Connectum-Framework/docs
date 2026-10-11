@@ -41,8 +41,6 @@ plugins:
       - import_extension=.ts
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Key Entry Points
 
 | Entry point | Use it to |
@@ -50,14 +48,11 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `protoc-gen-connectum-catalog` | Generate catalog descriptors and TypeScript module augmentation. |
 | `protocGenCatalog` | Plugin definition exported for tooling integration. |
 
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
-
 ## Learn / Configure / API Reference {#api-reference}
 
 - **Learn:** [Focused guide](/en/guide/service-communication/service-catalog)
 - **Configure:** [Task and configuration guidance](/en/guide/service-communication/service-catalog)
-- **API reference:** [Exact options and symbols](/en/api/@connectum/protoc-gen-catalog/)
-- **Package API index:** [Generated TypeDoc](/en/api/@connectum/protoc-gen-catalog/)
+- **API reference:** [Generated TypeDoc](/en/api/@connectum/protoc-gen-catalog/)
 - **Source:** [@connectum/protoc-gen-catalog on GitHub](https://github.com/Connectum-Framework/connectum/tree/main/packages/protoc-gen-catalog)
 
 ## Related Modules {#related-packages}

@@ -1,10 +1,13 @@
 ---
+title: Built-in Interceptors
+description: Review the default interceptor chain, opt-in behavior, and request logging.
+docType: reference
 outline: deep
 ---
 
 # Built-in Interceptors
 
-Connectum provides 8 production-ready interceptors via `createDefaultInterceptors()`. They form a fixed-order chain that covers error handling, resilience, validation, and serialization.
+`createDefaultInterceptors()` provides eight built-in interceptors in a fixed order for error handling, resilience, validation, and serialization.
 
 ## The Default Chain
 
@@ -235,7 +238,7 @@ createLoggerInterceptor({ includeBodies: true });
 ```
 
 ::: warning Bodies in logs
-Enable `includeBodies` only where the log is as protected as the traffic itself. Before 1.3.0 bodies were always logged; see [Logger bodies are opt-in](/en/migration/logger-bodies).
+Enable `includeBodies` only where the log is as protected as the traffic itself. The upcoming 1.3.0 release makes bodies opt-in; **that release is not yet published to npm**. See [Logger bodies are opt-in](/en/migration/logger-bodies).
 :::
 
 ### The logger cannot break a call

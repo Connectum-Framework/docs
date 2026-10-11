@@ -1,4 +1,7 @@
 ---
+title: Patterns & Workflow
+description: Apply common TypeScript conventions and development commands in Connectum projects.
+docType: concept
 outline: deep
 ---
 
@@ -118,10 +121,10 @@ bunx tsc --noEmit --watch
 ::: runtime
 == node
 ```bash
-# Node.js 25+: start with auto-reload (watches for file changes)
+# Node.js 25.2+: start with auto-reload (watches for file changes)
 node --watch src/index.ts
 
-# tsx: start with auto-reload (Node.js 22+)
+# tsx: start with auto-reload (Node.js >= 22.13.0)
 tsx --watch src/index.ts
 
 # Type check in a separate terminal
@@ -154,7 +157,7 @@ Before running your Connectum service, verify:
 
 ::: runtime
 == node
-- [ ] Node.js 25+ installed (`node --version`), or tsx installed (`npx tsx --version`)
+- [ ] Node.js 25.2.0 or later installed (`node --version`), or tsx installed (`npx tsx --version`)
 - [ ] `erasableSyntaxOnly: true` in `tsconfig.json`
 - [ ] No `enum` in application code (use `const` objects) -- type stripping cannot execute it
 - [ ] `.ts` extensions in relative imports

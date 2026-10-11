@@ -1,12 +1,17 @@
 ---
+title: Runtime Compatibility
+description: Compare package runtime requirements with tested Node.js and Bun behavior.
+docType: reference
 outline: deep
 ---
 
 # Runtime Compatibility
 
-Connectum targets **Node.js 22+** as the primary runtime and is exercised on Bun in CI on
-every pull request. This page documents the current state of runtime compatibility across
-all `@connectum/*` packages.
+Published `@connectum/*` packages declare Node.js `>=22.13.0` in their package
+manifests. The framework repository itself requires Node.js `>=26.0.0` for development.
+CI runs the framework test matrix on Node.js 24 and 26, and tests the HTTP/2 client
+boundary on Bun 1.2.6 and the current Bun release. Those are separate contracts: the
+framework's development floor does not raise the published packages' engine requirement.
 
 ::: tip Runtime switcher
 Pages that show runtime-specific commands have a **Node.js | Bun** switch in the
@@ -21,29 +26,21 @@ test transport, which opens no socket and behaves identically on both runtimes. 
 itself is exercised on Node.js, so run it with `npx` even inside a Bun project.
 :::
 
-## Compatibility Matrix
+## Runtime requirements and CI coverage {#compatibility-matrix}
 
-| Package | Node.js 22 | Node.js 25 | Bun >= 1.2.6 |
-|---------|:----------:|:----------:|:------------:|
-| `@connectum/core` | Yes | Yes | Yes |
-| `@connectum/interceptors` | Yes | Yes | Yes |
-| `@connectum/healthcheck` | Yes | Yes | Yes |
-| `@connectum/reflection` | Yes | Yes | Yes |
-| `@connectum/auth` | Yes | Yes | Yes |
-| `@connectum/events` | Yes | Yes | Yes |
-| `@connectum/events-nats` | Yes | Yes | Yes |
-| `@connectum/events-kafka` | Yes | Yes | Yes |
-| `@connectum/events-redis` | Yes | Yes | Yes |
-| `@connectum/events-amqp` | Yes | Yes | Yes |
-| `@connectum/otel` | Yes | Yes | Partial |
-| `@connectum/cli` | Yes | Yes | Partial |
-| `@connectum/testing` | Yes | Yes | Partial |
+| Use | Version requirement or tested boundary | Evidence |
+|-----|----------------------------------------|----------|
+| Run published framework packages on Node.js | `>=22.13.0` | Each published package manifest declares this `engines.node` floor. |
+| Develop in the framework repository | `>=26.0.0` | The workspace manifest declares this floor. |
+| Run package tests in framework CI on Node.js | 24 and 26 | CI's Node.js test matrix; the workspace development engine remains `>=26.0.0`. |
+| Run generated TypeScript directly with Node.js | `>=25.2.0` with `--node-exec raw` | The CLI's generated engine range and runtime option. |
+| Run generated TypeScript with Node.js and tsx | `>=22.13.0` with `--node-exec tsx` | The CLI's generated engine range and runtime option. |
+| Use the HTTP/2 client on Bun | `>=1.2.6` | CI checks the floor version and a `latest` Bun channel; the full suite runs on the `latest` channel. |
 
-**Legend:** Yes = fully supported, Partial = works with limitations (see details below).
-
-**Bun floor:** HTTP/2 client transports require **Bun >= 1.2.6** (see
-[HTTP/2 Client Transport](#http2-client)); the examples repository pins Bun >= 1.3.6.
-`@connectum/cli` is exercised on Node.js only -- run it with `npx` even in a Bun project.
+For observed client behavior, see [HTTP/2 Client Transport](#http2-client). Each example
+may set a higher runtime floor for its own source, so check its `package.json` before
+choosing a runtime. The CLI itself is exercised on Node.js only; run it with `npx` even
+when the generated project targets Bun.
 
 ## HTTP/2 Client Transport {#http2-client}
 
@@ -150,7 +147,7 @@ covered by semantic versioning, and on Bun 1.1.x it silently drops the request b
 
 ## Testing Utilities {#testing}
 
-`@connectum/testing` is a public, production-ready package. Its mock helpers -- including `createMockNext()`, `createMockNextError()`, `createMockNextSlow()`, and the underlying `createMockFn()` spy -- are implemented on top of a portable spy factory that does **not** depend on `node:test`, so the same test code runs on Node.js, Bun, Deno, and bundler environments.
+`@connectum/testing` provides mock helpers including `createMockNext()`, `createMockNextError()`, `createMockNextSlow()`, and `createMockFn()`. Their implementation does not import `node:test`; this alone does not establish support for every test runner or runtime.
 
 ```typescript
 import { describe, it } from 'node:test'; // or 'bun:test'
@@ -167,23 +164,21 @@ describe('my interceptor', () => {
 
 `createMockFn()` is API-compatible with the subset of `node:test`'s `mock.fn()` that the testing helpers rely on (`.mock.calls`, `.mock.callCount()`), so assertions written against one runtime work on the other. Full API: [@connectum/testing](/en/packages/testing).
 
-The package is marked **Partial** on Bun for one reason: the `@connectum/testing/parity`
-subpath registers a `node:test` test (`transportParityTest`) and therefore runs on Node.js
-only. The main entry point has no such dependency.
+The `@connectum/testing/parity` subpath registers a `node:test` test
+(`transportParityTest`) and therefore runs on Node.js only. The mock helpers shown above
+are separate from that subpath.
 
 ## OpenTelemetry {#otel}
 
-`@connectum/otel` depends on the official `@opentelemetry/*` SDK packages, which use `node:perf_hooks`, `node:diagnostics_channel`, and other Node.js-specific APIs.
-
-| Feature | Node.js | Bun |
-|---------|:-------:|:---:|
-| Tracing (spans) | Yes | Partial -- basic spans work, some auto-instrumentation may fail |
-| Metrics | Yes | Partial -- manual metrics work, automatic HTTP metrics may not |
-| Logging | Yes | Yes |
-| Auto-instrumentation | Yes | No -- `@opentelemetry/auto-instrumentations-node` is not compatible |
+`@connectum/otel` uses the OpenTelemetry SDK packages declared by the module. Node.js is
+covered by the package test suite. The framework's Bun CI matrix skips `@connectum/otel`,
+so this project does not publish a Bun compatibility claim for its tracing, metrics, or
+logging behavior. The package does not include `@opentelemetry/auto-instrumentations-node`;
+validate any separately installed auto-instrumentation against your runtime.
 
 ::: warning
-If you use `@connectum/otel` on Bun, test your specific instrumentation setup thoroughly. Manual instrumentation (explicit span creation) is more reliable than auto-instrumentation on Bun.
+If you use `@connectum/otel` on Bun, test the specific exporter and instrumentation
+packages in your application. This repository does not validate that combination.
 :::
 
 ## Known Issues {#known-issues}
@@ -192,9 +187,9 @@ If you use `@connectum/otel` on Bun, test your specific instrumentation setup th
 |-------|---------|--------|------------|
 | HTTP/2 client transports (`createGrpcTransport()`, `createConnectTransport({ httpVersion: '2' })`) hang on the first RPC | Bun <= 1.2.5 | **Fixed in Bun 1.2.6** | Upgrade Bun; on older Bun use `createConnectTransport()` over HTTP/1.1 (no bidi) |
 | `node:test` mock API unavailable | Bun | By design | Use `bun:test` mock directly |
-| `@connectum/testing/parity` requires `node:test` | Bun | By design | Use the main entry point; run parity tests on Node.js |
+| `@connectum/testing/parity` requires `node:test` | Bun | Node.js test registration | Use the main entry point in Bun tests; run parity tests on Node.js |
 | `@connectum/cli` is exercised on Node.js only | Bun | Open | Run the CLI with `npx`; generated code is unaffected |
-| OpenTelemetry auto-instrumentation | Bun | Open (OTel) | Use manual instrumentation |
+| `@connectum/otel` runtime behavior | Bun | Not covered by this project's Bun test suite | Validate the selected exporters and instrumentation in your application |
 
 ## Related
 

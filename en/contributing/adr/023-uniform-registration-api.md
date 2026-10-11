@@ -89,7 +89,7 @@ interface CreateServerOptions {
      * ConnectRPC interceptors.
      * When omitted or [], no interceptors are applied.
      * Use createDefaultInterceptors() from @connectum/interceptors
-     * to get the production-ready chain.
+     * to get the configured interceptor chain.
      */
     interceptors?: Interceptor[];
 }

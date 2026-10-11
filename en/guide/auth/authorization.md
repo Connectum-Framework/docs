@@ -1,4 +1,7 @@
 ---
+title: Authorize RPC Methods
+description: Define ordered access rules with code or proto-based policies.
+docType: how-to
 outline: deep
 ---
 

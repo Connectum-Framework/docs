@@ -40,8 +40,6 @@ npx @connectum/cli generate service invoices
 npx @connectum/cli --version
 ~~~
 
-For a complete, source-verified workflow, continue with the focused guide below.
-
 ## Key Entry Points
 
 | Entry point | Use it to |
@@ -49,8 +47,6 @@ For a complete, source-verified workflow, continue with the focused guide below.
 | `connectum init` | Create a service from the version-pinned official base. |
 | `connectum generate service` | Add a service contract and implementation. |
 | `connectum proto sync` | Discover and generate types from server reflection. |
-
-Runtime boundaries and extension seams remain in [Connectum Runtime Architecture](/en/guide/production/architecture).
 
 ## Learn / Configure / API Reference {#api-reference}
 

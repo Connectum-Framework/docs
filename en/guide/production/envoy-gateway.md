@@ -1,6 +1,7 @@
 ---
 title: Envoy Gateway + OpenAPI
 description: gRPC-JSON transcoding with Envoy Gateway, OpenAPI generation from proto files, and Swagger UI for Connectum services.
+docType: how-to
 ---
 
 # Envoy Gateway + OpenAPI

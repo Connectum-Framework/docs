@@ -53,15 +53,11 @@ The server looks for:
 
 ### Environment Variable Configuration
 
-TLS paths can also be set via environment variables:
-
-| Variable | Description |
-|----------|-------------|
-| `TLS_DIR_PATH` | Directory containing `server.key` and `server.crt` |
-| `TLS_KEY_PATH` | Path to TLS private key file |
-| `TLS_CERT_PATH` | Path to TLS certificate file |
-
-When no explicit paths are provided, the `readTLSCertificates()` utility falls back to the `TLS_DIR_PATH` environment variable.
+When `keyPath`, `certPath`, and `dirPath` are not supplied, `readTLSCertificates()`
+uses `TLS_DIR_PATH` or its environment-dependent default. The environment schema does
+not define `TLS_KEY_PATH` or `TLS_CERT_PATH`; pass explicit paths through `tls` instead.
+See [Environment Configuration](/en/guide/server/configuration#tls-configuration) for
+the directory defaults.
 
 ## TLS Utility Functions
 

@@ -1,5 +1,7 @@
 ---
 title: Choosing a Communication Mechanism
+description: Choose request-response, catalog, or event communication for a service interaction.
+docType: concept
 ---
 
 # Choosing a Communication Mechanism
@@ -14,14 +16,15 @@ best at.
 |---|---|---|---|
 | **`ctx.call` / `ctx.stream`** | synchronous request → response | you need the **answer now** to continue (validation, a lookup, a pre-check) | built in — the [service catalog](/en/guide/service-communication/service-catalog) |
 | **EventBus** | asynchronous fire-and-forget | you want to **announce a fact** and let any number of consumers react, decoupled in time | built in — [`@connectum/events`](/en/guide/events) |
-| **Durable saga** | long, multi-step transaction with rollback | a workflow **spans several services** and partial progress must be **compensated** on failure | the framework serves the RPCs; an external durable engine ([Temporal](https://temporal.io)) owns the orchestration |
+| **Durable saga** | multi-step durable workflow with compensating actions | a workflow **spans several services** and needs explicit recovery steps for partial progress | the framework serves the RPCs; an external durable engine ([Temporal](https://temporal.io)) owns the orchestration |
 
 The decision is about **coupling in time** and **failure semantics**, not about
 performance. Ask, in order:
 
 1. **Do I need the reply to proceed?** → `ctx.call` (synchronous).
 2. **Am I just announcing that something happened?** → EventBus (fire-and-forget).
-3. **Is this a multi-step transaction that must roll back as a unit?** → a durable saga.
+3. **Does this operation span services and need durable progress plus explicit**
+   **compensating actions?** → a durable saga.
 
 ::: tip Connectum stays thin
 Two of the three mechanisms ship **in the framework** (`ctx.call`, EventBus). The
@@ -96,13 +99,17 @@ rollback** — which is exactly why a multi-step transaction needs the third too
 
 ## Durable: a saga with compensations
 
-Use it when a single business operation **spans several services** and partial
-progress is unacceptable — onboarding a hire (create the record, set up payroll,
-grant time off, provision access) or a trip lifecycle (reserve, record, bill,
-settle). Neither `ctx.call` (no durability if the process dies mid-flow) nor the
-EventBus (no rollback) fits. This is the **saga** pattern: run the forward steps,
-and on any failure run each completed step's **compensation** in reverse (LIFO)
-order.
+Use it when a single business operation **spans several services** and needs
+durable coordination plus explicit recovery for partial progress — such as
+onboarding a hire (create the record, set up payroll, grant time off, provision
+access) or a trip lifecycle (reserve, record, bill, settle). Neither `ctx.call`
+(no durability if the process dies mid-flow) nor the EventBus (no rollback)
+fits. This is the **saga** pattern: run the forward steps
+and, after a failure, attempt the registered **compensations** in reverse (LIFO)
+order. These actions can reverse completed work where possible; they do not make
+separate services' changes atomic. A compensation can fail too: in the HRIS
+example, that failure is logged, the unwind continues, and the workflow reports
+the original failure. Check worker logs to find compensation failures.
 
 Connectum does **not** ship a workflow engine — it serves the RPCs and you drive
 the saga from a durable orchestrator. The examples use [Temporal](https://temporal.io):
@@ -111,11 +118,14 @@ the saga from a durable orchestrator. The examples use [Temporal](https://tempor
   a **workflow** run by a dedicated **worker** process. The worker is the only
   process that loads the native Temporal addon; the RPC roles stay no-build.
 - Each step is an **activity** — one ordinary `ctx.call`-style RPC against a role
-  service. A step's **business** failure (e.g. a duplicate id → `AlreadyExists`)
-  is made **non-retryable** so the workflow fails fast with nothing to undo;
-  transient failures keep retrying (the durability the saga buys you).
-- The compensations are **idempotent**, so an unwind after a partially-applied
-  step is safe.
+  service. In the HRIS example, a conflicting employee id is non-retryable;
+  transient activity failures are retried up to five attempts. If a
+  forward step ultimately fails, the workflow attempts the compensations. If a
+  compensation also fails after retries, it logs that failure, continues the
+  unwind, and still reports the original workflow failure.
+- In the HRIS example, compensations are **idempotent**, so retries or an unwind
+  after a partially-applied step are safe to repeat. This does not guarantee
+  that a compensation succeeds.
 
 ```mermaid
 flowchart LR
@@ -138,10 +148,11 @@ still run a **synchronous pre-check** with `ctx.call` *before* starting the
 workflow — so an invalid request is rejected immediately, with no durable run
 created.
 
-**Trade-off:** the most powerful and the most operationally heavy option — it
-adds an external dependency and a worker process. Reach for it only when the
-transaction genuinely spans services and must be atomic; a single-service
-mutation does not need a saga.
+**Trade-off:** this option requires operating the external Temporal service and
+a dedicated worker process. It provides durable orchestration and configured
+retries, while the workflow's compensations address partial progress; it does
+not provide an atomic transaction across services, and a compensation can fail.
+A single-service mutation does not need a saga.
 
 ## Combining them
 
@@ -161,8 +172,8 @@ flowchart LR
 - **`ctx.call`** validates the new hire's id and an employee before approving leave.
 - The **EventBus** broadcasts `LeaveApproved`, which payroll consumes to decrement
   the balance.
-- The **durable saga** provisions the hire across four services with automatic
-  compensation.
+- The **durable saga** coordinates onboarding across services and attempts its
+  registered compensations if a forward step fails.
 
 ## Reference examples
 

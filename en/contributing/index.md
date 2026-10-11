@@ -1,11 +1,12 @@
 ---
 title: Contributing
-description: How to contribute to the Connectum framework -- guidelines, setup, and conventions.
+description: Set up a Connectum development environment and find contributor commands and documentation rules.
+docType: contributor-guide
 ---
 
 # Contributing to Connectum
 
-Thank you for your interest in contributing to Connectum! This guide will help you get started.
+Use these guides to set up the repositories, run framework checks, and follow the project conventions.
 
 ## Where to Start
 
@@ -31,13 +32,13 @@ Connectum is organized as 3 independent repositories under the [Connectum-Framew
 - **Biome** for linting and formatting (`pnpm lint` / `pnpm format`)
 - **Native TypeScript** -- no `enum`, explicit `import type`, `.ts` extensions
 - **Named parameters** -- prefer options objects over positional arguments
-- Node.js 25+ required for development (consumers: Node.js 22+)
+- Node.js `>=25.2.0` for development; published packages require `>=22.13.0`.
 
 ### Commits
 
 - Use [Conventional Commits](https://www.conventionalcommits.org/) format
 - One logical change per commit
-- Run `pnpm typecheck && pnpm test` before committing
+- Run `pnpm build`, `pnpm typecheck`, `pnpm test`, and `pnpm lint` before opening a pull request.
 
 ### Architecture Decision Records
 
