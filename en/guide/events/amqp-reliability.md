@@ -61,7 +61,13 @@ before a queue is created or bound, because the queue would never receive a
 message; with `check` or `skip` the binding is the operator's. A fanout or
 headers exchange delivers every message to the queue whatever the pattern (the
 adapter's headers binding carries no arguments), so the subscription is
-accepted and `EventBus` drops events that have no matching handler. Embedded
+accepted and `EventBus` drops events that have no matching handler. On a headers
+exchange in `assert` mode the adapter adds that argument-less binding only when
+`topology.bindings` declares no binding of the queue to the adapter's exchange;
+with one declared, the declared `x-match` bindings alone select what the queue
+receives. A durable queue the previous version already bound keeps the old
+argument-less binding until the operator removes it (see the
+[migration guide](/en/migration/events-amqp-1.3#headers-declared-bindings)). Embedded
 characters such as `user*` and `user>` remain literal. A complete `#` segment is rejected in a topic subscription because
 RabbitMQ treats it as a wildcard while the EventBus matcher treats it as literal
 text. On non-topic exchanges, `#` remains a routing-key literal or is ignored
@@ -679,6 +685,12 @@ handler that never settles:
   100 ms later and the message arrived again with `attempt: 2`. The channel stayed open.
 - **Classic queue.** Over a 330 s window the client saw no event and no redelivery. This is
   one observation of one run, not a guarantee in either direction.
+
+How the consumer ends depends on the broker line. The same quorum-queue run on RabbitMQ
+4.3.6 gave the 4.3.1 result. On 3.13.7, 4.1.8 and 4.2.8 the broker closes the whole
+channel instead, after about two minutes, and the adapter reports `consumer-lost` with
+`cause: 'channel-closed'`. Only these releases were run, so where the behavior changes
+between them is inferred.
 
 Restoration does not remove the cause: the redelivered message reaches the same kind of
 handler and is held again. Settle deliveries in bounded time, and enforce your own handler

@@ -256,10 +256,16 @@ properties differ from NATS:
   seconds and messages being handled at that moment are delivered again; it
   happens only when there is a new topic, and an unchanged topic list costs one
   metadata request per wildcard subscription per interval. A discovered topic is
-  read from its first message, whatever `fromBeginning` says. A check that fails
-  is logged and repeated at the next interval, and each discovery is logged with
-  the names of the topics, so a rebalance it causes can be told from one caused
-  by a failing member.
+  read from its first message, whatever `fromBeginning` says. The checks use an
+  extra admin connection, and subscriptions made only of literal topic names are
+  never checked. If listing the topics fails when the subscription starts,
+  `subscribe()` rejects with that error: the same metadata request expands the
+  wildcard, and a discovery started from an empty list would read the history of
+  every existing topic. A check that fails later (for example because the
+  credentials may not describe the cluster) is logged and repeated at the next
+  interval, so a permanent failure logs once per interval. Each discovery is
+  logged with the names of the topics, so a rebalance it causes can be told from
+  one caused by a failing member.
 - Set `consumerOptions.topicDiscoveryInterval` to `false` to keep the topic list
   fixed (the behaviour of earlier versions). Then a matching topic created later
   is not consumed until the service restarts, and the restart reads it from its
