@@ -32,13 +32,18 @@ missing peers automatically; on Yarn, add them yourself — see
 
 ## Start Here {#quick-start}
 
+Use the `greeterService` definition from [Quickstart](/en/guide/quickstart).
+
 ~~~typescript
+import { createServer } from '@connectum/core';
 import { Reflection } from '@connectum/reflection';
 
 const server = createServer({
   services: [greeterService],
+  allowHTTP1: false,
   protocols: [Reflection()],
 });
+await server.start();
 ~~~
 
 ## Key Entry Points

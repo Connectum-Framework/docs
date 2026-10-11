@@ -26,6 +26,6 @@ const server = createServer({
 
 ## Advanced extension point
 
-[Creating a custom protocol](/en/guide/protocols/custom) owns `ProtocolRegistration`, `ProtocolContext`, HTTP handler behavior, registration timing, and examples. Add protocols before `server.start()`; this is an explicit server extension boundary, not general request middleware.
+[Creating a custom protocol](/en/guide/protocols/custom) owns `ProtocolRegistration`, `ProtocolContext`, HTTP handler behavior, registration timing, and examples. Add protocols before `server.start()` and before materializing an in-process transport; this is an explicit server extension boundary, not general request middleware.
 
 Exact core types remain in [`ProtocolRegistration`](/en/api/@connectum/core/types/interfaces/ProtocolRegistration) and the generated [core API](/en/api/@connectum/core/). Package setup belongs to the [`@connectum/healthcheck`](/en/packages/healthcheck) and [`@connectum/reflection`](/en/packages/reflection) module hubs.

@@ -48,6 +48,8 @@ const jwtAuth = createJwtAuthInterceptor({
 |---|---|
 | `createJwtAuthInterceptor` | Verify bearer tokens with JWKS, public keys, or a shared secret. |
 | `createAuthzInterceptor` | Apply explicit allow and deny rules. |
+| [`createProtoAuthzInterceptor`](/en/api/@connectum/auth/functions/createProtoAuthzInterceptor) | Resolve authorization from proto options; see [chain setup](/en/guide/auth/proto-authz). |
+| [`createInternalAuthInterceptor`](/en/api/@connectum/auth/functions/createInternalAuthInterceptor) | Require a trust source on internal method patterns. |
 | `requireAuthContext` | Read the verified identity in a handler. |
 
 ## Learn / Configure / API Reference {#api-reference}

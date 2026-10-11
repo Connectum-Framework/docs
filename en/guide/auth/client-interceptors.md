@@ -28,6 +28,7 @@ import { createConnectTransport } from '@connectrpc/connect-node';
 
 const transport = createConnectTransport({
   baseUrl: 'http://internal-api:5000',
+  httpVersion: '1.1',
   interceptors: [
     createClientBearerInterceptor({ token: process.env.API_TOKEN! }),
   ],
@@ -63,6 +64,7 @@ import { createConnectTransport } from '@connectrpc/connect-node';
 
 const transport = createConnectTransport({
   baseUrl: 'http://order-service:5001',
+  httpVersion: '1.1',
   interceptors: [
     createClientGatewayInterceptor({
       secret: process.env.GATEWAY_SECRET!,
@@ -77,6 +79,11 @@ Provide a secret that matches the server trust source and a stable service subje
 roles are optional. See
 [`ClientGatewayInterceptorOptions`](/en/api/@connectum/auth/interfaces/ClientGatewayInterceptorOptions)
 for exact fields.
+
+The plaintext URLs above are for a trusted local development environment. Use
+TLS for hops carrying bearer tokens or gateway secrets in production; the
+[transport matrix](/en/guide/production/transport-matrix) explains which
+`httpVersion` to choose for the receiving server.
 
 ### Header mapping
 
@@ -118,8 +125,12 @@ import { createConnectTransport } from '@connectrpc/connect-node';
 
 const transport = createConnectTransport({
   baseUrl: 'http://order-service:5001',
+  httpVersion: '1.1',
   interceptors: [
-    createOtelClientInterceptor(),       // tracing
+    createOtelClientInterceptor({         // tracing
+      serverAddress: 'order-service',
+      serverPort: 5001,
+    }),
     createClientGatewayInterceptor({     // auth
       secret: process.env.GATEWAY_SECRET!,
       subject: 'api-gateway',
@@ -136,3 +147,11 @@ const transport = createConnectTransport({
 | `createClientBearerInterceptor` | `createJwtAuthInterceptor` | JWT signature verification |
 | `createClientBearerInterceptor` | `createSessionAuthInterceptor` | Session token lookup |
 | `createClientGatewayInterceptor` | `createGatewayAuthInterceptor` | Shared secret header |
+
+## Verify
+
+Observe outgoing headers in a test transport and confirm the bearer or gateway
+headers shown above. Call the paired server with a valid credential, then a
+wrong one: the server should admit the valid credential and return
+`Code.Unauthenticated` for the wrong one. The client interceptor only attaches
+credentials; it does not validate them or authorize the method.

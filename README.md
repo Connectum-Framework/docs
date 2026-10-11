@@ -15,24 +15,34 @@ reference under `en/api/` is generated from the framework repository's JSDoc.
 
 ## Development
 
+Use Node.js 22, as in this repository's CI, and the pnpm version pinned in
+`package.json` (`11.0.4`). Clone the documentation repository and enter its root:
+
 ```bash
+git clone https://github.com/Connectum-Framework/docs.git
 cd docs
-pnpm install
+pnpm install --frozen-lockfile
 pnpm docs:dev
 ```
 
-The local site opens at `http://localhost:5173`.
+If you already cloned the repository, start at `pnpm install` from its root.
+Open the local URL printed by VitePress; the default development port is `5173`,
+but VitePress may select another port when it is occupied. Stop the server with
+Ctrl+C before running the build commands in the same terminal.
 
 ## Build
 
 ```bash
+pnpm docs:validate
 pnpm docs:build
+pnpm docs:validate:built
 pnpm docs:preview
 ```
 
-Check authored pages and links with `pnpm docs:validate`. After a successful build,
-`pnpm docs:validate:built` checks the generated routes, search index, sitemap, and LLM
-outputs.
+Run these commands from the repository root after installing dependencies.
+`docs:validate` checks authored pages and links. After a successful build,
+`docs:validate:built` checks the generated routes, search index, sitemap, and LLM
+outputs. Open the preview URL printed by VitePress and stop it with Ctrl+C.
 
 ## Structure
 

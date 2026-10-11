@@ -1,8 +1,18 @@
+---
+title: "ADR-005: Input Validation Strategy"
+description: Record the choice of proto-declared validation through the ConnectRPC validation interceptor.
+docType: adr
+---
+
 # ADR-005: Input Validation Strategy
 
 ## Status
 
 **Accepted** - 2025-12-24
+
+The environment, dependency versions, and performance estimates below belong to the
+dated decision. For current setup and enabled defaults, use
+[Validation](/en/guide/validation) and [Built-in Interceptors](/en/guide/interceptors/built-in).
 
 > **Update (2026-02-14)**: Replaced custom `createValidationInterceptor` with the official `@connectrpc/validate` package (`createValidateInterceptor()`). Custom implementation removed. Interceptor chain order revised — validation is now 7th (before serializer), not 1st. See [Implementation](#implementation) section.
 
@@ -322,3 +332,4 @@ const interceptors = createDefaultInterceptors(); // validation enabled by defau
 |------|--------|--------|
 | 2025-12-24 | Claude | Initial ADR — custom createValidationInterceptor, validation-first chain order |
 | 2026-02-14 | Claude | Replaced custom interceptor with @connectrpc/validate; updated chain order (7th, not 1st); added migration guide; real proto examples from production-ready example |
+| 2026-10-08 | Documentation review | Added a pointer to the current validation and interceptor guides for setup and enabled defaults; added page metadata. Decision text unchanged. |

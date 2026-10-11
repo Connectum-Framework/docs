@@ -196,20 +196,27 @@ events.service(InventoryEventHandlers, {
 
 ### Use custom topics for shared message types
 
-When multiple events share the same message type or when you want domain-oriented naming:
+Custom topics give events domain-oriented names. Use distinct message types when
+registering several such topics on one EventBus:
 
 ```protobuf
 service OrderEventHandlers {
-  // Same OrderStatus message, different business events
-  rpc OnOrderConfirmed(OrderStatus) returns (google.protobuf.Empty) {
+  rpc OnOrderConfirmed(OrderConfirmed) returns (google.protobuf.Empty) {
     option (connectum.events.v1.event).topic = "orders.confirmed";
   }
 
-  rpc OnOrderShipped(OrderStatus) returns (google.protobuf.Empty) {
+  rpc OnOrderShipped(OrderShipped) returns (google.protobuf.Empty) {
     option (connectum.events.v1.event).topic = "orders.shipped";
   }
 }
 ```
+
+The publish lookup maps one message `typeName` to one topic. If `routes` or
+`publishes` register the same message type under different topics on one bus,
+`start()` rejects with `Ambiguous publish topic`, even if later publishes would
+pass an explicit topic. To reuse one payload type across different topics, keep
+those registrations on separate buses. A publisher with no conflicting
+registrations can choose the destination with `PublishOptions.topic`.
 
 ### Keep topic naming consistent
 

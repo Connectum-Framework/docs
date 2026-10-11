@@ -125,7 +125,7 @@ bunx tsc --noEmit --watch
 node --watch src/index.ts
 
 # tsx: start with auto-reload (Node.js >= 22.13.0)
-tsx --watch src/index.ts
+tsx watch src/index.ts
 
 # Type check in a separate terminal
 tsc --noEmit --watch

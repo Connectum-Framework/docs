@@ -50,7 +50,9 @@ npx tsx src/index.ts
 npx tsx watch src/index.ts
 ```
 
-Install `tsx` as a development dependency for repeatable project scripts. This
+Install `tsx` as a development dependency for local project scripts. If a
+production image executes TypeScript through tsx, put it in `dependencies` so a
+production-only install includes the executable. This
 choice changes how application source is executed; it does not change the
 compiled format of Connectum packages.
 

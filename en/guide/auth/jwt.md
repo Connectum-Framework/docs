@@ -41,12 +41,17 @@ For simple setups and testing environments where tokens are signed with a shared
 ```typescript
 const jwtAuth = createJwtAuthInterceptor({
   secret: process.env.JWT_SECRET,
+  algorithms: ['HS256'],
   issuer: 'my-service',
 });
 ```
 
 ::: warning
-HMAC secrets require both the issuer and the verifier to know the secret. Use JWKS in production to avoid sharing signing keys.
+HMAC secrets require both the issuer and the verifier to know the secret. For
+HS256, the factory requires at least 32 UTF-8 bytes; HS384 requires 48 and HS512
+64 when those algorithms are configured. Generate a random secret, keep it out
+of source control, and check that the environment value is present. Use JWKS to
+avoid giving verifiers a signing secret.
 :::
 
 ## Public Key
@@ -79,7 +84,7 @@ At least one must be provided. If `jwksUri` is set, `publicKey` and `secret` are
 ```typescript
 import { createServer } from '@connectum/core';
 import { createDefaultInterceptors, createErrorHandlerInterceptor } from '@connectum/interceptors';
-import { createJwtAuthInterceptor, createAuthzInterceptor } from '@connectum/auth';
+import { createJwtAuthInterceptor } from '@connectum/auth';
 
 const jwtAuth = createJwtAuthInterceptor({
   jwksUri: 'https://auth.example.com/.well-known/jwks.json',
@@ -103,6 +108,19 @@ const server = createServer({
 
 await server.start();
 ```
+
+## Verify
+
+Call a protected method with a token from the configured issuer and audience,
+then repeat without the bearer header, with an expired token, and with a token
+from the wrong issuer or audience. The valid token should reach the handler;
+the other calls should return `Code.Unauthenticated`. Add explicit
+`claimsMapping.roles` before checking a roles-based authorization rule: a JWT's
+`roles` claim is not mapped automatically.
+
+If factory creation fails, check the key source and HMAC secret length first.
+If an intentionally public RPC still needs a token, check authentication
+`skipMethods`; a proto public marker alone does not configure JWT authentication.
 
 ## Related
 

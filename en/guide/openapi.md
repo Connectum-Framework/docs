@@ -21,7 +21,7 @@ The [`car-sharing`](https://github.com/Connectum-Framework/examples/tree/main/ca
 
 Generation is **two decoupled steps**, run together via one script:
 
-1. **Base spec** -- the [`protoc-gen-connect-openapi`](https://github.com/sudorandom/protoc-gen-connect-openapi) buf remote plugin emits a faithful OpenAPI v3.1 description of the Connect API (paths, schemas, framing). It is accurate about the *shape* but blind to Connectum authz.
+1. **Base spec** -- the [`protoc-gen-connect-openapi`](https://github.com/sudorandom/protoc-gen-connect-openapi) buf remote plugin emits Connect operations and schemas in OpenAPI v3.1. Connectum-specific authorization is added in the next step.
 2. **Authz overlay** -- a small post-processor reads the `connectum.auth.v1` options via **`resolveMethodAuth`** from `@connectum/auth/proto` (the *same* reader the runtime interceptor uses) and patches each operation with `security` and `x-connectum-*` extensions.
 
 Keep the OpenAPI generation in its **own** buf template, separate from the one that emits your TypeScript. The remote plugin needs network access; isolating it means your normal `buf:generate` and tests stay offline and deterministic.
@@ -44,7 +44,11 @@ plugins:
 
 ### 2. Authz overlay
 
-The overlay walks each service's methods, resolves the proto authz, and patches the corresponding operation. `resolveMethodAuth(method)` returns `{ public, internal?, policy?, requires? }`.
+The overlay walks each service's methods, resolves the proto authz, and patches
+the corresponding operation. `resolveMethodAuth(method)` returns `public` and
+`internal` booleans, plus `policy` and `requires`, which may be `undefined`.
+The header names and schemes below match the example's JWT and internal-token
+chain; adapt them to your configured trust sources.
 
 ```typescript
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -64,7 +68,7 @@ doc.components.securitySchemes.bearerAuth = bearerAuth;
 
 for (const method of OrderService.methods) {
   const op = doc.paths?.[`/${OrderService.typeName}/${method.name}`]?.post;
-  if (op === undefined) continue; // e.g. streaming RPCs are not emitted by default
+  if (op === undefined) continue; // no generated POST operation to overlay
   const auth = resolveMethodAuth(method);
 
   if (auth.public) {
@@ -101,19 +105,34 @@ Wire both steps into one command:
 | Connectum authz (proto) | `resolveMethodAuth` | OpenAPI patch on the operation |
 |---|---|---|
 | `public: true` | `auth.public === true` | `security: []` + `x-connectum-public: true` |
-| gated (default / `requires` / `policy`) | `auth.public === false` | `security: [{ bearerAuth: [] }]` |
+| gated (default / `requires` / `policy`) | `!auth.public && !auth.internal` | `security: [{ bearerAuth: [] }]` |
 | `requires { roles: [...] }` | `auth.requires.roles` | `x-connectum-required-roles: [...]` |
 | `requires { scopes: [...] }` | `auth.requires.scopes` | `x-connectum-required-scopes: [...]` |
 | `internal: true` | `auth.internal === true` | `security: [{ internalToken: [] }]` + `x-connectum-internal: true` |
 
 `security` and the `bearerAuth` scheme are standard OpenAPI that off-the-shelf tooling already understands. The `x-connectum-*` entries are **vendor extensions** -- advisory metadata for humans, gateways, and catalogs. They document intent; the wire enforcement remains the interceptor's job ([Proto-Based Authz](/en/guide/auth/proto-authz)).
 
+The overlay describes credentials and required roles/scopes. It does not encode
+the complete authorization decision: a proto `policy: "deny"`, code-based rules,
+callbacks, a request gate, and transport restrictions still apply at runtime.
+Sharing the resolver keeps annotation resolution consistent; it does not prove
+that every operation carrying a credential is callable.
+
 ## Notes & limitations
 
-- **Streaming RPCs** (server-, client-, or bidi-streaming) get no operation in the base spec unless the plugin's `with-streaming` opt is set -- OpenAPI's request/response model does not fit streaming. The plugin leaves an empty path entry, and the overlay skips any method that has no generated operation. (In `car-sharing`, `FleetService.ListVehicles` is server-streaming and is therefore skipped.)
+- **Streaming coverage.** In the committed `car-sharing` artifact, the server-streaming `FleetService.ListVehicles` has an empty path entry and no POST operation. The overlay therefore skips it. Inspect the generated artifact when changing plugin options; this pattern does not provide streaming-operation coverage by itself.
 - **Network dependency.** `pnpm openapi` invokes a buf *remote* plugin, so generation is not fully offline. Commit the generated `openapi/*.yaml` so consumers and CI have the spec without regenerating.
-- **The `internal` marker** (`x-connectum-internal: true`) requires `@connectum/auth` >= 1.1.0 (see [ADR-029](/en/contributing/adr/029-internal-service-to-service-auth)). On 1.0.0, `internal` methods resolve as gated.
-- **Reference pattern, not a CLI (yet).** This is example code plus codegen config; it does not modify any published package. A first-class `connectum openapi` command is a [planned follow-up](/en/contributing/adr/030-openapi-authz-generation).
+- **Internal authentication.** `x-connectum-internal: true` documents the annotation. The receiving server must also install the internal-auth chain and the trust source matching `internalToken`; see [internal method setup](/en/guide/auth/proto-authz#internal-methods).
+- **Reference pattern.** The generation command comes from the example's `package.json`, not from a `connectum openapi` command. See [ADR-030](/en/contributing/adr/030-openapi-authz-generation) for the rationale and proposed tooling.
+
+## Verify the artifact
+
+Run your `openapi` script after regenerating the TypeScript descriptors from the
+same proto input. Check a public operation for `security: []`, a user operation
+for `bearerAuth`, and an internal operation for the configured internal scheme
+and `x-connectum-internal`. Then check role/scope extensions against the proto
+options and inspect any omitted operation. A successful overlay writes YAML; it
+does not validate a live server's access policy.
 
 ## Related
 

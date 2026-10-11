@@ -17,7 +17,15 @@ Authentication establishes an `AuthContext`; authorization decides whether that 
 | A trusted gateway verifies credentials first | [Gateway authentication](/en/guide/auth/gateway) |
 | A web application resolves a session | [Session authentication](/en/guide/auth/session) |
 | Internal services attach outgoing identity | [Client interceptors](/en/guide/auth/client-interceptors) |
+| RPCs require a trusted service identity instead of an end-user token | [Internal method setup](/en/guide/auth/proto-authz#internal-methods) |
 | Handlers need the authenticated identity | [Auth context](/en/guide/auth/context) |
+
+The auth interceptors receive request headers; they do not expose the TLS peer
+certificate to an authentication callback. For mTLS-bound identity, have a
+trusted gateway or mesh supply a verified identity header and enforce that
+boundary as described in the [gateway guide](/en/guide/auth/gateway). Direct
+application-level peer-certificate/SAN reading is deferred; see
+[ADR-029](/en/contributing/adr/029-internal-service-to-service-auth).
 
 ## Choose authorization ownership
 

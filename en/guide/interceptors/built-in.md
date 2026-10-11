@@ -36,8 +36,41 @@ flowchart LR
 The order is deliberate: `errorHandler` is outermost (catches everything), `serializer` is innermost (closest to the handler). The order applies to whichever interceptors you enable. In particular, `circuitBreaker` wraps `retry`, so one logical request increments the failure counter at most once regardless of retry attempts.
 
 ::: warning No hidden behavioral logic
-Only structural interceptors (errorHandler, validation) are enabled by default. Resilience interceptors (timeout, bulkhead, circuitBreaker, retry) alter request behavior and must be enabled explicitly with `true` or an options object — implicitly enabled resilience caused a confirmed production incident (a server-side circuit breaker tripped by expected business errors).
+Only structural interceptors (errorHandler, validation) are enabled by default. Resilience interceptors (timeout, bulkhead, circuitBreaker, retry) alter request behavior and must be enabled explicitly with `true` or an options object.
 :::
+
+`skipGrpcServices` matches service names beginning with `grpc.`, such as Health
+and Reflection. It does not skip every request using the gRPC wire protocol.
+
+## Cancellation and Streaming Scope {#cancellation-and-streaming-scope}
+
+::: info Upcoming in 1.3.0
+This cancellation behavior is planned for the upcoming `@connectum/interceptors`
+1.3.0 release. The published 1.2.x package does not forward timeout cancellation
+to downstream handler work.
+:::
+
+An enabled timeout forwards its own deadline and caller cancellation to
+downstream work. Its own deadline rejects with `DeadlineExceeded`. Caller
+cancellation preserves an existing `ConnectError`, including its code, message,
+metadata, and details; other caller reasons become `Canceled`. The first
+observed cancellation cause wins. Custom interceptors observe `req.signal`; RPC
+handlers observe `ctx.signal` and pass it to cancellable I/O.
+
+Retry interrupts a pending backoff and starts no further attempts after
+cancellation. It waits for an already running handler to settle, then rejects a
+late success with the cancellation reason. This keeps the bulkhead slot occupied
+until the work actually finishes. An outer timeout or transport can stop the
+caller's wait earlier.
+
+Handlers that ignore the signal can still finish and commit side effects.
+Cancellation does not roll them back. Retry only idempotent operations.
+
+Timeout and retry skip streaming calls by default. With `skipStreaming: false`,
+they cover opening the streaming response, not subsequent iteration. Successful
+opening clears the timeout without aborting the stream; later caller cancellation
+still reaches it. Retry can repeat opening failures, but cannot restart a response
+iterator that fails after opening.
 
 ## Circuit Breaker: Placement and Error Classification
 
@@ -75,15 +108,19 @@ createCircuitBreakerInterceptor({ failurePredicate: () => true });
 ```
 
 ::: tip When to enable the serializer
-Enable the serializer when your service uses the **Connect protocol** (HTTP/1.1 JSON) and you need automatic protobuf ↔ JSON conversion. Not needed for pure **gRPC** services (binary protobuf format).
+Ordinary Connect JSON calls need no serializer interceptor: ConnectRPC's transport
+already handles protobuf JSON encoding. Use the server's `jsonOptions` for wire
+JSON settings. The optional serializer instead converts the request message to
+JSON before `next()` and converts its response back to a protobuf message, so the
+inner handler must accept and return protobuf JSON shapes.
 
 ```typescript
-// Connect protocol service with JSON responses — enable serializer
+// Opt in only for an inner handler that intentionally works with JSON shapes
 const interceptors = createDefaultInterceptors({
   serializer: true,
 });
 
-// gRPC service (binary protobuf) — serializer not needed (default)
+// Normal protobuf handlers over Connect or gRPC: leave it disabled
 const interceptors = createDefaultInterceptors();
 
 // Custom serializer options
@@ -179,7 +216,7 @@ const interceptors = createDefaultInterceptors({
 });
 ```
 
-For detailed documentation on each interceptor, see the [@connectum/interceptors README](https://github.com/Connectum-Framework/connectum/tree/main/packages/interceptors).
+For exact factory options, see the [interceptor API](/en/api/@connectum/interceptors/).
 
 ## Request Logging
 

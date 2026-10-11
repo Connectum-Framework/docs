@@ -1,3 +1,9 @@
+---
+title: "ADR-008: Performance Benchmarking"
+description: Record benchmark goals, proposed scenarios, and the original k6 choice.
+docType: adr
+---
+
 # ADR-008: Performance Benchmarking
 
 ## Status
@@ -39,7 +45,7 @@
 
 ## Decision
 
-**Use [k6](https://k6.io/) to benchmark Connectum, measuring baseline performance, interceptor overhead, and breaking points.**
+**Use [k6](https://k6.io/) load testing tool for comprehensive performance benchmarking of Connectum, with infrastructure for measuring baseline performance, interceptor overhead, and breaking points.**
 
 ### Why k6?
 
@@ -190,3 +196,9 @@ k6 run --out json=results/basic-load.json tests/performance/scenarios/basic-load
 - [SRE Book: SLOs](https://sre.google/sre-book/service-level-objectives/) -- service level objectives
 - [ADR-006: Resilience Pattern Implementation](./006-resilience-pattern-implementation.md)
 - [ADR-007: Testing Strategy](./007-testing-strategy.md)
+
+## Changelog
+
+| Date | Author | Change |
+|------|--------|--------|
+| 2026-10-08 | Documentation review | Restored the original wording of the Decision sentence that an earlier editorial pass had changed; added page metadata. Decision unchanged. |

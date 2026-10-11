@@ -22,8 +22,8 @@ graph LR
     C2 --> D["DLQ Middleware"]
     D --> R["Retry Middleware"]
     R --> H["Event Handler"]
-    H -->|ack/nack| R
-    R -->|error after retries| DLQ["DLQ Topic"]
+    R -->|error after retries| D
+    D -->|publish failed event| DLQ["DLQ Topic"]
 ```
 
 Each middleware receives three arguments:
@@ -145,9 +145,23 @@ const orderEvents: EventRoute = (events) => {
 
 Both classes use `Symbol.for()` branding, so they work across module boundaries and realms.
 
+Retries re-enter the handler within the same broker delivery; they do not request
+a broker redelivery. The retry middleware increments the `RawEvent.attempt` passed
+to inner middleware. The handler's `ctx.attempt` remains the original delivery
+indicator, so it is not a local retry counter.
+
 ## DLQ Middleware
 
 When a handler fails after all retries are exhausted, the DLQ middleware publishes the failed event to a dedicated dead letter topic and acknowledges the original event. This prevents poison messages from blocking the queue.
+
+If the DLQ publish fails, the middleware calls `ctx.nack(false)` and does not
+rethrow. When that settlement is accepted, the original is no longer eligible
+for redelivery: a broker dead-letter policy may retain it, otherwise it can be
+lost. If publishing succeeds but `ctx.ack()` rejects, the same fallback is
+attempted; the context's first-settlement rule makes that later `nack()` a no-op,
+so broker redelivery can still occur. Do not treat this middleware as a guarantee
+that every failed event reaches the DLQ. An event already on the configured DLQ
+topic is rethrown instead of being published back to itself.
 
 ### Configuration
 
@@ -177,24 +191,32 @@ When an event is routed to the DLQ, the middleware attaches diagnostic metadata:
 |-----|-------------|
 | `dlq.original-topic` | Topic the event was originally published to |
 | `dlq.original-id` | Unique event ID from the original message |
-| `dlq.error` | Error message from the last failed handler invocation |
-| `dlq.attempt` | Number of delivery attempts before DLQ routing |
+| `dlq.error` | Serialized error; the default is the error name, or `UnknownError` for a non-`Error` value |
+| `dlq.attempt` | Original broker delivery indicator (`RawEvent.attempt`); excludes local middleware retries |
+
+The DLQ copy contains the original payload and these diagnostic fields. Original
+user metadata is not copied; the adapter creates a new event identity for the
+publish, so use `dlq.original-id` to correlate it with the failed delivery.
 
 ### Monitoring the DLQ
 
 Subscribe directly to the DLQ topic using the adapter to monitor and process failed events:
 
 ```typescript
-adapter.subscribe(
+const subscription = await adapter.subscribe(
   ['my-service.dlq'],
-  async (rawEvent) => {
+  async (rawEvent, ack) => {
     const originalTopic = rawEvent.metadata.get('dlq.original-topic') ?? 'unknown';
     const error = rawEvent.metadata.get('dlq.error') ?? 'unknown';
     console.error(`DLQ event from ${originalTopic}: ${error}`);
     // Log, alert, or attempt recovery
+    await ack();
   },
   { group: 'dlq-monitor' },
 );
+
+// On shutdown, close this directly managed subscription.
+await subscription.unsubscribe();
 ```
 
 ## Retry + DLQ Together
@@ -238,7 +260,7 @@ sequenceDiagram
     Note over Retry: maxRetries exhausted
     Retry->>DLQ: re-throw
     DLQ->>Broker: publish to DLQ topic
-    DLQ->>DLQ: ack original event
+    DLQ->>Broker: ack original event
 ```
 
 ## Custom Middleware
@@ -330,8 +352,8 @@ import type { EventMiddleware } from '@connectum/events';
 
 const middlewares: EventMiddleware[] = [
   loggingMiddleware,
-  retryMiddleware({ maxRetries: 3 }),
   dlqMiddleware({ topic: 'my.dlq' }, adapter),
+  retryMiddleware({ maxRetries: 3 }),
 ];
 
 const composed = composeMiddleware(middlewares, async (rawEvent, ctx) => {

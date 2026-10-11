@@ -19,7 +19,6 @@ import { createOtelClientInterceptor } from '@connectum/otel';
 
 const transport = createGrpcTransport({
   baseUrl: 'http://user-service:5001',
-  httpVersion: '2',
   interceptors: [
     createOtelClientInterceptor({
       serverAddress: 'user-service',   // Required
@@ -44,7 +43,7 @@ The interceptor:
 | `withoutMetrics` | `boolean` | `false` | Disable metric recording (tracing only) |
 | `filter` | `OtelFilter` | -- | Skip specific RPCs from instrumentation |
 | `attributeFilter` | `OtelAttributeFilter` | -- | Exclude specific span attributes |
-| `recordMessages` | `boolean` | `false` | Include message content in span events (may contain sensitive data) |
+| `recordMessages` | `boolean` | `false` | Record message direction, sequence number, and estimated size in span events |
 
 ### Trace Context Propagation
 
@@ -67,7 +66,6 @@ const server = createServer({
 
 const userTransport = createGrpcTransport({
   baseUrl: 'http://user-service:5001',
-  httpVersion: '2',
   interceptors: [
     createOtelClientInterceptor({                  // Client spans
       serverAddress: 'user-service',
@@ -93,7 +91,6 @@ import {
 // Forward a user's Bearer token (or a refreshable service token) to the upstream
 const upstream = createGrpcTransport({
   baseUrl: 'http://upstream-service:5000',
-  httpVersion: '2',
   interceptors: [
     createClientBearerInterceptor({
       token: async () => (await getAccessToken()).accessToken,
@@ -104,7 +101,6 @@ const upstream = createGrpcTransport({
 // Trusted service-to-service call behind a shared-secret gateway
 const internal = createGrpcTransport({
   baseUrl: 'http://internal-service:5000',
-  httpVersion: '2',
   interceptors: [
     createClientGatewayInterceptor({
       secret: process.env.GATEWAY_SECRET!,
@@ -129,7 +125,6 @@ import { createDefaultInterceptors } from '@connectum/interceptors';
 
 const transport = createGrpcTransport({
   baseUrl: 'http://inventory-service:5000',
-  httpVersion: '2',
   interceptors: [
     createOtelClientInterceptor({
       serverAddress: 'inventory-service',
@@ -149,9 +144,13 @@ const transport = createGrpcTransport({
 });
 ```
 
+For timeout and retry cancellation behavior, including streaming boundaries and
+signal-unaware handlers, see [Cancellation and Streaming Scope](/en/guide/interceptors/built-in#cancellation-and-streaming-scope).
+
 ### Circuit Breaker Behavior
 
-The circuit breaker tracks consecutive failures per client transport:
+Each circuit breaker instance tracks consecutive failures classified by its
+failure predicate. Use a separate instance for each downstream transport:
 
 | State | Behavior |
 |-------|----------|
@@ -159,7 +158,13 @@ The circuit breaker tracks consecutive failures per client transport:
 | **Open** | Requests fail immediately with `Unavailable` (no downstream call) |
 | **Half-Open** | A single probe request is allowed; success closes, failure re-opens |
 
-The default `threshold` is 5 consecutive failures. After the circuit opens, it automatically transitions to half-open after a cooldown period.
+The default `threshold` is 5 consecutive classified failures. Infrastructure
+codes (`Unknown`, `DeadlineExceeded`, `Internal`, `Unavailable`, `DataLoss`, and
+`ResourceExhausted`) count by default; business responses such as `NotFound` and
+`InvalidArgument` do not. Non-`ConnectError` failures count too. After the circuit
+opens, the next call after the cooldown can probe it. Streaming calls bypass the
+breaker by default (`skipStreaming: true`). Exact options are in
+[`CircuitBreakerOptions`](/en/api/@connectum/interceptors/interfaces/CircuitBreakerOptions).
 
 ### Per-Service Configuration
 
@@ -169,7 +174,6 @@ Create separate transports with different resilience settings for each downstrea
 // Critical service: aggressive retry, short timeout
 const paymentTransport = createGrpcTransport({
   baseUrl: 'http://payment-service:5000',
-  httpVersion: '2',
   interceptors: [
     createOtelClientInterceptor({ serverAddress: 'payment-service', serverPort: 5000 }),
     ...createDefaultInterceptors({
@@ -184,7 +188,6 @@ const paymentTransport = createGrpcTransport({
 // Non-critical service: lenient timeout, fewer retries
 const recommendationTransport = createGrpcTransport({
   baseUrl: 'http://recommendation-service:5000',
-  httpVersion: '2',
   interceptors: [
     createOtelClientInterceptor({ serverAddress: 'recommendation-service', serverPort: 5000 }),
     ...createDefaultInterceptors({
@@ -227,6 +230,12 @@ Both server and client interceptors automatically instrument streaming RPCs (cli
 3. Span ends when the stream is fully consumed, errors, or is broken
 
 This ensures accurate duration measurement for long-lived streams.
+
+This span lifecycle differs from the client metric lifecycle: streaming
+`rpc.client.call.duration` is recorded when the transport returns the response
+stream, before it is consumed. Streaming request and response size metrics are
+recorded as `0`. `rpc.message.uncompressed_size` is also an estimate: messages
+without a `toBinary()` method produce `0`.
 
 ### Streaming Attributes
 

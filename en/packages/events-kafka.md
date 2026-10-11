@@ -40,8 +40,8 @@ const adapter = KafkaAdapter({
 
 | Entry point | Use it to |
 |---|---|
-| `KafkaAdapter` | Connect EventBus to Kafka or Redpanda. |
-| `KafkaAdapterOptions` | Configure brokers, client, producer, and consumer behavior. |
+| [`KafkaAdapter`](/en/api/@connectum/events-kafka/functions/KafkaAdapter) | Connect EventBus to Kafka or Redpanda. |
+| [`KafkaAdapterOptions`](/en/api/@connectum/events-kafka/types/interfaces/KafkaAdapterOptions) | Configure brokers, client, producer, and consumer behavior. |
 
 ## Learn / Configure / API Reference {#api-reference}
 

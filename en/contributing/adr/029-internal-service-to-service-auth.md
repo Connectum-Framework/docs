@@ -1,8 +1,20 @@
+---
+title: "ADR-029: Internal Service-to-Service Authentication"
+description: Record internal method markers and issuer-bound service identity verification.
+docType: adr
+---
+
 # ADR-029: Internal (service-to-service) auth, distinct from `public`
 
 ## Status
 
 Accepted -- 2026-06-21 (design ratified; implementation is a follow-up)
+
+> **Update (2026-10-08):** The status qualifier and motivating example below describe
+> the decision at that date. The current authentication package exports the internal
+> interceptor and trust-source factories. Use
+> [Internal Methods](/en/guide/auth/proto-authz#internal-methods) for implemented
+> behavior and configuration.
 
 Tracks [#171](https://github.com/Connectum-Framework/connectum/issues/171). Extends [ADR-024](./024-auth-authz-strategy.md) (auth/authz strategy).
 
@@ -85,3 +97,9 @@ For non-`internal`, non-`public` methods the interceptor is a no-op. **Chain ord
 - `connectum/auth/v1/options.proto`: add `internal` to `ServiceAuth`/`MethodAuth` — additive; the auth proto path is already in `release.yml`'s "Check proto changes" list (confirm at implementation).
 - New `@connectum/auth` exports: `createInternalAuthInterceptor`, the three trust-source factories, `getInternalMethods`; extend `resolveMethodAuth` + `createProtoAuthzInterceptor` (the one inclusive rule of §3).
 - Tests: per-service containment (the issuer-bound (b) MUST reject A-signed-as-B — the empirical case from §2), the inclusive role composition, and the `internal`-no-identity → `Unauthenticated` path.
+
+## Changelog
+
+| Date | Author | Change |
+|------|--------|--------|
+| 2026-10-08 | Documentation review | Recorded that the internal interceptor and the trust-source factories are exported by the authentication package, as a dated Update note under Status; added page metadata. Decision unchanged. |

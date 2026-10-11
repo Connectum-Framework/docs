@@ -1,3 +1,9 @@
+---
+title: "ADR-023: Uniform Registration API"
+description: Record explicit composition of services, interceptors, and protocols.
+docType: adr
+---
+
 # ADR-023: Uniform Registration API for Services, Interceptors, and Protocols
 
 ## Status
@@ -89,7 +95,7 @@ interface CreateServerOptions {
      * ConnectRPC interceptors.
      * When omitted or [], no interceptors are applied.
      * Use createDefaultInterceptors() from @connectum/interceptors
-     * to get the configured interceptor chain.
+     * to get the production-ready chain.
      */
     interceptors?: Interceptor[];
 }
@@ -298,3 +304,4 @@ await server.start();
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-11 | Claude | Initial ADR -- Uniform Registration API |
+| 2026-10-08 | Documentation review | Restored the original wording of a code comment in the Decision example that an earlier editorial pass had changed; added page metadata. Decision unchanged. |

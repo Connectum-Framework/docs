@@ -1,3 +1,9 @@
+---
+title: "ADR-020: Reflection-Based Proto Synchronization"
+description: Record the reflection and binary-descriptor strategy for synchronizing client types.
+docType: adr
+---
+
 # ADR-020: Reflection-based Proto Synchronization
 
 **Status:** Accepted - 2026-02-11 (Phase 1 DONE, Phase 2 DONE)
@@ -179,17 +185,13 @@ connectum proto sync --from localhost:5000 --config ./buf.gen.yaml
 
 CLI pipeline architecture:
 
-```
-+--------------+    +----------------------+    +-----------------+    +------------+
-| Running      |    | ServerReflectionClient|    | FileDescriptorSet|    | buf        |
-| Connectum    |--->| (@lambdalisue/       |--->| .binpb file     |--->| generate   |
-| Server       |    |  connectrpc-         |    | (binary proto)  |    | (codegen)  |
-|              |    |  grpcreflect/client)  |    |                 |    |            |
-+--------------+    +----------------------+    +-----------------+    +------------+
-       |                   |                        |                    |
-  gRPC Reflection    listServices() +         toBinary() ->         TypeScript
-  Protocol           buildFileRegistry()      FileDescriptorSet    stubs in
-  (auto v1/v1alpha)  (ConnectRPC native)      -> .binpb file       --out dir
+```mermaid
+flowchart LR
+    Server["Running Connectum server<br/>gRPC Reflection v1 / v1alpha"]
+    Client["ServerReflectionClient<br/>@lambdalisue/connectrpc-grpcreflect/client<br/>listServices + buildFileRegistry (ConnectRPC native)"]
+    Descriptors["FileDescriptorSet<br/>toBinary → .binpb file (binary proto)"]
+    Buf["buf generate (codegen)<br/>TypeScript stubs in --out dir"]
+    Server --> Client --> Descriptors --> Buf
 ```
 
 Key advantages:
@@ -454,3 +456,4 @@ The decisions above (binary `FileDescriptorSet` to `buf generate`, reflection as
 | 2026-02-11 | Tech Lead | Phase 2 DONE: @connectum/cli package with proto sync command, integration tests, documentation |
 | 2026-02-12 | Tech Lead | Phase 0 revised: @connectum/proto removed, replaced by BSR deps approach. See ADR-003 update |
 | 2026-10-01 | Claude | `@lambdalisue/connectrpc-grpcreflect` replaced by native reflection server (`@connectum/reflection`) and client (`@connectum/cli`); see "Update (2026-10-01)" |
+| 2026-10-08 | Documentation review | Converted the text diagram of the reflection-based sync flow to a Mermaid flowchart with the same stages and names; added page metadata. Decision text unchanged. |

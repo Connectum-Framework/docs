@@ -22,7 +22,7 @@ see [Startup validation](#startup-validation) below.
 |---|---|---|
 | no `tls`, `allowHTTP1: true` (**default**) | plaintext HTTP/1.1 | `http.createServer` |
 | no `tls`, `allowHTTP1: false` | plaintext HTTP/2 (h2c) | `http2.createServer` |
-| `tls` configured | TLS + ALPN (HTTP/2 and HTTP/1.1 negotiated) | `http2.createSecureServer` |
+| `tls` configured | TLS + ALPN (HTTP/2; HTTP/1.1 also accepted when `allowHTTP1: true`) | `http2.createSecureServer` |
 
 ## RPC type support
 
@@ -40,8 +40,7 @@ intermediary that negotiates HTTP/1.1 over TLS (a client without `h2` in its
 ALPN list, a proxy with an HTTP/1.1 upstream leg) hits the same silent hang on
 bidi calls. When bidi methods are present on such a server, Connectum logs a
 **one-time warning** at startup. Remove the risk entirely by setting
-`allowHTTP1: false` (the server then refuses HTTP/1.1 at ALPN, so HTTP/1.1
-clients fail the handshake explicitly instead of hanging on bidi), or keep bidi
+`allowHTTP1: false` (the listener then serves HTTP/2 only), or keep bidi
 clients on HTTP/2 transports (`createGrpcTransport`, or `createConnectTransport`
 with `httpVersion: "2"`). Silence the warning with `transportValidation: "off"`.
 :::
@@ -57,9 +56,9 @@ server, gRPC clients and `grpcurl` do not work at all. Use h2c or TLS.
 
 A single **plaintext** (no-TLS) port cannot serve **both** native gRPC (which
 needs HTTP/2 / h2c) **and** plain HTTP/1.1 clients. Per-connection protocol
-selection is done by **ALPN**, a TLS handshake extension — a cleartext socket
-has no handshake, so the server cannot tell an HTTP/1.1 request from the HTTP/2
-connection preface. This is a **Node runtime limitation, not a Connectum one**:
+selection in the TLS mode uses **ALPN**. Node's cleartext servers do not provide
+automatic selection between an HTTP/1.1 request and an HTTP/2 connection preface.
+This is a limitation of the Node server APIs used by Connectum:
 Node core has declined to add cleartext `allowHTTP1`
 ([nodejs/node#26795](https://github.com/nodejs/node/issues/26795),
 [#44887](https://github.com/nodejs/node/issues/44887) — both closed; maintainers
@@ -79,7 +78,7 @@ preference:
    cannot, and it works the same on **every** JS runtime (see the matrix below).
    See [Envoy Gateway](/en/guide/production/envoy-gateway) and
    [Service Mesh](/en/guide/production/service-mesh).
-2. **Use TLS + ALPN.** A TLS server serves HTTP/1.1 and HTTP/2 on one port (ALPN
+2. **Use TLS + ALPN with `allowHTTP1: true`.** A TLS server serves HTTP/1.1 and HTTP/2 on one port (ALPN
    negotiates per client). If app-level TLS is acceptable, this is the built-in
    mixed-port answer.
 3. **Two listeners.** Serve native gRPC (h2c) and Connect/HTTP-1.1 on separate
@@ -131,15 +130,15 @@ write your own `Bun.serve` handler and must expose gRPC, terminate it at a
 This project has not validated equivalent deployments on Deno or Cloudflare Workers.
 
 ::: tip Bun client versions
-Serving is unaffected on every Bun version, but Bun's `node:http2` **client** only
+Serving worked on the Bun versions recorded below, while Bun's `node:http2` **client** only
 became usable in **Bun 1.2.6** — see
 [Runtime Compatibility](/en/guide/runtime-compatibility#http2-client).
 :::
 
 ## Verified behaviour by runtime {#verified}
 
-The tables above describe intent. This one records what was **executed**, so you can tell
-a tested guarantee from a reasonable expectation. Every row was run against a Connectum
+The following records historical measurements, not a new validation of the
+current peer-dependency line. Every row was run against a Connectum
 server built by `createServer()`, with `@connectum/core` 1.2.0 and
 `@connectrpc/connect-node` (both 2.0.0 and 2.1.2), asserting the response payload and the
 gRPC status code -- not merely that a call did not throw. Each scenario ran three times.
@@ -194,12 +193,12 @@ check.
 | **What** | one plaintext port serves HTTP/1.1 **or** h2c, never both | the `node:http2` client was unusable |
 | **Why** | protocol selection needs ALPN, which is a TLS handshake extension; a cleartext socket has no handshake | incomplete `node:http2` implementation |
 | **Scope** | server side | client side only |
-| **Status** | **permanent** -- Node core declined it ([#26795](https://github.com/nodejs/node/issues/26795), [#44887](https://github.com/nodejs/node/issues/44887), both closed) and `Upgrade: h2c` is deprecated by RFC 9113 | **fixed** in Bun 1.2.6 |
+| **Status** | Not supported by the Node cleartext APIs used here; see [#26795](https://github.com/nodejs/node/issues/26795) and [#44887](https://github.com/nodejs/node/issues/44887) | The recorded client boundary is Bun 1.2.6 |
 | **Work around it by** | TLS + ALPN, or a sidecar proxy | upgrading Bun |
 
-Bidi streaming over HTTP/1.1 is a third thing again: impossible on **every** runtime,
-because HTTP/1.1 has no full duplex. That is why Connectum refuses to start rather than
-letting it hang -- see [Startup validation](#startup-validation).
+Bidirectional streaming in the Connect protocol requires HTTP/2, independently
+of the runtime. Connectum rejects a plaintext HTTP/1.1 configuration with mounted
+bidi methods -- see [Startup validation](#startup-validation).
 
 ### Not tested
 

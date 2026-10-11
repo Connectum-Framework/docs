@@ -254,35 +254,34 @@ const inventory = {
 
 if (format === 'json') {
     process.stdout.write(`${JSON.stringify(inventory, null, 2)}\n`);
-    process.exit(0);
+} else {
+    const lines = [
+        '# Documentation route inventory',
+        '',
+        `Generated: ${inventory.generatedAt}`,
+        '',
+        `Scope: ${inventory.scope}`,
+        '',
+        `Pages: ${inventory.totals.pages}; headings: ${inventory.totals.headings}; words including code: ${inventory.totals.wordsIncludingCode}.`,
+        '',
+        `Areas: ${Object.entries(inventory.totals.pagesByArea).map(([area, count]) => `${area} ${count}`).join('; ')}.`,
+        '',
+        `Build outputs: sitemap ${inventory.totals.buildOutputs.sitemapUrls ?? 'not built'} URLs; search ${inventory.totals.buildOutputs.searchDocuments ?? 'not built'} documents; LLM ${inventory.totals.buildOutputs.llmOutputs.filter((output) => output.present).length}/3 files.`,
+        '',
+        '| Route | Source | Type / audience | Disposition / owner | Inbound | Anchors |',
+        '|---|---|---|---|---:|---|',
+    ];
+
+    for (const page of inventory.pages) {
+        const anchors = page.headings
+            .filter((heading) => heading.level > 1)
+            .map((heading) => `#${heading.anchor}`)
+            .join('<br>');
+
+        lines.push(
+            `| \`${page.route}\` | \`${page.sourcePath}\` | ${page.contentType}<br>${page.audience} | ${page.disposition}<br>${page.canonicalOwner} | ${page.inboundLinks.length} | ${anchors || '—'} |`,
+        );
+    }
+
+    process.stdout.write(`${lines.join('\n')}\n`);
 }
-
-const lines = [
-    '# Documentation route inventory',
-    '',
-    `Generated: ${inventory.generatedAt}`,
-    '',
-    `Scope: ${inventory.scope}`,
-    '',
-    `Pages: ${inventory.totals.pages}; headings: ${inventory.totals.headings}; words including code: ${inventory.totals.wordsIncludingCode}.`,
-    '',
-    `Areas: ${Object.entries(inventory.totals.pagesByArea).map(([area, count]) => `${area} ${count}`).join('; ')}.`,
-    '',
-    `Build outputs: sitemap ${inventory.totals.buildOutputs.sitemapUrls ?? 'not built'} URLs; search ${inventory.totals.buildOutputs.searchDocuments ?? 'not built'} documents; LLM ${inventory.totals.buildOutputs.llmOutputs.filter((output) => output.present).length}/3 files.`,
-    '',
-    '| Route | Source | Type / audience | Disposition / owner | Inbound | Anchors |',
-    '|---|---|---|---|---:|---|',
-];
-
-for (const page of inventory.pages) {
-    const anchors = page.headings
-        .filter((heading) => heading.level > 1)
-        .map((heading) => `#${heading.anchor}`)
-        .join('<br>');
-
-    lines.push(
-        `| \`${page.route}\` | \`${page.sourcePath}\` | ${page.contentType}<br>${page.audience} | ${page.disposition}<br>${page.canonicalOwner} | ${page.inboundLinks.length} | ${anchors || '—'} |`,
-    );
-}
-
-process.stdout.write(`${lines.join('\n')}\n`);

@@ -1,6 +1,17 @@
+---
+title: "ADR-009: Migration to Buf CLI v2"
+description: Record the move from system protoc commands to Buf configuration.
+docType: adr
+---
+
 # ADR-009: Migration to Buf CLI v2 for Proto Generation
 
 **Status:** Accepted - 2026-02-06
+
+The removed `@connectum/proto` package and its fallback commands are historical.
+Current TypeScript-direct projects can generate erasable enums without the enum
+compilation workaround; see [Proto Enums](/en/guide/typescript/proto-enums) and
+[Contributor Commands](/en/contributing/cli-commands#proto-generation).
 
 **Deciders:** Tech Lead, Platform Team
 
@@ -279,6 +290,7 @@ pnpm --filter @connectum/proto clean
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-06 | Claude | Initial ADR -- Buf CLI v2 migration |
+| 2026-10-08 | Documentation review | Added a note that the removed `@connectum/proto` package and its fallback commands are historical, with pointers to the proto enums guide and the contributor commands; added page metadata. Decision text unchanged. |
 
 ---
 

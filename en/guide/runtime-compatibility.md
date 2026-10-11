@@ -99,8 +99,9 @@ default). Connectum servers speak the Connect protocol alongside gRPC, so no ser
 is needed.
 :::
 
-**Servers are unaffected on every Bun version.** A Connectum server -- including plaintext
-h2c (`allowHTTP1: false`) -- serves HTTP/2 correctly; the limitation was always client-side.
+The recorded tests cover the server on Bun 1.1.38 and later tested versions,
+including plaintext h2c (`allowHTTP1: false`). The historical limitation above
+concerns the client; it is not evidence for untested Bun server versions.
 
 ## Streaming RPC {#streaming}
 
@@ -156,7 +157,7 @@ import { createMockNext, createMockRequest } from '@connectum/testing';
 describe('my interceptor', () => {
   it('calls next', async () => {
     const next = createMockNext();
-    await myInterceptor(createMockRequest(), next);
+    await myInterceptor(next)(createMockRequest());
     // next.mock.callCount() === 1
   });
 });
