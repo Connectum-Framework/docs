@@ -169,7 +169,7 @@ matchPattern("user.>", "user.created")       // true
 matchPattern("user.>", "user.created.v2")    // true
 ```
 
-Adapters translate these patterns to broker-native equivalents (NATS subjects, Kafka regex, Redis stream keys).
+Adapters translate these patterns to broker-native equivalents (NATS subjects, Kafka regex, AMQP topic-exchange bindings). Redis Streams has no pattern subscription, so the Redis adapter rejects wildcard patterns when the subscription is made.
 
 #### 7. Server Lifecycle Integration via EventBusLike
 
