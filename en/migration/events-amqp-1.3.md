@@ -12,6 +12,8 @@ docType: migration
 
 You need to act if your service uses `AmqpAdapter` and any of the following is true:
 
+- you use a headers exchange with `topologyMode: 'assert'` and declare selective
+  bindings for a queue in `topology.bindings`;
 - you count or alert on `onDisconnected` calls;
 - you use `recovery: false` and handle `onDisconnected`;
 - you set a finite `recovery.maxRetries`;
@@ -58,6 +60,40 @@ await channel.unbindQueue(queue, exchange, 'user.#');
 
 Check whether other consumers depend on the old binding before removing it.
 Unbinding changes future routing and does not delete messages already queued.
+
+### A headers exchange honours declared bindings {#headers-declared-bindings}
+
+With `exchangeType: 'headers'` and `topologyMode: 'assert'`, the previous adapter
+bound every subscribed queue to the exchange with an argument-less binding. A
+headers exchange delivers a message when any binding of the queue matches, so
+that binding defeated a selective `x-match` binding declared in
+`topology.bindings`: the queue received every message. The 1.3.0 adapter skips its
+own binding for a queue for which `topology.bindings` declares a binding to the
+adapter's exchange, so the declared bindings alone select what the queue
+receives. Queues without declared bindings, the `check` and `skip` modes and
+topic, direct and fanout exchanges are unchanged. A binding made outside the
+topology is not seen by the adapter, which still adds its own next to it, and a
+binding reached through an intermediate exchange is not considered.
+
+**Action, if a queue relied on receiving everything:** declare the binding
+without arguments, or drop the selective one.
+
+**Action, for a durable queue the previous adapter already bound:** the broker
+keeps the old argument-less bindings, one per subscription pattern, and the
+adapter never removes bindings (it cannot tell its own from an operator's), so
+until you remove them the queue still receives every message. The routing key of
+such a binding is the pattern as the previous adapter converted it: a `>` became
+`#`, so `user.>` was bound as `user.#`, and unbinding with the pattern as
+written removes nothing, silently. Read the exact keys from the broker
+(`rabbitmqctl list_bindings`, or the management API) and unbind each argument-less
+leftover with its key and no arguments:
+
+```typescript
+await channel.unbindQueue(queue, exchange, 'user.#'); // the key the broker lists
+```
+
+Check the list again afterwards. Deleting the queue and letting the adapter declare
+it again also works, and loses its queued messages.
 
 ### `onDisconnected` fires once per drop {#disconnect-once}
 
