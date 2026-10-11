@@ -119,7 +119,7 @@ Code generation runs the same way inside the image -- `RUN bunx buf generate`. S
 
 ### Alpine Variant (Node.js Images)
 
-If you need an Alpine image and your native dependencies support its libc, use `node:26-alpine` for both Node base stages, and install `curl` with `apk add --no-cache curl` instead of `apt-get`. Alpine's BusyBox applets differ from the GNU builds, so verify that the health check reports `unhealthy` for an invalid URL.
+The Node.js Docker project lists its `musl` (Alpine) builds for `amd64` under the "Experimental" support tier, and does not test `musl` builds for other architectures, such as `arm64`, before release; Debian-based images belong to tiers 1 and 2, which are recommended for production. Validate your target architecture before production use, or use a Debian-based image. If you need an Alpine image and your native dependencies support its libc, use `node:26-alpine` for both Node base stages, and install `curl` with `apk add --no-cache curl` instead of `apt-get`. Alpine's BusyBox applets differ from the GNU builds, so verify that the health check reports `unhealthy` for an invalid URL.
 
 ### Node.js Base Image Choices {#image-size-comparison-nodejs-images}
 
