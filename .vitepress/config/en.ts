@@ -249,6 +249,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Custom protocols: setup/register', link: '/en/migration/protocol-setup' },
                         { text: 'Peer dependencies: protobuf and Connect', link: '/en/migration/peer-dependencies' },
                         { text: 'Erasable proto enums', link: '/en/migration/erasable-enums' },
+                        { text: 'Signed tokens must carry exp', link: '/en/migration/token-expiration' },
                         { text: 'In-process calls on shutdown', link: '/en/migration/in-process-shutdown' },
                         { text: 'Logger bodies are opt-in', link: '/en/migration/logger-bodies' },
                         { text: 'Option descriptors from the packages', link: '/en/migration/option-descriptor-imports' },
