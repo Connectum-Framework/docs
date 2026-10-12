@@ -23,9 +23,15 @@ Push handle for a client-streaming catalog call: send N requests, then
 
 > **close**(): `Promise`\<`Res`\>
 
-Defined in: [packages/core/src/context.ts:76](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L76)
+Defined in: [packages/core/src/context.ts:84](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L84)
 
 End the request stream and resolve with the server's single response.
+
+Settles only when the call has finished, not when the response arrives:
+it rejects if the stream ends without a response, carries more than one,
+or fails after the response (the failure is what the call reports).
+A server that delays its final status therefore holds `close()` until
+that status arrives, the call is canceled or its deadline passes.
 
 #### Returns
 

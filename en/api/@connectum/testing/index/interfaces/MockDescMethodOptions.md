@@ -20,7 +20,7 @@ Input message descriptor.
 
 ### kind?
 
-> `optional` **kind?**: `"unary"` \| `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"`
+> `optional` **kind?**: `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"` \| `"unary"`
 
 Defined in: test-fixtures/dist/types.d.ts:58
 

@@ -4,7 +4,7 @@
 
 > **createFakeMethod**(`service`, `name`, `options?`): [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: test-fixtures/dist/index.d.ts:100
+Defined in: test-fixtures/dist/index.d.ts:101
 
 Create a fake [DescMethod](https://protobufes.com/reference/reflection/descriptors/#types) descriptor attached to a service.
 

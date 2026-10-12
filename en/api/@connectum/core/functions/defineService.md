@@ -4,7 +4,7 @@
 
 > **defineService**\<`S`\>(`descriptor`, `handlers`, `options?`): [`ServiceDefinition`](../interfaces/ServiceDefinition.md)
 
-Defined in: [packages/core/src/defineService.ts:74](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L74)
+Defined in: [packages/core/src/defineService.ts:75](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L75)
 
 Define a service from its descriptor and handler map.
 

@@ -4,7 +4,7 @@
 
 > **applyAttributeFilter**(`attrs`, `filter?`): `Attributes`
 
-Defined in: [shared.ts:198](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L198)
+Defined in: [shared.ts:246](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L246)
 
 Applies an attribute filter to the given attributes.
 

@@ -77,7 +77,7 @@ Clear all services and components
 
 Defined in: [HealthcheckManager.ts:193](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L193)
 
-Get all services health status
+Get health status for all registered services and components.
 
 #### Returns
 

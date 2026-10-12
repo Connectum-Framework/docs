@@ -2,7 +2,7 @@
 
 # Interface: CreateCatalogClientOptions
 
-Defined in: [packages/core/src/catalogClient.ts:46](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L46)
+Defined in: [packages/core/src/catalogClient.ts:47](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L47)
 
 Options for [createCatalogClient](../functions/createCatalogClient.md).
 
@@ -12,10 +12,26 @@ Options for [createCatalogClient](../functions/createCatalogClient.md).
 
 > **catalog**: [`ServiceCatalog`](../type-aliases/ServiceCatalog.md)
 
-Defined in: [packages/core/src/catalogClient.ts:51](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L51)
+Defined in: [packages/core/src/catalogClient.ts:52](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L52)
 
 The service catalog (a `Record<typeName, DescService>`) that backs typed
 dispatch — the same object passed to `createServer({ catalog })`.
+
+***
+
+### outgoingInterceptors?
+
+> `optional` **outgoingInterceptors?**: readonly `Interceptor`[]
+
+Defined in: [packages/core/src/catalogClient.ts:69](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L69)
+
+Client-side interceptors applied once around every `call`/`stream` this
+client makes, outside the interceptors of the resolver's transport.
+Empty by default: a standalone client has no `Server` to inherit a chain
+from, and a resolver whose transports already carry the application's
+policy keeps working unchanged. Do not configure the same policy here and
+on the resolver's transport — the framework cannot see inside a
+`Transport` and would run it twice.
 
 ***
 
@@ -23,7 +39,7 @@ dispatch — the same object passed to `createServer({ catalog })`.
 
 > **resolver**: [`RemoteResolver`](../type-aliases/RemoteResolver.md)
 
-Defined in: [packages/core/src/catalogClient.ts:58](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L58)
+Defined in: [packages/core/src/catalogClient.ts:59](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L59)
 
 Maps a target service `typeName` to a ConnectRPC `Transport`. Required:
 unlike a `Server`, a catalog client has no in-process/local path, so every

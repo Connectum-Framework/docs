@@ -4,7 +4,7 @@
 
 > **createMockNextSlow**(`delay`, `options?`): `any`
 
-Defined in: test-fixtures/dist/index.d.ts:308
+Defined in: test-fixtures/dist/index.d.ts:311
 
 Create a mock `next` handler that resolves after a configurable delay.
 

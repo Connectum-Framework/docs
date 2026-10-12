@@ -4,7 +4,7 @@
 
 > **createCircuitBreakerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [circuit-breaker.ts:94](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/circuit-breaker.ts#L94)
+Defined in: [circuit-breaker.ts:95](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/circuit-breaker.ts#L95)
 
 Create circuit breaker interceptor
 
@@ -49,6 +49,7 @@ import { createCircuitBreakerInterceptor } from '@connectum/interceptors';
 
 const transport = createConnectTransport({
   baseUrl: 'http://localhost:5000',
+  httpVersion: '1.1',
   interceptors: [
     createCircuitBreakerInterceptor({
       threshold: 5,           // Open after 5 consecutive failures

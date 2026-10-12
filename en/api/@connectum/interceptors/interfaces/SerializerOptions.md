@@ -2,7 +2,7 @@
 
 # Interface: SerializerOptions
 
-Defined in: [types.ts:83](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L83)
+Defined in: [types.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L97)
 
 Serializer interceptor options
 
@@ -12,7 +12,7 @@ Serializer interceptor options
 
 > `optional` **alwaysEmitImplicit?**: `boolean`
 
-Defined in: [types.ts:94](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L94)
+Defined in: [types.ts:109](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L109)
 
 Always emit implicit fields in JSON
 
@@ -28,7 +28,7 @@ true
 
 > `optional` **ignoreUnknownFields?**: `boolean`
 
-Defined in: [types.ts:100](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L100)
+Defined in: [types.ts:115](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L115)
 
 Ignore unknown fields when deserializing
 
@@ -44,9 +44,10 @@ true
 
 > `optional` **skipGrpcServices?**: `boolean`
 
-Defined in: [types.ts:88](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L88)
+Defined in: [types.ts:103](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L103)
 
-Skip serialization for gRPC services
+Skip services whose protobuf type name starts with `grpc.`.
+The check applies to the service namespace, regardless of wire protocol.
 
 #### Default
 

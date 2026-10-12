@@ -4,12 +4,17 @@
 
 > **withAuthContext**\<`T`\>(`context`, `fn`): `Promise`\<`T`\>
 
-Defined in: [packages/auth/src/testing/with-context.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/testing/with-context.ts#L31)
+Defined in: [packages/auth/src/testing/with-context.ts:36](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/testing/with-context.ts#L36)
 
 Run a function with a pre-set AuthContext.
 
 Sets the provided AuthContext in AsyncLocalStorage for the duration
 of the callback. Useful for testing handlers that call getAuthContext().
+
+The context is scoped to the callback, not to a value it returns. For an
+`async function*` handler, iterate the generator inside `fn`: a generator
+created inside `fn` but consumed after `fn` has returned does not see the
+context.
 
 ## Type Parameters
 

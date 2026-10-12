@@ -10,7 +10,7 @@ Options for [createFakeMethod](../functions/createFakeMethod.md).
 
 ### methodKind?
 
-> `optional` **methodKind?**: `"unary"` \| `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"`
+> `optional` **methodKind?**: `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"` \| `"unary"`
 
 Defined in: test-fixtures/dist/types.d.ts:77
 

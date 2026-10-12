@@ -2,7 +2,7 @@
 
 # Interface: MockCall\<Args\>
 
-Defined in: test-fixtures/dist/index.d.ts:115
+Defined in: test-fixtures/dist/index.d.ts:116
 
 A single recorded invocation of a [MockFn](MockFn.md).
 
@@ -18,6 +18,6 @@ A single recorded invocation of a [MockFn](MockFn.md).
 
 > `readonly` **arguments**: `Args`
 
-Defined in: test-fixtures/dist/index.d.ts:117
+Defined in: test-fixtures/dist/index.d.ts:118
 
 The arguments passed to the mock function.

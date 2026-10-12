@@ -8,5 +8,5 @@ Module-augmentation target for type-safe **unary** `ctx.call(method, request)`.
 
 `@connectum/protoc-gen-catalog` augments this with one entry per unary RPC,
 keyed `"<typeName>/<method>"` → `{ request; response }`. It starts empty so
-that a project with no generated catalog still type-checks (calls are then
-untyped rather than a hard error).
+applications that do not use catalog calls need no generated augmentation.
+Without registered keys, `ctx.call` has no callable procedure names.
