@@ -145,7 +145,7 @@ The pinned client versions and the upstream protos the suites check against are 
 
 ### Release Gate and Scaffold Check
 
-Two checks reproduce, locally and before you push, what CI runs against the *packed* packages rather than the workspace sources. Run them from the root of the framework repository (`connectum`).
+Two checks reproduce, locally and before you push, what CI runs at the release boundary. They use different package sources: `release:gate` installs locally packed `@connectum/*` packages, while `scaffold:check` installs the published `@connectum/*` packages from npm, so it does not validate unpublished workspace changes. Run them from the root of the framework repository (`connectum`).
 
 ```bash
 # Publish-boundary gate: install the packed @connectum/* packages into a throwaway

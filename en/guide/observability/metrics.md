@@ -88,7 +88,7 @@ an estimated serialized size. Message events are disabled by default.
 ### Attributes and the semantic conventions
 
 The duration histograms use the names and the `s` unit that the OpenTelemetry RPC
-semantic conventions define. The attributes on every metric point are:
+semantic conventions define. An RPC metric point can carry the attributes below; the table states the condition for those that appear only on failed calls:
 
 | Attribute | Value |
 |-----------|-------|
