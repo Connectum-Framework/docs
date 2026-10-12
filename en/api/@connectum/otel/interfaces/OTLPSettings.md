@@ -2,7 +2,7 @@
 
 # Interface: OTLPSettings
 
-Defined in: [config.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L31)
+Defined in: [config.ts:33](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L33)
 
 OTLP settings for traces, metrics, and logs
 
@@ -12,7 +12,7 @@ OTLP settings for traces, metrics, and logs
 
 > **logs**: [`ExporterType`](../type-aliases/ExporterType.md)
 
-Defined in: [config.ts:34](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L34)
+Defined in: [config.ts:36](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L36)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [config.ts:34](https://github.com/Connectum-Framework/connectum/blob
 
 > **metrics**: [`ExporterType`](../type-aliases/ExporterType.md)
 
-Defined in: [config.ts:33](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L33)
+Defined in: [config.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L35)
 
 ***
 
@@ -28,4 +28,4 @@ Defined in: [config.ts:33](https://github.com/Connectum-Framework/connectum/blob
 
 > **traces**: [`ExporterType`](../type-aliases/ExporterType.md)
 
-Defined in: [config.ts:32](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L32)
+Defined in: [config.ts:34](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L34)

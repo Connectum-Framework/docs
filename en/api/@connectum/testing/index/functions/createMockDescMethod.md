@@ -4,7 +4,7 @@
 
 > **createMockDescMethod**(`name`, `options?`): [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: test-fixtures/dist/index.d.ts:236
+Defined in: test-fixtures/dist/index.d.ts:237
 
 Create a mock [DescMethod](https://protobufes.com/reference/reflection/descriptors/#types) descriptor.
 

@@ -4,6 +4,6 @@
 
 > **FakePublishOutcome** = `"ack"` \| `Error`
 
-Defined in: [packages/events-amqp/src/testing.ts:65](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L65)
+Defined in: [packages/events-amqp/src/testing.ts:120](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L120)
 
 One publish outcome: `"ack"` resolves; an `Error` rejects the publish with it.

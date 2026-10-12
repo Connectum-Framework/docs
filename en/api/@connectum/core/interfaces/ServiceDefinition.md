@@ -2,7 +2,7 @@
 
 # Interface: ServiceDefinition
 
-Defined in: [packages/core/src/defineService.ts:50](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L50)
+Defined in: [packages/core/src/defineService.ts:51](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L51)
 
 A service ready to be mounted: its proto descriptor plus a `register` closure
 that wires the handlers onto a `ConnectRouter`. Produced by [defineService](../functions/defineService.md)
@@ -14,6 +14,6 @@ and [defineLazyService](../functions/defineLazyService.md); consumed by `createS
 
 > `readonly` **descriptor**: [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: [packages/core/src/defineService.ts:52](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L52)
+Defined in: [packages/core/src/defineService.ts:53](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L53)
 
 The proto service descriptor (carries `typeName` and `file`).

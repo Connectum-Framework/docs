@@ -39,8 +39,8 @@ Filter callback to skip specific requests
 
 Defined in: [types.ts:47](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L47)
 
-Include request/response message content in span events.
-WARNING: May contain sensitive data.
+Record request/response message events with direction, sequence number,
+and estimated size. Message payloads are not included in these events.
 
 #### Default
 

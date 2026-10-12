@@ -2,7 +2,7 @@
 
 # Interface: BroadcastSubscribersOptions
 
-Defined in: [packages/events/src/broadcast.ts:34](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L34)
+Defined in: [packages/events/src/broadcast.ts:33](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L33)
 
 Options for [createBroadcastSubscribers](../functions/createBroadcastSubscribers.md).
 
@@ -12,7 +12,7 @@ Options for [createBroadcastSubscribers](../functions/createBroadcastSubscribers
 
 > `readonly` **adapter**: [`EventAdapter`](../types/interfaces/EventAdapter.md) \| [`EventAdapterFactory`](../types/type-aliases/EventAdapterFactory.md)
 
-Defined in: [packages/events/src/broadcast.ts:41](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L41)
+Defined in: [packages/events/src/broadcast.ts:40](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L40)
 
 The broker adapter. Pass ONE shared instance (fine for `MemoryAdapter` in
 tests, where all buses share the in-memory registry) OR a factory invoked
@@ -25,7 +25,7 @@ own connection / durable consumer).
 
 > `readonly` `optional` **drainPublishTimeout?**: `number`
 
-Defined in: [packages/events/src/broadcast.ts:49](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L49)
+Defined in: [packages/events/src/broadcast.ts:48](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L48)
 
 Shared per-bus opt-in publish drain budget at `stop()` (ms). Since 1.3.0.
 
@@ -35,7 +35,7 @@ Shared per-bus opt-in publish drain budget at `stop()` (ms). Since 1.3.0.
 
 > `readonly` `optional` **drainTimeout?**: `number`
 
-Defined in: [packages/events/src/broadcast.ts:47](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L47)
+Defined in: [packages/events/src/broadcast.ts:46](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L46)
 
 Shared per-bus drain timeout (ms).
 
@@ -45,7 +45,7 @@ Shared per-bus drain timeout (ms).
 
 > `readonly` `optional` **handlerTimeout?**: `number`
 
-Defined in: [packages/events/src/broadcast.ts:45](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L45)
+Defined in: [packages/events/src/broadcast.ts:44](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L44)
 
 Shared per-bus handler timeout (ms).
 
@@ -55,7 +55,7 @@ Shared per-bus handler timeout (ms).
 
 > `readonly` **reactors**: [`BroadcastReactor`](BroadcastReactor.md)[]
 
-Defined in: [packages/events/src/broadcast.ts:43](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L43)
+Defined in: [packages/events/src/broadcast.ts:42](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L42)
 
 The independent reactors — each becomes its own EventBus with its own group.
 
@@ -65,6 +65,6 @@ The independent reactors — each becomes its own EventBus with its own group.
 
 > `readonly` `optional` **signal?**: `AbortSignal`
 
-Defined in: [packages/events/src/broadcast.ts:51](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L51)
+Defined in: [packages/events/src/broadcast.ts:50](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L50)
 
 Shared abort signal for graceful shutdown.

@@ -20,7 +20,7 @@ Input message descriptor.
 
 ### kind?
 
-> `optional` **kind?**: `"unary"` \| `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"`
+> `optional` **kind?**: `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"` \| `"unary"`
 
 Defined in: [types.ts:78](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L78)
 

@@ -18,7 +18,7 @@ file-based check can report methods nobody can call.
 
 ### source
 
-readonly ([`DescService`](https://protobufes.com/reference/reflection/descriptors/#types) \| `DescFile`)[]
+readonly (`DescFile` \| [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types))[]
 
 ## Returns
 

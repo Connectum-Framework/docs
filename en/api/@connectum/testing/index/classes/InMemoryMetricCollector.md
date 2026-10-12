@@ -50,7 +50,7 @@ Defined in: [testing/src/otel-collectors.ts:196](https://github.com/Connectum-Fr
 
 > **dispose**(): `Promise`\<`void`\>
 
-Defined in: [testing/src/otel-collectors.ts:231](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L231)
+Defined in: [testing/src/otel-collectors.ts:232](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L232)
 
 #### Returns
 
@@ -62,7 +62,7 @@ Defined in: [testing/src/otel-collectors.ts:231](https://github.com/Connectum-Fr
 
 > **flush**(): `Promise`\<[`NormalizedMetric`](../interfaces/NormalizedMetric.md)[]\>
 
-Defined in: [testing/src/otel-collectors.ts:210](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L210)
+Defined in: [testing/src/otel-collectors.ts:211](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L211)
 
 #### Returns
 
@@ -74,7 +74,7 @@ Defined in: [testing/src/otel-collectors.ts:210](https://github.com/Connectum-Fr
 
 > **reset**(): `void`
 
-Defined in: [testing/src/otel-collectors.ts:227](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L227)
+Defined in: [testing/src/otel-collectors.ts:228](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/otel-collectors.ts#L228)
 
 #### Returns
 

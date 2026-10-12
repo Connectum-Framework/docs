@@ -4,7 +4,7 @@
 
 > `const` **authContextStorage**: `AsyncLocalStorage`\<[`AuthContext`](../interfaces/AuthContext.md)\>
 
-Defined in: [packages/auth/src/context.ts:87](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/context.ts#L87)
+Defined in: [packages/auth/src/context.ts:86](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/context.ts#L86)
 
 Process-wide AsyncLocalStorage for auth context.
 

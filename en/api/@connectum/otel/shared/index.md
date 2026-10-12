@@ -18,4 +18,5 @@ and createOtelClientInterceptor().
 - [buildErrorAttributes](functions/buildErrorAttributes.md)
 - [detectConnectumTransport](functions/detectConnectumTransport.md)
 - [estimateMessageSize](functions/estimateMessageSize.md)
+- [scopeAsyncIterable](functions/scopeAsyncIterable.md)
 - [wrapAsyncIterable](functions/wrapAsyncIterable.md)

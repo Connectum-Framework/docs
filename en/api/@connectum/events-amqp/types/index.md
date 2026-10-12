@@ -23,6 +23,7 @@ Configuration types for the AMQP/RabbitMQ adapter.
 
 ## Type Aliases
 
+- [AmqpConsumerLossCause](type-aliases/AmqpConsumerLossCause.md)
 - [AmqpLifecycleEvent](type-aliases/AmqpLifecycleEvent.md)
 - [AmqpSettlementAction](type-aliases/AmqpSettlementAction.md)
 - [AmqpTopologyMode](type-aliases/AmqpTopologyMode.md)

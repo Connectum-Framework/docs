@@ -4,7 +4,7 @@
 
 > **createMockNext**(`options?`): `any`
 
-Defined in: [mock-next.ts:36](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-next.ts#L36)
+Defined in: [mock-next.ts:38](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-next.ts#L38)
 
 Create a mock `next` handler that resolves with a successful response.
 
@@ -23,7 +23,9 @@ Optional overrides for the response payload and stream flag.
 
 `any`
 
-A spy-enabled async function matching the ConnectRPC `next` signature.
+a spy-enabled async function resolving to a partial response with
+  `stream` and `message` fields. Use a real `next` response when the code
+  under test reads response headers, trailers, or descriptors.
 
 ## Example
 

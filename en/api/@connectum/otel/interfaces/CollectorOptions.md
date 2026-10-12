@@ -2,7 +2,7 @@
 
 # Interface: CollectorOptions
 
-Defined in: [config.ts:40](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L40)
+Defined in: [config.ts:42](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L42)
 
 Collector endpoint options
 
@@ -12,7 +12,7 @@ Collector endpoint options
 
 > **concurrencyLimit**: `number`
 
-Defined in: [config.ts:41](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L41)
+Defined in: [config.ts:43](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L43)
 
 ***
 
@@ -20,4 +20,4 @@ Defined in: [config.ts:41](https://github.com/Connectum-Framework/connectum/blob
 
 > **url**: `string` \| `undefined`
 
-Defined in: [config.ts:42](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L42)
+Defined in: [config.ts:44](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L44)

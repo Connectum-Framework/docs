@@ -4,7 +4,7 @@
 
 > **createMockFn**\<`F`\>(`impl`): [`MockFn`](../interfaces/MockFn.md)\<`F`\>
 
-Defined in: test-fixtures/dist/index.d.ts:150
+Defined in: test-fixtures/dist/index.d.ts:151
 
 Create a portable mock function that wraps `impl` and records every call.
 

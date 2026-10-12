@@ -2,7 +2,7 @@
 
 # Interface: MockService
 
-Defined in: [testing/src/mockResolver.ts:22](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L22)
+Defined in: [testing/src/mockResolver.ts:21](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L21)
 
 A mocked service: its proto descriptor paired with a (partial) implementation.
 
@@ -12,7 +12,7 @@ A mocked service: its proto descriptor paired with a (partial) implementation.
 
 > `readonly` **impl**: `Partial`\<`ServiceImpl`\<[`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)\>\>
 
-Defined in: [testing/src/mockResolver.ts:24](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L24)
+Defined in: [testing/src/mockResolver.ts:23](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L23)
 
 ***
 
@@ -20,4 +20,4 @@ Defined in: [testing/src/mockResolver.ts:24](https://github.com/Connectum-Framew
 
 > `readonly` **service**: [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: [testing/src/mockResolver.ts:23](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L23)
+Defined in: [testing/src/mockResolver.ts:22](https://github.com/Connectum-Framework/connectum/blob/main/packages/testing/src/mockResolver.ts#L22)

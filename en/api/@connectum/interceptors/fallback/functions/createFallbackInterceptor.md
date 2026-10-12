@@ -4,11 +4,13 @@
 
 > **createFallbackInterceptor**\<`T`\>(`options`): `Interceptor`
 
-Defined in: [fallback.ts:57](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/fallback.ts#L57)
+Defined in: [fallback.ts:60](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/fallback.ts#L60)
 
 Create fallback interceptor
 
 Provides fallback response when service fails, enabling graceful degradation.
+The handler returns the RPC response message, not a response wrapper.
+In the server example, getCachedData is application code that returns that message.
 
 ## Type Parameters
 
@@ -45,7 +47,7 @@ const server = createServer({
     createFallbackInterceptor({
       handler: (error) => {
         console.error('Service failed, returning cached data:', error);
-        return { message: getCachedData() };
+        return getCachedData();
       },
       skipStreaming: true,
     }),
@@ -63,6 +65,7 @@ import { createFallbackInterceptor } from '@connectum/interceptors';
 
 const transport = createConnectTransport({
   baseUrl: 'http://localhost:5000',
+  httpVersion: '1.1',
   interceptors: [
     createFallbackInterceptor({
       handler: () => ({ data: [] }),

@@ -4,7 +4,7 @@
 
 > **createMockNextSlow**(`delay`, `options?`): `any`
 
-Defined in: [mock-next.ts:93](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-next.ts#L93)
+Defined in: [mock-next.ts:95](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-next.ts#L95)
 
 Create a mock `next` handler that resolves after a configurable delay.
 

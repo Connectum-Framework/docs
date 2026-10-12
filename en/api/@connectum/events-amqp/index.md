@@ -41,6 +41,12 @@ Re-exports [AmqpBindingDeclaration](types/interfaces/AmqpBindingDeclaration.md)
 
 ***
 
+### AmqpConsumerLossCause
+
+Re-exports [AmqpConsumerLossCause](types/type-aliases/AmqpConsumerLossCause.md)
+
+***
+
 ### AmqpConsumerOptions
 
 Re-exports [AmqpConsumerOptions](types/interfaces/AmqpConsumerOptions.md)

@@ -2,7 +2,7 @@
 
 # Interface: AmqpConsumerOptions
 
-Defined in: [packages/events-amqp/src/types.ts:749](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L749)
+Defined in: [packages/events-amqp/src/types.ts:839](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L839)
 
 Consumer options.
 
@@ -12,14 +12,19 @@ Consumer options.
 
 > `readonly` `optional` **exclusive?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:763](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L763)
+Defined in: [packages/events-amqp/src/types.ts:858](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L858)
 
-Whether the consumer is exclusive to this connection.
+Whether the private queue of a subscription without `group` is exclusive
+to the subscriber's connection, so the broker removes it with that
+connection. RabbitMQ 4.3 and later refuse a queue that is neither
+durable nor exclusive, so `false` works only on older brokers or where the
+`transient_nonexcl_queues` deprecated feature is permitted. Subscriptions
+with `group` use a durable shared queue by default and ignore this option.
 
 #### Default
 
 ```ts
-false
+true
 ```
 
 ***
@@ -28,7 +33,7 @@ false
 
 > `readonly` `optional` **prefetch?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:756](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L756)
+Defined in: [packages/events-amqp/src/types.ts:846](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L846)
 
 Prefetch count (QoS) — how many unacknowledged messages
 a consumer can have at a time.

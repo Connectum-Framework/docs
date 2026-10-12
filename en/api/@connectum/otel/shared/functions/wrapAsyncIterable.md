@@ -4,12 +4,14 @@
 
 > **wrapAsyncIterable**\<`T`\>(`iterable`, `span`, `direction`, `recordMessages`, `endSpanOnComplete?`): `AsyncGenerator`\<`T`\>
 
-Defined in: [shared.ts:83](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L83)
+Defined in: [shared.ts:85](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L85)
 
 Wraps an AsyncIterable to track streaming messages with OTel span events.
 
 Captures the span via closure (not AsyncLocalStorage) to avoid
 the Node.js ALS context loss in async generators (nodejs/node#42237).
+Recording events this way does not make the span the active span for the
+code that produces the messages; use [scopeAsyncIterable](scopeAsyncIterable.md) for that.
 
 When `endSpanOnComplete` is true, the span lifecycle is managed by the
 generator itself: the span is ended in the `finally` block, which runs
