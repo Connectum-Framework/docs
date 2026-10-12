@@ -198,6 +198,33 @@ intervals in a shutdown hook. Mark each RPC service `SERVING` separately in the
 `ready` listener: an unqualified `update(SERVING)` also marks dependency components
 healthy, even before their checks succeed.
 
+### Worker-only processes
+
+A process with no RPC services (`services: []`) still needs an explicit readiness
+source, because an empty registry is never healthy. Register a component before
+`start()` and flip it with the server lifecycle:
+
+```typescript
+import { createServer } from '@connectum/core';
+import { Healthcheck, healthcheckManager, ServingStatus } from '@connectum/healthcheck';
+
+const server = createServer({
+  services: [],
+  port: 5000,
+  protocols: [Healthcheck({ httpEnabled: true })],
+});
+
+healthcheckManager.register('process');
+server.on('ready', () => healthcheckManager.set('process', ServingStatus.SERVING));
+server.on('stopping', () => healthcheckManager.set('process', ServingStatus.NOT_SERVING));
+
+await server.start();
+```
+
+`/healthz` then returns `200` once the component is `SERVING`, and gRPC
+`Check` for `process` reports the same status, which is what a
+`docker compose` `service_healthy` condition or a Kubernetes probe needs.
+
 Use `areAllHealthy()` for aggregate health status:
 
 ```bash
