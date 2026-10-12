@@ -12,6 +12,7 @@ Replaces the previous OTLPProvider singleton with explicit lifecycle control.
 - [OtelProvider](interfaces/OtelProvider.md)
 - [ProviderOptions](interfaces/ProviderOptions.md)
 - [ResourceAttributeInputs](interfaces/ResourceAttributeInputs.md)
+- [ServiceNameInputs](interfaces/ServiceNameInputs.md)
 
 ## Functions
 
@@ -19,4 +20,5 @@ Replaces the previous OTLPProvider singleton with explicit lifecycle control.
 - [getProvider](functions/getProvider.md)
 - [initProvider](functions/initProvider.md)
 - [parseOtelResourceAttributesEnv](functions/parseOtelResourceAttributesEnv.md)
+- [resolveServiceName](functions/resolveServiceName.md)
 - [shutdownProvider](functions/shutdownProvider.md)

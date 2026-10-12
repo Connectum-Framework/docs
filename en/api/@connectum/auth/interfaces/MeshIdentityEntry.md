@@ -2,7 +2,7 @@
 
 # Interface: MeshIdentityEntry
 
-Defined in: [packages/auth/src/types.ts:366](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L366)
+Defined in: [packages/auth/src/types.ts:374](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L374)
 
 An allow-list entry for [meshIdentityTrust](../functions/meshIdentityTrust.md), mapping a verified mesh
 identity (the forwarded peer principal) to its authorization context.
@@ -13,7 +13,7 @@ identity (the forwarded peer principal) to its authorization context.
 
 > `readonly` `optional` **name?**: `string`
 
-Defined in: [packages/auth/src/types.ts:377](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L377)
+Defined in: [packages/auth/src/types.ts:385](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L385)
 
 Optional human-readable name for the calling service.
 
@@ -23,7 +23,7 @@ Optional human-readable name for the calling service.
 
 > `readonly` **principal**: `string`
 
-Defined in: [packages/auth/src/types.ts:371](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L371)
+Defined in: [packages/auth/src/types.ts:379](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L379)
 
 The mesh-forwarded peer identity to match, e.g. an Istio short-form
 ServiceAccount principal `cluster.local/ns/<ns>/sa/<name>` or a SPIFFE id.
@@ -34,7 +34,7 @@ ServiceAccount principal `cluster.local/ns/<ns>/sa/<name>` or a SPIFFE id.
 
 > `readonly` `optional` **roles?**: readonly `string`[]
 
-Defined in: [packages/auth/src/types.ts:373](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L373)
+Defined in: [packages/auth/src/types.ts:381](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L381)
 
 Roles granted to this caller (compose via `requires {roles}`).
 
@@ -44,6 +44,6 @@ Roles granted to this caller (compose via `requires {roles}`).
 
 > `readonly` `optional` **scopes?**: readonly `string`[]
 
-Defined in: [packages/auth/src/types.ts:375](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L375)
+Defined in: [packages/auth/src/types.ts:383](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L383)
 
 Scopes granted to this caller (compose via `requires {scopes}`).

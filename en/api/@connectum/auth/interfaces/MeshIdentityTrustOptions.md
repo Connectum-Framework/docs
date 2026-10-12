@@ -2,7 +2,7 @@
 
 # Interface: MeshIdentityTrustOptions
 
-Defined in: [packages/auth/src/types.ts:383](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L383)
+Defined in: [packages/auth/src/types.ts:391](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L391)
 
 Options for [meshIdentityTrust](../functions/meshIdentityTrust.md).
 
@@ -12,7 +12,7 @@ Options for [meshIdentityTrust](../functions/meshIdentityTrust.md).
 
 > `readonly` **allowlist**: readonly [`MeshIdentityEntry`](MeshIdentityEntry.md)[]
 
-Defined in: [packages/auth/src/types.ts:389](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L389)
+Defined in: [packages/auth/src/types.ts:397](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L397)
 
 Allow-list of permitted mesh identities. Each entry maps a forwarded peer
 principal to its roles/scopes. A request whose identity is not on the
@@ -24,7 +24,7 @@ list is rejected.
 
 > `readonly` `optional` **header?**: `string`
 
-Defined in: [packages/auth/src/types.ts:394](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L394)
+Defined in: [packages/auth/src/types.ts:402](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L402)
 
 Header carrying the mesh-forwarded peer identity.
 
@@ -40,7 +40,7 @@ Header carrying the mesh-forwarded peer identity.
 
 > `readonly` `optional` **type?**: `string`
 
-Defined in: [packages/auth/src/types.ts:396](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L396)
+Defined in: [packages/auth/src/types.ts:404](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L404)
 
 Credential type set on the resulting AuthContext.
 

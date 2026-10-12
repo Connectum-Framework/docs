@@ -2,7 +2,7 @@
 
 # Interface: ProtoAuthzInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:555](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L555)
+Defined in: [packages/auth/src/types.ts:569](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L569)
 
 Proto-based authorization interceptor options.
 
@@ -15,7 +15,7 @@ rules defined in .proto files. Falls back to programmatic rules and callbacks.
 
 > `optional` **authorize?**: (`context`, `req`) => `boolean` \| `Promise`\<`boolean`\>
 
-Defined in: [packages/auth/src/types.ts:574](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L574)
+Defined in: [packages/auth/src/types.ts:588](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L588)
 
 Programmatic authorization callback.
 Called when neither proto options nor programmatic rules match.
@@ -52,7 +52,7 @@ true if authorized, false otherwise
 
 > `optional` **defaultPolicy?**: [`AuthzEffect`](../type-aliases/AuthzEffect.md)
 
-Defined in: [packages/auth/src/types.ts:560](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L560)
+Defined in: [packages/auth/src/types.ts:574](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L574)
 
 Default policy when no proto option and no rule match.
 
@@ -68,7 +68,7 @@ Default policy when no proto option and no rule match.
 
 > `optional` **rules?**: [`AuthzRule`](AuthzRule.md)[]
 
-Defined in: [packages/auth/src/types.ts:565](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L565)
+Defined in: [packages/auth/src/types.ts:579](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L579)
 
 Additional programmatic rules, evaluated after proto options.
 Rules are evaluated in order; first matching rule wins.

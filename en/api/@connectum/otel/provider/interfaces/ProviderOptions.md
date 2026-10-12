@@ -38,7 +38,7 @@ over attributes parsed from the `OTEL_RESOURCE_ATTRIBUTES` env var.
 
 Defined in: [provider.ts:42](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L42)
 
-Override service name (defaults to OTEL_SERVICE_NAME or npm_package_name)
+Override service name (defaults to OTEL_SERVICE_NAME, then service.name in OTEL_RESOURCE_ATTRIBUTES, then npm_package_name)
 
 ***
 
