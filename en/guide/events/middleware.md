@@ -192,7 +192,19 @@ When an event is routed to the DLQ, the middleware attaches diagnostic metadata:
 | `dlq.original-topic` | Topic the event was originally published to |
 | `dlq.original-id` | Unique event ID from the original message |
 | `dlq.error` | Serialized error; the default is the error name, or `UnknownError` for a non-`Error` value |
-| `dlq.attempt` | Original broker delivery indicator (`RawEvent.attempt`); excludes local middleware retries |
+| `dlq.attempt` | Delivery attempt of the original message as the broker adapter reports it (`RawEvent.attempt`); retries made by the retry middleware inside the process are not counted |
+
+`dlq.attempt` is a delivery number, not the number of handler invocations: with
+`retry: { maxRetries: 2 }` and a handler that always fails, the handler runs three
+times and `dlq.attempt` is still the broker's number for that one delivery. Each
+adapter fills it differently:
+
+| Adapter | `dlq.attempt` |
+|---------|---------------|
+| NATS | The JetStream delivery count |
+| Redis | `1` on a normal read; the pending-entry delivery count when the entry was reclaimed |
+| AMQP | `2` when the broker marks the message `redelivered`, otherwise `1` (there is no exact counter) |
+| Kafka, in-memory | Always `1` |
 
 The DLQ copy contains the original payload and these diagnostic fields. Original
 user metadata is not copied; the adapter creates a new event identity for the

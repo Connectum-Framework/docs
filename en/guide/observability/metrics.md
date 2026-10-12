@@ -85,6 +85,28 @@ For streaming RPCs, those aggregate size measurements are recorded as zero;
 setting `recordMessages: true` adds per-message `rpc.message` span events with
 an estimated serialized size. Message events are disabled by default.
 
+### Attributes and the semantic conventions
+
+The duration histograms use the names and the `s` unit that the OpenTelemetry RPC
+semantic conventions define. An RPC metric point can carry the attributes below; the table states the condition for those that appear only on failed calls:
+
+| Attribute | Value |
+|-----------|-------|
+| `rpc.system` | `connect_rpc` |
+| `rpc.service`, `rpc.method` | Service name and the short method name |
+| `server.address`, `server.port` | The server address and port |
+| `network.protocol.name`, `network.transport` | `connect_rpc` and `tcp` |
+| `transport` | `http` or `in-process`: which transport carried the call. This is a Connectum attribute, not part of the semantic conventions |
+| `error.type` | Only for failed calls: the Connect error code name (for example `FAILED_PRECONDITION`), the error class name for another `Error`, otherwise `UNKNOWN` |
+| `rpc.connect_rpc.status_code` | Only for failed calls with a Connect error: the numeric Connect code. This is a Connectum attribute, not part of the semantic conventions |
+
+The OpenTelemetry RPC conventions are in the *Release Candidate* status, and newer
+revisions use other attribute names than the ones above (`rpc.system.name`,
+a fully qualified `rpc.method`, `rpc.response.status_code`), and no longer define the
+request and response size metrics or the `rpc.message` event. Connectum keeps its
+current names within 1.x so existing dashboards and alerts keep working; dashboards
+that filter on these attributes should use the names in the table.
+
 ## Related
 
 - [Observability Overview](/en/guide/observability) -- back to overview

@@ -143,6 +143,27 @@ pnpm --filter @connectum/cli test:interop
 
 The pinned client versions and the upstream protos the suites check against are listed in `tests/interop/README.md` in the framework repository.
 
+### Release Gate and Scaffold Check
+
+Two checks reproduce, locally and before you push, what CI runs at the release boundary. They use different package sources: `release:gate` installs locally packed `@connectum/*` packages, while `scaffold:check` installs the published `@connectum/*` packages from npm, so it does not validate unpublished workspace changes. Run them from the root of the framework repository (`connectum`).
+
+```bash
+# Publish-boundary gate: install the packed @connectum/* packages into a throwaway
+# consumer and check exports maps, the full .d.ts graph, value exports against
+# .d.ts declarations, subpath importability, catalog codegen and a behavioural smoke
+pnpm release:gate
+
+# Scaffold matrix: for each module combination, run `connectum init`, install,
+# typecheck (which runs `buf generate` first) and test the generated project
+pnpm scaffold:check
+pnpm scaffold:check --combo auth,otel   # only the named combinations
+pnpm scaffold:check --runtime bun       # add the Bun cell (needs bun in PATH)
+pnpm scaffold:check --drift             # add the base-drift cell (examples@main)
+pnpm scaffold:check --keep              # keep the generated projects in .tmp/
+```
+
+The scaffold check installs published `@connectum/*` and third-party ranges without a lockfile, so a failure with no local change reports the state of the published surface and is not a reason to re-run. `--drift` is intentionally not deterministic: it follows the live `examples` branch that `connectum init` is meant to be pinned away from.
+
 ### Linting and Formatting
 
 ```bash

@@ -31,7 +31,12 @@ const gatewayAuth = createGatewayAuthInterceptor({
 `trustSource` checks a header value before accepting the identity fields. The
 example uses a shared secret; the matcher also supports IPv4 CIDR values, which
 still rely on a trusted upstream setting the header rather than a socket peer
-check. Remove or overwrite client-supplied identity and trust headers at the
+check. An address in the header is read strictly: exactly four decimal octets from
+0 to 255 without leading zeros (`10.0.0.1`), and a CIDR value is such an address, a
+`/` and a prefix of 0 to 32 (`10.0.0.0/8`). A header value that is not an address, or an
+`expectedValues` entry that is not a well-formed block, matches only if it is
+byte-for-byte equal to the other side, so a malformed block never widens trust
+(a shared secret may itself contain `/`). IPv6 ranges are not supported. Remove or overwrite client-supplied identity and trust headers at the
 gateway, restrict direct access to the service, and protect the hop with TLS. See
 [`GatewayAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/GatewayAuthInterceptorOptions)
 for the exact nested fields.

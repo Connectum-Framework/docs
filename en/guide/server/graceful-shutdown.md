@@ -235,11 +235,17 @@ process.on('SIGTERM', async () => {
 Manual shutdown is useful when you need to perform actions **before** calling `server.stop()`, such as waiting for load balancer drain or notifying external services.
 :::
 
-### Concurrent stop() calls {#idempotent-stop}
+### Repeated stop() calls {#idempotent-stop}
 
-Concurrent `server.stop()` calls while shutdown is in progress await the same
-shutdown operation. A call before startup or after the server has stopped rejects;
-`stop()` is not a no-op in those states:
+`server.stop()` is safe to call more than once, for example from a signal handler and
+from your own code:
+
+- Concurrent calls while shutdown is in progress await the same shutdown operation
+  and settle with its outcome, also when it fails.
+- A call after the server has stopped resolves immediately. It does not run the
+  shutdown hooks again and emits no events.
+- A call on a server that was never started, or is still starting, rejects: that is a
+  lifecycle mistake, not a repeat.
 
 ```typescript
 // Both resolve when the single shutdown completes
@@ -247,6 +253,8 @@ await Promise.all([
   server.stop(),
   server.stop(),
 ]);
+
+await server.stop(); // already stopped: resolves, does nothing
 ```
 
 ## Kubernetes Integration

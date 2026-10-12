@@ -34,6 +34,13 @@ expected issuer, audience, age, and algorithms for your identity provider. Use
 [`JwtAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/JwtAuthInterceptorOptions)
 for the complete field contract and defaults.
 
+A token must carry an `exp` (expiration time) claim: a signed token without one
+never expires, so one that leaks stays valid until the signing key is rotated. A
+token without `exp`, or with an `exp` in the past, is rejected as `Unauthenticated`.
+Set `requireExpiration: false` only for an issuer that cannot add `exp`; an expired
+token is still rejected. See [Signed tokens must carry `exp`](/en/migration/token-expiration)
+when upgrading.
+
 ## HMAC Secret
 
 For simple setups and testing environments where tokens are signed with a shared secret:
