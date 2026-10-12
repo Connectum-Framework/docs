@@ -2,7 +2,7 @@
 
 # Interface: ClientGatewayInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:540](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L540)
+Defined in: [packages/auth/src/types.ts:554](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L554)
 
 Client-side gateway service-to-service auth interceptor options.
 
@@ -16,7 +16,7 @@ Client-side gateway service-to-service auth interceptor options.
 
 > `readonly` `optional` **roles?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:546](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L546)
+Defined in: [packages/auth/src/types.ts:560](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L560)
 
 Optional roles to propagate (JSON-encoded in header)
 
@@ -26,7 +26,7 @@ Optional roles to propagate (JSON-encoded in header)
 
 > `readonly` **secret**: `string`
 
-Defined in: [packages/auth/src/types.ts:542](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L542)
+Defined in: [packages/auth/src/types.ts:556](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L556)
 
 Shared secret for gateway trust verification
 
@@ -36,6 +36,6 @@ Shared secret for gateway trust verification
 
 > `readonly` **subject**: `string`
 
-Defined in: [packages/auth/src/types.ts:544](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L544)
+Defined in: [packages/auth/src/types.ts:558](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L558)
 
 Authenticated subject identifier (e.g., service name)

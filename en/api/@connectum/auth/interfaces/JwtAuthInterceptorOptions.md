@@ -91,7 +91,7 @@ Number (seconds) or string (e.g., "2h", "7d").
 
 > `optional` **propagateHeaders?**: `boolean`
 
-Defined in: [packages/auth/src/types.ts:238](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L238)
+Defined in: [packages/auth/src/types.ts:246](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L246)
 
 Propagate auth context as headers for downstream services.
 
@@ -151,6 +151,25 @@ const ecKey = await crypto.subtle.importKey(
 
 ***
 
+### requireExpiration?
+
+> `optional` **requireExpiration?**: `boolean`
+
+Defined in: [packages/auth/src/types.ts:236](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L236)
+
+Reject a token that has no `exp` (expiration time) claim. A signed token
+without `exp` never expires, so a leaked one stays valid until the signing
+key is rotated; RFC 9068 requires `exp` in JWT access tokens. Set `false`
+only for a trusted issuer that cannot add `exp`.
+
+#### Default
+
+```ts
+true
+```
+
+***
+
 ### secret?
 
 > `optional` **secret?**: `string`
@@ -165,7 +184,7 @@ HMAC symmetric secret (for HS256/HS384/HS512)
 
 > `optional` **skipMethods?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:233](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L233)
+Defined in: [packages/auth/src/types.ts:241](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L241)
 
 Methods to skip authentication for.
 

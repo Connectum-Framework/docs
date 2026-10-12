@@ -4,7 +4,7 @@
 
 > **InternalTrustSource** = (`req`) => [`AuthContext`](../interfaces/AuthContext.md) \| `null` \| `Promise`\<[`AuthContext`](../interfaces/AuthContext.md) \| `null`\>
 
-Defined in: [packages/auth/src/types.ts:336](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L336)
+Defined in: [packages/auth/src/types.ts:344](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L344)
 
 A pluggable internal trust source (ADR-029).
 

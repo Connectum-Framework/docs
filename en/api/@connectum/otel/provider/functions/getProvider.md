@@ -4,7 +4,7 @@
 
 > **getProvider**(): [`OtelProvider`](../interfaces/OtelProvider.md)
 
-Defined in: [provider.ts:463](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L463)
+Defined in: [provider.ts:497](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L497)
 
 Get the current OpenTelemetry provider.
 
