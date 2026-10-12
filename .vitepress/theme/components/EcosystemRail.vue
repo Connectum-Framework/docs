@@ -15,8 +15,6 @@ const technologies: readonly Technology[] = [
     { label: 'Kafka', icon: '/assets/ecosystem/kafka.webp', darkInvert: true },
     { label: 'NATS', icon: '/assets/ecosystem/nats.webp', darkInvert: true },
     { label: 'Redis', icon: '/assets/ecosystem/redis.webp', darkInvert: true },
-    { label: 'KeyDB', icon: '/assets/ecosystem/keydb.webp', darkInvert: true },
-    { label: 'Dragonfly', icon: '/assets/ecosystem/dragonfly.webp' },
     { label: 'AMQP', icon: '/assets/ecosystem/amqp.webp' },
     { label: 'Redpanda', icon: '/assets/ecosystem/redpanda.webp' },
     { label: 'TypeScript', icon: '/assets/ecosystem/typescript.webp' },
