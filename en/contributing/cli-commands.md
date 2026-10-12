@@ -204,6 +204,17 @@ With sibling framework and documentation checkouts, the generated API Reference 
 written to `../docs/en/api/` and integrated into the sidebar through
 `typedoc-sidebar.json`. TypeDoc warnings fail generation.
 
+```bash
+# Run the Quickstart, authentication/TLS guide and package README examples
+# against the packed packages (run after `pnpm build`)
+pnpm docs:check --docs ../docs --examples ../examples
+```
+
+The command packs the existing `dist` of every package, installs a consumer
+project for each example, and probes the running server. It needs network access
+and sibling `docs` and `examples` checkouts, writes only below `.tmp/`, and is
+not part of CI.
+
 ## Package-Level Commands
 
 Commands for working with individual packages.

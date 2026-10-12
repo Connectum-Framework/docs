@@ -44,6 +44,20 @@ Run these commands from the repository root after installing dependencies.
 `docs:validate:built` checks the generated routes, search index, sitemap, and LLM
 outputs. Open the preview URL printed by VitePress and stop it with Ctrl+C.
 
+## Check code examples
+
+The framework repository runs the examples from this site and from its package
+READMEs as an isolated consumer of the packed packages. With the framework,
+documentation, and examples repositories checked out side by side, run from the
+framework root after `pnpm build`:
+
+```bash
+pnpm docs:check --docs ../docs --examples ../examples
+```
+
+The check needs network access, installs its consumer projects at run time, and
+is not part of CI.
+
 ## Structure
 
 ```
