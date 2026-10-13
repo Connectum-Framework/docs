@@ -26,6 +26,7 @@ Reject calls that carry no credential at all. The gate stays cheap: it only look
 ```typescript
 import { Code, ConnectError } from '@connectrpc/connect';
 import { createServer } from '@connectum/core';
+import { ConnectErrorCodeName } from '@connectum/otel';
 
 const server = createServer({
   services: [routes],
@@ -54,6 +55,7 @@ A rejected call never reaches the server interceptors, so `@connectum/otel` reco
 import type { HandlerContext } from '@connectrpc/connect';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { createServer } from '@connectum/core';
+import { ConnectErrorCodeName } from '@connectum/otel';
 import { metrics } from '@opentelemetry/api';
 
 type Gate = (context: HandlerContext) => void | Promise<void>;
@@ -66,10 +68,9 @@ function audited(gate: Gate): Gate {
       await gate(context);
     } catch (err) {
       rejections.add(1, {
-        'rpc.service': context.service.typeName,
-        'rpc.method': context.method.name,
-        // Numeric Connect code, as @connectum/otel records it on spans.
-        'rpc.connect_rpc.status_code': ConnectError.from(err).code,
+        'rpc.method': `${context.service.typeName}/${context.method.name}`,
+        // Connect code name, as @connectum/otel records it on spans.
+        'rpc.response.status_code': ConnectErrorCodeName[ConnectError.from(err).code] ?? 'UNKNOWN',
       });
       throw err;
     }

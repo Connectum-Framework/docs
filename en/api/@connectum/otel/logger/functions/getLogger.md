@@ -4,7 +4,7 @@
 
 > **getLogger**(`name?`, `options?`): [`Logger`](../interfaces/Logger.md)
 
-Defined in: [logger.ts:28](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/logger.ts#L28)
+Defined in: [logger.ts:32](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/logger.ts#L32)
 
 ## Parameters
 

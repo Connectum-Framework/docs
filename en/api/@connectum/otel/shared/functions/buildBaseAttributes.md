@@ -4,7 +4,7 @@
 
 > **buildBaseAttributes**(`params`): `Record`\<`string`, `string` \| `number`\>
 
-Defined in: [shared.ts:208](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L208)
+Defined in: [shared.ts:217](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L217)
 
 Builds standard RPC base attributes per OTel semantic conventions.
 

@@ -16,6 +16,10 @@ https://opentelemetry.io/docs/specs/semconv/rpc/rpc-metrics/
 - [RpcClientMetrics](interfaces/RpcClientMetrics.md)
 - [RpcServerMetrics](interfaces/RpcServerMetrics.md)
 
+## Variables
+
+- [RPC\_DURATION\_BUCKETS](variables/RPC_DURATION_BUCKETS.md)
+
 ## Functions
 
 - [createRpcClientMetrics](functions/createRpcClientMetrics.md)
