@@ -2,7 +2,7 @@
 
 # Interface: AmqpLifecycleCallbacks
 
-Defined in: [packages/events-amqp/src/types.ts:724](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L724)
+Defined in: [packages/events-amqp/src/types.ts:745](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L745)
 
 Connection lifecycle callbacks.
 
@@ -16,7 +16,7 @@ deprecated since 1.3.0 (removal not before 2.0).
 
 > `readonly` `optional` **onConnected?**: () => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:748](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L748)
+Defined in: [packages/events-amqp/src/types.ts:769](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L769)
 
 #### Returns
 
@@ -32,7 +32,7 @@ Since 1.3.0 — use [onLifecycle](#onlifecycle) (`type: "connected"`). Kept unti
 
 > `readonly` `optional` **onDisconnected?**: (`cause`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:750](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L750)
+Defined in: [packages/events-amqp/src/types.ts:771](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L771)
 
 #### Parameters
 
@@ -54,7 +54,7 @@ Since 1.3.0 — use [onLifecycle](#onlifecycle) (`type: "disconnected"`). Kept u
 
 > `readonly` `optional` **onLifecycle?**: (`event`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:746](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L746)
+Defined in: [packages/events-amqp/src/types.ts:767](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L767)
 
 Single discriminated-union lifecycle callback — the preferred surface.
 Receives every [AmqpLifecycleEvent](../type-aliases/AmqpLifecycleEvent.md), including `blocked`/`unblocked`,
@@ -92,7 +92,7 @@ initial attempts themselves report their setup failures.
 
 > `readonly` `optional` **onReconnectFailed?**: (`cause`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:763](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L763)
+Defined in: [packages/events-amqp/src/types.ts:784](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L784)
 
 #### Parameters
 
@@ -114,7 +114,7 @@ Since 1.3.0 — use [onLifecycle](#onlifecycle) (`type: "reconnect-failed"`). Ke
 
 > `readonly` `optional` **onReconnecting?**: (`info`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:761](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L761)
+Defined in: [packages/events-amqp/src/types.ts:782](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L782)
 
 A reconnect attempt has been scheduled. Fires exactly ONCE per scheduled
 retry (amqplib's `reconnect-scheduled`). A failed attempt that also emits
@@ -153,7 +153,7 @@ Since 1.3.0 — use [onLifecycle](#onlifecycle) (`type: "reconnecting"`). Kept u
 
 > `readonly` `optional` **onSetupFailed?**: (`error`, `ctx`) => `void`
 
-Defined in: [packages/events-amqp/src/types.ts:780](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L780)
+Defined in: [packages/events-amqp/src/types.ts:801](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L801)
 
 A setup/topology failure occurred while (re)applying the declarative
 topology — during the startup window (`ctx.initial: true`; `ctx.attempt`

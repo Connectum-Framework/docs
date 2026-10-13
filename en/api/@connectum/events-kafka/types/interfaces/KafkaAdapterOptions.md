@@ -2,17 +2,27 @@
 
 # Interface: KafkaAdapterOptions
 
-Defined in: [types.ts:12](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L12)
+Defined in: [types.ts:72](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L72)
 
 Options for creating a KafkaAdapter instance.
 
 ## Properties
 
+### authenticationTimeout?
+
+> `readonly` `optional` **authenticationTimeout?**: `number`
+
+Defined in: [types.ts:89](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L89)
+
+Time allowed for the SASL handshake, in milliseconds.
+
+***
+
 ### brokers
 
 > `readonly` **brokers**: `string`[]
 
-Defined in: [types.ts:14](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L14)
+Defined in: [types.ts:74](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L74)
 
 Kafka broker addresses (e.g., ["localhost:9092"])
 
@@ -22,9 +32,35 @@ Kafka broker addresses (e.g., ["localhost:9092"])
 
 > `readonly` `optional` **clientId?**: `string`
 
-Defined in: [types.ts:17](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L17)
+Defined in: [types.ts:77](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L77)
 
 Client ID for this producer/consumer (default: "connectum")
+
+***
+
+### clientOptions?
+
+> `readonly` `optional` **clientOptions?**: `Readonly`\<`Record`\<`string`, `unknown`\>\>
+
+Defined in: [types.ts:115](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L115)
+
+Settings of the underlying Kafka client that have no portable form, such as a custom logger
+factory, a socket factory or a custom SASL mechanism.
+
+**Not portable and not type-checked:** the keys are those of the client library the adapter
+uses today (KafkaJS) and may change if that library is replaced. The value is merged
+shallowly over the typed options above (a `retry` here replaces `retry` there), and it can
+never override `brokers` or `clientId`.
+
+***
+
+### connectionTimeout?
+
+> `readonly` `optional` **connectionTimeout?**: `number`
+
+Defined in: [types.ts:86](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L86)
+
+Time allowed to establish a connection, in milliseconds.
 
 ***
 
@@ -32,7 +68,7 @@ Client ID for this producer/consumer (default: "connectum")
 
 > `readonly` `optional` **consumerOptions?**: `object`
 
-Defined in: [types.ts:32](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L32)
+Defined in: [types.ts:124](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L124)
 
 Consumer-specific options
 
@@ -132,14 +168,23 @@ throws a `RangeError` otherwise.
 
 ***
 
-### kafkaConfig?
+### enforceRequestTimeout?
 
-> `readonly` `optional` **kafkaConfig?**: `Omit`\<`Partial`\<`KafkaConfig`\>, `"brokers"` \| `"clientId"`\>
+> `readonly` `optional` **enforceRequestTimeout?**: `boolean`
 
-Defined in: [types.ts:23](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L23)
+Defined in: [types.ts:98](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L98)
 
-Additional KafkaJS configuration overrides.
-Merged with brokers and clientId.
+Whether `requestTimeout` is enforced by the client itself rather than only by the socket.
+
+***
+
+### logLevel?
+
+> `readonly` `optional` **logLevel?**: [`KafkaLogLevel`](../type-aliases/KafkaLogLevel.md)
+
+Defined in: [types.ts:104](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L104)
+
+Verbosity of the client library's log (default: the library's own default, `"info"`).
 
 ***
 
@@ -147,12 +192,62 @@ Merged with brokers and clientId.
 
 > `readonly` `optional` **producerOptions?**: `object`
 
-Defined in: [types.ts:26](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L26)
+Defined in: [types.ts:118](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L118)
 
 Producer-specific options
 
 #### compression?
 
-> `readonly` `optional` **compression?**: `CompressionTypes`
+> `readonly` `optional` **compression?**: [`KafkaCompression`](../type-aliases/KafkaCompression.md)
 
-Compression type for produced messages
+Compression of produced messages (default: none).
+
+***
+
+### reauthenticationThreshold?
+
+> `readonly` `optional` **reauthenticationThreshold?**: `number`
+
+Defined in: [types.ts:92](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L92)
+
+Share of a SASL session's lifetime after which the connection re-authenticates (a number between 0 and 1).
+
+***
+
+### requestTimeout?
+
+> `readonly` `optional` **requestTimeout?**: `number`
+
+Defined in: [types.ts:95](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L95)
+
+Time after which a request without an answer fails, in milliseconds.
+
+***
+
+### retry?
+
+> `readonly` `optional` **retry?**: [`KafkaRetryOptions`](KafkaRetryOptions.md)
+
+Defined in: [types.ts:101](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L101)
+
+Retry of the client's requests and connection attempts.
+
+***
+
+### sasl?
+
+> `readonly` `optional` **sasl?**: [`KafkaSaslOptions`](../type-aliases/KafkaSaslOptions.md)
+
+Defined in: [types.ts:83](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L83)
+
+SASL authentication of the broker connection.
+
+***
+
+### ssl?
+
+> `readonly` `optional` **ssl?**: `boolean` \| [`KafkaTlsOptions`](KafkaTlsOptions.md)
+
+Defined in: [types.ts:80](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L80)
+
+TLS for the broker connection: `true` for the system trust store, or the settings of [KafkaTlsOptions](KafkaTlsOptions.md).

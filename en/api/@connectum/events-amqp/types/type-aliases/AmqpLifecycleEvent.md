@@ -2,7 +2,7 @@
 
 # Type Alias: AmqpLifecycleEvent
 
-> **AmqpLifecycleEvent** = \{ `reconnected`: `boolean`; `type`: `"connected"`; \} \| \{ `error`: `Error`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `delay`: `number`; `error`: `Error`; `type`: `"reconnecting"`; \} \| \{ `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `initial`: `boolean`; `type`: `"setup-failed"`; \} \| \{ `reason`: `string`; `type`: `"blocked"`; \} \| \{ `type`: `"unblocked"`; \} \| \{ `action`: [`AmqpSettlementAction`](AmqpSettlementAction.md); `deliveryTag`: `number`; `error`: `Error`; `queue`: `string`; `routingKey`: `string`; `type`: `"settlement-skipped"`; \} \| \{ `cause`: [`AmqpConsumerLossCause`](AmqpConsumerLossCause.md); `error?`: `Error`; `queue`: `string`; `type`: `"consumer-lost"`; `willRestore`: `boolean`; \} \| \{ `attempt`: `number`; `queue`: `string`; `type`: `"consumer-restored"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `queue`: `string`; `type`: `"consumer-restore-failed"`; `willRetry`: `boolean`; \} \| \{ `callback`: `string`; `error`: `Error`; `event`: `string`; `type`: `"lifecycle-error"`; \}
+> **AmqpLifecycleEvent** = \{ `reconnected`: `boolean`; `type`: `"connected"`; \} \| \{ `error`: `Error`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `delay`: `number`; `error`: `Error`; `type`: `"reconnecting"`; \} \| \{ `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `initial`: `boolean`; `type`: `"setup-failed"`; \} \| \{ `reason`: `string`; `type`: `"blocked"`; \} \| \{ `type`: `"unblocked"`; \} \| \{ `action`: [`AmqpSettlementAction`](AmqpSettlementAction.md); `deliveryTag`: `number`; `error`: `Error`; `queue`: `string`; `routingKey`: `string`; `type`: `"settlement-skipped"`; \} \| \{ `cause`: [`AmqpConsumerLossCause`](AmqpConsumerLossCause.md); `error?`: `Error`; `queue`: `string`; `type`: `"consumer-lost"`; `willRestore`: `boolean`; \} \| \{ `attempt`: `number`; `queue`: `string`; `type`: `"consumer-restored"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `queue`: `string`; `type`: `"consumer-restore-failed"`; `willRetry`: `boolean`; \} \| \{ `error`: `Error`; `type`: `"publish-channel-lost"`; \} \| \{ `type`: `"publish-channel-restored"`; \} \| \{ `callback`: `string`; `error`: `Error`; `event`: `string`; `type`: `"lifecycle-error"`; \}
 
 Defined in: [packages/events-amqp/src/types.ts:610](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L610)
 
@@ -209,6 +209,45 @@ and the connection are unaffected.
 #### willRetry
 
 > `readonly` **willRetry**: `boolean`
+
+***
+
+### Type Literal
+
+\{ `error`: `Error`; `type`: `"publish-channel-lost"`; \}
+
+#### error
+
+> `readonly` **error**: `Error`
+
+The broker reply, carrying the numeric reply `code`.
+
+#### type
+
+> `readonly` **type**: `"publish-channel-lost"`
+
+The broker closed only the publish channel with a reply code (for
+example `404` for a publish to a missing exchange under
+`topologyMode: "skip"`, or `406`) while the connection stayed up.
+The publish that caused it, and the publishes in flight on that
+channel, reject with `AmqpConnectionError` whose `cause` carries the
+broker reply; the next publish opens a new channel
+(`publish-channel-restored`).
+
+Delivered once per close. Not delivered for a connection loss (the
+connection's own `disconnected` covers it) nor for `disconnect()`.
+
+***
+
+### Type Literal
+
+\{ `type`: `"publish-channel-restored"`; \}
+
+#### type
+
+> `readonly` **type**: `"publish-channel-restored"`
+
+A new publish channel replaced the one reported by `publish-channel-lost`; delivered once, when the next publish had it opened.
 
 ***
 

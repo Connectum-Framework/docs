@@ -122,6 +122,44 @@ const adapter = KafkaAdapter({
 });
 ```
 
+### Connection options {#kafka-connection-options}
+
+TLS, SASL, timeouts, retry and the client's log level are options of `KafkaAdapter()`
+with types that this package owns; none of them names the Kafka client library:
+
+```typescript
+const adapter = KafkaAdapter({
+  brokers: ['kafka-1:9093'],
+  ssl: { ca: process.env.KAFKA_CA },
+  sasl: { mechanism: 'scram-sha-512', username: 'orders', password: process.env.KAFKA_PASSWORD ?? '' },
+  requestTimeout: 30_000,
+  retry: { retries: 8 },
+  logLevel: 'warn',
+  producerOptions: { compression: 'gzip' },
+});
+```
+
+| Option | Value |
+|---|---|
+| `ssl` | `true` for the system trust store, or `{ ca, cert, key, passphrase, rejectUnauthorized, servername }` |
+| `sasl` | `plain`, `scram-sha-256` and `scram-sha-512` with `username` and `password`; `oauthbearer` with an `oauthBearerProvider` function; `aws` with `authorizationIdentity`, `accessKeyId`, `secretAccessKey` and optionally `sessionToken` |
+| `connectionTimeout`, `authenticationTimeout`, `requestTimeout`, `reauthenticationThreshold`, `enforceRequestTimeout` | Timeouts in milliseconds, the SASL re-authentication share, and whether the client enforces `requestTimeout` itself |
+| `retry` | `maxRetryTime`, `initialRetryTime`, `factor`, `multiplier`, `retries` |
+| `logLevel` | `nothing`, `error`, `warn`, `info` or `debug` |
+| `producerOptions.compression` | `none`, `gzip`, `snappy`, `lz4` or `zstd` |
+
+`gzip` works as shipped. `snappy`, `lz4` and `zstd` need a codec that your application
+registers with the client library before the first publish; without one, publishing fails.
+
+Settings that have no portable form go in `clientOptions`: a log factory, a socket
+factory, a custom SASL mechanism. Its keys are those of the client library the adapter
+uses today (KafkaJS); they are **not type-checked and not portable**, and may change if
+that library is replaced. The value is merged shallowly over the typed options and can
+never override `brokers` or `clientId`.
+
+The `kafkaConfig` option of earlier versions is removed and throws a `TypeError`; see
+[Kafka adapter options](/en/migration/kafka-adapter-options).
+
 ### Acknowledgement and redelivery {#kafka-ack-redelivery}
 
 Delivery is at-least-once. The adapter commits a partition offset only from the
