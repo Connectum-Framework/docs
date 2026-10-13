@@ -174,18 +174,20 @@ What is retried, and what is not:
   message state at a timeout is unknown, so this raises the chance of duplicates.
 - **Never retried inline:** a broker nack, an unroutable message, a serialization
   failure, and a topology error.
-- **Not retried when retrying cannot help:** when the broker closes the *current*
-  publish channel with a reply code of any kind (`404` for a publish to a missing
-  exchange under `topologyMode: 'skip'`, `403` for a publish to an internal exchange,
-  `406`, `541`), the publish rejects at once with the broker reply as `cause`, without
-  using the budget. The connection stays up and recovery does not re-create a channel
-  the broker closed, so every further attempt would meet the same closed channel; with
-  `maxRetries: Infinity` this is what keeps the loop from running forever. A
-  connection loss closes channels without a reply code and stays retriable, and so does
-  a failure that arrived on a channel recovery had already replaced. A publish made
-  when the adapter has no connection at all (never connected, after `disconnect()`, or
-  after recovery [gave up](#recovery-gives-up)) also rejects at once without using the
-  budget.
+- **Not retried when retrying cannot help:** when the broker closes the publish
+  channel an attempt used, with a reply code of any kind (`404` for a publish to a
+  missing exchange under `topologyMode: 'skip'`, `403` for a publish to an internal
+  exchange, `406`, `541`), the publish rejects at once with the broker reply as
+  `cause`, without using the budget, and it stays final even though the adapter has
+  meanwhile opened a new publish channel (see
+  [A publish channel the broker closed](#publish-channel-recovery)): the same publish
+  would only get the same reply. With `maxRetries: Infinity` this is what keeps the
+  loop from running forever. The publishes that were in flight on the same closed
+  channel reject the same way, because their outcome cannot be told apart. A
+  connection loss closes channels without a reply code and stays retriable. A publish
+  made when the adapter has no connection at all (never connected, after
+  `disconnect()`, or after recovery [gave up](#recovery-gives-up)) also rejects at
+  once without using the budget.
 - **Shutdown:** `disconnect()` aborts the backoff wait and the publish rejects with
   the error of its last attempt. Because the retry loop runs inside the
   `adapter.publish()` promise, the EventBus
@@ -205,16 +207,36 @@ A single `publish()` can take up to `maxRetries + 1` attempts, each bounded by
 `externalContract`), mandatory publishes run one at a time; a retrying publish holds
 that queue, so order is kept at the cost of the publishes behind it waiting.
 
+### A publish channel the broker closed {#publish-channel-recovery}
+
+A publish to an exchange that does not exist (under `topologyMode: 'skip'`), a `406`
+and similar channel errors make the broker close only the publish channel; the
+connection stays up. The publish that caused it, and the publishes that were in
+flight on that channel, reject with `AmqpConnectionError` whose `cause` is the broker
+reply (`cause.code` is `404`, `406`, ...). The adapter then opens a new publish
+channel on the same connection when the next `publish()` needs it:
+
+- It happens once, however many publishes are waiting, and starts no timer of its
+  own: a permanently wrong exchange costs one channel per failing publish at most.
+- It is not a reconnect: no `connected` or `disconnected` event is reported, and the
+  topology is not declared again.
+- It is reported with two lifecycle events, `publish-channel-lost` and
+  `publish-channel-restored`.
+- A close without a broker reply code (a connection loss, your own `disconnect()`) is
+  not handled this way: connection recovery owns it.
+- If `disconnect()` is called, or the connection is lost, while the new channel is
+  opening, the new channel is closed and not used.
+
 ### Apply the same boundary in your own code {#auto-retriable-errors}
 
 `isAutoRetriablePublishError(err, { retryOnTimeout })` is the error-class part of the
 `publishRetry` rule: it returns `true` for any `AmqpConnectionError`, plus
 `AmqpPublishTimeoutError` when `retryOnTimeout` is `true`. `publishRetry` adds two
-stops on top of it, described above: a publish channel closed by the broker, and an
+stops on top of it, described above: a publish refused by a broker channel close, and an
 adapter with no connection. Use the helper when a producer retries at a higher level
 (an outbox, a job queue) and should agree with the adapter, and add the reply-code
 check yourself, because a publish channel closed by the broker fails the same way
-every time. The adapter decides by channel identity; the check below is the part
+every time. The adapter decides by the broker reply its own attempt recorded; the check below is the part
 visible to application code, a numeric broker reply code in `cause`:
 
 ```typescript
@@ -520,6 +542,8 @@ const adapter = AmqpAdapter({
 | `consumer-lost` | `queue`, `cause`, `error?`, `willRestore` | The broker ended one subscription's consumer while the connection stayed up. `cause` is `cancelled` (queue deleted or consumer cancelled) or `channel-closed` (the broker closed the channel; `error` is its exception). `willRestore` is `true` when `recovery` is enabled. See [A consumer the broker ends](#consumer-loss). |
 | `consumer-restored` | `queue`, `attempt` | A lost consumer is consuming again. For a subscription without a group, `queue` is the new auto-named queue. |
 | `consumer-restore-failed` | `queue`, `attempt`, `error`, `willRetry` | A restoration attempt failed. `willRetry: false` means this subscription's restoration has ended. For a subscription without a group, `queue` is the name the lost consumer had, not a queue declared by the failed attempt. |
+| `publish-channel-lost` | `error` | The broker closed only the publish channel with a reply code (for example `404` for a publish to a missing exchange) while the connection stayed up. `error` is the broker reply, with its `code`. Not reported for a connection loss or your own `disconnect()`. See [A publish channel the broker closed](#publish-channel-recovery). |
+| `publish-channel-restored` | — | A new publish channel replaced the lost one, opened by the next `publish()`. |
 | `lifecycle-error` | `callback`, `event`, `error` | A lifecycle callback threw or returned a rejected promise. `callback` names it (`onLifecycle` or a flat callback such as `onReconnecting`); `event` is the `type` it was handling. |
 
 Rules for the callback:
