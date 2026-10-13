@@ -2,7 +2,7 @@
 
 # Interface: AmqpExchangeOptions
 
-Defined in: [packages/events-amqp/src/types.ts:786](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L786)
+Defined in: [packages/events-amqp/src/types.ts:807](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L807)
 
 Exchange assertion options.
 
@@ -12,7 +12,7 @@ Exchange assertion options.
 
 > `readonly` `optional` **autoDelete?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:799](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L799)
+Defined in: [packages/events-amqp/src/types.ts:820](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L820)
 
 Whether the exchange is deleted when the last queue unbinds.
 
@@ -28,7 +28,7 @@ false
 
 > `readonly` `optional` **durable?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:792](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L792)
+Defined in: [packages/events-amqp/src/types.ts:813](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L813)
 
 Whether the exchange should survive broker restarts.
 
