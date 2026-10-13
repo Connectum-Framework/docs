@@ -2,7 +2,7 @@
 
 # Interface: NatsConsumerOptions
 
-Defined in: [types.ts:41](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L41)
+Defined in: [types.ts:46](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L46)
 
 Options for JetStream consumer behaviour.
 
@@ -12,7 +12,7 @@ Options for JetStream consumer behaviour.
 
 > `readonly` `optional` **ackWait?**: `number`
 
-Defined in: [types.ts:58](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L58)
+Defined in: [types.ts:63](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L63)
 
 Ack wait timeout in milliseconds.
 After this period an unacknowledged message is redelivered.
@@ -29,7 +29,7 @@ After this period an unacknowledged message is redelivered.
 
 > `readonly` `optional` **deliverPolicy?**: `"all"` \| `"last"` \| `"new"`
 
-Defined in: [types.ts:50](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L50)
+Defined in: [types.ts:55](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L55)
 
 Deliver policy for new consumers.
 - `"new"` — only messages published after consumer creation
@@ -48,7 +48,7 @@ Deliver policy for new consumers.
 
 > `readonly` `optional` **maxDeliver?**: `number`
 
-Defined in: [types.ts:68](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L68)
+Defined in: [types.ts:73](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L73)
 
 Maximum number of delivery attempts. When the limit is reached,
 JetStream stops redelivering the message and emits a max-deliver

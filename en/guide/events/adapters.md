@@ -418,6 +418,80 @@ const adapter = AmqpAdapter({
 - [`AmqpAdapterOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpAdapterOptions)
 - [AMQP example](https://github.com/Connectum-Framework/examples/tree/main/with-events-amqp)
 
+## Connection Lifecycle Events {#adapter-lifecycle}
+
+The AMQP, NATS, Redis and Kafka adapters report their connection through
+`lifecycle.onLifecycle`, so you can alert on a lost or abandoned broker connection. The
+callback receives an object whose `type` field tells the event apart. The `type` strings
+and the shared fields are the same everywhere; the event types themselves are local to
+each package (`NatsLifecycleEvent`, `RedisLifecycleEvent`, `KafkaLifecycleEvent`,
+`AmqpLifecycleEvent`). The option is off unless you set it: without it no listener is
+attached to the broker client and nothing changes. The Memory adapter has no lifecycle option.
+
+```typescript
+const adapter = NatsAdapter({
+  servers: 'nats://localhost:4222',
+  lifecycle: {
+    onLifecycle: (event) => {
+      if (event.type === 'reconnect-failed') alert('NATS connection abandoned', event.error);
+    },
+  },
+});
+```
+
+Rules for the callback, the same for all adapters:
+
+- **It should not throw.** A thrown exception, or a returned promise that rejects, is
+  isolated and reported once as a `lifecycle-error` event (`callback`, `event`,
+  `error`); a failure while handling `lifecycle-error` itself is dropped. The broker
+  clients run their listeners inside their own recovery code, so an unguarded exception
+  there could stop the recovery or the subscription.
+- **A returned promise is not awaited.** A slow callback never delays `disconnect()` or
+  the recovery.
+- **Your own `disconnect()` and `unsubscribe()` report nothing** as a loss.
+
+The table below lists the NATS, Redis and Kafka events; the AMQP events are in
+[AMQP reliability](/en/guide/events/amqp-reliability).
+
+| Event | Fields | NATS | Redis | Kafka |
+|---|---|---|---|---|
+| `connected` | `reconnected` | After the first connect (`false`) and after every recovery (`true`, with `server`) | Once per connection on its first ready (`false`) and after every recovery (`true`) | Once, when the producer has connected (`false`) |
+| `disconnected` | `error` (NATS: `server`) | Once per loss | Once per loss of a connection that had been ready, however many reconnect attempts fail | Not emitted |
+| `reconnecting` | `attempt` (NATS), `attempt`, `delay`, `error` (Redis) | One per dial; the client gives no delay or error | One per scheduled attempt; the count restarts on ready | Not emitted |
+| `reconnect-failed` | `error` | Terminal: the client closed itself without your `disconnect()`, usually after its reconnect budget ran out | Terminal: the client ended without your close, which needs a `retryStrategy` that returns no delay | Not emitted |
+| `consumer-lost`, `consumer-restore-failed`, `consumer-restored` | `groupId`, `error`, `willRestore` / `attempt`, `willRetry` | — | — | A subscription's consumer crashed, crashed again before it came back, and joined its group again |
+
+### NATS {#nats-lifecycle}
+
+`reconnecting.attempt` counts dials since the loss, one for each address the client tries,
+and resets on recovery. After `reconnect-failed` the adapter drops the dead connection:
+`publish()` rejects with "not connected" and `connect()` can start a new one. The client's
+own `staleConnection`, `forceReconnect`, `error`, `ldm`, `update`, `ping` and
+`slowConsumer` events produce nothing. Events of the initial dial that happen before
+`connect()` returns are not available from the client.
+
+### Redis {#redis-lifecycle}
+
+The adapter holds one publishing connection and one blocking connection for every
+subscription, so a single loss of the server is reported once per connection; `connection`
+says which: `"publisher"` or `{ group, patterns }`. With N subscriptions that is N + 1
+`disconnected` events. Nothing is reported before a connection's first ready (`connect()`
+rejects with the error itself). Setting `onLifecycle` attaches an `error` listener to every
+connection, which replaces the client's own `[ioredis] Unhandled error event` line on
+stderr: the cause is in the `error` field of the events instead.
+
+### Kafka {#kafka-lifecycle}
+
+The client library reports no loss of the producer's connection, and a consumer rides out
+a short broker outage without any event, so the adapter does **not** emit `disconnected`,
+`reconnecting` or `reconnect-failed`: it would have to guess them from failed sends. What
+the client does report is a consumer that gave up retrying and crashed. `consumer-lost`
+carries `willRestore` (whether the client restarts the consumer on its own),
+`consumer-restore-failed` a counted `attempt` for each crash before the consumer came
+back, and `consumer-restored` the first group join after a crash. A first join,
+rebalances, the restart that [topic discovery](#kafka-wildcards) causes and your own
+`unsubscribe()` produce nothing.
+
 ## Automatic Client Identification
 
 When an adapter-specific client or connection name is not supplied, the EventBus

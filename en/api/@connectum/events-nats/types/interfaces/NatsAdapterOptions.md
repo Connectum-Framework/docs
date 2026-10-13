@@ -25,9 +25,19 @@ top-level `servers` option.
 
 > `readonly` `optional` **consumerOptions?**: [`NatsConsumerOptions`](NatsConsumerOptions.md)
 
-Defined in: [types.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L35)
+Defined in: [types.ts:40](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L40)
 
 JetStream consumer tuning options.
+
+***
+
+### lifecycle?
+
+> `readonly` `optional` **lifecycle?**: [`NatsLifecycleCallbacks`](NatsLifecycleCallbacks.md)
+
+Defined in: [types.ts:37](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L37)
+
+Connection lifecycle callback. Without it the adapter attaches no listener to the client and behaves as before.
 
 ***
 

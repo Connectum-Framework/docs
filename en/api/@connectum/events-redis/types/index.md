@@ -8,3 +8,9 @@ Configuration types for the Redis Streams adapter.
 
 - [RedisAdapterOptions](interfaces/RedisAdapterOptions.md)
 - [RedisBrokerOptions](interfaces/RedisBrokerOptions.md)
+- [RedisLifecycleCallbacks](interfaces/RedisLifecycleCallbacks.md)
+
+## Type Aliases
+
+- [RedisLifecycleConnection](type-aliases/RedisLifecycleConnection.md)
+- [RedisLifecycleEvent](type-aliases/RedisLifecycleEvent.md)

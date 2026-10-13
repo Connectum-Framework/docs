@@ -8,3 +8,8 @@ Configuration types for the NATS JetStream adapter.
 
 - [NatsAdapterOptions](interfaces/NatsAdapterOptions.md)
 - [NatsConsumerOptions](interfaces/NatsConsumerOptions.md)
+- [NatsLifecycleCallbacks](interfaces/NatsLifecycleCallbacks.md)
+
+## Type Aliases
+
+- [NatsLifecycleEvent](type-aliases/NatsLifecycleEvent.md)
