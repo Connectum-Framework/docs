@@ -18,6 +18,16 @@ Broker-specific tuning for Redis Streams consumption.
 
 ***
 
+### lifecycle?
+
+> `readonly` `optional` **lifecycle?**: [`RedisLifecycleCallbacks`](RedisLifecycleCallbacks.md)
+
+Defined in: [types.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-redis/src/types.ts#L35)
+
+Connection lifecycle callback. Without it the adapter attaches no listener to the clients and behaves as before.
+
+***
+
 ### redisOptions?
 
 > `readonly` `optional` **redisOptions?**: `RedisOptions`

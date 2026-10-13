@@ -24,6 +24,18 @@ Re-exports [KafkaCompression](types/type-aliases/KafkaCompression.md)
 
 ***
 
+### KafkaLifecycleCallbacks
+
+Re-exports [KafkaLifecycleCallbacks](types/interfaces/KafkaLifecycleCallbacks.md)
+
+***
+
+### KafkaLifecycleEvent
+
+Re-exports [KafkaLifecycleEvent](types/type-aliases/KafkaLifecycleEvent.md)
+
+***
+
 ### KafkaLogLevel
 
 Re-exports [KafkaLogLevel](types/type-aliases/KafkaLogLevel.md)

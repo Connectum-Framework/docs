@@ -68,7 +68,7 @@ Time allowed to establish a connection, in milliseconds.
 
 > `readonly` `optional` **consumerOptions?**: `object`
 
-Defined in: [types.ts:124](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L124)
+Defined in: [types.ts:127](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L127)
 
 Consumer-specific options
 
@@ -178,6 +178,16 @@ Whether `requestTimeout` is enforced by the client itself rather than only by th
 
 ***
 
+### lifecycle?
+
+> `readonly` `optional` **lifecycle?**: [`KafkaLifecycleCallbacks`](KafkaLifecycleCallbacks.md)
+
+Defined in: [types.ts:118](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L118)
+
+Lifecycle callback. Without it the adapter attaches no listener to the client and behaves as before.
+
+***
+
 ### logLevel?
 
 > `readonly` `optional` **logLevel?**: [`KafkaLogLevel`](../type-aliases/KafkaLogLevel.md)
@@ -192,7 +202,7 @@ Verbosity of the client library's log (default: the library's own default, `"inf
 
 > `readonly` `optional` **producerOptions?**: `object`
 
-Defined in: [types.ts:118](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L118)
+Defined in: [types.ts:121](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L121)
 
 Producer-specific options
 
