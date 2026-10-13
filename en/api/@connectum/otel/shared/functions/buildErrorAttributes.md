@@ -2,14 +2,15 @@
 
 # Function: buildErrorAttributes()
 
-> **buildErrorAttributes**(`error`): `Record`\<`string`, `string` \| `number`\>
+> **buildErrorAttributes**(`error`): `Record`\<`string`, `string`\>
 
 Defined in: [shared.ts:179](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L179)
 
 Builds error-specific attributes for spans and metrics.
 
-For ConnectError instances, records the Connect error code name and numeric code.
-For generic Error instances, records the error constructor name.
+For ConnectError instances, `error.type` and `rpc.response.status_code` both carry the
+Connect error-code name (the convention asks `error.type` to be the status code).
+For generic Error instances, records the error constructor name as `error.type` only.
 For unknown error types, records "UNKNOWN".
 
 ## Parameters
@@ -22,6 +23,6 @@ The caught error
 
 ## Returns
 
-`Record`\<`string`, `string` \| `number`\>
+`Record`\<`string`, `string`\>
 
 Record of error attributes to attach to spans/metrics

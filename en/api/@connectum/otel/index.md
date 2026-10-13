@@ -90,12 +90,6 @@ Re-exports [ATTR_NETWORK_TRANSPORT](attributes/variables/ATTR_NETWORK_TRANSPORT.
 
 ***
 
-### ATTR\_RPC\_CONNECT\_RPC\_STATUS\_CODE
-
-Re-exports [ATTR_RPC_CONNECT_RPC_STATUS_CODE](attributes/variables/ATTR_RPC_CONNECT_RPC_STATUS_CODE.md)
-
-***
-
 ### ATTR\_RPC\_MESSAGE\_ID
 
 Re-exports [ATTR_RPC_MESSAGE_ID](attributes/variables/ATTR_RPC_MESSAGE_ID.md)
@@ -120,15 +114,15 @@ Re-exports [ATTR_RPC_METHOD](attributes/variables/ATTR_RPC_METHOD.md)
 
 ***
 
-### ATTR\_RPC\_SERVICE
+### ATTR\_RPC\_RESPONSE\_STATUS\_CODE
 
-Re-exports [ATTR_RPC_SERVICE](attributes/variables/ATTR_RPC_SERVICE.md)
+Re-exports [ATTR_RPC_RESPONSE_STATUS_CODE](attributes/variables/ATTR_RPC_RESPONSE_STATUS_CODE.md)
 
 ***
 
-### ATTR\_RPC\_SYSTEM
+### ATTR\_RPC\_SYSTEM\_NAME
 
-Re-exports [ATTR_RPC_SYSTEM](attributes/variables/ATTR_RPC_SYSTEM.md)
+Re-exports [ATTR_RPC_SYSTEM_NAME](attributes/variables/ATTR_RPC_SYSTEM_NAME.md)
 
 ***
 
@@ -147,6 +141,12 @@ Re-exports [ATTR_SERVER_PORT](attributes/variables/ATTR_SERVER_PORT.md)
 ### buildErrorAttributes
 
 Re-exports [buildErrorAttributes](shared/functions/buildErrorAttributes.md)
+
+***
+
+### buildSuccessAttributes
+
+Re-exports [buildSuccessAttributes](shared/functions/buildSuccessAttributes.md)
 
 ***
 
@@ -264,15 +264,21 @@ Re-exports [ProviderOptions](provider/interfaces/ProviderOptions.md)
 
 ***
 
+### RPC\_DURATION\_BUCKETS
+
+Re-exports [RPC_DURATION_BUCKETS](metrics/variables/RPC_DURATION_BUCKETS.md)
+
+***
+
 ### RPC\_MESSAGE\_EVENT
 
 Re-exports [RPC_MESSAGE_EVENT](attributes/variables/RPC_MESSAGE_EVENT.md)
 
 ***
 
-### RPC\_SYSTEM\_CONNECT\_RPC
+### RPC\_SYSTEM\_NAME\_CONNECTRPC
 
-Re-exports [RPC_SYSTEM_CONNECT_RPC](attributes/variables/RPC_SYSTEM_CONNECT_RPC.md)
+Re-exports [RPC_SYSTEM_NAME_CONNECTRPC](attributes/variables/RPC_SYSTEM_NAME_CONNECTRPC.md)
 
 ***
 

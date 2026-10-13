@@ -4,7 +4,7 @@
 
 > **detectConnectumTransport**(`headers`): `"http"` \| `"in-process"`
 
-Defined in: [shared.ts:235](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L235)
+Defined in: [shared.ts:243](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L243)
 
 Connectum transport identifier observed from request headers.
 

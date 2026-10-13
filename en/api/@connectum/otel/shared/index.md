@@ -16,6 +16,7 @@ and createOtelClientInterceptor().
 - [applyAttributeFilter](functions/applyAttributeFilter.md)
 - [buildBaseAttributes](functions/buildBaseAttributes.md)
 - [buildErrorAttributes](functions/buildErrorAttributes.md)
+- [buildSuccessAttributes](functions/buildSuccessAttributes.md)
 - [detectConnectumTransport](functions/detectConnectumTransport.md)
 - [estimateMessageSize](functions/estimateMessageSize.md)
 - [scopeAsyncIterable](functions/scopeAsyncIterable.md)

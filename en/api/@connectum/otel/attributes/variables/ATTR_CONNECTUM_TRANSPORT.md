@@ -4,7 +4,7 @@
 
 > `const` **ATTR\_CONNECTUM\_TRANSPORT**: `"connectum.transport"` = `"connectum.transport"`
 
-Defined in: [attributes.ts:43](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L43)
+Defined in: [attributes.ts:49](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L49)
 
 Connectum-specific span attribute that distinguishes RPC observations
 carried by the in-process router transport from those carried by HTTP transports.

@@ -4,4 +4,4 @@
 
 > `const` **RPC\_MESSAGE\_EVENT**: `"rpc.message"` = `"rpc.message"`
 
-Defined in: [attributes.ts:57](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L57)
+Defined in: [attributes.ts:63](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/attributes.ts#L63)
