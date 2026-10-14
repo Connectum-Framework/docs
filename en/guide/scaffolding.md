@@ -126,7 +126,7 @@ when a module has made the service unreachable.
 | `--healthcheck` / `--no-healthcheck` | — | Include the gRPC health protocol (default on) |
 | `--reflection` / `--no-reflection` | — | Include gRPC server reflection (default on) |
 | `--sample` / `--no-sample` | — | Emit the runnable sample Greeter service (default on); `--no-sample` is [config-only](#no-sample-a-config-only-project) and cannot be combined with `--auth` or `--events` |
-| `--yes`, `-y` | — | Non-interactive; use flags and defaults |
+| `--yes`, `-y` | — | Non-interactive; use flags and defaults. `init` also runs non-interactively, without `--yes`, when the environment variable `CI` is `true` or when standard output is not a terminal |
 | `--force` | — | Overwrite existing files |
 | `--ref` | any git ref | Base example ref to fetch (advanced; defaults to the tag pinned for this CLI release) |
 
