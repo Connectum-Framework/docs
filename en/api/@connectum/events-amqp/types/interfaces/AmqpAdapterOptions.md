@@ -90,10 +90,10 @@ every wanted event, never a subset of them.
 
 > `readonly` `optional` **failFastOnInitialSetupError?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:195](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L195)
+Defined in: [packages/events-amqp/src/types.ts:197](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L197)
 
-Fail fast on a DETERMINISTIC setup/topology error on the FIRST connect,
-instead of entering amqplib's infinite recovery loop.
+Fail fast on a topology setup failure on the FIRST connect, instead of
+entering amqplib's infinite recovery loop.
 
 amqplib's opt-in recovery resolves `connect()` only after its setup hook
 succeeds, and rejects only once `maxRetries` is exhausted (default
@@ -108,10 +108,12 @@ validates topology against a throwaway non-recovering connection (the
 startup probe); with it, every initial attempt runs the full setup and
 the first setup error stops the initial connect.
 
-Only deterministic setup/topology errors fail fast. A transient
-broker-unreachable at startup is NOT a fail-fast condition — it falls
-through to normal recovery (block-until-broker, or the initial connect
-budget). SUBSEQUENT reconnects always keep infinite-recovery behavior.
+Only a failure of the topology setup pass reported as `AmqpTopologyError`
+fails fast — a broker reply to a declare/check/bind (404, 406, 403, …) or
+the adapter's own configuration check. A broker that cannot be reached,
+and a connection lost while the pass runs (reported as
+`AmqpConnectionError`), are not fail-fast: the adapter continues with
+recovery (block-until-broker, or the initial connect budget). SUBSEQUENT reconnects always keep infinite-recovery behavior.
 
 No-op with `recovery: false` (that path already fails fast on setup).
 Without `initialConnectMaxRetries`, enabling this — or supplying
@@ -133,7 +135,7 @@ false
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/types.ts:321](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L321)
+Defined in: [packages/events-amqp/src/types.ts:323](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L323)
 
 Connection lifecycle callbacks. Connection errors are surfaced here —
 not just logged.
@@ -154,7 +156,7 @@ Publisher options.
 
 > `readonly` `optional` **publishRetry?**: `boolean` \| [`AmqpPublishRetryOptions`](AmqpPublishRetryOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:315](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L315)
+Defined in: [packages/events-amqp/src/types.ts:317](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L317)
 
 Opt-in bounded publish retry for CONNECTION-CLASS outcomes (since 1.3.0).
 
@@ -227,7 +229,7 @@ undefined (disabled — behavior unchanged)
 
 > `readonly` `optional` **publishTimeoutMs?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:336](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L336)
+Defined in: [packages/events-amqp/src/types.ts:338](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L338)
 
 Per-publish broker-outcome deadline in milliseconds. A publish whose
 ack/nack/return/connection-loss outcome does not arrive in time
@@ -384,7 +386,7 @@ How topology is established:
 
 > `readonly` `optional` **treatTopologyErrorAsFatal?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:251](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L251)
+Defined in: [packages/events-amqp/src/types.ts:253](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L253)
 
 Treat DETERMINISTIC topology drift during steady-state recovery as
 fatal: stop the reconnect cycle instead of retrying forever against a
