@@ -245,7 +245,10 @@ from your own code:
 - A call after the server has stopped resolves immediately. It does not run the
   shutdown hooks again and emits no events.
 - A call on a server that was never started, or is still starting, rejects: that is a
-  lifecycle mistake, not a repeat.
+  lifecycle mistake, not a repeat. A rejected `stop()` before `start()` leaves the
+  server in the `created` state.
+- `server.onShutdown()` on a server that has already stopped throws, because the hook
+  could never run.
 
 ```typescript
 // Both resolve when the single shutdown completes

@@ -130,6 +130,9 @@ when a module has made the service unreachable.
 | `--force` | — | Overwrite existing files |
 | `--ref` | any git ref | Base example ref to fetch (advanced; defaults to the tag pinned for this CLI release) |
 
+Files are written in ascending path order, whatever order the scaffold produced them
+in. The existing files that `init` skips are listed in the same order.
+
 ### Project path and name {#project-path-and-name}
 
 The argument of `init` is the **destination path**. The package name written to
@@ -331,6 +334,10 @@ with a non-zero exit code. If the server lists a service that reflection cannot 
 the error names each such service and nothing is generated (this holds for `--dry-run`
 too). A server that accepts the connection but never answers ends with an error naming the
 address and the limit, rather than waiting forever; raise `--timeout` for a slow server.
+
+A full sync prints the size of the fetched descriptor set, then the exact `buf generate`
+command line it runs. The stdout and stderr of `buf` pass straight through to your
+terminal. The output directory is printed only after `buf` has succeeded.
 
 ## Adding a service by hand
 

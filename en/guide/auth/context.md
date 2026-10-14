@@ -132,6 +132,20 @@ const sessionAuth = createSessionAuthInterceptor({
 | `x-auth-scopes` | Space-separated scopes |
 | `x-auth-claims` | JSON-encoded filtered claims |
 
+Values are sanitized when written and when read:
+
+- Control characters are removed, except tab, line feed and carriage return.
+- `x-auth-subject` is cut to 512 characters, `x-auth-type` to 128 and `x-auth-name` to 256.
+  An over-long value is **truncated, not rejected**, so two subjects that share their
+  first 512 characters become indistinguishable downstream.
+- `x-auth-roles`, `x-auth-scopes` and `x-auth-claims` have a limit of 8192 characters
+  for the serialized value. A value over the limit is not truncated: the sender leaves
+  that header out, and a receiver ignores it and uses an empty roles, scopes or claims value.
+
+Loading `@connectum/auth` from two module instances (for example `src` and `dist`
+imports mixed in one process) emits a `CONNECTUM_AUTH_DUP_INIT` process warning once. Both
+instances share one auth context storage; the warning points to the duplicated import.
+
 `createGatewayAuthInterceptor` can map these identity headers, but it still
 requires its configured `trustSource` marker. Forwarded identity headers alone
 do not establish caller trust; see [client auth interceptors](/en/guide/auth/client-interceptors)
