@@ -1263,3 +1263,14 @@ html:not([data-pm]) .pm-tab[data-pm-value='pnpm'] {
         text-transform: uppercase;
     }
 }
+
+/* A previous/next page title is a single unbreakable identifier on the API pages
+   (for example a long constant name); without these rules it pushes the pager past
+   the right edge of a narrow viewport. */
+.VPDocFooter .pager-link {
+    min-width: 0;
+}
+
+.VPDocFooter .pager-link .title {
+    overflow-wrap: anywhere;
+}
