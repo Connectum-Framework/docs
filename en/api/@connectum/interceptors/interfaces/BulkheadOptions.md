@@ -2,7 +2,7 @@
 
 # Interface: BulkheadOptions
 
-Defined in: [types.ts:233](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L233)
+Defined in: [types.ts:258](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L258)
 
 Bulkhead interceptor options
 
@@ -12,7 +12,7 @@ Bulkhead interceptor options
 
 > `optional` **capacity?**: `number`
 
-Defined in: [types.ts:238](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L238)
+Defined in: [types.ts:263](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L263)
 
 Maximum number of concurrent requests
 
@@ -28,7 +28,7 @@ Maximum number of concurrent requests
 
 > `optional` **queueSize?**: `number`
 
-Defined in: [types.ts:244](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L244)
+Defined in: [types.ts:269](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L269)
 
 Maximum queue size for pending requests
 
@@ -44,7 +44,7 @@ Maximum queue size for pending requests
 
 > `optional` **skipStreaming?**: `boolean`
 
-Defined in: [types.ts:250](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L250)
+Defined in: [types.ts:275](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L275)
 
 Skip bulkhead for streaming calls
 

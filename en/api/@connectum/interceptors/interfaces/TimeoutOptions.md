@@ -2,7 +2,7 @@
 
 # Interface: TimeoutOptions
 
-Defined in: [types.ts:213](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L213)
+Defined in: [types.ts:238](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L238)
 
 Timeout interceptor options
 
@@ -12,7 +12,7 @@ Timeout interceptor options
 
 > `optional` **duration?**: `number`
 
-Defined in: [types.ts:219](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L219)
+Defined in: [types.ts:244](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L244)
 
 Timeout in milliseconds for waiting on the downstream response.
 Expiration cancels downstream work cooperatively and returns DeadlineExceeded.
@@ -29,7 +29,7 @@ Expiration cancels downstream work cooperatively and returns DeadlineExceeded.
 
 > `optional` **skipStreaming?**: `boolean`
 
-Defined in: [types.ts:227](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L227)
+Defined in: [types.ts:252](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L252)
 
 Skip timeout for streaming calls. If false, the timeout covers opening
 the response, not its subsequent iteration. Caller cancellation continues
