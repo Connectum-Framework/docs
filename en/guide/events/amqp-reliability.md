@@ -321,8 +321,12 @@ one adapter connection open on the broker and exhaustion leaves none:
 - when the budget is spent, the adapter reports `reconnect-failed` and `connect()`
   rejects with `AmqpConnectionError("Initial connect failed after N attempt(s)
   (initialConnectMaxRetries: M)")` whose `cause` is the last failure;
-- `failFastOnInitialSetupError: true` still rejects on the first topology error,
-  whatever the budget;
+- a connection lost while an attempt's topology setup runs counts as a transient
+  failure of that attempt: it uses up the budget like an unreachable broker and
+  reports no `setup-failed`;
+- `failFastOnInitialSetupError: true` still rejects on the first topology error
+  (a broker reply or a configuration error; not a lost connection), whatever the
+  budget;
 - `disconnect()` during the backoff cancels the pending retry at once and
   `connect()` rejects with `AmqpConnectionError`;
 - `publish()` and `subscribe()` reject with the typed "not connected" error until
@@ -538,7 +542,7 @@ const adapter = AmqpAdapter({
 | `disconnected` | `error` | Once per connection loss. Not reported for your own `disconnect()`. With `recovery: false`, `error` is the broker's own close error when there is one (`code` carries the reply code, for example `320` for a forced close). |
 | `reconnecting` | `attempt`, `delay`, `error` | Once per scheduled reconnect, and per startup attempt with `initialConnectMaxRetries`. |
 | `reconnect-failed` | `error` | Terminal: retry budget exhausted, fatal topology drift, startup budget exhausted, or a failed `backoff` hook. See [When recovery gives up](#recovery-gives-up). |
-| `setup-failed` | `initial`, `attempt`, `error` | Topology setup failed: at startup (`initial: true`) or on a reconnect (`initial: false`, `attempt` ≥ 1). Reported for `AmqpTopologyError` failures only. |
+| `setup-failed` | `initial`, `attempt`, `error` | Topology setup failed: at startup (`initial: true`) or on a reconnect (`initial: false`, `attempt` ≥ 1). Reported for `AmqpTopologyError` failures only; a connection lost while the setup runs is an `AmqpConnectionError` and is not reported here. |
 | `blocked` | `reason` | The broker applied flow control (RabbitMQ `connection.blocked`, for example under a memory or disk alarm). |
 | `unblocked` | — | Flow control lifted. |
 | `settlement-skipped` | `action`, `queue`, `routingKey`, `deliveryTag`, `error` | A settlement was skipped on a closed channel, or the adapter's own reject/requeue failed; `action` is `ack`, `requeue` or `reject`. Redelivery depends on the queue and the broker's settlement state; see [Settling a delivery after the channel closed](#settlement-skipped). |
@@ -566,6 +570,9 @@ Rules for the callback:
   connection and validate the topology first, so a misconfiguration at startup is
   reported as `setup-failed { initial: true, attempt: 0 }`. Without
   `failFastOnInitialSetupError` the adapter then continues with normal recovery.
+  A connection lost while that check runs is not a misconfiguration: no
+  `setup-failed` event, and with `failFastOnInitialSetupError` the adapter still
+  continues with recovery.
 - **The flat callbacks are deprecated.** `onConnected`, `onDisconnected`,
   `onReconnecting`, `onReconnectFailed`, and `onSetupFailed` still work (removal not
   before 2.0) and receive the same events. When both are set, the flat callback runs
