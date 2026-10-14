@@ -47,6 +47,8 @@ A gate runs **before** the server interceptor chain, so `createErrorHandlerInter
 - A thrown `ConnectError` reaches the client exactly as thrown — code, message, metadata, and details. Give it a fixed, non-revealing message such as `unauthenticated` above. Do not throw a `ConnectError` whose message names internal rules (for example an authorization error that includes the rule that denied the call).
 - Anything else — a plain `Error`, a string, a rejected promise — is replaced by Connect with `internal` / `internal error` on every protocol and both transports; its message, stack, and cause never reach the client. Connectum's tests pin this. It is a safety net, not a way to reject: the client learns nothing useful, so convert expected failures to a `ConnectError` with the right code.
 
+Inside the interceptor chain, `errorHandler` applies the same policy by default: the text of a failure that is not a `ConnectError` or a `SanitizableError` does not reach the client ([details](/en/guide/interceptors/built-in#what-a-client-sees-when-a-handler-fails)).
+
 ### Audit rejections yourself
 
 A rejected call never reaches the server interceptors, so `@connectum/otel` records no server span or metric for it and the logger interceptor writes nothing. Client-side interceptors of the caller still observe the failure. Connectum adds no automatic telemetry for the gate; wrap it when you need an audit trail:

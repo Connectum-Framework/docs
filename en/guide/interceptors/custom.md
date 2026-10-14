@@ -153,6 +153,14 @@ When `errorHandler` wraps your interceptor, it normalizes thrown errors to
 numeric `code` use that value as is, without checking it against the Connect codes,
 and errors without one, or with a non-numeric `code`, use `Code.Internal`.
 Errors implementing `SanitizableError` use their explicit client message and code.
+
+The text follows its own rule. A `ConnectError` keeps its text, details and metadata,
+and a `SanitizableError` sends its `clientMessage`. For anything else the client
+receives `internal error` (code `Internal`) or an empty text (when the error carried
+a numeric `code`); the original stays on the server as `cause` of the thrown
+`ConnectError`, as `info.error` of `onError`, and in the console log. Set
+`exposeErrorMessages: true` on the error handler to send the original text instead.
+See [What a client sees when a handler fails](/en/guide/interceptors/built-in#what-a-client-sees-when-a-handler-fails).
 :::
 
 ## Composing with Built-in Interceptors
