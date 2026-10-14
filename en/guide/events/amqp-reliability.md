@@ -282,6 +282,7 @@ stateDiagram-v2
     Recovering --> Connected: reconnect + setup succeeded (connected, reconnected true)
     Recovering --> Recovering: attempt failed (reconnecting)
     Recovering --> GaveUp: maxRetries exhausted, fatal topology drift or failed backoff hook (reconnect-failed)
+    Connecting --> GaveUp: initialConnectMaxRetries exhausted or failed backoff hook (reconnect-failed, connect() rejects)
     GaveUp --> Connecting: connect() again, without old subscriptions
     Connected --> [*]: disconnect()
 ```
@@ -338,9 +339,11 @@ With `recovery: false` the original error is thrown unchanged.
 
 ### When recovery gives up {#recovery-gives-up}
 
-Recovery ends for good in three cases: a finite `maxRetries` is exhausted,
+Recovery ends for good in four cases: a finite `maxRetries` is exhausted, the
+startup budget [`initialConnectMaxRetries`](#retry-budget) is exhausted,
 [`treatTopologyErrorAsFatal`](#topology-drift) stopped it, or a
-[`backoff` hook](#custom-backoff-hook) failed. Before reporting the
+[`backoff` hook](#custom-backoff-hook) failed (in steady state, or during a startup
+bounded by `initialConnectMaxRetries`). Before reporting the
 terminal `reconnect-failed` event, the adapter drops the dead connection, its publish
 channel, and all subscription records. After that:
 

@@ -327,7 +327,7 @@ npx @connectum/cli proto sync --from localhost:5000 --out ./generated --dry-run
 | `--out` | Output directory for the generated types (required) |
 | `--template` | Path to a custom `buf.gen.yaml` |
 | `--dry-run` | Connect, list the services and files, generate nothing |
-| `--timeout` | Time limit of each reflection request in milliseconds: an integer from 1 to 2147483647 (default `10000`) |
+| `--timeout` | Time limit of each reflection request in milliseconds: an integer from 1 to 2147483647, written in plain decimal digits: a value with a leading zero, such as `007`, is rejected like any other invalid value (default `10000`) |
 
 The command either obtains a descriptor for **every** service the server lists or fails
 with a non-zero exit code. If the server lists a service that reflection cannot describe,
