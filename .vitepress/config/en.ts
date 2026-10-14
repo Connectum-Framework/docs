@@ -254,6 +254,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Kafka adapter options', link: '/en/migration/kafka-adapter-options' },
                         { text: 'In-process calls on shutdown', link: '/en/migration/in-process-shutdown' },
                         { text: 'Logger bodies are opt-in', link: '/en/migration/logger-bodies' },
+                        { text: 'Error handler and client messages', link: '/en/migration/error-handler-messages' },
                         { text: 'Option descriptors from the packages', link: '/en/migration/option-descriptor-imports' },
                         { text: 'events-amqp 1.3 behavior changes', link: '/en/migration/events-amqp-1.3' },
                     ],
