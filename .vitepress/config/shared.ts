@@ -64,7 +64,7 @@ export const sharedConfig = defineConfig({
         ['script', { id: 'restore-pm' }, restorePackageManagerScript],
     ],
     themeConfig: {
-        logo: '/assets/connectum-wordmark-animated.svg?v=2',
+        logo: { src: '/assets/connectum-wordmark-animated.svg?v=2', alt: 'Connectum' },
         siteTitle: false,
         socialLinks: [
             { icon: 'github', link: 'https://github.com/Connectum-Framework/connectum' },
