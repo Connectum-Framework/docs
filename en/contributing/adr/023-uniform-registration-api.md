@@ -136,7 +136,7 @@ interface Server {
 
 All three `addX()` methods work identically:
 - Can only be called in the `CREATED` state (before `start()`)
-- Throw `Error` if the server is already running
+- Throw `Error` if the server is not in `CREATED` (running, stopping or stopped)
 - Append the element to the internal array
 
 All three readonly getters return `ReadonlyArray<T>`.

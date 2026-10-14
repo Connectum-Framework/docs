@@ -108,6 +108,10 @@ that connect-node loads is another version, or a different copy than the one
 The check has no switch to turn the failure into a warning: an out-of-range copy breaks
 generated types and Connect at runtime.
 
+The check understands only an exact version or a caret range `^X.Y.Z` with `X` of 1 or
+higher. A peer range in any other form, such as `>=2.2.0` or `^0.2.0`, cannot be
+evaluated: that library is treated as passing, and no error is reported for it.
+
 It is **skipped** when the loaded versions cannot be determined:
 
 - `@connectum/core` is bundled into your application (esbuild, `bun build`, and similar) —

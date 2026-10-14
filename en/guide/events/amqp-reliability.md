@@ -677,6 +677,13 @@ How it behaves:
   such as a queue the broker has not made available yet, is retried without a limit. The attempt counter restarts only
   after the consumer has been consuming for `maxDelay` without a new loss, so a queue that
   vanishes after every restore sees growing delays instead of a tight loop.
+- **A loss during `subscribe()` is not lost.** If the broker ends the consumer before the
+  subscription setup has returned, the adapter holds the loss and reports `consumer-lost`
+  right after the setup returns. With `recovery` enabled the consumer is then restored like
+  any other.
+- **The recovery timers do not keep the process alive.** The backoff pause before a
+  restore attempt and the stability window are `unref`-ed, so they never prevent a
+  process from exiting.
 - **`recovery: false`.** `consumer-lost` is reported with `willRestore: false` and the
   consumer stays dead. Nothing is restored.
 - **A subscription without a group** gets a new auto-named queue; `consumer-restored.queue`

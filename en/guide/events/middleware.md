@@ -161,7 +161,8 @@ lost. If publishing succeeds but `ctx.ack()` rejects, the same fallback is
 attempted; the context's first-settlement rule makes that later `nack()` a no-op,
 so broker redelivery can still occur. Do not treat this middleware as a guarantee
 that every failed event reaches the DLQ. An event already on the configured DLQ
-topic is rethrown instead of being published back to itself.
+topic is rethrown instead of being published back to itself; in that case the
+middleware calls neither `ack()` nor `nack()`, and the event is left unacknowledged.
 
 ### Configuration
 

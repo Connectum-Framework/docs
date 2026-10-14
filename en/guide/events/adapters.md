@@ -499,6 +499,13 @@ derives a service identifier from registered proto service names and the host.
 An explicit adapter option always wins. Use explicit names when broker ACLs,
 dashboards, or support procedures depend on stable identifiers.
 
+The derived name is `{packages}@{hostname}`. `{packages}` lists each distinct proto
+package once, joined with `/`, **in the order the services were registered**; the
+list is not sorted. Registering the same services in a different order therefore
+produces a different name, and with it a different Kafka `clientId`, NATS connection
+`name`, and Redis `CLIENT SETNAME`. A service whose type name has no proto package
+contributes its whole type name instead of a package.
+
 ## Adapter Instances and Factories {#adapter-factory}
 
 `createEventBus()` takes an adapter **instance**. Construct it once at the

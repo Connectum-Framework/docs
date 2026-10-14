@@ -22,6 +22,9 @@ When you register event handlers with `events.service()`, the EventRouter resolv
 1. Check for a custom `(connectum.events.v1.event).topic` proto option on the method
 2. Fall back to `method.input.typeName` (the fully-qualified protobuf message name)
 
+An empty `topic` string in the option is treated as if the option were not set, so
+the method falls back to `method.input.typeName`.
+
 For example, this handler subscribes to the topic `orders.v1.OrderCreated`:
 
 ```protobuf
@@ -163,6 +166,10 @@ Two wildcard tokens are supported:
 
 - **`*`** -- matches exactly one dot-separated segment
 - **`>`** -- matches one or more trailing segments
+
+When one bus has both an exact route and a wildcard pattern that match the same
+incoming topic, the exact route handles the event. The order in which two matching
+wildcard patterns are tried is not defined; do not rely on it.
 
 Support and caveats differ by adapter:
 

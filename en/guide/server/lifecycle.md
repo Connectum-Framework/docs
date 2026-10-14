@@ -32,6 +32,12 @@ stateDiagram-v2
 
 The transitions are one-directional. A stopped server cannot be restarted -- create a new one instead.
 
+`addService()`, `addInterceptor()` and `addProtocol()` work only in the **created** state.
+Each throws once the server is in any other state (starting, running, stopping or stopped),
+and also once the routes have been built: `start()` builds them, and so does the first use
+of the in-process client (`server.localClient()`), even on a server that is still in the
+created state.
+
 ## Lifecycle Events
 
 Register listeners with `server.on(event, handler)`:

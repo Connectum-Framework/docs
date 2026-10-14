@@ -150,7 +150,8 @@ function createRateLimitInterceptor(options: {
 ::: warning
 When `errorHandler` wraps your interceptor, it normalizes thrown errors to
 `ConnectError`. Existing Connect errors preserve their code; other errors with a
-numeric `code` use that value, and errors without one use `Code.Internal`.
+numeric `code` use that value as is, without checking it against the Connect codes,
+and errors without one, or with a non-numeric `code`, use `Code.Internal`.
 Errors implementing `SanitizableError` use their explicit client message and code.
 :::
 
