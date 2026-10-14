@@ -24,7 +24,7 @@ flowchart LR
 
 | # | Interceptor | Purpose | Default |
 |---|-------------|---------|---------|
-| 1 | **errorHandler** | Normalizes errors into `ConnectError` | Enabled |
+| 1 | **errorHandler** | Normalizes errors into `ConnectError` and hides the text of non-Connect failures from the client | Enabled |
 | 2 | **timeout** | Limits request execution time | **Opt-in** (30s when enabled) |
 | 3 | **bulkhead** | Limits concurrent requests | **Opt-in** (capacity 10, queue 10 when enabled) |
 | 4 | **circuitBreaker** | Prevents cascading failures (outbound pattern, see below) | **Opt-in** (threshold 5 when enabled) |
@@ -41,6 +41,27 @@ Only structural interceptors (errorHandler, validation) are enabled by default. 
 
 `skipGrpcServices` matches service names beginning with `grpc.`, such as Health
 and Reflection. It does not skip every request using the gRPC wire protocol.
+
+## What a client sees when a handler fails {#what-a-client-sees-when-a-handler-fails}
+
+The text of a failure often carries a connection string, a query or a value from the request, so `errorHandler` sends it to the client only when the author chose to. The behavior is the same over gRPC, Connect and `server.localClient()`.
+
+| Thrown by the handler | Client receives |
+|---|---|
+| `ConnectError` | Unchanged: code, text, details, metadata |
+| `SanitizableError` | Its `clientMessage` and code; `serverDetails` stay on the server |
+| `Error` or a thrown string | `Internal` with the text `internal error` |
+| An error with a numeric `code` | That code with an empty text |
+
+The original failure stays on the server: as `cause` of the thrown `ConnectError` (no transport serializes `cause`), as `info.error` of `onError` with its original text, and in the console log.
+
+To send a message on purpose, throw a `ConnectError` or a `SanitizableError`. To send the original text of every failure, set `exposeErrorMessages: true`. The option is server-side, defaults to `false` and does not depend on `NODE_ENV`; use it only for trusted internal callers or while debugging:
+
+```typescript
+createDefaultInterceptors({ errorHandler: { exposeErrorMessages: true } });
+```
+
+The same option exists on `createErrorHandlerInterceptor({ exposeErrorMessages: true })`. Clients that parsed these texts must read the code, or a `ConnectError` with details, instead. See [Error handler keeps non-Connect messages on the server](/en/migration/error-handler-messages).
 
 ## Cancellation and Streaming Scope {#cancellation-and-streaming-scope}
 

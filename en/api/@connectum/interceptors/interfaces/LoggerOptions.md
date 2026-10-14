@@ -2,7 +2,7 @@
 
 # Interface: LoggerOptions
 
-Defined in: [types.ts:45](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L45)
+Defined in: [types.ts:70](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L70)
 
 Logger interceptor options
 
@@ -12,7 +12,7 @@ Logger interceptor options
 
 > `optional` **includeBodies?**: `boolean`
 
-Defined in: [types.ts:91](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L91)
+Defined in: [types.ts:116](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L116)
 
 Pass request and response bodies to the log sink.
 
@@ -35,7 +35,7 @@ false
 
 > `optional` **includeTransport?**: `boolean`
 
-Defined in: [types.ts:77](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L77)
+Defined in: [types.ts:102](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L102)
 
 Tag every log line with the transport that carried the call, right
 after the `RPC` / `STREAM` prefix: `[in-process]` for calls made through
@@ -59,7 +59,7 @@ false
 
 > `optional` **level?**: `"error"` \| `"warn"` \| `"debug"` \| `"info"`
 
-Defined in: [types.ts:50](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L50)
+Defined in: [types.ts:75](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L75)
 
 Log level
 
@@ -75,7 +75,7 @@ Log level
 
 > `optional` **logger?**: (`message`, ...`args`) => `void`
 
-Defined in: [types.ts:62](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L62)
+Defined in: [types.ts:87](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L87)
 
 Custom logger function
 
@@ -105,7 +105,7 @@ console[level]
 
 > `optional` **skipHealthCheck?**: `boolean`
 
-Defined in: [types.ts:56](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L56)
+Defined in: [types.ts:81](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L81)
 
 Skip logging for health check services
 
