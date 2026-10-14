@@ -214,6 +214,17 @@ Setting `onLifecycle` enables the startup topology check, as `onSetupFailed` and
 and validates the topology before connecting. A service that used only
 `onConnected` or `onDisconnected` in 1.2 did not run this check.
 
+A connection lost while the setup pass runs (at startup or during recovery) is now
+reported as `AmqpConnectionError`, not `AmqpTopologyError`. With
+`failFastOnInitialSetupError` such a drop no longer rejects `connect()`: the adapter
+continues with recovery, and no `setup-failed` is reported for it. With
+`recovery: false` the class of that rare error changes to `AmqpConnectionError`.
+Broker replies (404, 406, 403, and so on) and the adapter's own configuration check
+still fail fast. This affects code that catches `AmqpTopologyError` from `connect()`
+with `recovery: false`, and code that relied on a dropped connection to fail startup
+under `failFastOnInitialSetupError`. Handle `AmqpConnectionError` there, or treat the
+startup as retryable.
+
 ### Watch for `consumer-lost` {#consumer-lost}
 
 When the broker ends one subscription's consumer on a live connection (the queue was
