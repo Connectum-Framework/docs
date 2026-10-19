@@ -87,6 +87,8 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 
 Steps 6 and 7 run even if closing the transport fails before the timeout, so your hooks always get to release their resources, and step 7 also runs if a hook fails. On this failure path the server emits `error` and then still emits `stop`, and `stop()` rejects with the error that occurred — or with an `AggregateError` carrying both when the transport close and a hook both failed. A close failure that only arrives after the timeout has already won is logged, not thrown: if the hooks succeed, `stop()` resolves normally.
 
+When a hook fails, `stop()` rejects with the first failure. Hooks that do not depend on the failed one and have already started keep running, but `stop()` does not wait for them; hooks that depend on the failed one do not run at all. Only the first failure is reported. Keep hooks independent and let each one catch and log its own errors if the others must finish before `stop` is emitted.
+
 ### In-process calls
 
 The upcoming 1.3.0 release adds in-process cancellation to step 2. **This release is not yet published to npm.** In its current-main implementation, `context.signal` is aborted for calls made through `server.localClient()`, `server.client()` for a local service, `createLocalTransport()`, and `ctx.call` / `ctx.stream` to a local service; every hop of a local `ctx.call` chain sees it directly. A handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP.
