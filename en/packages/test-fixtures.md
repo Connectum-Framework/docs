@@ -47,6 +47,30 @@ const next = createMockNext({ message: { ok: true } });
 | `createFakeService` | Build descriptor-compatible fake services. |
 | `createMockStream` | Create deterministic streaming inputs. |
 
+## Descriptor Mocks Follow protobuf-es {#descriptor-fidelity}
+
+`createMockDescMessage`, `createMockDescField`, `createMockDescMethod` and `createFakeMethod` follow the rules of compiled protobuf-es descriptors, so `create()` and name lookups behave as they do in production:
+
+- `create(mock)` returns every declared field with its zero value, and each oneof group as `{ case: undefined }`. `members` lists the standalone fields in declaration order, then the oneof groups.
+- A field `name` is the proto name. `localName` and `jsonName` are derived from it (`user_id` gives `userId`); a `localName` that collides with `constructor`, `toString`, `toJSON` or `valueOf` gets a `$` suffix. The same suffix applies to method `localName` (`ToString` gives `toString$`).
+- Field numbers that are not set continue from the highest number used so far; repeating a number throws an `Error`.
+- `createMockNextSlow` returns a copy of the configured `message` on every call, like `createMockNext`.
+
+~~~typescript
+import { create } from '@bufbuild/protobuf';
+import { createMockDescMessage } from '@connectum/test-fixtures';
+
+const desc = createMockDescMessage('acme.v1.User', {
+  fields: [{ name: 'user_id', type: 'int32' }, { name: 'email' }],
+});
+
+create(desc); // { $typeName: 'acme.v1.User', userId: 0, email: '' }
+~~~
+
+Limits: a mock oneof group has no fields (the declared fields are not attached to it), and a custom `json_name` option cannot be expressed. `createMockRequest` builds its `url` with the placeholder origin `http://localhost`; a request from the in-process transport carries `https://in-memory/…`, so pass `url` explicitly when the code under test depends on the origin.
+
+Upgrading tests from earlier versions: [Test fixture descriptors follow protobuf-es](/en/migration/test-fixtures-descriptors).
+
 ## Learn / Configure / API Reference {#api-reference}
 
 - **Learn:** [Focused guide](/en/guide/testing)
