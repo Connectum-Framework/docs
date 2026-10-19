@@ -335,13 +335,15 @@ npx @connectum/cli proto sync --from localhost:5000 --out ./generated --dry-run
 | `--out` | Output directory for the generated types (required) |
 | `--template` | Path to a custom `buf.gen.yaml` |
 | `--dry-run` | Connect, list the services and files, generate nothing |
-| `--timeout` | Time limit of each reflection request in milliseconds: an integer from 1 to 2147483647, written in plain decimal digits: a value with a leading zero, such as `007`, is rejected like any other invalid value (default `10000`) |
+| `--timeout` | Time limit of each reflection request in milliseconds: an integer from 1 to 99999999 (the longest limit an eight-digit `grpc-timeout` header can carry), written in plain decimal digits: a value with a leading zero, such as `007`, is rejected like any other invalid value (default `10000`) |
 
 The command either obtains a descriptor for **every** service the server lists or fails
 with a non-zero exit code. If the server lists a service that reflection cannot describe,
 the error names each such service and nothing is generated (this holds for `--dry-run`
 too). A server that accepts the connection but never answers ends with an error naming the
 address and the limit, rather than waiting forever; raise `--timeout` for a slow server.
+The command ends as soon as its work is done: the limit is a ceiling for a silent
+server, not a time the command waits out.
 
 A full sync prints the size of the fetched descriptor set, then the exact `buf generate`
 command line it runs. The stdout and stderr of `buf` pass straight through to your
