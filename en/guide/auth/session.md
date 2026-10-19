@@ -70,6 +70,10 @@ flowchart LR
     Map --> Context[AuthContext]
 ```
 
+## Errors From Your Callbacks
+
+A `ConnectError` thrown by `verifySession` or `mapSession` reaches the client **unchanged**: its code and its text are sent verbatim, so write that text for the client (`new ConnectError('Session expired', Code.Unauthenticated)`). Any other thrown value is replaced by `Unauthenticated` with the fixed text `Session verification failed` (from `verifySession`) or `Session mapping failed` (from `mapSession`); its own message never leaves the server. The examples on this page throw a plain `Error` for this reason.
+
 ## Cookie-Based Auth
 
 When your session backend reads cookies directly from headers, extract the actual
@@ -101,6 +105,8 @@ const sessionAuth = createSessionAuthInterceptor({
   cache: { ttl: 60_000 },  // Cache for 60 seconds
 });
 ```
+
+`cache.ttl` must be a finite number of milliseconds greater than 0, and `cache.maxSize` (default 1000) an integer of at least 1. Anything else, including `NaN` and `Infinity`, throws a `RangeError` when the interceptor is created. The same bounds apply to the `cache` option of `createAuthInterceptor`.
 
 Here `verifySessionToken` is your backend callback that verifies the supplied
 token. Cached identities are keyed only by that extracted token; do not cache a

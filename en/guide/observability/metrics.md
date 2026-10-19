@@ -130,7 +130,7 @@ those that appear only on some calls:
 |-----------|-------|
 | `rpc.system.name` | `connectrpc` |
 | `rpc.method` | The fully qualified method, `<package>.<Service>/<Method>` (for example `acme.greeter.v1.GreeterService/SayHello`); it equals the span name |
-| `rpc.response.status_code` | A string: `OK` on a successful unary call, otherwise the Connect error code name (for example `FAILED_PRECONDITION`). A streaming call that started successfully carries none, because its final status is not known when the response head returns |
+| `rpc.response.status_code` | A string: `OK` on a successful unary call, otherwise the Connect error code name (for example `FAILED_PRECONDITION`). A canceled call reports `CANCELED` (one L, as Connect spells it; `CANCELLED` is the gRPC spelling and is never produced), so a query over data from both stacks can match `CANCEL+ED`. A streaming call that started successfully carries none, because its final status is not known when the response head returns |
 | `error.type` | Only for failed calls, equal to `rpc.response.status_code` for a Connect error; the error class name for another `Error`, otherwise `UNKNOWN` |
 | `server.address`, `server.port` | The server address and port |
 | `network.protocol.name`, `network.transport` | `connect_rpc` and `tcp` |

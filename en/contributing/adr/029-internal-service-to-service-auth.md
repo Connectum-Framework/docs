@@ -102,4 +102,5 @@ For non-`internal`, non-`public` methods the interceptor is a no-op. **Chain ord
 
 | Date | Author | Change |
 |------|--------|--------|
+| 2026-10-19 | Security review (1.3.0) | Tightened the contract without changing the decision: `signedTokenTrust` now sets the subject to the verified `iss` and reads `sub` and `scope` only through an explicit `claimsMapping`; a method that is both `public` and `internal` is a configuration error. See the migration guide `auth-proto-options`. |
 | 2026-10-08 | Documentation review | Recorded that the internal interceptor and the trust-source factories are exported by the authentication package, as a dated Update note under Status; added page metadata. Decision unchanged. |

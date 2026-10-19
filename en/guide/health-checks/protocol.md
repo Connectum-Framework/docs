@@ -148,8 +148,17 @@ When `httpEnabled: true`, the following HTTP endpoints are available:
 ### Check a Specific Service via HTTP
 
 ```bash
-curl http://localhost:5000/healthz?service=my.service.v1.MyService
+curl 'http://localhost:5000/healthz?service=my.service.v1.MyService'
 ```
+
+The `service` query parameter selects one service or component. The answer depends on the URL alone: the `Host` header of the request, including an empty or malformed one, does not change which service the response describes.
+
+| Request | Response |
+|---------|----------|
+| No `service` parameter | Overall health; the body carries `"service": "overall"` |
+| `?service=` (empty value) | The overall status and HTTP code, as if the parameter were absent |
+| `?service=<known name>` | The status of that service or component, with its name in the `service` field |
+| `?service=<unknown name>` | `404 Not Found`, status `SERVICE_UNKNOWN`, with the requested name in the `service` field |
 
 ### Custom Paths
 
@@ -159,6 +168,22 @@ Healthcheck({
   httpPaths: ['/healthz', '/ready', '/live'],
 })
 ```
+
+`httpPaths` replaces the default list. It must be a non-empty array of absolute paths: each entry starts with `/` and contains no `?` or `#`. `Healthcheck()` checks it whenever it is passed, also with `httpEnabled: false`, and throws instead of starting a server that serves nothing:
+
+| Value | Result |
+|-------|--------|
+| not passed (`undefined`) | The default paths `/healthz`, `/health`, `/readyz` |
+| `[]` | `RangeError`. To turn the HTTP endpoint off, set `httpEnabled: false` |
+| an entry that is not a string, has no leading `/`, or contains `?` or `#` | `TypeError` |
+
+A request matches a configured path only when the path is identical:
+
+- The comparison is exact and case-sensitive. `/healthz/` and `/Healthz` do not match `/healthz`; such a request is not handled by the health endpoint. To serve both forms, list both.
+- The query string is ignored when matching, so `/healthz?service=my.service.v1.MyService` matches `/healthz`.
+- The request method is not checked.
+
+If you passed `httpPaths: []` before 1.3, see [HTTP health options validation](/en/migration/healthcheck-http-options).
 
 ## Custom Dependency Health Checks
 
