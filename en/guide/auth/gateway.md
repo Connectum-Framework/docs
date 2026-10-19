@@ -61,7 +61,7 @@ The `headerMapping` object maps `AuthContext` fields to the header names your ga
 |--------|------|---------|-------------|
 | `defaultType` | `string` | `'gateway'` | Credential type used when the gateway sends no type header |
 
-`defaultType` becomes `AuthContext.type` and, with `propagateHeaders`, the `x-auth-type` header, so a value containing NUL, CR or LF throws when the interceptor is created.
+`defaultType` becomes `AuthContext.type` and, with `propagateHeaders`, the `x-auth-type` header, so a value containing NUL, CR, LF or a character above U+00FF throws when the interceptor is created.
 
 ### trustSource Check
 
@@ -88,7 +88,7 @@ Enabling `propagateHeaders` writes the verified identity back using the standard
 `x-auth-*` names, including all non-empty claims that fit the header limit. This
 option does not restore the gateway trust secret. Choose it only when the next
 hop needs those fields; gateway authentication has no `propagatedClaims` filter.
-An identity that cannot be written into headers (NUL, CR or LF in the subject, type, name or a scope) is rejected with `Unauthenticated`; see [Auth Context](/en/guide/auth/context#propagated-headers).
+An identity that cannot be written into headers (NUL, CR, LF or a character above U+00FF in the subject, type, name or a scope) is rejected with `Unauthenticated`; see [Auth Context](/en/guide/auth/context#propagated-headers).
 
 `skipMethods` lists methods and `Service/*` patterns; the catch-all `'*'` is refused when the interceptor is created (see [Method Patterns](/en/guide/auth/authorization#method-patterns)).
 
