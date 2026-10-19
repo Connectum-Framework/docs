@@ -398,6 +398,15 @@ consumer group is created at `$` and starts with events published after its
 creation. Use the same explicit group across restarts to retain its consumption
 state; omitting `group` creates a new random group.
 
+### Entries written by other producers {#redis-foreign-entries}
+
+The entry layout is the adapter's own, so writing to these streams with a
+different producer is not supported. An entry written by another producer
+without `eventType`, or naming another topic, is acknowledged and dropped: the
+event type it reports matches no route, and the EventBus acknowledges such a
+delivery without running any handler or middleware (see
+[Unmatched events](/en/guide/events/middleware#unmatched-events)).
+
 ## AMQP or RabbitMQ {#amqp--rabbitmq-adapter}
 
 Choose AMQP for exchange/queue topology, competing consumers, or integration

@@ -164,6 +164,18 @@ that every failed event reaches the DLQ. An event already on the configured DLQ
 topic is rethrown instead of being published back to itself; in that case the
 middleware calls neither `ack()` nor `nack()`, and the event is left unacknowledged.
 
+### Unmatched events {#unmatched-events}
+
+Events that match no route never enter the pipeline and are acknowledged. When
+the event type matches no registered topic, exactly or by pattern, the EventBus
+acknowledges the delivery without running any handler or middleware. It does
+not nack or requeue it and does not copy it to the DLQ, because the DLQ
+middleware is part of a route's pipeline. This is reachable where the broker
+can deliver more than the subscription asks for: an AMQP fanout or headers
+exchange delivers every message to the queue (see
+[AMQP reliability](/en/guide/events/amqp-reliability)), and a Redis stream
+entry without a matching `eventType` reports an empty or foreign type.
+
 ### Configuration
 
 ```typescript

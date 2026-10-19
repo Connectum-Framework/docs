@@ -119,6 +119,8 @@ const adapter = MemoryAdapter();
 
 Middleware wraps event handlers in an onion model. Built-in middleware provides retry with configurable backoff and dead letter queue routing. See the [middleware pipeline diagram](/en/guide/events/middleware#pipeline-order) for execution and error flow.
 
+A delivery whose event type matches no route is acknowledged without running any handler or middleware, and it is not copied to the DLQ. See [Unmatched events](/en/guide/events/middleware#unmatched-events).
+
 Each middleware receives the raw event, the event context, and a `next()` function to call the inner handler.
 
 ### EventContext
