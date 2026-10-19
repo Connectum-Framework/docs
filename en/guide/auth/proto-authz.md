@@ -60,7 +60,7 @@ service UserService {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `default_policy` | `string` | `"allow"` or `"deny"` when no proto requirements apply; precedes programmatic rules |
+| `default_policy` | `string` | `"allow"` or `"deny"` (lowercase) when no proto requirements apply; precedes programmatic rules. Empty means not set; any other value is a configuration error (see [Validation](#validation)) |
 | `default_requires` | `AuthRequirements` | Default roles/scopes for all methods |
 | `public` | `bool` | Skip proto authz for all methods; also configure authentication `skipMethods` |
 | `internal` | `bool` | Mark all methods as internal (service-to-service). Skips end-user JWT auth; requires a trust marker from `createInternalAuthInterceptor`. Since 1.1.0. See [ADR-029](/en/contributing/adr/029-internal-service-to-service-auth). |
@@ -71,15 +71,26 @@ service UserService {
 |-------|------|-------------|
 | `public` | `bool` | Skip proto authz; also configure authentication `skipMethods` |
 | `requires` | `AuthRequirements` | Required roles and/or scopes |
-| `policy` | `string` | Override service-level default policy |
-| `internal` | `bool` | Mark the method as internal (service-to-service). Distinct from `public`: world-open vs. trusted-caller-only. Since 1.1.0. |
+| `policy` | `string` | Override service-level default policy: `"allow"` or `"deny"` (lowercase). Empty means not set; any other value is a configuration error (see [Validation](#validation)) |
+| `internal` | `bool` | Mark the method as internal (service-to-service). Distinct from `public`: world-open vs. trusted-caller-only. Since 1.1.0. A method cannot be both `public` and `internal`. |
 
 #### `AuthRequirements`
 
 | Field | Type | Semantics |
 |-------|------|-----------|
-| `roles` | `repeated string` | **any-of** -- user needs at least one |
-| `scopes` | `repeated string` | **all-of** -- user needs every scope |
+| `roles` | `repeated string` | **any-of** -- user needs at least one; an empty list places no restriction on roles |
+| `scopes` | `repeated string` | **all-of** -- user needs every scope; an empty list places no restriction on scopes |
+
+An empty list restricts nothing in its dimension, so `requires { roles: [] }` is the same as not listing roles, and `requires {}` means **authentication only**: any authenticated caller passes, an unauthenticated one gets `Unauthenticated`. A `requires` option, even an empty one, is still a defined requirement: it overrides a service `default_requires` as a whole, and it decides before `policy` is read.
+
+### Validation
+
+Two contract mistakes are errors, not silent fallbacks. `resolveMethodAuth()` throws an `Error` for them, and so do `getPublicMethods()`, `getInternalMethods()` and the proto authorization interceptor, which resolve methods:
+
+- **A policy string other than `""`, `"allow"` or `"deny"`** (for example `"Allow"` or `"dney"`; the check is case-sensitive). The message names the value, the method and the option (`method_auth.policy` or `service_auth.default_policy`). Before 1.3.0 such a value was read as "not set" and the decision silently fell to `defaultPolicy`.
+- **A method that is both `public` and `internal`**, set on the method or inherited from the service. The message suggests `public: true, internal: false`. Before 1.3.0 `public` silently won.
+
+A service `default_policy` is checked when a method that uses it (has no `policy` of its own) is resolved. Building the list with `getPublicMethods(services)` at startup resolves every method, so these errors surface when the server is composed rather than on the first request. See [Auth option validation](/en/migration/auth-proto-options).
 
 Explicit method-level fields override their service-level counterparts. An
 omitted field inherits the service setting; for the optional booleans, explicit
@@ -170,8 +181,8 @@ request to the next interceptor; every deny throws and ends authorization.
 For internal methods, `requires === undefined` is distinct from a defined
 requirements object: the former allows a trusted internal caller immediately;
 the latter requires a context and evaluates its roles/scopes. An object with
-empty role and scope lists is still defined and passes the requirements check
-when context exists.
+empty role and scope lists (`requires {}`) is still defined and passes the
+requirements check when context exists.
 
 ## Syncing Public Methods with Authentication
 
@@ -248,7 +259,15 @@ Without a mesh, use [`signedTokenTrust`](/en/api/@connectum/auth/functions/signe
 with per-issuer keys. `createProtoAuthzInterceptor` consumes the resulting
 `AuthContext`; the upstream internal interceptor establishes the trust boundary.
 See [ADR-029](/en/contributing/adr/029-internal-service-to-service-auth) for the
-deployment requirements. Do not mark a method both public and internal.
+deployment requirements. A method marked both public and internal is rejected
+with an `Error` when it is resolved (see [Validation](#validation)).
+
+`signedTokenTrust` identifies the caller by the verified `iss` of its token: the
+`AuthContext.subject` is the issuer whose own key signed it. The `sub` claim is used
+only when the issuer entry maps it (`claimsMapping: { subject: 'sub' }`; a missing or
+non-string value then rejects the call), and the `scope` claim grants scopes only
+through `claimsMapping.scopes`. Roles likewise come only from `claimsMapping.roles`.
+See [Auth option validation](/en/migration/auth-proto-options) when upgrading.
 
 ## Resolution Details
 

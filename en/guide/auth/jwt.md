@@ -41,6 +41,12 @@ Set `requireExpiration: false` only for an issuer that cannot add `exp`; an expi
 token is still rejected. See [Signed tokens must carry `exp`](/en/migration/token-expiration)
 when upgrading.
 
+### Errors and Skipped Methods
+
+A token that fails verification (bad signature, wrong issuer or audience, expired, no `exp`) ends the call with `Unauthenticated` and the fixed text `Authentication failed`; the text of the verification error is not sent to the client. A valid token with no subject fails with `JWT missing subject claim`. For the generic `createAuthInterceptor`, a `ConnectError` thrown by `verifyCredentials` is the exception: it reaches the client unchanged, so write its text for the client.
+
+`skipMethods` takes exact methods and `Service/*` patterns. The catch-all `'*'` is refused when the interceptor is created, because it would switch authentication off for every method; to disable the interceptor, do not register it.
+
 ## HMAC Secret
 
 For simple setups and testing environments where tokens are signed with a shared secret:
