@@ -29,7 +29,7 @@ flowchart LR
 | 3 | **bulkhead** | Limits concurrent requests | **Opt-in** (capacity 10, queue 10 when enabled) |
 | 4 | **circuitBreaker** | Prevents cascading failures (outbound pattern, see below) | **Opt-in** (threshold 5 when enabled) |
 | 5 | **retry** | Retries transient failures with exponential backoff | **Opt-in** (3 retries when enabled) |
-| 6 | **fallback** | Graceful degradation | **Opt-in** (requires a handler) |
+| 6 | **fallback** | Graceful degradation | **Opt-in** (requires an options object with a handler; `true` is refused) |
 | 7 | **validation** | Validates via `@connectrpc/validate` | Enabled |
 | 8 | **serializer** | JSON serialization for protobuf | **Opt-in** |
 
@@ -200,6 +200,46 @@ const server = createServer({
   shutdown: { autoShutdown: true },
 });
 ```
+
+Each key accepts only `true`, `false`, `undefined` or an options object. `validation` accepts only a boolean. `fallback` accepts `false` or an options object with a `handler`; there is no default handler, so `fallback: true` is refused. Any other value (`null`, a number, a string, an array, a function) throws a `TypeError` that names the key, for example `timeout must be true, false or an options object, got null`. A value the helper does not understand never switches an interceptor off silently.
+
+```typescript
+createDefaultInterceptors({ fallback: { handler: () => ({ items: [] }) } }); // enabled
+createDefaultInterceptors({ fallback: true });  // TypeError: fallback must be false or an options object with a handler, got true
+createDefaultInterceptors({ timeout: null });   // TypeError: timeout must be true, false or an options object, got null
+```
+
+## Option ranges and validation {#option-ranges-and-validation}
+
+The numeric options of the resilience interceptors are checked when the factory is called (or when `createDefaultInterceptors()` builds the chain), so a misconfiguration fails at startup instead of changing behavior under load.
+
+| Factory | Option | Accepted value | Default |
+|---|---|---|---|
+| `createTimeoutInterceptor` | `duration` | integer, 1 to 2147483647 ms | 30000 |
+| `createBulkheadInterceptor` | `capacity` | integer, 1 or more | 10 |
+| `createBulkheadInterceptor` | `queueSize` | integer, 0 or more | 10 |
+| `createCircuitBreakerInterceptor` | `threshold` | integer, 1 or more | 5 |
+| `createCircuitBreakerInterceptor` | `halfOpenAfter` | integer, 0 to 2147483647 ms | 30000 |
+| `createRetryInterceptor` | `maxRetries` | finite number, 0 or more (a fraction such as `0.5` is allowed) | 3 |
+| `createRetryInterceptor` | `initialDelay` | integer, 0 to 2147483647 ms | 200 |
+| `createRetryInterceptor` | `maxDelay` | integer, 0 to 2147483647 ms | 5000 |
+| `createFallbackInterceptor` | `handler` | function | required |
+
+2147483647 ms (about 24.8 days) is the longest delay the platform timer honors. A longer delay does not wait longer: the timer fires after 1 ms, so a very large timeout would expire at once. To run without a time limit, omit the `timeout` interceptor instead of passing a large number.
+
+A refusal names the factory, the option, the rule and the received value:
+
+| Received | Thrown | Example message |
+|---|---|---|
+| Not a number (`"30s"`, `null`, `true`; `undefined` selects the default) | `TypeError` | `createTimeoutInterceptor: duration must be an integer from 1 to 2147483647 milliseconds, got "30s"` |
+| A number outside the rule (`NaN`, `Infinity`, a fraction, zero or negative where not allowed, above the ceiling) | `RangeError` | `createBulkheadInterceptor: capacity must be an integer of at least 1, got 1.5` |
+| A `fallback` options object without a function `handler` | `TypeError` | `createFallbackInterceptor: handler must be a function` |
+
+### Bulkhead refusal
+
+A request that finds every slot and the whole queue taken is rejected with the code `ResourceExhausted` and the text `Bulkhead capacity exceeded (capacity: N, queueSize: M)`, where N and M are the values you configured. The text carries no live occupancy. Branch on the code, not on the text: the text is for people reading logs and can change between releases.
+
+Upgrading from a release where these were accepted? See [Interceptor option validation](/en/migration/interceptor-options).
 
 ## Combining with Custom Interceptors
 

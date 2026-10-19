@@ -39,6 +39,7 @@ const authz = createAuthzInterceptor({
 - **Roles** use **any-of** semantics -- the user needs at least one of the listed roles.
 - **Scopes** use **all-of** semantics -- the user needs all listed scopes.
 - Rules without `requires` match all authenticated users for the named methods.
+- An empty or omitted list places no restriction on that dimension: `requires: { roles: [] }` does not restrict roles, and `requires: {}` matches any authenticated caller, exactly like a rule without `requires`. A rule restricts a dimension only when its list has at least one entry.
 - This interceptor requires an `AuthContext` before evaluating any rule. A rule named `public` does not bypass authentication. Put intentionally public methods in both authentication and authorization `skipMethods` lists.
 
 ### Method Patterns
@@ -46,10 +47,12 @@ const authz = createAuthzInterceptor({
 | Pattern | Description |
 |---------|-------------|
 | `'public.v1.PublicService/*'` | All methods of the service |
-| `'*'` | All services and methods |
+| `'*'` | All services and methods (allowed in rule `methods` and in `internalMethods`) |
 | `'admin.v1.AdminService/DeleteUser'` | Exact method match |
 
 Partial wildcards such as `Write*` or `admin.v1.*/*` are not supported by auth interceptors. List exact methods or use a complete `Service/*` pattern.
+
+The catch-all `'*'` is **not accepted in `skipMethods`**. `createAuthInterceptor`, `createJwtAuthInterceptor`, `createSessionAuthInterceptor`, `createGatewayAuthInterceptor` and `createAuthzInterceptor` throw when it is created with `skipMethods: ['*']`, because the option would switch the interceptor off for every method without saying so. To turn an interceptor off, do not register it; to skip a whole service, list `'pkg.v1.Service/*'`. See [Auth option validation](/en/migration/auth-proto-options).
 
 ## Programmatic Callback
 
