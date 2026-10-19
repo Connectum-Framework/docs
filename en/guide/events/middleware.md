@@ -171,8 +171,9 @@ the event type matches no registered topic, exactly or by pattern, the EventBus
 acknowledges the delivery without running any handler or middleware. It does
 not nack or requeue it and does not copy it to the DLQ, because the DLQ
 middleware is part of a route's pipeline. This is reachable where the broker
-can deliver more than the subscription asks for: an AMQP fanout or headers
-exchange delivers every message to the queue (see
+can deliver more than the subscription asks for: an AMQP fanout exchange, or a
+headers exchange whose queue has no operator-declared bindings, delivers every
+message to the queue (see
 [AMQP reliability](/en/guide/events/amqp-reliability)), and a Redis stream
 entry without a matching `eventType` reports an empty or foreign type.
 
