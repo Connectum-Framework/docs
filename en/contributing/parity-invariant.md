@@ -33,9 +33,17 @@ revised or accompanied by a documented carve-out in the spec.
    scenario twice — once over `createGrpcTransport({ baseUrl })` and once over
    `createLocalTransport(server)` — and performs a structural diff on the
    normalized result (response, headers, error, OTEL spans, metrics).
-2. **Parity suite** — aggregated by `scripts/parity-suite.sh`, covering
-   interceptors, validation, authorization, streaming, error mapping,
-   coexistence, and OTEL.
+2. **Parity suite** — aggregated by `scripts/parity-suite.sh`, which runs the
+   parity tests of `@connectum/testing` (interceptors, validation, streaming,
+   error mapping, coexistence, request admission, reflection),
+   `@connectum/auth` (authentication and authorization), and
+   `@connectum/otel` (OTEL). Validation and authorization scenarios run the
+   **shipped** interceptors (`createDefaultInterceptors()`,
+   `createJwtAuthInterceptor`, `createProtoAuthzInterceptor`) against fixtures
+   with real `buf.validate` and `connectum.auth.v1` annotations; each scenario
+   checks the outcome against an expected value as well as comparing the two
+   transports. A test-local interceptor that imitates them does not count as
+   coverage.
 3. **`HTTP ↔ in-process parity` CI check** (`.github/workflows/parity-gate.yml`) runs the
    suite on every pull request and every push to `main`.
 
@@ -43,8 +51,9 @@ revised or accompanied by a documented carve-out in the spec.
 
 Any change that touches **observable RPC behaviour** must add (or extend) a
 `transportParityTest()` scenario in the appropriate file under
-`packages/testing/tests/parity/` (or `packages/otel/tests/parity/` for
-observability). This includes, but is not limited to:
+`packages/testing/tests/parity/`, `packages/auth/tests/parity/` (authentication
+and authorization), or `packages/otel/tests/parity/` (observability). This
+includes, but is not limited to:
 
 - a new interceptor in `@connectum/interceptors`;
 - a new authentication or authorization rule in `@connectum/auth`
