@@ -122,7 +122,7 @@ when a module has made the service unreachable.
 | `--events` | `nats`, `kafka`, `redpanda`, `redis`, `amqp` | Add an EventBus with the chosen adapter |
 | `--auth` | — | Add JWT authentication + proto-driven authorization |
 | `--catalog` | — | Add the service catalog (typed `ctx.call` / `ctx.stream`) |
-| `--resilience` | comma list of `timeout,bulkhead,circuitBreaker,retry,fallback` | Enable resilience interceptors |
+| `--resilience` | comma list of `timeout,bulkhead,circuitBreaker,retry` | Enable resilience interceptors; `fallback` is refused, see [Interceptor order](#interceptor-order) |
 | `--healthcheck` / `--no-healthcheck` | — | Include the gRPC health protocol (default on) |
 | `--reflection` / `--no-reflection` | — | Include gRPC server reflection (default on) |
 | `--sample` / `--no-sample` | — | Emit the runnable sample Greeter service (default on); `--no-sample` is [config-only](#no-sample-a-config-only-project) and cannot be combined with `--auth` or `--events` |
@@ -256,8 +256,16 @@ enabled resilience → validation**. OpenTelemetry is outermost so a span always
 covers the whole request, including errors.
 
 The resilience entries follow the [built-in chain order](/en/guide/interceptors/built-in).
-`--resilience fallback` alone emits `fallback: true`, which does not create a
-fallback interceptor: configure an explicit handler in `src/server.ts`.
+
+`--resilience` accepts `timeout`, `bulkhead`, `circuitBreaker` and `retry`, each
+enabled with its default options. `fallback` is not offered: a fallback needs a handler that produces an application-specific response, which a
+generator cannot write, and `createDefaultInterceptors({ fallback: true })` is
+refused. `connectum init --resilience fallback` exits with
+`invalid --resilience "fallback"` and a hint; add the interceptor yourself:
+
+```typescript
+createDefaultInterceptors({ fallback: { handler: () => ({ items: [] }) } })
+```
 
 ### Dependency build scripts under pnpm
 
