@@ -97,7 +97,7 @@ Only synchronous exceptions are covered. An `async` listener that rejects is not
 
 ## The shutdownSignal
 
-Every server exposes an `AbortSignal` via `server.shutdownSignal`. The signal is **aborted** when the server enters the `stopping` state. Use it to propagate cancellation to streaming RPCs, background workers, and long-running operations.
+Every server exposes an `AbortSignal` via `server.shutdownSignal`. The signal is **aborted** right after the `stopping` event has been emitted: inside a `stopping` listener it is not yet aborted, so react to it with `signal.addEventListener('abort', …)` rather than by reading `signal.aborted` there. Use it to propagate cancellation to streaming RPCs, background workers, and long-running operations.
 
 ```typescript
 server.on('ready', () => {
