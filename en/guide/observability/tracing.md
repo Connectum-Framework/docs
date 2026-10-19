@@ -30,6 +30,22 @@ attributes, signal toggles, or data recording that the service requires; use
 for the exact fields. Keep message recording disabled unless its privacy and volume
 impact has been reviewed.
 
+### Span status
+
+A span that ends without a failure keeps the default status, **unset**. The
+interceptors, `traced()` and `traceAll()` never set `OK`: the OpenTelemetry Trace API
+asks instrumentation libraries not to, and the RPC conventions leave the status unset
+when a call succeeds. They set `ERROR`, with the error message, only when the call or
+function fails or is canceled. A stream whose consumer stops early (`return()` or
+`break`) also ends unset, because that is neither a failure nor a confirmed success.
+
+To count failures, filter on `status = error`; to count successes, use "status is not
+error" or the `rpc.response.status_code` attribute, which still reports `OK` for a
+successful unary call. Cancellation is reported as `CANCELED` (one L, the Connect
+spelling) in `rpc.response.status_code` and `error.type`. Queries over data from
+both Connect and gRPC stacks can match both spellings with `CANCEL+ED`. See
+[RPC telemetry attribute names](/en/migration/otel-rpc-attributes#span-status-is-unset-on-success).
+
 ### Spans in streaming handlers
 
 The server span is the active span for the whole handler of a unary, client-streaming, server-streaming, or bidirectional call. In a generator handler this holds at the start, after every `await` and `yield`, and in `finally`, so a span started with `traced()` or `tracer.startActiveSpan()` there is a child of the call's server span:
