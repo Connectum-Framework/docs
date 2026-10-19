@@ -63,8 +63,8 @@ Update every query that selects successes by span status:
 
 | Before | From 1.3.0 |
 |--------|------------|
-| `status = ok` | `status != error` (an unset status is the success state) |
-| success rate = OK spans / all spans | `1 - error spans / all spans`, or filter on `rpc.response.status_code = "OK"` |
+| `status = ok` | `status != error` for calls without an error; `rpc.response.status_code = "OK"` for confirmed successes |
+| success rate = OK spans / all spans | `rpc.response.status_code = "OK"` over all calls. `1 - error spans / all spans` is a non-error rate: it also counts streams that a consumer stopped early |
 | errors: `status = error` | unchanged |
 
 The `rpc.response.status_code` attribute still reports `OK` for a successful unary call, and the metrics, `error.type` and span events are unchanged. If a backend shows an unset status as "unknown", that is the meaning the specification gives to the unset state; failures are the spans in the error state.
