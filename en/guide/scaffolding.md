@@ -331,7 +331,7 @@ npx @connectum/cli proto sync --from localhost:5000 --out ./generated --dry-run
 
 | Flag | Description |
 |------|-------------|
-| `--from` | Server address, with or without `http://` (required) |
+| `--from` | Server address (required): `host:port`, which gets `http://` put in front of it, or a full `http://` / `https://` URL, used as typed (the scheme may be written in any letter case). Any other scheme, such as `ftp://host:port`, is refused before a connection is made, with a message that names the scheme |
 | `--out` | Output directory for the generated types (required) |
 | `--template` | Path to a custom `buf.gen.yaml` |
 | `--dry-run` | Connect, list the services and files, generate nothing |
