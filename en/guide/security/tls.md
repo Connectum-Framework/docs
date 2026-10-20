@@ -36,8 +36,17 @@ const server = createServer({
 ```
 
 Paths are resolved relative to the current working directory.
-Supply `keyPath` and `certPath` together. If either is missing, the loader uses
-`dirPath` or its default directory for both files.
+Supply `keyPath` and `certPath` together. Setting only one of them is a
+configuration error: `readTLSCertificates()` throws an `Error` that names the
+parameter you set and the one that is missing, before it reads any file, so
+`server.start()` rejects with it. Earlier versions silently ignored the single
+path and read both files from the directory, which started the server with a
+different certificate than the one you named. An empty string counts as not set.
+
+Precedence when several sources are present: both explicit paths win over
+`dirPath`, `dirPath` wins over `TLS_DIR_PATH`, and `TLS_DIR_PATH` wins over the
+built-in default directory. A single explicit path is never combined with a
+directory, whichever directory it would come from.
 
 ### Directory-Based Configuration
 
@@ -55,6 +64,9 @@ const server = createServer({
 The server looks for:
 - `<dirPath>/server.key`
 - `<dirPath>/server.crt`
+
+Do not combine `dirPath` with only one of `keyPath` or `certPath`; that
+combination is rejected as described above.
 
 ### Environment Variable Configuration
 

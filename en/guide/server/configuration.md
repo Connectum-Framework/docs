@@ -189,6 +189,7 @@ The `TLS_DIR_PATH` environment variable sets the default directory for `getTLSPa
 
 ::: warning
 In production, always set `TLS_DIR_PATH` explicitly or provide `keyPath`/`certPath` in the `tls` option.
+Provide `keyPath` and `certPath` together: setting only one is rejected with an error naming the missing one.
 :::
 
 ## Extending the Schema
