@@ -49,7 +49,9 @@ The `headerMapping` object maps `AuthContext` fields to the header names your ga
 |-------|----------------------|---------|
 | `subject` | User ID (string) | `x-user-id: user-123` |
 | `name` | Display name (string) | `x-user-name: John Doe` |
-| `roles` | JSON array or comma-separated roles | `x-user-roles: ["admin","editor"]` or `x-user-roles: admin,editor` |
+| `roles` | JSON array of strings or comma-separated roles | `x-user-roles: ["admin","editor"]` or `x-user-roles: admin,editor` |
+
+A `roles` value that is a JSON array is used as sent (items that are not strings are dropped). Every other value is read as a comma-separated list, with the items trimmed and empty items dropped. That includes JSON of another kind: `x-user-roles: 123` or `true` is the single role `"123"` or `"true"`, not an empty list.
 | `scopes` | Space-separated scopes | `x-user-scopes: read write` |
 | `type` | Credential type (string) | `x-user-type: oidc` |
 

@@ -119,9 +119,10 @@ action below rather than assuming a direct upgrade to the documented line.
 - [Test fixture descriptors follow protobuf-es](/en/migration/test-fixtures-descriptors) —
   from 1.3, the descriptor mocks of `@connectum/test-fixtures` and `@connectum/testing`
   zero-initialise fields in `create()`, derive `localName` from the proto name, number
-  fields uniquely (a repeated number throws), escape reserved names with `$`, and
-  `createMockNextSlow` returns copies (**breaking** for tests that rely on the old
-  mock behavior).
+  fields uniquely (a repeated number throws), escape reserved names with `$`,
+  link fields to their message through `parent`, report the proto3 edition and mark
+  sensitive fields with a real `FieldOptions`, and `createMockNextSlow` returns
+  copies (**breaking** for tests that rely on the old mock behavior).
 
 ## Release History
 

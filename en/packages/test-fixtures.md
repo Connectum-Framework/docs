@@ -55,6 +55,8 @@ const next = createMockNext({ message: { ok: true } });
 - A field `name` is the proto name. `localName` and `jsonName` are derived from it (`user_id` gives `userId`); a `localName` that collides with `constructor`, `toString`, `toJSON` or `valueOf` gets a `$` suffix. The same suffix applies to method `localName` (`ToString` gives `toString$`).
 - Field numbers that are not set continue from the highest number used so far; repeating a number throws an `Error`.
 - `createMockNextSlow` returns a copy of the configured `message` on every call, like `createMockNext`.
+- Each field of a message made by `createMockDescMessage` points back at the message through `parent`, and the file reports the proto3 edition (`file.edition` is `Edition.EDITION_PROTO3`), so `toBinary`, `isFieldSet`, `equals` and `clone` of `@bufbuild/protobuf` accept the mock. The link is circular: `JSON.stringify` of a mock message that has fields throws `TypeError`, as it does for a compiled descriptor, so serialise `typeName` and the field names instead. A field made by `createMockDescField` alone and a method made by `createMockDescMethod` have `parent` `undefined`; use `createFakeMethod(service, name)` for a method attached to a service.
+- A field created with `isSensitive: true` carries a real `google.protobuf.FieldOptions` message with `debugRedact: true` in `proto.options`. `useSensitiveRedaction` of `createMockDescMethod` is deprecated: `MethodOptions` has no such property, so its `{ debug_redact: true }` marker exists only in the fixture.
 
 ~~~typescript
 import { create } from '@bufbuild/protobuf';
