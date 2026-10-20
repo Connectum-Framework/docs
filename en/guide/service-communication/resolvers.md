@@ -59,7 +59,7 @@ const server = createServer({
 
 ### `mapResolver({ [typeName]: transport })`
 
-An explicit per-service map. Use it when each remote service has its own transport and you want an exact allow-list — any `typeName` not in the map resolves to `null` (→ `Code.Unavailable`).
+An explicit per-service map. Use it when each remote service has its own transport and you want an exact allow-list — any `typeName` not in the map resolves to `null` (→ `Code.Unavailable`). Only the keys the map owns count: a name that exists on `Object.prototype` (`constructor`, `toString`, `valueOf`, `__proto__`) is not in the map unless you put it there, and resolves to `null`. The lookup is live, so an entry added to the map after the resolver was created is honoured.
 
 ```typescript
 import { createServer, mapResolver } from '@connectum/core';

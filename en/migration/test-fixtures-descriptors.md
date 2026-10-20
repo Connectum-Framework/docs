@@ -26,6 +26,10 @@ Application code and tests that use only `createMockRequest`, `createMockNext`, 
 | Automatic field numbers were the 1-based position; a repeated number was accepted | Automatic numbers continue from the highest number so far (`[{ name: "a", fieldNumber: 5 }, { name: "b" }]` numbers `b` as 6); a repeated number throws `Error` |
 | `createMockDescMethod("ToString").localName` was `toString` | It is `toString$`, as for a compiled descriptor; `createFakeMethod` does the same |
 | `createMockNextSlow` returned the configured `message` object itself | It returns a shallow copy on every call, like `createMockNext` |
+| The `parent` of a field built by `createMockDescMessage` was `undefined`, so `toBinary`, `isFieldSet`, `equals` and `clone` threw `TypeError` | Each field points back at its message through `parent`; those four functions accept the mock |
+| `JSON.stringify` of a mock message worked | It throws `TypeError` when the message has fields: the `parent` link is circular, as in a compiled descriptor |
+| `proto.options` of a field with `isSensitive: true` was `{ debug_redact: true }` | It is a `google.protobuf.FieldOptions` message with `debugRedact: true` |
+| `file.proto.edition` was the string `"EDITION_PROTO3"` | `file.edition` is `Edition.EDITION_PROTO3` (999); `file.proto.syntax` is `"proto3"` and `file.proto.edition` is `Edition.EDITION_UNKNOWN` (0) |
 
 Names that are already camelCase (`userId`, `email`) are unchanged.
 
@@ -45,7 +49,8 @@ Names that are already camelCase (`userId`, `email`) are unchanged.
 2. Look up a snake_case field by its camelCase name: `desc.field.userId`, not `desc.field.user_id`. The proto name stays available as `field.name`.
 3. Give every field a distinct `fieldNumber`, or leave the numbers out. Two fields with one number throw when the message is created.
 4. Look up a method with a reserved name under its escaped `localName` (`toString$`).
-5. If a test mutated a `message` returned by `createMockNextSlow` and expected the configured object, or the next response, to change, change the configured object (or pass a new `message`) instead; every response is now a shallow copy.
+5. Serialise `typeName` and the field names instead of the descriptor object when a test passes a mock message to `JSON.stringify`. Read `proto.options.debugRedact` (not `debug_redact`) of a sensitive field, and the edition from `file.edition`. `useSensitiveRedaction` of `createMockDescMethod` is deprecated and keeps its behaviour; mark a field with `isSensitive` instead.
+6. If a test mutated a `message` returned by `createMockNextSlow` and expected the configured object, or the next response, to change, change the configured object (or pass a new `message`) instead; every response is now a shallow copy.
 
 ## Limits that remain
 

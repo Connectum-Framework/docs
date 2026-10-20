@@ -209,6 +209,15 @@ createDefaultInterceptors({ fallback: true });  // TypeError: fallback must be f
 createDefaultInterceptors({ timeout: null });   // TypeError: timeout must be true, false or an options object, got null
 ```
 
+### Fallback response {#fallback-response}
+
+The response the fallback interceptor synthesises carries only the protocol headers it needs, on a server chain and on a client transport alike:
+
+- `content-type` equal to the `content-type` of the request. A Connect GET request has none, so it is derived from the `encoding` query parameter (`json` gives `application/json`, `proto` gives `application/proto`); with no type to derive, the header stays empty.
+- the trailer `grpc-status: 0` when the request `content-type` starts with `application/grpc` (gRPC and gRPC-web). For any other protocol the trailer is empty.
+
+No header of the request is copied into the response, whichever interceptor added it. Connect, gRPC and gRPC-web clients over HTTP/2 and HTTP/1.1 accept the response. Metadata the caller needs belongs in the message the `handler` returns, not in the headers.
+
 ## Option ranges and validation {#option-ranges-and-validation}
 
 The numeric options of the resilience interceptors are checked when the factory is called (or when `createDefaultInterceptors()` builds the chain), so a misconfiguration fails at startup instead of changing behavior under load.

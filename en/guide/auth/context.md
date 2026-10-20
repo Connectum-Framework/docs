@@ -97,7 +97,10 @@ Enable the authentication interceptor's `propagateHeaders` to write the verified
 identity into the current request's headers. It does not send a downstream
 request itself. To carry those fields on `ctx.call` or `ctx.stream`, also list the
 chosen headers in the server's [header propagation](/en/guide/service-communication/service-catalog#header-propagation)
-configuration; independent clients need an outgoing interceptor.
+configuration; independent clients need an outgoing interceptor. The `x-auth-*`
+headers are for downstream services: the response the
+[fallback interceptor](/en/guide/interceptors/built-in#fallback-response) synthesises
+does not hand them back to the caller.
 
 ```typescript
 const jwtAuth = createJwtAuthInterceptor({

@@ -143,7 +143,7 @@ Analysis of the existing test suite (216 tests across 3 packages) revealed signi
 
 **Phase 2 — Protobuf Descriptor Mocks & Streaming (P1):**
 - `createMockDescMessage(typeName, options?)` — structurally valid DescMessage
-- `createMockDescField(localName, options?)` — DescField with isSensitive support
+- `createMockDescField(name, options?)` — DescField built from the proto field name (`localName` and `jsonName` are derived from it), with `isSensitive` support
 - `createMockDescMethod(name, options?)` — DescMethod with input/output descriptors
 - `createMockStream(items, options?)` — AsyncIterable from array
 
