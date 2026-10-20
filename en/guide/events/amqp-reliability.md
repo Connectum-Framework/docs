@@ -54,7 +54,9 @@ The adapter translates EventBus wildcard patterns for RabbitMQ topic bindings:
 
 Only complete dot-separated tokens are wildcards. A complete `>` token is valid
 only at the end of a pattern; a non-terminal `>` is rejected before subscription
-topology is created. Complete `*` and `>` tokens match only on a topic exchange.
+topology is created. So is a pattern with an empty segment (the empty string,
+`a..b`, `.a`, `a.` or `.`); earlier versions bound the queue to that key
+unchanged. See [empty segments](/en/guide/events/custom-topics#empty-segments-are-rejected). Complete `*` and `>` tokens match only on a topic exchange.
 A direct exchange matches binding keys literally, so with
 `topologyMode: 'assert'` a subscription containing such a token is rejected
 before a queue is created or bound, because the queue would never receive a
