@@ -4,7 +4,7 @@
 
 > **resolveMethodAuth**(`method`): [`ResolvedMethodAuth`](../interfaces/ResolvedMethodAuth.md)
 
-Defined in: [packages/auth/src/proto/reader.ts:73](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/proto/reader.ts#L73)
+Defined in: [packages/auth/src/proto/reader.ts:80](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/proto/reader.ts#L80)
 
 Resolve the effective authorization configuration for an RPC method.
 
@@ -35,3 +35,8 @@ The protobuf method descriptor
 [`ResolvedMethodAuth`](../interfaces/ResolvedMethodAuth.md)
 
 Resolved authorization configuration
+
+## Throws
+
+When the effective `policy` / `default_policy` is neither empty, `"allow"` nor `"deny"`,
+  or when the method resolves to both `public` and `internal`. A failed resolution is not cached.

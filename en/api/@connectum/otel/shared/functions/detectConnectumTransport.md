@@ -2,9 +2,9 @@
 
 # Function: detectConnectumTransport()
 
-> **detectConnectumTransport**(`headers`): `"http"` \| `"in-process"`
+> **detectConnectumTransport**(`headers`): `"in-process"` \| `"http"`
 
-Defined in: [shared.ts:243](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L243)
+Defined in: [shared.ts:244](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L244)
 
 Connectum transport identifier observed from request headers.
 
@@ -23,6 +23,6 @@ The request headers (Connect `req.header`)
 
 ## Returns
 
-`"http"` \| `"in-process"`
+`"in-process"` \| `"http"`
 
 `"in-process"` if the marker is present, `"http"` otherwise.

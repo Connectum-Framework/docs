@@ -4,7 +4,7 @@
 
 > **createMockNextError**(`code`, `message?`): `any`
 
-Defined in: test-fixtures/dist/index.d.ts:292
+Defined in: test-fixtures/dist/index.d.ts:338
 
 Create a mock `next` handler that always throws a [ConnectError](https://connectrpc.com/docs/web/errors).
 

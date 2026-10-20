@@ -28,9 +28,17 @@ false
 
 > `optional` **httpPaths?**: `string`[]
 
-Defined in: [types.ts:41](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L41)
+Defined in: [types.ts:49](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L49)
 
 HTTP health endpoint paths that all respond with health status.
+
+Must be a non-empty array of absolute paths: each starts with `/` and
+contains no `?` or `#`. An empty array throws `RangeError` and an
+invalid entry throws `TypeError` from `Healthcheck()`; to turn the HTTP
+endpoint off use `httpEnabled: false`. Request paths are compared
+exactly and case-sensitively (`/healthz/` does not match `/healthz`),
+the query string is ignored when matching, and the request method is
+not checked.
 
 #### Default
 
@@ -44,7 +52,7 @@ HTTP health endpoint paths that all respond with health status.
 
 > `optional` **manager?**: [`HealthcheckManager`](../../classes/HealthcheckManager.md)
 
-Defined in: [types.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L54)
+Defined in: [types.ts:62](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L62)
 
 Custom HealthcheckManager instance.
 Useful for testing or running multiple servers in one process.
@@ -56,7 +64,7 @@ When not provided, uses the default module-level singleton.
 
 > `optional` **watchInterval?**: `number`
 
-Defined in: [types.ts:47](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L47)
+Defined in: [types.ts:55](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L55)
 
 Watch interval in milliseconds for streaming health updates
 

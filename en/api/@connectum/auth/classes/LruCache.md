@@ -42,7 +42,7 @@ Defined in: [packages/auth/src/cache.ts:18](https://github.com/Connectum-Framewo
 
 > **get** **size**(): `number`
 
-Defined in: [packages/auth/src/cache.ts:63](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/cache.ts#L63)
+Defined in: [packages/auth/src/cache.ts:72](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/cache.ts#L72)
 
 ##### Returns
 
@@ -54,7 +54,7 @@ Defined in: [packages/auth/src/cache.ts:63](https://github.com/Connectum-Framewo
 
 > **clear**(): `void`
 
-Defined in: [packages/auth/src/cache.ts:59](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/cache.ts#L59)
+Defined in: [packages/auth/src/cache.ts:68](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/cache.ts#L68)
 
 #### Returns
 
@@ -66,7 +66,7 @@ Defined in: [packages/auth/src/cache.ts:59](https://github.com/Connectum-Framewo
 
 > **get**(`key`): `T` \| `undefined`
 
-Defined in: [packages/auth/src/cache.ts:26](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/cache.ts#L26)
+Defined in: [packages/auth/src/cache.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/cache.ts#L35)
 
 #### Parameters
 
@@ -84,7 +84,7 @@ Defined in: [packages/auth/src/cache.ts:26](https://github.com/Connectum-Framewo
 
 > **set**(`key`, `value`): `void`
 
-Defined in: [packages/auth/src/cache.ts:41](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/cache.ts#L41)
+Defined in: [packages/auth/src/cache.ts:50](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/cache.ts#L50)
 
 #### Parameters
 

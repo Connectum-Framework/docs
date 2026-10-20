@@ -2,7 +2,7 @@
 
 # Interface: MockDescFieldOptions
 
-Defined in: [types.ts:62](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L62)
+Defined in: [types.ts:70](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L70)
 
 Options for [createMockDescField](../../index/functions/createMockDescField.md).
 
@@ -12,7 +12,7 @@ Options for [createMockDescField](../../index/functions/createMockDescField.md).
 
 > `optional` **fieldNumber?**: `number`
 
-Defined in: [types.ts:66](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L66)
+Defined in: [types.ts:78](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L78)
 
 Proto field number. Default: auto-incremented
 
@@ -22,9 +22,11 @@ Proto field number. Default: auto-incremented
 
 > `optional` **isSensitive?**: `boolean`
 
-Defined in: [types.ts:64](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L64)
+Defined in: [types.ts:76](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L76)
 
-Mark field as sensitive (for redact interceptor). Default: `false`
+Mark the field as sensitive: `proto.options` becomes a `google.protobuf.FieldOptions`
+message with `debugRedact` set to `true`, as in a compiled descriptor.
+Default: `false`
 
 ***
 
@@ -32,6 +34,6 @@ Mark field as sensitive (for redact interceptor). Default: `false`
 
 > `optional` **type?**: `string`
 
-Defined in: [types.ts:68](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L68)
+Defined in: [types.ts:80](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L80)
 
 Field scalar type. Default: `'string'`

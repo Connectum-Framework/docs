@@ -4,13 +4,17 @@
 
 > **createAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/auth-interceptor.ts:81](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/auth-interceptor.ts#L81)
+Defined in: [packages/auth/src/auth-interceptor.ts:87](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/auth-interceptor.ts#L87)
 
 Create a generic authentication interceptor.
 
 Extracts credentials from request headers, verifies them using
 a user-provided callback, and stores the resulting AuthContext
 in AsyncLocalStorage for downstream access.
+
+A `ConnectError` thrown by `verifyCredentials` reaches the client unchanged (code and
+message), so choose its text as public. Any other thrown value is replaced by
+`Unauthenticated: Authentication failed`.
 
 ## Parameters
 
@@ -25,6 +29,14 @@ Authentication options
 `Interceptor`
 
 ConnectRPC interceptor
+
+## Throws
+
+When `skipMethods` contains `"*"`
+
+## Throws
+
+When `cache` has a `ttl` that is not finite and positive, or a `maxSize` that is not an integer of at least 1
 
 ## Examples
 

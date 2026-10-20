@@ -2,7 +2,7 @@
 
 # Interface: FakeMethodOptions
 
-Defined in: [types.ts:106](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L106)
+Defined in: [types.ts:125](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L125)
 
 Options for [createFakeMethod](../../index/functions/createFakeMethod.md).
 
@@ -12,7 +12,7 @@ Options for [createFakeMethod](../../index/functions/createFakeMethod.md).
 
 > `optional` **methodKind?**: `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"` \| `"unary"`
 
-Defined in: [types.ts:108](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L108)
+Defined in: [types.ts:127](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L127)
 
 Method kind. Default: `'unary'`
 
@@ -22,6 +22,6 @@ Method kind. Default: `'unary'`
 
 > `optional` **register?**: `boolean`
 
-Defined in: [types.ts:110](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L110)
+Defined in: [types.ts:129](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L129)
 
 Whether to register the method in service.methods. Default: `false`

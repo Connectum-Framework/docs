@@ -4,7 +4,7 @@
 
 > **defaultFailurePredicate**(`error`): `boolean`
 
-Defined in: [circuit-breaker.ts:37](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/circuit-breaker.ts#L37)
+Defined in: [circuit-breaker.ts:38](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/circuit-breaker.ts#L38)
 
 Default circuit-failure classification.
 

@@ -4,7 +4,7 @@
 
 > **executeProtoSync**(`options`): `Promise`\<`void`\>
 
-Defined in: [commands/proto-sync.ts:47](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L47)
+Defined in: [commands/proto-sync.ts:77](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L77)
 
 Fetch service descriptors from a running server and generate client types with `buf`.
 

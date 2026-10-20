@@ -2,7 +2,7 @@
 
 # Interface: CircuitBreakerOptions
 
-Defined in: [types.ts:185](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L185)
+Defined in: [types.ts:187](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L187)
 
 Circuit breaker interceptor options
 
@@ -12,7 +12,7 @@ Circuit breaker interceptor options
 
 > `optional` **failurePredicate?**: (`error`, `defaultPredicate`) => `boolean`
 
-Defined in: [types.ts:232](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L232)
+Defined in: [types.ts:235](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L235)
 
 Decides whether an error counts as a circuit failure.
 
@@ -65,9 +65,10 @@ non-ConnectError values count as failures)
 
 > `optional` **halfOpenAfter?**: `number`
 
-Defined in: [types.ts:196](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L196)
+Defined in: [types.ts:199](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L199)
 
-Time in milliseconds to wait before attempting to close circuit
+Time in milliseconds to wait before attempting to close circuit.
+Integer from 0 to 2147483647 (the platform timer ceiling).
 
 #### Default
 
@@ -81,7 +82,7 @@ Time in milliseconds to wait before attempting to close circuit
 
 > `optional` **skipStreaming?**: `boolean`
 
-Defined in: [types.ts:202](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L202)
+Defined in: [types.ts:205](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L205)
 
 Skip circuit breaker for streaming calls
 
@@ -97,9 +98,9 @@ true
 
 > `optional` **threshold?**: `number`
 
-Defined in: [types.ts:190](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L190)
+Defined in: [types.ts:192](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L192)
 
-Number of consecutive failures before opening circuit
+Number of consecutive failures before opening circuit. Integer of at least 1.
 
 #### Default
 

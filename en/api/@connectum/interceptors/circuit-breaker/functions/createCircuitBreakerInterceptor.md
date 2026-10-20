@@ -4,7 +4,7 @@
 
 > **createCircuitBreakerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [circuit-breaker.ts:95](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/circuit-breaker.ts#L95)
+Defined in: [circuit-breaker.ts:100](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/circuit-breaker.ts#L100)
 
 Create circuit breaker interceptor
 
@@ -24,6 +24,10 @@ The circuit breaker is an outbound/client-side pattern: it protects the
 caller from a sick upstream and gives that upstream room to recover. On a
 server's inbound stack it degenerates into error-rate load shedding —
 prefer timeout + bulkhead for inbound protection.
+
+`threshold` must be an integer of at least 1 and `halfOpenAfter` an integer from
+0 to 2147483647 milliseconds; anything else throws at construction (`TypeError`
+for a non-number, `RangeError` otherwise).
 
 ## Parameters
 

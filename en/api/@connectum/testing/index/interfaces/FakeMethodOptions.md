@@ -2,7 +2,7 @@
 
 # Interface: FakeMethodOptions
 
-Defined in: test-fixtures/dist/types.d.ts:75
+Defined in: test-fixtures/dist/types.d.ts:94
 
 Options for [createFakeMethod](../functions/createFakeMethod.md).
 
@@ -12,7 +12,7 @@ Options for [createFakeMethod](../functions/createFakeMethod.md).
 
 > `optional` **methodKind?**: `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"` \| `"unary"`
 
-Defined in: test-fixtures/dist/types.d.ts:77
+Defined in: test-fixtures/dist/types.d.ts:96
 
 Method kind. Default: `'unary'`
 
@@ -22,6 +22,6 @@ Method kind. Default: `'unary'`
 
 > `optional` **register?**: `boolean`
 
-Defined in: test-fixtures/dist/types.d.ts:79
+Defined in: test-fixtures/dist/types.d.ts:98
 
 Whether to register the method in service.methods. Default: `false`

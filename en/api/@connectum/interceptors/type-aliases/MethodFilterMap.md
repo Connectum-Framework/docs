@@ -4,7 +4,7 @@
 
 > **MethodFilterMap** = `Record`\<`string`, `Interceptor`[]\>
 
-Defined in: [types.ts:316](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L316)
+Defined in: [types.ts:322](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L322)
 
 Method pattern to interceptors mapping.
 

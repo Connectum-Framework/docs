@@ -12,13 +12,23 @@ Options for [createMockDescMessage](../functions/createMockDescMessage.md).
 
 > `optional` **fields?**: `object`[]
 
-Defined in: test-fixtures/dist/types.d.ts:34
+Defined in: test-fixtures/dist/types.d.ts:40
 
 Field definitions. Default: `[]`
+
+`name` is the field name as written in the `.proto` file; `localName` is
+derived from it (`user_id` gives `userId`). `fieldNumber` defaults to the
+highest number used so far plus one; a repeated number throws.
 
 #### fieldNumber?
 
 > `optional` **fieldNumber?**: `number`
+
+#### isSensitive?
+
+> `optional` **isSensitive?**: `boolean`
+
+Mark the field as sensitive, as in [MockDescFieldOptions.isSensitive](MockDescFieldOptions.md#issensitive). Default: `false`
 
 #### name
 
@@ -34,6 +44,6 @@ Field definitions. Default: `[]`
 
 > `optional` **oneofs?**: `string`[]
 
-Defined in: test-fixtures/dist/types.d.ts:40
+Defined in: test-fixtures/dist/types.d.ts:48
 
-Oneof group names. Default: `[]`
+Oneof group names. A mock oneof group has no fields. Default: `[]`

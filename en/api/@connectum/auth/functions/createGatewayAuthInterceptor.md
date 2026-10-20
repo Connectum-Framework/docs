@@ -4,7 +4,7 @@
 
 > **createGatewayAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/gateway-auth-interceptor.ts:111](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/gateway-auth-interceptor.ts#L111)
+Defined in: [packages/auth/src/gateway-auth-interceptor.ts:137](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/gateway-auth-interceptor.ts#L137)
 
 Create a gateway authentication interceptor.
 
@@ -26,6 +26,11 @@ Gateway auth configuration
 `Interceptor`
 
 ConnectRPC interceptor
+
+## Throws
+
+When `headerMapping.subject` or `trustSource.expectedValues` is missing, `skipMethods`
+  contains `"*"`, or `defaultType` contains NUL, CR or LF
 
 ## Example
 

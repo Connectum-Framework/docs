@@ -4,7 +4,7 @@
 
 > **signedTokenTrust**(`options`): [`InternalTrustSource`](../type-aliases/InternalTrustSource.md)
 
-Defined in: [packages/auth/src/internal-auth-interceptor.ts:266](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/internal-auth-interceptor.ts#L266)
+Defined in: [packages/auth/src/internal-auth-interceptor.ts:270](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/internal-auth-interceptor.ts#L270)
 
 Trust source that verifies a per-service signed JWT via issuer-bound JWKS
 (ADR-029 option (b) — non-mesh per-service containment, NOT a shared secret).
@@ -22,6 +22,10 @@ JWKS holding multiple services' keys does NOT contain compromise: `jose`
 resolves the signing key by `kid` independently of the `iss` claim, so a token
 claiming `iss: "B"` signed with A's key (header `kid: kid_A`) would be accepted
 against a shared keyset. This per-issuer binding prevents that forge.
+
+**Identity.** The resulting `subject` is the verified `iss`. `sub` and `scope` are read
+only through an explicit `claimsMapping` (`subject`, `scopes`); a mapped subject that is
+absent or not a string rejects the call. Roles come from `claimsMapping.roles` only.
 
 The framework ships only the verification primitive; key issuance/rotation/
 JWKS publication belong to the deployment (SPIRE / the IdP / the mesh).
