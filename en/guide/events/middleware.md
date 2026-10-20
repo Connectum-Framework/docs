@@ -64,7 +64,7 @@ const eventBus = createEventBus({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `maxRetries` | `number` | `3` | Maximum retry attempts before giving up |
+| `maxRetries` | `number` | `3` | Maximum number of retries after the first attempt, before giving up. An integer of at least `0`; `0` runs the handler once. A negative, fractional, `NaN` or infinite value throws when the middleware is created (`RangeError`; `TypeError` for a non-number) |
 | `backoff` | `"exponential" \| "linear" \| "fixed"` | `"exponential"` | Backoff strategy between retries |
 | `initialDelay` | `number` | `1000` | Initial delay in milliseconds |
 | `maxDelay` | `number` | `30000` | Maximum delay cap in milliseconds |
