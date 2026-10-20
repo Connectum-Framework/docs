@@ -51,7 +51,10 @@ The text of a failure often carries a connection string, a query or a value from
 | `ConnectError` | Unchanged: code, text, details, metadata |
 | `SanitizableError` | Its `clientMessage` and code; `serverDetails` stay on the server |
 | `Error` or a thrown string | `Internal` with the text `internal error` |
-| An error with a numeric `code` | That code with an empty text |
+| An error with a numeric `code` that is an integer from 1 to 16 | That code with an empty text |
+| An error with any other numeric `code` (`0`, `17`, `1.5`, `NaN`, an HTTP status, an errno) | `Internal` with the text `internal error` |
+
+Only the codes 1 to 16 (`Canceled` to `Unauthenticated`) are failure codes; `0` means success in gRPC, so another number is not sent to the client as a code. `onError` receives `Internal` for it, and the original error keeps its own `code`.
 
 The original failure stays on the server: as `cause` of the thrown `ConnectError` (no transport serializes `cause`), as `info.error` of `onError` with its original text, and in the console log.
 

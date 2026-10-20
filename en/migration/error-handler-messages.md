@@ -28,9 +28,12 @@ From 1.3.0 a client receives:
 | `ConnectError` | Unchanged: code, text, details, metadata |
 | `SanitizableError` | Its `clientMessage` and code; `serverDetails` stay on the server |
 | `Error` or a thrown string | `Internal` with the text `internal error` |
-| An error with a numeric `code` | That code with an empty text |
+| An error with a numeric `code` that is an integer from 1 to 16 | That code with an empty text |
+| An error with any other numeric `code` (`0`, `17`, `1.5`, `NaN`, an HTTP status, an errno) | `Internal` with the text `internal error` |
 
-The code selection rule did not change. The original failure stays on the server: as `cause` of the `ConnectError` that `errorHandler` throws (no transport serializes `cause`), as `info.error` of `onError` with its original text, and in the console log. The behavior is the same over gRPC, Connect and `server.localClient()`.
+A numeric `code` is adopted only when it is one of the Connect failure codes, 1 to 16. A handler that threw an object with another number (for example an HTTP status such as `404`) used to reach the client as a transport-dependent result: an `invalid grpc-status` text or a protocol error over gRPC, `Unknown` over Connect. Now it is `Internal` everywhere; to send a specific code, throw a `ConnectError` with it.
+
+The original failure stays on the server: as `cause` of the `ConnectError` that `errorHandler` throws (no transport serializes `cause`), as `info.error` of `onError` with its original text, and in the console log. The behavior is the same over gRPC, Connect and `server.localClient()`.
 
 `errorHandler` is a server interceptor. It changes what the server sends; a client needs no upgrade, and its own interceptors see the new text.
 

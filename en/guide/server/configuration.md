@@ -34,7 +34,7 @@ console.log(config.NODE_ENV);       // "development" (default)
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
-| `PORT` | `number` | `5000` | Server port (1--65535) |
+| `PORT` | `number` | `5000` | Server port, a whole number from 1 to 65535; a fractional value such as `80.5` is rejected with an error on `PORT` |
 | `LISTEN` | `string` | `"0.0.0.0"` | Listen address |
 | `NODE_ENV` | `enum` | `"development"` | `"development"`, `"production"`, or `"test"` |
 
