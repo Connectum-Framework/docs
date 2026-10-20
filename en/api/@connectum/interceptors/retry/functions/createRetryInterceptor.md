@@ -4,7 +4,7 @@
 
 > **createRetryInterceptor**(`options?`): `Interceptor`
 
-Defined in: [retry.ts:55](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/retry.ts#L55)
+Defined in: [retry.ts:61](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/retry.ts#L61)
 
 Create retry interceptor
 
@@ -17,6 +17,11 @@ cannot become a successful retry result when it completes later.
 
 Use retries only for idempotent operations. Streaming is skipped by default;
 opting in retries opening failures, not errors while consuming an opened stream.
+
+`maxRetries` must be a finite number of at least 0 (fractions allowed);
+`initialDelay` and `maxDelay` must be integers from 0 to 2147483647
+milliseconds. Anything else throws at construction (`TypeError` for a
+non-number, `RangeError` otherwise).
 
 ## Parameters
 

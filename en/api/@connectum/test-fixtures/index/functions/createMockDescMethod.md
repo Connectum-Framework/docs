@@ -4,13 +4,17 @@
 
 > **createMockDescMethod**(`name`, `options?`): [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: [mock-desc.ts:172](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-desc.ts#L172)
+Defined in: [mock-desc.ts:269](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-desc.ts#L269)
 
 Create a mock [DescMethod](https://protobufes.com/reference/reflection/descriptors/#types) descriptor.
 
 When `input` or `output` are not provided, default mock messages are created
 automatically based on the method name (e.g. `test.GetUserRequest` /
 `test.GetUserResponse`).
+
+Limit: the method has `parent` `undefined`, so code that reads the service of the
+method (for example `createMethodUrl`) cannot use it. Use `createFakeMethod(service, name)`
+for a method attached to a service.
 
 ## Parameters
 
@@ -24,7 +28,9 @@ The RPC method name (PascalCase by convention).
 
 [`MockDescMethodOptions`](../../types/interfaces/MockDescMethodOptions.md)
 
-Optional overrides for kind, input/output, and redaction.
+Optional overrides for kind, input/output, and redaction
+  (`useSensitiveRedaction` is deprecated: `MethodOptions` has no such property, so the
+  `{ debug_redact: true }` marker it produces is fixture-only and nothing in Connectum reads it).
 
 ## Returns
 

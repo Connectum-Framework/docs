@@ -4,7 +4,7 @@
 
 > **createMockNext**(`options?`): `any`
 
-Defined in: test-fixtures/dist/index.d.ts:270
+Defined in: test-fixtures/dist/index.d.ts:316
 
 Create a mock `next` handler that resolves with a successful response.
 

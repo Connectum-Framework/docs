@@ -2,7 +2,7 @@
 
 # Interface: MockDescMethodOptions
 
-Defined in: test-fixtures/dist/types.d.ts:52
+Defined in: test-fixtures/dist/types.d.ts:64
 
 Options for [createMockDescMethod](../functions/createMockDescMethod.md).
 
@@ -12,7 +12,7 @@ Options for [createMockDescMethod](../functions/createMockDescMethod.md).
 
 > `optional` **input?**: [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: test-fixtures/dist/types.d.ts:54
+Defined in: test-fixtures/dist/types.d.ts:66
 
 Input message descriptor.
 
@@ -22,7 +22,7 @@ Input message descriptor.
 
 > `optional` **kind?**: `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"` \| `"unary"`
 
-Defined in: test-fixtures/dist/types.d.ts:58
+Defined in: test-fixtures/dist/types.d.ts:70
 
 Method kind. Default: `'unary'`
 
@@ -32,16 +32,23 @@ Method kind. Default: `'unary'`
 
 > `optional` **output?**: [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: test-fixtures/dist/types.d.ts:56
+Defined in: test-fixtures/dist/types.d.ts:68
 
 Output message descriptor.
 
 ***
 
-### useSensitiveRedaction?
+### ~~useSensitiveRedaction?~~
 
 > `optional` **useSensitiveRedaction?**: `boolean`
 
-Defined in: test-fixtures/dist/types.d.ts:60
+Defined in: test-fixtures/dist/types.d.ts:79
 
-Enable sensitive field redaction for this method. Default: `false`
+Put the fixture-only marker `{ debug_redact: true }` into `proto.options`. Default: `false`
+
+#### Deprecated
+
+`google.protobuf.MethodOptions` has no `debug_redact` field: the marker
+  exists only in this fixture, nothing in Connectum reads it, and it does not conform
+  to a compiled descriptor. It keeps its behaviour for existing tests. Mark a field
+  with `isSensitive` instead.

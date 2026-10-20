@@ -572,7 +572,7 @@ v3.2.0
 
 ### listeners()
 
-> **listeners**\<`E`\>(`eventName`): (...`args`) => `void`[]
+> **listeners**\<`E`\>(`eventName`): ((...`args`) => `void`)[]
 
 Defined in: node\_modules/.pnpm/@types+node@26.2.0/node\_modules/@types/node/events.d.ts:186
 
@@ -600,7 +600,7 @@ console.log(util.inspect(server.listeners('connection')));
 
 #### Returns
 
-(...`args`) => `void`[]
+((...`args`) => `void`)[]
 
 #### Since
 
@@ -1532,7 +1532,7 @@ v6.0.0
 
 ### rawListeners()
 
-> **rawListeners**\<`E`\>(`eventName`): (...`args`) => `void`[]
+> **rawListeners**\<`E`\>(`eventName`): ((...`args`) => `void`)[]
 
 Defined in: node\_modules/.pnpm/@types+node@26.2.0/node\_modules/@types/node/events.d.ts:326
 
@@ -1578,7 +1578,7 @@ emitter.emit('log');
 
 #### Returns
 
-(...`args`) => `void`[]
+((...`args`) => `void`)[]
 
 #### Since
 

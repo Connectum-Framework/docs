@@ -2,7 +2,7 @@
 
 # Interface: GatewayAuthInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:309](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L309)
+Defined in: [packages/auth/src/types.ts:331](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L331)
 
 Gateway auth interceptor options.
 
@@ -15,9 +15,16 @@ Extracts auth context from gateway-injected headers.
 
 > `readonly` `optional` **defaultType?**: `string`
 
-Defined in: [packages/auth/src/types.ts:326](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L326)
+Defined in: [packages/auth/src/types.ts:355](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L355)
 
-Default credential type when not provided by gateway
+Credential type used when the gateway sends no type header.
+A value containing NUL, CR or LF throws when the interceptor is created.
+
+#### Default
+
+```ts
+"gateway"
+```
 
 ***
 
@@ -25,7 +32,7 @@ Default credential type when not provided by gateway
 
 > `readonly` **headerMapping**: [`GatewayHeaderMapping`](GatewayHeaderMapping.md)
 
-Defined in: [packages/auth/src/types.ts:311](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L311)
+Defined in: [packages/auth/src/types.ts:333](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L333)
 
 Mapping from AuthContext fields to gateway header names
 
@@ -35,9 +42,10 @@ Mapping from AuthContext fields to gateway header names
 
 > `readonly` `optional` **propagateHeaders?**: `boolean`
 
-Defined in: [packages/auth/src/types.ts:324](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L324)
+Defined in: [packages/auth/src/types.ts:349](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L349)
 
-Propagate auth context as headers for downstream services
+Propagate auth context as headers for downstream services.
+An identity containing NUL, CR or LF is rejected with `Unauthenticated` while this is on.
 
 ***
 
@@ -45,9 +53,9 @@ Propagate auth context as headers for downstream services
 
 > `readonly` `optional` **skipMethods?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:322](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L322)
+Defined in: [packages/auth/src/types.ts:344](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L344)
 
-Methods to skip authentication for
+Methods to skip authentication for. The catch-all `"*"` is refused (creation throws).
 
 ***
 
@@ -55,7 +63,7 @@ Methods to skip authentication for
 
 > `readonly` `optional` **stripHeaders?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:320](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L320)
+Defined in: [packages/auth/src/types.ts:342](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L342)
 
 Headers to strip from the request after extraction (prevent spoofing)
 
@@ -65,7 +73,7 @@ Headers to strip from the request after extraction (prevent spoofing)
 
 > `readonly` **trustSource**: `object`
 
-Defined in: [packages/auth/src/types.ts:313](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L313)
+Defined in: [packages/auth/src/types.ts:335](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L335)
 
 Trust verification: check that request came from a trusted gateway
 

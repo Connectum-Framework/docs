@@ -4,7 +4,7 @@
 
 > **buildErrorAttributes**(`error`): `Record`\<`string`, `string`\>
 
-Defined in: [shared.ts:179](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L179)
+Defined in: [shared.ts:180](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L180)
 
 Builds error-specific attributes for spans and metrics.
 

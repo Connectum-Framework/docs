@@ -4,7 +4,7 @@
 
 > **createMockRequest**(`options?`): `any`
 
-Defined in: test-fixtures/dist/index.d.ts:340
+Defined in: test-fixtures/dist/index.d.ts:391
 
 Create a simplified ConnectRPC request fixture for interceptor unit tests.
 
@@ -12,6 +12,11 @@ Provides common request fields and an independent, non-aborted signal.
 Service and method descriptors are minimal mocks. Tests that need
 requestMethod, contextValues or complete protobuf descriptors must supply
 those fields separately, or exercise an actual RPC transport.
+
+The generated `url` is a placeholder: its origin is `http://localhost`, while
+a request produced by the in-process transport carries `https://in-memory/…`.
+Only the path (`/<service typeName>/<method name>`) mirrors a real request.
+Pass `url` explicitly when the code under test depends on the origin.
 
 ## Parameters
 

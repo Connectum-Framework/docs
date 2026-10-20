@@ -4,7 +4,7 @@
 
 > **getInternalMethods**(`services`): `string`[]
 
-Defined in: [packages/auth/src/proto/reader.ts:222](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/proto/reader.ts#L222)
+Defined in: [packages/auth/src/proto/reader.ts:250](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/proto/reader.ts#L250)
 
 Get the list of internal method patterns from a set of service descriptors.
 

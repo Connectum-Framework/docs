@@ -46,6 +46,9 @@ Whether the method is public (skip authn + authz).
 
 > `readonly` **requires**: \{ `roles`: readonly `string`[]; `scopes`: readonly `string`[]; \} \| `undefined`
 
-Defined in: [packages/auth/src/proto/reader.ts:32](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/proto/reader.ts#L32)
+Defined in: [packages/auth/src/proto/reader.ts:37](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/proto/reader.ts#L37)
 
 Required roles and scopes, or undefined if none specified.
+
+An empty `roles` or `scopes` list places no restriction on that dimension;
+`requires {}` (both empty) admits any authenticated caller.

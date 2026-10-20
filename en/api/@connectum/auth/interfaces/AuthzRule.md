@@ -46,12 +46,14 @@ Rule name for logging/debugging
 
 > `readonly` `optional` **requires?**: `object`
 
-Defined in: [packages/auth/src/types.ts:94](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L94)
+Defined in: [packages/auth/src/types.ts:96](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L96)
 
 Required roles/scopes for this rule.
 
 - `roles` uses "any-of" semantics: user needs at least one of the listed roles.
 - `scopes` uses "all-of" semantics: user needs every listed scope.
+- An empty or omitted list places no restriction on that dimension; `requires: {}`
+  therefore matches any authenticated caller.
 
 #### roles?
 

@@ -2,7 +2,7 @@
 
 # Function: createBroadcastSubscribers()
 
-> **createBroadcastSubscribers**(`options`): [`EventBus`](../types/interfaces/EventBus.md) & `EventBusLike`[]
+> **createBroadcastSubscribers**(`options`): ([`EventBus`](../types/interfaces/EventBus.md) & `EventBusLike`)[]
 
 Defined in: [packages/events/src/broadcast.ts:76](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L76)
 
@@ -23,7 +23,7 @@ instead of fanning out).
 
 ## Returns
 
-[`EventBus`](../types/interfaces/EventBus.md) & `EventBusLike`[]
+([`EventBus`](../types/interfaces/EventBus.md) & `EventBusLike`)[]
 
 ## Example
 

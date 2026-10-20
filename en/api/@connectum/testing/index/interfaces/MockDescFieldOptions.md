@@ -2,7 +2,7 @@
 
 # Interface: MockDescFieldOptions
 
-Defined in: test-fixtures/dist/types.d.ts:43
+Defined in: test-fixtures/dist/types.d.ts:51
 
 Options for [createMockDescField](../functions/createMockDescField.md).
 
@@ -12,7 +12,7 @@ Options for [createMockDescField](../functions/createMockDescField.md).
 
 > `optional` **fieldNumber?**: `number`
 
-Defined in: test-fixtures/dist/types.d.ts:47
+Defined in: test-fixtures/dist/types.d.ts:59
 
 Proto field number. Default: auto-incremented
 
@@ -22,9 +22,11 @@ Proto field number. Default: auto-incremented
 
 > `optional` **isSensitive?**: `boolean`
 
-Defined in: test-fixtures/dist/types.d.ts:45
+Defined in: test-fixtures/dist/types.d.ts:57
 
-Mark field as sensitive (for redact interceptor). Default: `false`
+Mark the field as sensitive: `proto.options` becomes a `google.protobuf.FieldOptions`
+message with `debugRedact` set to `true`, as in a compiled descriptor.
+Default: `false`
 
 ***
 
@@ -32,6 +34,6 @@ Mark field as sensitive (for redact interceptor). Default: `false`
 
 > `optional` **type?**: `string`
 
-Defined in: test-fixtures/dist/types.d.ts:49
+Defined in: test-fixtures/dist/types.d.ts:61
 
 Field scalar type. Default: `'string'`

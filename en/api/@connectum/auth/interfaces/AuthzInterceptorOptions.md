@@ -2,7 +2,7 @@
 
 # Interface: AuthzInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:252](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L252)
+Defined in: [packages/auth/src/types.ts:269](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L269)
 
 Authorization interceptor options
 
@@ -12,7 +12,7 @@ Authorization interceptor options
 
 > `optional` **authorize?**: (`context`, `req`) => `boolean` \| `Promise`\<`boolean`\>
 
-Defined in: [packages/auth/src/types.ts:274](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L274)
+Defined in: [packages/auth/src/types.ts:291](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L291)
 
 Programmatic authorization callback.
 Called after rule evaluation if no rule matched,
@@ -50,7 +50,7 @@ true if authorized, false otherwise
 
 > `optional` **defaultPolicy?**: [`AuthzEffect`](../type-aliases/AuthzEffect.md)
 
-Defined in: [packages/auth/src/types.ts:257](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L257)
+Defined in: [packages/auth/src/types.ts:274](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L274)
 
 Default policy when no rule matches.
 
@@ -66,7 +66,7 @@ Default policy when no rule matches.
 
 > `optional` **rules?**: [`AuthzRule`](AuthzRule.md)[]
 
-Defined in: [packages/auth/src/types.ts:263](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L263)
+Defined in: [packages/auth/src/types.ts:280](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L280)
 
 Declarative authorization rules.
 Evaluated in order; first matching rule wins.
@@ -77,9 +77,10 @@ Evaluated in order; first matching rule wins.
 
 > `optional` **skipMethods?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:280](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L280)
+Defined in: [packages/auth/src/types.ts:298](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L298)
 
-Methods to skip authorization for.
+Methods to skip authorization for. The catch-all `"*"` is refused (creation throws);
+`"*"` remains valid in the `methods` of a rule.
 
 #### Default
 

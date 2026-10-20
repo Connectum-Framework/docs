@@ -4,7 +4,7 @@
 
 > **sharedSecretTrust**(`options`): [`InternalTrustSource`](../type-aliases/InternalTrustSource.md)
 
-Defined in: [packages/auth/src/internal-auth-interceptor.ts:385](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/internal-auth-interceptor.ts#L385)
+Defined in: [packages/auth/src/internal-auth-interceptor.ts:399](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/internal-auth-interceptor.ts#L399)
 
 Trust source that constant-time compares a single shared secret (ADR-029
 option (c)).

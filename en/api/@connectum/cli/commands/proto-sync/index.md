@@ -23,4 +23,5 @@ Pipeline:
 ## Functions
 
 - [executeProtoSync](functions/executeProtoSync.md)
+- [normalizeServerUrl](functions/normalizeServerUrl.md)
 - [parseTimeoutOption](functions/parseTimeoutOption.md)

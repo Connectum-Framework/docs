@@ -2,7 +2,7 @@
 
 # Interface: InternalAuthInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:349](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L349)
+Defined in: [packages/auth/src/types.ts:378](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L378)
 
 Options for [createInternalAuthInterceptor](../functions/createInternalAuthInterceptor.md).
 
@@ -12,7 +12,7 @@ Options for [createInternalAuthInterceptor](../functions/createInternalAuthInter
 
 > `readonly` **internalMethods**: readonly `string`[]
 
-Defined in: [packages/auth/src/types.ts:367](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L367)
+Defined in: [packages/auth/src/types.ts:396](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L396)
 
 Method patterns that are internal (service-to-service). Typically the
 output of `getInternalMethods(services)`. The interceptor enforces the
@@ -27,7 +27,7 @@ Patterns: `"Service/Method"`, `"Service/*"`, or `"*"`.
 
 > `readonly` **trustSource**: [`InternalTrustSource`](../type-aliases/InternalTrustSource.md)
 
-Defined in: [packages/auth/src/types.ts:358](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L358)
+Defined in: [packages/auth/src/types.ts:387](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L387)
 
 The trust source that authorizes an internal call.
 

@@ -2,7 +2,7 @@
 
 # Interface: SharedSecretTrustOptions
 
-Defined in: [packages/auth/src/types.ts:471](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L471)
+Defined in: [packages/auth/src/types.ts:504](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L504)
 
 Options for [sharedSecretTrust](../functions/sharedSecretTrust.md).
 
@@ -16,7 +16,7 @@ production. See ADR-029.
 
 > `readonly` `optional` **header?**: `string`
 
-Defined in: [packages/auth/src/types.ts:478](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L478)
+Defined in: [packages/auth/src/types.ts:511](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L511)
 
 Header carrying the shared secret.
 
@@ -32,7 +32,7 @@ Header carrying the shared secret.
 
 > `readonly` `optional` **roles?**: readonly `string`[]
 
-Defined in: [packages/auth/src/types.ts:485](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L485)
+Defined in: [packages/auth/src/types.ts:518](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L518)
 
 Roles granted to a trusted caller.
 
@@ -42,7 +42,7 @@ Roles granted to a trusted caller.
 
 > `readonly` `optional` **scopes?**: readonly `string`[]
 
-Defined in: [packages/auth/src/types.ts:487](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L487)
+Defined in: [packages/auth/src/types.ts:520](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L520)
 
 Scopes granted to a trusted caller.
 
@@ -52,7 +52,7 @@ Scopes granted to a trusted caller.
 
 > `readonly` **secret**: `string`
 
-Defined in: [packages/auth/src/types.ts:473](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L473)
+Defined in: [packages/auth/src/types.ts:506](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L506)
 
 The shared secret, constant-time compared against the header value.
 
@@ -62,7 +62,7 @@ The shared secret, constant-time compared against the header value.
 
 > `readonly` `optional` **subject?**: `string`
 
-Defined in: [packages/auth/src/types.ts:483](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L483)
+Defined in: [packages/auth/src/types.ts:516](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L516)
 
 Subject identity assigned to a trusted call.
 
@@ -78,7 +78,7 @@ Subject identity assigned to a trusted call.
 
 > `readonly` `optional` **type?**: `string`
 
-Defined in: [packages/auth/src/types.ts:489](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L489)
+Defined in: [packages/auth/src/types.ts:522](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L522)
 
 Credential type set on the resulting AuthContext.
 

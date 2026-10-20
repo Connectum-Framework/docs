@@ -2,7 +2,7 @@
 
 # Interface: FakeServiceOptions
 
-Defined in: [types.ts:98](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L98)
+Defined in: [types.ts:117](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L117)
 
 Options for [createFakeService](../../index/functions/createFakeService.md).
 
@@ -12,7 +12,7 @@ Options for [createFakeService](../../index/functions/createFakeService.md).
 
 > `optional` **name?**: `string`
 
-Defined in: [types.ts:102](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L102)
+Defined in: [types.ts:121](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L121)
 
 Service name (short). Default: derived from typeName
 
@@ -22,6 +22,6 @@ Service name (short). Default: derived from typeName
 
 > `optional` **typeName?**: `string`
 
-Defined in: [types.ts:100](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L100)
+Defined in: [types.ts:119](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L119)
 
 Service type name. Default: `'test.v1.TestService'`

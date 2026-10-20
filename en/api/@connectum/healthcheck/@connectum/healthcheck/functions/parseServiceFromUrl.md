@@ -2,14 +2,15 @@
 
 # Function: parseServiceFromUrl()
 
-> **parseServiceFromUrl**(`url`, `host`): `string` \| `undefined`
+> **parseServiceFromUrl**(`url`, `_host?`): `string` \| `undefined`
 
-Defined in: [httpHandler.ts:116](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/httpHandler.ts#L116)
+Defined in: [httpHandler.ts:135](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/httpHandler.ts#L135)
 
 Read the optional `service` query parameter from a request URL.
 
 Returns `undefined` when the URL is absent, malformed, or has no `service`
-parameter. The host is used only to resolve relative URLs.
+parameter. An empty value (`?service=`) is returned as the empty string.
+The result depends on the URL alone: the `Host` header never changes it.
 
 ## Parameters
 
@@ -17,9 +18,14 @@ parameter. The host is used only to resolve relative URLs.
 
 `string` \| `undefined`
 
-### host
+Request target, usually `req.url`
 
-`string` \| `undefined`
+### \_host?
+
+`string`
+
+Accepted for backward compatibility only; it has no effect
+  on the result and is removed in the next major version
 
 ## Returns
 
@@ -28,6 +34,6 @@ parameter. The host is used only to resolve relative URLs.
 ## Example
 
 ```typescript
-parseServiceFromUrl('/healthz?service=my.service.v1.MyService', req.headers.host)
+parseServiceFromUrl('/healthz?service=my.service.v1.MyService')
 // returns 'my.service.v1.MyService'
 ```

@@ -4,7 +4,7 @@
 
 > **getPublicMethods**(`services`): `string`[]
 
-Defined in: [packages/auth/src/proto/reader.ts:178](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/proto/reader.ts#L178)
+Defined in: [packages/auth/src/proto/reader.ts:206](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/proto/reader.ts#L206)
 
 Get the list of public method patterns from a set of service descriptors.
 

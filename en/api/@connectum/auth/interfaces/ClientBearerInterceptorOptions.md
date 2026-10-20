@@ -2,7 +2,7 @@
 
 # Interface: ClientBearerInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:538](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L538)
+Defined in: [packages/auth/src/types.ts:579](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L579)
 
 Client-side Bearer token interceptor options.
 
@@ -16,7 +16,7 @@ Client-side Bearer token interceptor options.
 
 > `readonly` **token**: `string` \| (() => `Promise`\<`string`\>)
 
-Defined in: [packages/auth/src/types.ts:546](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L546)
+Defined in: [packages/auth/src/types.ts:587](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L587)
 
 Bearer token value or async factory function.
 

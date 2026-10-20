@@ -2,7 +2,7 @@
 
 # Interface: MockStreamOptions
 
-Defined in: test-fixtures/dist/types.d.ts:63
+Defined in: test-fixtures/dist/types.d.ts:82
 
 Options for [createMockStream](../functions/createMockStream.md).
 
@@ -12,6 +12,6 @@ Options for [createMockStream](../functions/createMockStream.md).
 
 > `optional` **delayMs?**: `number`
 
-Defined in: test-fixtures/dist/types.d.ts:65
+Defined in: test-fixtures/dist/types.d.ts:84
 
 Delay in milliseconds between yielded items.

@@ -4,7 +4,7 @@
 
 > **createAuthzInterceptor**(`options?`): `Interceptor`
 
-Defined in: [packages/auth/src/authz-interceptor.ts:85](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/authz-interceptor.ts#L85)
+Defined in: [packages/auth/src/authz-interceptor.ts:86](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/authz-interceptor.ts#L86)
 
 Create an authorization interceptor.
 
@@ -27,6 +27,10 @@ Authorization options
 `Interceptor`
 
 ConnectRPC interceptor
+
+## Throws
+
+When `skipMethods` contains `"*"` (the pattern `"*"` stays valid in rule `methods`)
 
 ## Example
 

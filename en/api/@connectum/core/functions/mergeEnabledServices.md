@@ -12,7 +12,7 @@ Merge several `enabledServices` lists, de-duplicating while preserving first-see
 
 ### lists
 
-...readonly readonly `string`[][]
+...readonly (readonly `string`[])[]
 
 ## Returns
 

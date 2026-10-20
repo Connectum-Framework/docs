@@ -4,7 +4,7 @@
 
 > **parseTimeoutOption**(`raw`): `number` \| `undefined`
 
-Defined in: [commands/proto-sync.ts:124](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L124)
+Defined in: [commands/proto-sync.ts:158](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L158)
 
 Parse the `--timeout` value. Anything but a plain positive integer (`0`, `-5`, `1.5`,
 `abc`, `10s`) is refused rather than coerced, so a typo cannot silently become "no limit".

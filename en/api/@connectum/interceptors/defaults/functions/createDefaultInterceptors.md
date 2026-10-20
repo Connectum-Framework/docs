@@ -4,7 +4,7 @@
 
 > **createDefaultInterceptors**(`options?`): `Interceptor`[]
 
-Defined in: [defaults.ts:162](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L162)
+Defined in: [defaults.ts:188](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L188)
 
 Creates the default interceptor chain with the specified configuration.
 
@@ -35,6 +35,14 @@ Configuration for each interceptor
 `Interceptor`[]
 
 Array of configured interceptors in the correct order
+
+## Throws
+
+TypeError if a key holds a value its shape does not allow (see [DefaultInterceptorOptions](../interfaces/DefaultInterceptorOptions.md))
+
+## Throws
+
+RangeError if a numeric option inside an options object is out of range
 
 ## Example
 

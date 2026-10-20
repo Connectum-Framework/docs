@@ -4,7 +4,7 @@
 
 > **createFakeMethod**(`service`, `name`, `options?`): [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: [fake-service.ts:72](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/fake-service.ts#L72)
+Defined in: [fake-service.ts:73](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/fake-service.ts#L73)
 
 Create a fake [DescMethod](https://protobufes.com/reference/reflection/descriptors/#types) descriptor attached to a service.
 
