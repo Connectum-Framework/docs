@@ -262,6 +262,22 @@ try {
 The helper is narrower than the republish column above on purpose: a nack is safe to
 republish later, but it is not retried in a tight loop.
 
+## Socket options {#socket-options}
+
+Since 1.3.0, the adapter turns Nagle's algorithm off on its connections (the working
+connection and the startup probe): `socketOptions.noDelay` is `true` unless you set it.
+amqplib leaves the algorithm on by default, and with it on a publish that starts right
+after the previous message was delivered on the same connection can wait about 40 ms.
+To get amqplib's own behavior back, set the option explicitly; an explicit value,
+`false` included, is always used as given:
+
+```typescript
+const adapter = AmqpAdapter({
+  url: 'amqp://localhost:5672',
+  socketOptions: { noDelay: false },
+});
+```
+
 ## Connection recovery {#connection-recovery}
 
 Recovery is on by default (`recovery: true`). After a connection loss amqplib

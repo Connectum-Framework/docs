@@ -203,6 +203,18 @@ The generated e2e test asserts both directions: the public rpc succeeds and the
 authenticated one is rejected without credentials. Remove the option from `SayHello` once
 you want every method to require a token.
 
+### Lint rules in `buf.yaml` {#buf-lint-rules}
+
+The generated `buf.yaml` lints with the STANDARD rule set and checks breaking changes with
+`FILE`. The plain project and `--auth` add no lint exceptions.
+
+With `--events`, the file also excepts `SERVICE_SUFFIX`, `RPC_REQUEST_STANDARD_NAME`,
+`RPC_RESPONSE_STANDARD_NAME` and `RPC_REQUEST_RESPONSE_UNIQUE`, because event-handler
+services break exactly these rules: they are not named `*Service`, take the event message
+as the request, and answer with a shared `google.protobuf.Empty`. An `except` applies to
+the whole `proto` module, so in an `--events` project these four rules are off for every
+service you add later, not only for the event handlers.
+
 ### Connectum option protos
 
 With `--auth` or `--events`, your protos import Connectum's option protos
