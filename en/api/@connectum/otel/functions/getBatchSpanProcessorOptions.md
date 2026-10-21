@@ -4,7 +4,7 @@
 
 > **getBatchSpanProcessorOptions**(): [`BatchSpanProcessorOptions`](../interfaces/BatchSpanProcessorOptions.md)
 
-Defined in: [config.ts:159](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L159)
+Defined in: [config.ts:163](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L163)
 
 Gets batch span processor options from environment variables
 
@@ -16,7 +16,11 @@ Environment variables:
 
 A value that is not an integer, or is negative, is ignored with a process warning and the
 default is used, as the OpenTelemetry specification asks for invalid numeric
-variables. The provider is created lazily on the first traced call, so throwing here
+variables. `OTEL_BSP_MAX_EXPORT_BATCH_SIZE` and `OTEL_BSP_MAX_QUEUE_SIZE` must also be at
+least 1: a queue of size 0 drops every span without a trace, and a batch of size 0 makes the
+span processor allocate until the process runs out of memory (both measured with
+`@opentelemetry/sdk-trace-node`), so 0 is treated as invalid for them. The two durations
+accept 0. The provider is created lazily on the first traced call, so throwing here
 would fail that user call.
 
 ## Returns

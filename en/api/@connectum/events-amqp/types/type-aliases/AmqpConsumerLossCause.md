@@ -4,6 +4,6 @@
 
 > **AmqpConsumerLossCause** = `"cancelled"` \| `"channel-closed"`
 
-Defined in: [packages/events-amqp/src/types.ts:717](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L717)
+Defined in: [packages/events-amqp/src/types.ts:719](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L719)
 
 How the broker ended a consumer: cancelled it (e.g. queue deleted) or closed its channel with an exception.

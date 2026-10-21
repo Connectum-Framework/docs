@@ -23,6 +23,7 @@
 
 ## Functions
 
+- [assertPublishTopic](functions/assertPublishTopic.md)
 - [assertSubscriptionPatterns](functions/assertSubscriptionPatterns.md)
 - [composeMiddleware](functions/composeMiddleware.md)
 - [createBroadcastSubscribers](functions/createBroadcastSubscribers.md)

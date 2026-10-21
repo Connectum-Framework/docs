@@ -35,7 +35,7 @@ cannot express is set with [AmqpRecoveryOptions.backoff](#backoff).
 
 > `readonly` `optional` **backoff?**: (`attempt`) => `number`
 
-Defined in: [packages/events-amqp/src/types.ts:556](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L556)
+Defined in: [packages/events-amqp/src/types.ts:558](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L558)
 
 Custom reconnect delay: called with the attempt number, returns the
 delay in milliseconds before that attempt. Forwarded to amqplib's
@@ -44,7 +44,9 @@ delay in milliseconds before that attempt. Forwarded to amqplib's
 - `attempt` is 1-based and restarts at 1 after every successful connect.
 - Covers every reconnect attempt: steady-state recovery and the retries
   of the initial connect (with or without `initialConnectMaxRetries`).
-  It does NOT cover `publishRetry`, which keeps its own numeric backoff.
+  It does NOT cover `publishRetry`, which keeps its own numeric backoff, nor the
+  retries that restore a lost consumer, which follow the numeric options
+  (`initialDelay`, `maxDelay`, `factor`, `jitter`).
 - The return value must be a finite number ≥ 0. It is rounded to whole
   milliseconds and applied as is — NOT clamped to `maxDelay`; cap it
   yourself (`Math.min(cap, …)`). `0` is valid and retries at once. The
