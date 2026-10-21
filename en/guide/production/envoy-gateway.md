@@ -18,30 +18,23 @@ Connectum services communicate via gRPC, but many external clients (browsers, mo
 ## Request Flow
 
 ```mermaid
-graph LR
-    subgraph Clients
-        WEB["Browser / SPA"]
-        MOB["Mobile App"]
-        CLI["REST Client<br/>(curl, Postman)"]
-    end
+flowchart TD
+    Client["REST client<br/>browser, mobile, curl"]
 
     subgraph Gateway["Envoy Gateway"]
-        ROUTE["HTTPRoute"]
-        TRANSCODE["gRPC-JSON<br/>Transcoder Filter"]
-        SWAGGER["Swagger UI<br/>/docs"]
+        Route["HTTPRoute"]
+        Transcode["gRPC-JSON transcoder filter"]
+        Swagger["Swagger UI at /docs"]
     end
 
-    subgraph Services["Connectum Services"]
-        SVC["Order Service<br/>gRPC :5000"]
-    end
+    Svc["Order Service<br/>gRPC on :5000"]
 
-    WEB -->|"POST /v1/orders<br/>Content-Type: application/json"| ROUTE
-    MOB -->|"GET /v1/orders/123"| ROUTE
-    CLI -->|"GET /docs"| SWAGGER
-    ROUTE --> TRANSCODE
-    TRANSCODE -->|"gRPC binary<br/>HTTP/2"| SVC
-    SVC -->|"gRPC response"| TRANSCODE
-    TRANSCODE -->|"JSON response"| ROUTE
+    Client -->|"POST /v1/orders<br/>JSON in, JSON out"| Route
+    Client -->|"GET /docs"| Swagger
+    Route --> Transcode
+    Transcode -->|"gRPC over HTTP/2,<br/>response goes back<br/>through the filter"| Svc
+
+    class Transcode accent
 ```
 
 ## Prerequisites

@@ -305,7 +305,7 @@ downstream RPC itself.
 Auth/authz interceptors are positioned **immediately after errorHandler** and before resilience and handler-processing interceptors:
 
 ```mermaid
-flowchart LR
+flowchart TD
     Error[errorHandler] --> Authn[AUTH]
     Authn --> Authz[AUTHZ]
     Authz --> Timeout[timeout]
@@ -429,59 +429,61 @@ packages/auth/
 ## Architecture Diagram
 
 ```mermaid
-graph TB
-    subgraph "Layer 0: @connectum/core"
-        Server["Server.ts<br/>(lifecycle only)"]
-        Types["types.ts<br/>(SanitizableError type protocol)"]
-    end
-
-    subgraph "Layer 1: @connectum/auth"
-        AuthInt["createAuthInterceptor()<br/>Generic authentication"]
-        JwtAuth["createJwtAuthInterceptor()<br/>JWT + JWKS verification"]
-        Authz["createAuthzInterceptor()<br/>Declarative rules engine"]
-        ProtoAuthz["createProtoAuthzInterceptor()<br/>Proto-based authorization"]
-        Context["getAuthContext()<br/>AsyncLocalStorage + Headers"]
-        TestUtils["testing/<br/>JWT, RS256, and JWKS test helpers"]
-        GatewayAuth["createGatewayAuthInterceptor()<br/>Gateway pre-auth headers"]
-        SessionAuth["createSessionAuthInterceptor()<br/>Session-based auth"]
-        InternalAuth["createInternalAuthInterceptor()<br/>Internal trust marker"]
-        ClientBearer["createClientBearerInterceptor()<br/>Client Bearer token"]
-        ClientGateway["createClientGatewayInterceptor()<br/>Client gateway trust"]
-        Cache["LruCache<br/>In-memory TTL cache"]
-    end
-
-    subgraph "Layer 1: @connectum/interceptors"
-        Defaults["createDefaultInterceptors()"]
-        MethodFilter["createMethodFilterInterceptor()"]
-    end
-
-    subgraph "External"
-        Jose["jose<br/>(JWT library)"]
-        ConnectRPC["@connectrpc/connect<br/>(Interceptor type)"]
-        BufProtobuf["@bufbuild/protobuf<br/>(Proto reflection)"]
-    end
+flowchart TD
+    JwtAuth["createJwtAuthInterceptor()"]
+    AuthInt["createAuthInterceptor()"]
+    Jose["jose<br/>JWT library"]
+    Cache["LruCache<br/>In-memory TTL cache"]
+    Context["getAuthContext()<br/>AsyncLocalStorage + headers"]
 
     JwtAuth --> AuthInt
     JwtAuth --> Jose
+    AuthInt --> Cache
     AuthInt --> Context
-    AuthInt --> ConnectRPC
-    Authz --> Context
-    Authz --> ConnectRPC
-    ProtoAuthz --> Context
-    ProtoAuthz --> BufProtobuf
-    ProtoAuthz --> ConnectRPC
-    GatewayAuth --> Context
-    GatewayAuth --> ConnectRPC
-    SessionAuth --> Context
-    SessionAuth --> Cache
-    SessionAuth --> ConnectRPC
-    Defaults --> ConnectRPC
-    MethodFilter --> ConnectRPC
-    Authz -.-> Types
+
+    class Context accent
 ```
 
-The dashed core relationship is the type-only `SanitizableError` protocol used
-by `AuthzDeniedError`; it does not imply a runtime import of `@connectum/core`.
+The gateway and session interceptors are independent of the generic one:
+
+```mermaid
+flowchart TD
+    GatewayAuth["createGatewayAuthInterceptor()"]
+    SessionAuth["createSessionAuthInterceptor()"]
+    Context["getAuthContext()<br/>AsyncLocalStorage + headers"]
+    Cache["LruCache<br/>In-memory TTL cache"]
+
+    GatewayAuth --> Context
+    SessionAuth --> Context
+    SessionAuth --> Cache
+
+    class Context accent
+```
+
+Authorization reads the same context. Only the proto reader touches protobuf
+reflection:
+
+```mermaid
+flowchart TD
+    Authz["createAuthzInterceptor()<br/>Declarative rules engine"]
+    ProtoAuthz["createProtoAuthzInterceptor()<br/>Proto-based authorization"]
+    Types["@connectum/core<br/>SanitizableError type protocol"]
+    Context["getAuthContext()<br/>AsyncLocalStorage + headers"]
+    BufProtobuf["@bufbuild/protobuf<br/>Proto reflection"]
+
+    Authz -.->|"type-only"| Types
+    Authz --> Context
+    ProtoAuthz --> Context
+    ProtoAuthz --> BufProtobuf
+
+    class Context accent
+```
+
+Every interceptor above, and `createDefaultInterceptors()` and
+`createMethodFilterInterceptor()` from `@connectum/interceptors`, is typed as the
+`Interceptor` of `@connectrpc/connect`. The dashed core relationship is the
+type-only `SanitizableError` protocol used by `AuthzDeniedError`; it does not
+imply a runtime import of `@connectum/core`.
 
 ### Interceptor Chain Flow
 
@@ -489,34 +491,22 @@ The sequence below illustrates one JWT-authenticated request. Gateway, session,
 internal, and deliberately public methods use different authentication paths.
 
 ```mermaid
-sequenceDiagram
-    participant Client
-    participant ErrorHandler
-    participant Auth as Auth Interceptor
-    participant Authz as Authz Interceptor
-    participant Timeout
-    participant Handler as Service Handler
+flowchart TD
+    Req["Request + Bearer token"] --> EH["errorHandler"]
+    EH --> Auth{"Auth interceptor:<br/>token valid?"}
+    Auth -->|"missing or invalid"| E1["throw ConnectError(Unauthenticated)"]
+    E1 --> R1["errorHandler returns<br/>16 UNAUTHENTICATED"]
+    Auth -->|"valid"| Ctx["Set AuthContext<br/>AsyncLocalStorage + headers"]
+    Ctx --> Authz{"Authz interceptor:<br/>authorized?"}
+    Authz -->|"no"| E2["throw ConnectError(PermissionDenied)"]
+    E2 --> R2["errorHandler returns<br/>7 PERMISSION_DENIED"]
+    Authz -->|"yes"| TO["timeout"]
+    TO --> H["Service handler<br/>getAuthContext() returns AuthContext"]
+    H --> Resp["Response"]
 
-    Client->>ErrorHandler: Request + Bearer token
-    ErrorHandler->>Auth: Forward request
-
-    alt Token missing or invalid
-        Auth-->>ErrorHandler: throw ConnectError(Unauthenticated)
-        ErrorHandler-->>Client: 16 UNAUTHENTICATED
-    else Token valid
-        Auth->>Auth: Set AuthContext (AsyncLocalStorage + headers)
-        Auth->>Authz: Forward request + AuthContext
-
-        alt Not authorized
-            Authz-->>ErrorHandler: throw ConnectError(PermissionDenied)
-            ErrorHandler-->>Client: 7 PERMISSION_DENIED
-        else Authorized
-            Authz->>Timeout: Forward request
-            Timeout->>Handler: Forward request
-            Handler->>Handler: getAuthContext() => AuthContext
-            Handler-->>Client: Response
-        end
-    end
+    class R1 warning
+    class R2 warning
+    class Resp positive
 ```
 
 ---
