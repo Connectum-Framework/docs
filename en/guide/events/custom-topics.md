@@ -201,7 +201,7 @@ For NATS the location in parentheses reads `the pattern is empty`, `it starts wi
 
 ### Topics a broker cannot serve are rejected when publishing
 
-`publish()` applies the same two rules to the topic it is given, before anything is sent to the broker: `NatsAdapter` and `MemoryAdapter` reject a topic with an empty segment (`""`, `a..b`, `.a`, `a.`, `.`), `KafkaAdapter` rejects `""`, `.` and `..`, and `RedisAdapter` and `AmqpAdapter` reject nothing. A topic that `subscribe()` would refuse can therefore not be published to either.
+`publish()` applies the same two rules to the topic it is given, before anything is sent to the broker: `NatsAdapter` and `MemoryAdapter` reject a topic with an empty segment (`""`, `a..b`, `.a`, `a.`, `.`), `KafkaAdapter` rejects `""`, `.` and `..`, and `RedisAdapter` and `AmqpAdapter` reject nothing. For these name rules (an empty segment, the reserved Kafka names) a topic that `subscribe()` refuses is refused by `publish()` too. The rules on wildcards stay with subscriptions: the check on a published topic does not look at wildcard characters.
 
 The error is a `TypeError` that names the adapter and the topic:
 
