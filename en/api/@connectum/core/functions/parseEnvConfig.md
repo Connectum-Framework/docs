@@ -4,7 +4,7 @@
 
 > **parseEnvConfig**(`env?`): `object`
 
-Defined in: [packages/core/src/config/envSchema.ts:145](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/config/envSchema.ts#L145)
+Defined in: [packages/core/src/config/envSchema.ts:146](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/config/envSchema.ts#L146)
 
 Parse and validate environment configuration
 
@@ -142,7 +142,8 @@ when absent; provider defaults belong to the telemetry package.
 
 > **PORT**: `number`
 
-Server port
+Server port: a whole number from 1 to 65535 (a fraction is rejected here
+instead of failing later inside the network layer)
 
 #### Default
 

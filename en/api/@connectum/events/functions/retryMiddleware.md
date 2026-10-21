@@ -4,7 +4,7 @@
 
 > **retryMiddleware**(`options?`): [`EventMiddleware`](../types/type-aliases/EventMiddleware.md)
 
-Defined in: [packages/events/src/middleware/retry.ts:48](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/middleware/retry.ts#L48)
+Defined in: [packages/events/src/middleware/retry.ts:62](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/middleware/retry.ts#L62)
 
 Create a retry middleware with configurable options.
 

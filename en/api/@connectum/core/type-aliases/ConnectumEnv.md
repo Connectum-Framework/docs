@@ -4,6 +4,6 @@
 
 > **ConnectumEnv** = `z.infer`\<*typeof* [`ConnectumEnvSchema`](../variables/ConnectumEnvSchema.md)\>
 
-Defined in: [packages/core/src/config/envSchema.ts:133](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/config/envSchema.ts#L133)
+Defined in: [packages/core/src/config/envSchema.ts:134](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/config/envSchema.ts#L134)
 
 Connectum environment configuration type

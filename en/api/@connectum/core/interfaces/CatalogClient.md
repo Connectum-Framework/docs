@@ -2,7 +2,7 @@
 
 # Interface: CatalogClient
 
-Defined in: [packages/core/src/catalogClient.ts:78](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L78)
+Defined in: [packages/core/src/catalogClient.ts:79](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L79)
 
 A standalone, catalog-typed client. Exposes the SAME `call` (unary) and
 `stream` (server/client/bidi) surface as the handler [Context](Context.md), keyed
@@ -15,7 +15,7 @@ a `Server`.
 
 > **call**: [`CatalogCall`](../type-aliases/CatalogCall.md)
 
-Defined in: [packages/core/src/catalogClient.ts:89](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L89)
+Defined in: [packages/core/src/catalogClient.ts:90](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L90)
 
 Invoke a unary service in the catalog over the resolver-supplied
 transport. With no augmentation of [ConnectumCallMap](ConnectumCallMap.md) this is
@@ -32,7 +32,7 @@ returns `null` → `Code.Unavailable`; resolver throws → `Code.Internal`
 
 > **stream**: [`CatalogStream`](../type-aliases/CatalogStream.md)
 
-Defined in: [packages/core/src/catalogClient.ts:96](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L96)
+Defined in: [packages/core/src/catalogClient.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L97)
 
 Open a streaming call to a service in the catalog over the
 resolver-supplied transport. Returns the same kind-specific factory as

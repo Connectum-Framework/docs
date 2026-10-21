@@ -2,7 +2,7 @@
 
 # Interface: PublishOptions
 
-Defined in: [packages/events/src/types.ts:59](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L59)
+Defined in: [packages/events/src/types.ts:67](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L67)
 
 Options for publishing events
 
@@ -12,7 +12,7 @@ Options for publishing events
 
 > `optional` **group?**: `string`
 
-Defined in: [packages/events/src/types.ts:63](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L63)
+Defined in: [packages/events/src/types.ts:71](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L71)
 
 Named group tag for workflow grouping
 
@@ -22,7 +22,7 @@ Named group tag for workflow grouping
 
 > `optional` **key?**: `string`
 
-Defined in: [packages/events/src/types.ts:67](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L67)
+Defined in: [packages/events/src/types.ts:75](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L75)
 
 Message key for partitioning (Kafka: partition key, others: ignored)
 
@@ -32,7 +32,7 @@ Message key for partitioning (Kafka: partition key, others: ignored)
 
 > `optional` **messageId?**: `string`
 
-Defined in: [packages/events/src/types.ts:75](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L75)
+Defined in: [packages/events/src/types.ts:83](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L83)
 
 Caller-supplied message identifier the adapter sets on the wire where
 supported (AMQP: the `messageId` property; other adapters ignore it).
@@ -46,7 +46,7 @@ so set this when the contract requires one.
 
 > `optional` **metadata?**: `Record`\<`string`, `string`\>
 
-Defined in: [packages/events/src/types.ts:65](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L65)
+Defined in: [packages/events/src/types.ts:73](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L73)
 
 Additional metadata / headers
 
@@ -56,7 +56,7 @@ Additional metadata / headers
 
 > `optional` **timestamp?**: `number`
 
-Defined in: [packages/events/src/types.ts:82](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L82)
+Defined in: [packages/events/src/types.ts:90](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L90)
 
 Caller-supplied message timestamp in **Unix epoch seconds**, set on the
 wire where supported (AMQP: the `timestamp` property; other adapters
@@ -69,6 +69,6 @@ publishing where the adapter does not auto-populate it.
 
 > `optional` **topic?**: `string`
 
-Defined in: [packages/events/src/types.ts:61](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L61)
+Defined in: [packages/events/src/types.ts:69](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L69)
 
 Override topic name (default: schema.typeName)

@@ -4,13 +4,19 @@
 
 > **createFallbackInterceptor**\<`T`\>(`options`): `Interceptor`
 
-Defined in: [fallback.ts:103](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/fallback.ts#L103)
+Defined in: [fallback.ts:119](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/fallback.ts#L119)
 
 Create fallback interceptor
 
 Provides fallback response when service fails, enabling graceful degradation.
 The handler returns the RPC response message, not a response wrapper.
 In the server example, getCachedData is application code that returns that message.
+
+A refusal of access is never replaced: a failure with the code `Unauthenticated` or
+`PermissionDenied` is rethrown as it is, and the `handler` is not called for it. The
+fallback value is for failed dependencies, timeouts and bugs, not for callers who are
+not allowed. Even so, put the authentication and authorization interceptors in front of
+the default interceptors, as the authentication guide shows.
 
 The response synthesised by the fallback interceptor carries only the protocol
 headers it needs, on a server chain and on a client transport alike:

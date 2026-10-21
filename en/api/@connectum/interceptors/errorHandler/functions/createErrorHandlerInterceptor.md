@@ -4,7 +4,7 @@
 
 > **createErrorHandlerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [errorHandler.ts:74](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/errorHandler.ts#L74)
+Defined in: [errorHandler.ts:87](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/errorHandler.ts#L87)
 
 Create error handler interceptor
 
@@ -17,7 +17,8 @@ What a client receives for each kind of thrown value:
   chose to send them.
 - `SanitizableError`: its `clientMessage` and code only; `serverDetails` stay on the server.
 - Anything else (`Error`, a thrown string, an object with a numeric `code`): the code is
-  the numeric `code` when there is one and `Internal` otherwise. The text of the failure
+  the numeric `code` when it is an integer from 1 to 16 (a Connect failure code) and
+  `Internal` otherwise (no code, a non-number, or a number outside 1..16). The text of the failure
   is NOT sent: `Internal` carries the fixed text `"internal error"`, any other code carries
   an empty text. A message such as a connection string or a query would otherwise leak
   to every caller (CWE-209). Set `exposeErrorMessages: true` to send the original text.

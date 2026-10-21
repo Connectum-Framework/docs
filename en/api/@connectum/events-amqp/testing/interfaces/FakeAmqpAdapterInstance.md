@@ -24,7 +24,7 @@ Defined in: [packages/events-amqp/src/testing.ts:234](https://github.com/Connect
 
 > `readonly` **name**: `string`
 
-Defined in: packages/events/dist/index.d.ts:105
+Defined in: packages/events/dist/index.d.ts:113
 
 Adapter name for identification (e.g., "nats", "kafka", "redis", "memory")
 
@@ -38,7 +38,7 @@ Adapter name for identification (e.g., "nats", "kafka", "redis", "memory")
 
 > **connect**(`context?`): `Promise`\<`void`\>
 
-Defined in: packages/events/dist/index.d.ts:113
+Defined in: packages/events/dist/index.d.ts:121
 
 Connect to the message broker.
 
@@ -66,7 +66,7 @@ Optional adapter context with service-level information
 
 > **disconnect**(): `Promise`\<`void`\>
 
-Defined in: packages/events/dist/index.d.ts:115
+Defined in: packages/events/dist/index.d.ts:123
 
 Disconnect from the message broker
 
@@ -84,7 +84,7 @@ Disconnect from the message broker
 
 > **publish**(`eventType`, `payload`, `options?`): `Promise`\<`void`\>
 
-Defined in: packages/events/dist/index.d.ts:117
+Defined in: packages/events/dist/index.d.ts:125
 
 Publish a serialized event to a topic
 
@@ -116,7 +116,7 @@ Publish a serialized event to a topic
 
 > **subscribe**(`patterns`, `handler`, `options?`): `Promise`\<`EventSubscription`\>
 
-Defined in: packages/events/dist/index.d.ts:119
+Defined in: packages/events/dist/index.d.ts:127
 
 Subscribe to event patterns with a raw handler
 
