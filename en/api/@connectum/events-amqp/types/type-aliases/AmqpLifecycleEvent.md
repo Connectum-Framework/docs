@@ -4,7 +4,7 @@
 
 > **AmqpLifecycleEvent** = \{ `reconnected`: `boolean`; `type`: `"connected"`; \} \| \{ `error`: `Error`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `delay`: `number`; `error`: `Error`; `type`: `"reconnecting"`; \} \| \{ `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `initial`: `boolean`; `type`: `"setup-failed"`; \} \| \{ `reason`: `string`; `type`: `"blocked"`; \} \| \{ `type`: `"unblocked"`; \} \| \{ `action`: [`AmqpSettlementAction`](AmqpSettlementAction.md); `deliveryTag`: `number`; `error`: `Error`; `queue`: `string`; `routingKey`: `string`; `type`: `"settlement-skipped"`; \} \| \{ `cause`: [`AmqpConsumerLossCause`](AmqpConsumerLossCause.md); `error?`: `Error`; `queue`: `string`; `type`: `"consumer-lost"`; `willRestore`: `boolean`; \} \| \{ `attempt`: `number`; `queue`: `string`; `type`: `"consumer-restored"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `queue`: `string`; `type`: `"consumer-restore-failed"`; `willRetry`: `boolean`; \} \| \{ `error`: `Error`; `type`: `"publish-channel-lost"`; \} \| \{ `type`: `"publish-channel-restored"`; \} \| \{ `callback`: `string`; `error`: `Error`; `event`: `string`; `type`: `"lifecycle-error"`; \}
 
-Defined in: [packages/events-amqp/src/types.ts:628](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L628)
+Defined in: [packages/events-amqp/src/types.ts:630](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L630)
 
 Discriminated connection lifecycle event, delivered to
 [AmqpLifecycleCallbacks.onLifecycle](../interfaces/AmqpLifecycleCallbacks.md#onlifecycle).
