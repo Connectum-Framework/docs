@@ -77,7 +77,7 @@ For defining authorization rules directly in `.proto` files using custom options
 Auth and authz interceptors must be placed **after** `errorHandler` and **before** resilience interceptors:
 
 ```mermaid
-flowchart LR
+flowchart TD
     Error[errorHandler] --> Authn[AUTH]
     Authn --> Authz[AUTHZ]
     Authz --> Timeout[timeout]

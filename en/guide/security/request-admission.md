@@ -14,6 +14,25 @@ Authentication interceptors run after the request message is available: for unar
 
 Both are unset by default; a server that does not set them behaves exactly as before.
 
+The checks run in this order for a call to an RPC on the router:
+
+```mermaid
+flowchart TD
+    Headers["Request headers arrive"] --> Gate{"requestGate<br/>throws?"}
+    Gate -->|"yes"| R1["Call ends with the thrown error,<br/>body never read"]
+    Gate -->|"no"| Read{"Message larger<br/>than readMaxBytes?"}
+    Read -->|"yes"| R2["resource_exhausted"]
+    Read -->|"no"| Chain["Server interceptors:<br/>authentication, validation, and so on"]
+    Chain --> Handler["Service handler"]
+
+    class R1 warning
+    class R2 warning
+    class Handler positive
+```
+
+HTTP endpoints served outside the router skip all of these checks; see
+[Router RPCs yes, plain HTTP endpoints no](#router-rpcs-yes-plain-http-endpoints-no).
+
 ## Before you begin
 
 - `@connectum/core` 1.3.0 or later. **Version 1.3.0 is not yet published to npm.** The current-main implementation requires `@connectrpc/connect` 2.2.0, which introduced `requestGate`.

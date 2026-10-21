@@ -55,6 +55,24 @@ npx @connectum/cli init payments \
   --yes
 ```
 
+`init` checks as much as it can before it writes the first file:
+
+```mermaid
+flowchart TD
+    Opts["Collect options<br/>flags, or prompts unless --yes"] --> Dir{"Target directory empty,<br/>or --force given?"}
+    Dir -->|"no"| E1["Stops, nothing written"]
+    Dir -->|"yes"| Fetch["Download getting-started<br/>pinned tag, or --ref"]
+    Fetch --> Fit{"Base has the shape<br/>this CLI expects?"}
+    Fit -->|"no"| E2["Stops, nothing written"]
+    Fit -->|"yes"| Transform["Apply the selected modules<br/>to the downloaded text"]
+    Transform --> Emit["Validate every path, then write<br/>the files"]
+    Emit --> Done["Print next steps"]
+
+    class E1 critical
+    class E2 critical
+    class Done positive
+```
+
 Then:
 
 ```bash

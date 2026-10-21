@@ -11,6 +11,32 @@ A **remote resolver** is the service-catalog routing layer: it maps a proto serv
 
 You pass a resolver to `createServer({ remoteResolver })` for server-side routing, or directly to `createCatalogClient({ resolver })` for out-of-process workers, schedulers, and CLIs. The framework calls it lazily, on the first route to a given service, and caches the result.
 
+The diagram follows one call from each entry point to the transport that carries it:
+
+```mermaid
+flowchart TD
+    Client["server.client(Desc)"] --> Local{"Mounted on<br/>this server?"}
+    Call["ctx.call(...)"] --> Local
+    Standalone["createCatalogClient(...)"] --> Cache
+
+    Local -->|"yes"| InProc["In-process transport<br/>plus outgoingInterceptors"]
+    Local -->|"no"| Cache{"Cached for<br/>typeName and endpoint?"}
+    Cache -->|"hit"| Wrap["Transport wrapped in<br/>outgoing interceptors"]
+    Cache -->|"miss"| Resolver{"Resolver result"}
+    Resolver -->|"transport"| Wrap
+    Resolver -->|"null"| Unavail["Code.Unavailable"]
+    Resolver -->|"throws"| Fail["Code.Internal"]
+
+    class Resolver accent
+    class Unavail warning
+    class Fail critical
+```
+
+`server.client()` also fails before the resolver is consulted when no
+`remoteResolver` is configured at all: that is a `CatalogConfigError`. The
+`Code.Internal` branch applies to `ctx.call` and `createCatalogClient`; a resolver that
+throws inside `server.client()` propagates its own error instead.
+
 ## The `RemoteResolver` contract
 
 A resolver is a plain function:

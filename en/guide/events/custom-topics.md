@@ -136,20 +136,29 @@ Whichever resolution path you use, the topic must match what the subscriber decl
 
 ```mermaid
 flowchart TD
-    A["EventRouter.service()"] --> B{"Has proto option?"}
+    A["EventRouter.service()"] --> B{"Has proto option<br/>with a topic?"}
     B -->|Yes| C["Use option topic"]
     B -->|No| D["Use method.input.typeName"]
     C --> E["Subscribe to topic"]
     D --> E
+```
 
-    F["eventBus.publish()"] --> G{"Has PublishOptions.topic?"}
+The publishing side resolves the topic in this order. The `strictTopics` branch applies only when that option is enabled:
+
+```mermaid
+flowchart TD
+    F["eventBus.publish()"] --> G{"PublishOptions.topic set?"}
     G -->|Yes| H["Use options.topic"]
-    G -->|No| P{"Found in publishTopicMap?\n(from routes or publishes)"}
-    P -->|Yes| Q["Use declared topic from proto option"]
-    P -->|No| I["Use schema.typeName"]
+    G -->|No| P{"In publishTopicMap?<br/>filled from routes and publishes"}
+    P -->|Yes| Q["Use declared topic"]
+    P -->|No| S{"strictTopics enabled?"}
+    S -->|No| I["Use schema.typeName"]
+    S -->|Yes| X["Throw: topic cannot be resolved"]
     H --> J["Publish to topic"]
     Q --> J
     I --> J
+
+    class X critical
 ```
 
 ## Wildcard Topic Matching

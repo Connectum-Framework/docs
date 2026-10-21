@@ -12,7 +12,7 @@ outline: deep
 ## The Default Chain
 
 ```mermaid
-flowchart LR
+flowchart TD
     Error[errorHandler] --> Timeout[timeout]
     Timeout --> Bulkhead[bulkhead]
     Bulkhead --> Breaker[circuitBreaker]
@@ -379,19 +379,16 @@ Interceptors execute in the order they are defined. Each interceptor wraps the n
 ```mermaid
 sequenceDiagram
     participant Client
-    participant I1 as interceptor1
-    participant I2 as interceptor2
-    participant I3 as interceptor3
+    participant First as First interceptor
+    participant Last as Last interceptor
     participant Handler
 
-    Client->>I1: Request
-    I1->>I2: Request
-    I2->>I3: Request
-    I3->>Handler: Request
-    Handler-->>I3: Response
-    I3-->>I2: Response
-    I2-->>I1: Response
-    I1-->>Client: Response
+    Client->>First: Request
+    First->>Last: Request
+    Last->>Handler: Request
+    Handler-->>Last: Response
+    Last-->>First: Response
+    First-->>Client: Response
 ```
 
 This means:

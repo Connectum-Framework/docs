@@ -183,6 +183,34 @@ values need redaction before they become span attributes.
 
 ## Distributed Tracing Across Services
 
+The client interceptor starts a `CLIENT` span under whatever span is active in the calling handler and injects the trace context into the request headers. The receiving server interceptor extracts it:
+
+```mermaid
+sequenceDiagram
+    participant A as Service A handler
+    participant C as Client interceptor
+    participant S as Server interceptor of B
+
+    A->>C: Outgoing RPC
+    C->>C: Start CLIENT span
+    C->>S: Request with trace headers
+    S->>S: Extract context
+    S->>S: Start SERVER span
+```
+
+The server interceptor chooses the parent of its span like this:
+
+```mermaid
+flowchart TD
+    Req["Request headers"] --> Extract["Extract remote context<br/>from the headers"]
+    Extract --> Trust{"trustRemote?"}
+    Trust -->|"true"| Remote["Parent is the remote span:<br/>one trace across the boundary"]
+    Trust -->|"false, default"| Active["Parent is the active context<br/>of the receiving process"]
+    Active --> Link["Remote span context, if any,<br/>becomes a link on the new span"]
+```
+
+Over HTTP the receiving process has no active span, so the default yields a root span with a link. On the [in-process transport](/en/guide/production/in-process-transport#observability) the caller's span is active, so the same default yields a child of the client span.
+
 A complete example showing trace context propagation between two services:
 
 ```typescript

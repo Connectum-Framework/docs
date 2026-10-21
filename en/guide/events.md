@@ -16,39 +16,22 @@ published `1.2.x` packages until 1.3.0 is released.
 ## Architecture
 
 ```mermaid
-graph LR
-    subgraph Service A
-        HA["Event Handler A"]
-        PA["eventBus.publish()"]
-    end
+flowchart TD
+    Pub["eventBus.publish(Schema, data)"] --> Ser["Serialize and resolve topic"]
+    Ser --> AdOut["adapter.publish"]
+    AdOut --> Broker[("Message broker")]
+    Broker --> AdIn["adapter.subscribe callback"]
+    AdIn --> Match{"Topic has a handler?"}
+    Match -->|"no"| Ack["ack and skip"]
+    Match -->|"yes"| MW["Middleware chain"]
+    MW --> Handler["Your event handler"]
 
-    subgraph EventBus
-        AD["EventAdapter"]
-        R["EventRouter"]
-        MW["Middleware Pipeline"]
-    end
-
-    subgraph Broker["Message Broker"]
-        T1["Topic 1"]
-        T2["Topic 2"]
-    end
-
-    subgraph Service B
-        HB["Event Handler B"]
-        PB["eventBus.publish()"]
-    end
-
-    PA -->|"publish(Schema, data)"| AD
-    PB -->|"publish(Schema, data)"| AD
-
-    AD <-->|"produce / consume"| T1
-    AD <-->|"produce / consume"| T2
-
-    AD -->|"inbound event"| R
-    R -->|"topic to handler"| MW
-    MW --> HA
-    MW --> HB
+    class Broker accent
+    class Ack muted
 ```
+
+Publishing skips the middleware chain: it only serializes the message and hands it
+to the adapter. Middleware wraps the consuming side only.
 
 The EventBus sits between your service handlers and the message broker. It handles:
 

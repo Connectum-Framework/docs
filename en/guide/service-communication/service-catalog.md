@@ -111,6 +111,33 @@ const response = await ctx.call(method, request, options?);
 
 The transport is chosen automatically: an in-process call when the target is mounted locally (no TCP socket is opened), otherwise the transport supplied by the configured `remoteResolver`. Successful remote resolutions are cached per `(typeName, endpoint)`; a `null` result or thrown error is retried at the next call.
 
+Each `ctx.call` passes these steps in order, and each failure is a `ConnectError`:
+
+```mermaid
+flowchart TD
+    Call["ctx.call('typeName/Method', request)"] --> Lookup{"Key well-formed and<br/>method in the catalog?"}
+    Lookup -->|"no catalog configured"| E0["FailedPrecondition"]
+    Lookup -->|"malformed key, unknown<br/>service or method"| E1["Unimplemented"]
+    Lookup -->|"yes"| Kind{"Unary method?"}
+    Kind -->|"no"| E2["Unimplemented:<br/>use ctx.stream"]
+    Kind -->|"yes"| Local{"Mounted on<br/>this server?"}
+    Local -->|"yes"| InProc["In-process transport"]
+    Local -->|"no"| Resolver{"remoteResolver result"}
+    Resolver -->|"transport"| Remote["Resolver transport"]
+    Resolver -->|"null"| E3["Unavailable"]
+    Resolver -->|"throws"| E4["Internal"]
+    InProc --> Frame["Build call frame:<br/>deadline, signal, propagated headers"]
+    Remote --> Frame
+    Frame --> Send["transport.unary"]
+
+    class Resolver accent
+    class E0 critical
+    class E1 critical
+    class E2 critical
+    class E3 warning
+    class E4 critical
+```
+
 ```typescript
 async secureEcho(req, ctx) {
   const inner = await ctx.call(

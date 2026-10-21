@@ -131,19 +131,28 @@ the saga from a durable orchestrator. The examples use [Temporal](https://tempor
   that a compensation succeeds.
 
 ```mermaid
-flowchart LR
-    Employee[createEmployee] --> Payroll[setupPayroll]
-    Payroll --> TimeOff[grantTimeOff]
-    TimeOff --> Access[provisionAccess]
-    Access --> Activate[activate]
-    Activate --> Complete[COMPLETED]
+flowchart TD
+    subgraph Forward["Forward steps"]
+        direction TB
+        Employee[createEmployee] --> Payroll[setupPayroll]
+        Payroll --> TimeOff[grantTimeOff]
+        TimeOff --> Access[provisionAccess]
+        Access --> Activate[activateEmployee]
+        Activate --> Complete[COMPLETED]
+    end
 
-    Failure[Any activity fails] -.-> Reverse[Compensations run in reverse]
-    Reverse --> Revoke[revoke access]
-    Revoke --> RevokeTimeOff[revoke time off]
-    RevokeTimeOff --> Teardown[teardown payroll]
-    Teardown --> Offboard[offboard employee]
-    Offboard --> Failed[FAILED]
+    subgraph Unwind["Compensations, reverse order"]
+        direction TB
+        Revoke[revokeAccess] --> RevokeTimeOff[revokeTimeOff]
+        RevokeTimeOff --> Teardown[teardownPayroll]
+        Teardown --> Offboard[offboardEmployee]
+        Offboard --> Failed[FAILED]
+    end
+
+    Forward -.->|"any activity fails"| Unwind
+
+    class Complete positive
+    class Failed critical
 ```
 
 The compensation chain shows the full registered stack; a failure earlier in
@@ -167,11 +176,11 @@ The three are **complementary**, and a real flow uses each where it fits. In the
 HRIS reference example, one codebase runs all three:
 
 ```mermaid
-flowchart LR
+flowchart TD
   C["client"] -->|"OnboardEmployee"| G["Onboarding gateway"]
   G -->|"ctx.call pre-check"| D["Directory"]
   G -.->|"start durable saga"| W["Temporal worker"]
-  W ==>|"activities (RPC per step)"| S["Directory · Payroll · TimeOff · Access"]
+  W ==>|"activities, one RPC per step"| S["Directory, Payroll, TimeOff, Access"]
   TO["TimeOff"] -->|"publish LeaveApproved"| B(("EventBus"))
   B -->|"deliver"| P["Payroll subscriber"]
 ```

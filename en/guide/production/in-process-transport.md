@@ -25,6 +25,28 @@ encoding and decoding.
 
 The in-process transport reuses the `ConnectRouter` that `createServer()` has already built and dispatches client calls directly to the registered handlers. The client API is identical to a remote ConnectRPC client (`createClient(Service, transport)`), so the same caller code works whether the callee is local or remote.
 
+A call reaches the same router by either path. Everything after the router is shared:
+
+```mermaid
+flowchart TD
+    Net["Network client"] --> Wire["HTTP/2 and TLS"]
+    Wire --> Strip["Server drops a forged<br/>transport marker header"]
+    Local["server.client(), localClient(),<br/>createLocalTransport()"] --> Mark["Client interceptors:<br/>marker, yours, stream binding"]
+    Mark --> Codec["Binary protobuf codec,<br/>headers cloned"]
+    Strip --> Router["Server router"]
+    Codec --> Router
+    Router --> Gate["requestGate and readMaxBytes"]
+    Gate --> Chain["Server interceptors, in configured order"]
+    Chain --> Handler["Service handler"]
+
+    class Router accent
+```
+
+Server interceptors, request admission, and the shutdown signal sit after the
+router, so neither path can skip them. The client interceptors you pass to
+`createLocalTransport()` run on the in-process side; an HTTP caller configures
+its own.
+
 **When to use:**
 
 - **Modular monolith** — multiple bounded contexts hosted in a single process call each other over typed RPC contracts without the network overhead.
