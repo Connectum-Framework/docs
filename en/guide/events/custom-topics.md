@@ -199,6 +199,19 @@ KafkaAdapter: subscription pattern ".." is not a valid Kafka topic name. Kafka r
 
 For NATS the location in parentheses reads `the pattern is empty`, `it starts with "."`, `it ends with "."` or `it contains ".."`. Earlier versions of NATS failed with `jetstream is not enabled` and Kafka with `invalid topic` after it had connected a consumer, neither naming the pattern. If `bus.start()` now fails with one of these errors, correct the topic of the route.
 
+### Topics a broker cannot serve are rejected when publishing
+
+`publish()` applies the same two rules to the topic it is given, before anything is sent to the broker: `NatsAdapter` and `MemoryAdapter` reject a topic with an empty segment (`""`, `a..b`, `.a`, `a.`, `.`), `KafkaAdapter` rejects `""`, `.` and `..`, and `RedisAdapter` and `AmqpAdapter` reject nothing. A topic that `subscribe()` would refuse can therefore not be published to either.
+
+The error is a `TypeError` that names the adapter and the topic:
+
+```text
+NatsAdapter: publish topic "orders..created" has an empty segment (it contains ".."). Every dot-separated segment of a topic must be non-empty.
+KafkaAdapter: publish topic ".." is not a valid Kafka topic name. Kafka reserves the names "", "." and "..".
+```
+
+Earlier versions answered a malformed topic differently: NATS with `jetstream is not enabled`, and nothing was stored; Kafka, for its reserved names, with a broker error that did not name the topic; and the in-memory adapter delivered the event to wildcard subscribers although no subscription pattern could name that topic. A custom adapter can make the same check with `assertPublishTopic({ adapter, topic, rule })` from `@connectum/events`, which takes the same `rule` values as `assertSubscriptionPatterns`.
+
 ### Support by adapter
 
 Support and caveats differ by adapter:
