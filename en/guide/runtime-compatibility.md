@@ -14,9 +14,8 @@ boundary on Bun 1.2.6 and the current Bun release. Those are separate contracts:
 framework's development floor does not raise the published packages' engine requirement.
 
 ::: tip Runtime switcher
-Pages that show runtime-specific commands have a **Node.js | Bun** switch in the
-navigation bar (and next to each affected block). This page deliberately shows both
-runtimes side by side.
+Pages that show runtime-specific commands have a **Node.js | Bun** switch next to
+each affected block. This page deliberately shows both runtimes side by side.
 :::
 
 ::: tip Scaffolding emits runtime-appropriate defaults

@@ -122,6 +122,54 @@ pnpm test:unit
 pnpm test:integration
 ```
 
+Package test scripts run through `exodus-test` (the `@exodus/test` runner), not bare
+`node --test`; call a package's `test` script rather than invoking `node --test` on its files.
+The test files import `describe`, `it` and `mock` from `node:test`, and the same runner
+executes them on other engines:
+
+```bash
+# Run the suites on Bun (needs bun in PATH); each package selects the files that run
+# under Bun, and a few packages skip it with an explanatory message
+pnpm test:bun
+
+# Run the suites with esbuild transpilation
+pnpm test:esbuild
+
+# Node.js tests, Bun tests and esbuild tests in one run
+pnpm test:cross-runtime
+
+# Bun HTTP/2 client floor guard (defined in @connectum/core only)
+pnpm --filter @connectum/core run test:bun:h2
+```
+
+### Repository Checks
+
+Scripts that guard the repository's own contracts. Run them from the root of the framework
+repository.
+
+```bash
+# Biome rules implemented as GritQL plugins: tests that each rule fires on the forms it targets
+pnpm lint:rules
+
+# Biome over the whole repository, without changing files
+pnpm lint:repo
+
+# Biome over the whole repository, applying safe fixes
+pnpm biome
+
+# Install the framework into throwaway npm, pnpm and Bun consumers and check that a
+# consumer ends up with one copy of @bufbuild/protobuf and @connectrpc/connect
+pnpm dependency-contract:check
+
+# Check the release workflow against the pinned changesets action and a disposable
+# version plan (fetches the action metadata from the network)
+pnpm release:contract
+
+# The release gate against pkg-pr-new preview packages instead of locally packed ones;
+# pass the commit the preview was built from
+pnpm release:gate:preview --ref <commit-sha>
+```
+
 ### Protocol Interop Tests
 
 These suites check gRPC Server Reflection, the Health service and `connectum proto sync` with clients that are not built on Connect: grpcurl, `buf curl` and `grpc_health_probe`. They are not part of `pnpm test`. CI runs them in the required `Protocol interop` check on every pull request.

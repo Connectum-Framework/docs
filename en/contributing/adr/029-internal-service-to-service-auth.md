@@ -16,6 +16,13 @@ Accepted -- 2026-06-21 (design ratified; implementation is a follow-up)
 > [Internal Methods](/en/guide/auth/proto-authz#internal-methods) for implemented
 > behavior and configuration.
 
+> **Update (2026-10-21):** The `car-sharing` example migration that the Consequences and
+> Ratified decisions below defer as a follow-up is done. `RecordTrip` and `EndTrip` are
+> declared with `internal: true` and `requires: { roles: ["worker"] }`, and the fleet and
+> billing services declare `internal: true` with `default_requires: { roles: ["worker"] }`
+> at the service level. The text below
+> is preserved as the record of the decision.
+
 Tracks [#171](https://github.com/Connectum-Framework/connectum/issues/171). Extends [ADR-024](./024-auth-authz-strategy.md) (auth/authz strategy).
 
 ## Context
@@ -102,5 +109,6 @@ For non-`internal`, non-`public` methods the interceptor is a no-op. **Chain ord
 
 | Date | Author | Change |
 |------|--------|--------|
+| 2026-10-21 | Documentation review | Added an Update note: the `car-sharing` example already uses `internal` for its worker-called RPCs. Decision text unchanged. |
 | 2026-10-19 | Security review (1.3.0) | Tightened the contract without changing the decision: `signedTokenTrust` now sets the subject to the verified `iss` and reads `sub` and `scope` only through an explicit `claimsMapping`; a method that is both `public` and `internal` is a configuration error. See the migration guide `auth-proto-options`. |
 | 2026-10-08 | Documentation review | Recorded that the internal interceptor and the trust-source factories are exported by the authentication package, as a dated Update note under Status; added page metadata. Decision unchanged. |
