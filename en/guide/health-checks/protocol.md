@@ -51,7 +51,7 @@ flowchart TD
     App["Your code<br/>update(), set(), register()"] --> Mgr["healthcheckManager<br/>status per service<br/>and component"]
     Mgr --> GrpcRead["gRPC Health:<br/>Check, Watch, List"]
     Mgr --> HttpRead["HTTP endpoints,<br/>when httpEnabled"]
-    GrpcRead --> Router["Pass the server's request gate<br/>as router RPCs"]
+    GrpcRead --> Router["Served as router RPCs,<br/>behind the server's request gate"]
     HttpRead --> Plain["Served outside the router,<br/>no request gate"]
 
     class Mgr accent

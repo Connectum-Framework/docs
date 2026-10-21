@@ -45,7 +45,11 @@ flowchart TD
 Server interceptors, request admission, and the shutdown signal sit after the
 router, so neither path can skip them. The client interceptors you pass to
 `createLocalTransport()` run on the in-process side; an HTTP caller configures
-its own. — multiple bounded contexts hosted in a single process call each other over typed RPC contracts without the network overhead.
+its own.
+
+**When to use:**
+
+- **Modular monolith** — multiple bounded contexts hosted in a single process call each other over typed RPC contracts without the network overhead.
 - **Backend-for-Frontend (BFF)** — a BFF process embeds upstream services for low-latency composition.
 - **Tests** — exercise the full server-side interceptor chain (validation, auth, OTEL) without binding ports.
 - **Polyglot deployment** — a single client codebase that automatically routes to a local registered service or falls back to a remote HTTP transport based on the runtime topology.
