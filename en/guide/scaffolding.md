@@ -314,6 +314,29 @@ Register the new service in src/server.ts:
   // add billingService to the services: [...] array passed to createServer
 ```
 
+### Service names
+
+The name becomes the proto package, the proto service (`BillingService`), the TypeScript
+binding (`billingService`) and the two file paths, so it has to survive that derivation
+unchanged. `generate service` refuses, before it creates any file or directory and with a
+non-zero exit code, a name that:
+
+- contains anything but ASCII letters, digits, `-` and `_` — path separators (`/`, `\`),
+  dots (`.`, `..`), whitespace inside the name and non-ASCII letters such as Cyrillic are
+  refused rather than dropped, so `../x`, `a/b`, `Order Service` and `Привет-billing` are errors;
+- does not start with a letter (`123-orders`, `_billing`);
+- is longer than 214 characters.
+
+The message names the name and every rule it breaks. Whitespace around the name is
+ignored. `-` and `_` separate words: `billing-v2` gives the proto package `billingv2` and the
+service `BillingV2Service`; upper and lower case give the same files (`Billing` is `billing`).
+
+Two different names can give the same proto package (`ab` and `a-b` both write
+`proto/ab/v1/ab.proto`, but declare `AbService` and `ABService`). When the proto of a new name
+already exists and does not declare the service that name needs, the command stops before
+writing anything and names the proto and the missing service; choose another name, or pass
+`--force` to overwrite the proto. Running the same name again stays a no-op.
+
 ## `connectum proto sync`
 
 Generate TypeScript types from a **running** server through gRPC reflection, without
@@ -336,6 +359,11 @@ npx @connectum/cli proto sync --from localhost:5000 --out ./generated --dry-run
 | `--template` | Path to a custom `buf.gen.yaml` |
 | `--dry-run` | Connect, list the services and files, generate nothing |
 | `--timeout` | Time limit of each reflection request in milliseconds: an integer from 1 to 99999999 (the longest limit an eight-digit `grpc-timeout` header can carry), written in plain decimal digits: a value with a leading zero, such as `007`, is rejected like any other invalid value (default `10000`) |
+
+`--dry-run` prints `Connected to <url>`, a `Services:` list of fully qualified service names
+as the server reports them (for example `grpc.health.v1.Health`), a `Files:` list of the
+file names in the fetched descriptors, and the line `Would generate to: <out>`. Each entry
+is on its own line, prefixed with `  - `.
 
 The command either obtains a descriptor for **every** service the server lists or fails
 with a non-zero exit code. If the server lists a service that reflection cannot describe,

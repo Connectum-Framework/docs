@@ -171,6 +171,27 @@ When one bus has both an exact route and a wildcard pattern that match the same
 incoming topic, the exact route handles the event. The order in which two matching
 wildcard patterns are tried is not defined; do not rely on it.
 
+### Patterns a broker cannot serve are rejected
+
+An adapter rejects, when the subscription is made, only the patterns its broker can never serve, so `bus.start()` fails before any consumer or consumer group is created. The call is rejected as a whole: a good pattern listed next to a bad one is not subscribed either.
+
+| Adapter | Rejected | Accepted |
+|---------|----------|----------|
+| `NatsAdapter`, `MemoryAdapter` | Any pattern with an empty segment: the empty string, `a..b`, `.a`, `a.`, `.` | `*` and `>` and every pattern whose segments all have content |
+| `KafkaAdapter` | `""`, `.` and `..`, the topic names Kafka reserves | `a..b`, `.a` and `a.` are legal Kafka topic names and work on an existing topic |
+| `RedisAdapter`, `AmqpAdapter` | Nothing for its segments: a Redis key and a RabbitMQ routing key may be any string | Every pattern |
+
+The error is a `TypeError` that names the adapter and the pattern:
+
+```text
+NatsAdapter: subscription pattern "orders..created" has an empty segment (it contains ".."). Every dot-separated segment of a pattern must be non-empty.
+KafkaAdapter: subscription pattern ".." is not a valid Kafka topic name. Kafka reserves the names "", "." and "..".
+```
+
+For NATS the location in parentheses reads `the pattern is empty`, `it starts with "."`, `it ends with "."` or `it contains ".."`. Earlier versions of NATS failed with `jetstream is not enabled` and Kafka with `invalid topic` after it had connected a consumer, neither naming the pattern. If `bus.start()` now fails with one of these errors, correct the topic of the route.
+
+### Support by adapter
+
 Support and caveats differ by adapter:
 
 | Adapter | Wildcards | What to know |

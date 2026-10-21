@@ -32,11 +32,21 @@ stateDiagram-v2
 
 The transitions are one-directional. A stopped server cannot be restarted -- create a new one instead.
 
-`addService()`, `addInterceptor()` and `addProtocol()` work only in the **created** state.
-Each throws once the server is in any other state (starting, running, stopping or stopped),
-and also once the routes have been built: `start()` builds them, and so does the first use
-of the in-process client (`server.localClient()`), even on a server that is still in the
-created state.
+### Which calls work in which state {#state-call-matrix}
+
+| Call | created | starting | running | stopping | stopped |
+|------|---------|----------|---------|----------|---------|
+| `start()` | Starts the server | Rejects | Rejects | Rejects | Rejects |
+| `stop()` | Rejects; the server stays `created` | Rejects | Starts the shutdown | Returns the promise of the shutdown in progress and settles with its outcome | Resolves at once; runs no hooks and emits no events |
+| `onShutdown()` | Registers the hook | Registers the hook | Registers the hook | Registers the hook (see the note below) | Throws |
+| `addService()`, `addInterceptor()`, `addProtocol()` | Add, unless the routes are already built | Throw | Throw | Throw | Throw |
+
+A rejected `start()` or `stop()` carries the message `Cannot start server: current state is "<state>", expected "created"` or `Cannot stop server: current state is "<state>", expected "running"`. The `add*` methods throw `Cannot add <service|interceptor|protocol>: server is already <state>. Add ... before calling start().`; `onShutdown()` in the stopped state throws `Cannot add shutdown hook: server is already stopped`.
+
+- **Routes lock.** The `add*` methods also throw in the created state once the routes have been built. `start()` builds them, and so does the first use of the in-process client (`server.localClient()`), even on a server that is still in the created state.
+- **A failed `start()` ends in `stopped`.** The server cannot be started again.
+- **A hook registered while stopping.** `onShutdown()` accepts it without an error, but the shutdown collects its hooks once, after the transport has closed. A hook registered after that moment is not guaranteed to run.
+- **Signal handlers appear with `running`.** With `autoShutdown: true` the framework installs its signal handlers when the server enters `running`, just before `ready`, and removes them when `stop()` begins. In `created` and `starting` the framework has no handler for the signal. If you need to react to a signal during startup, install your own handler.
 
 ## Lifecycle Events
 
