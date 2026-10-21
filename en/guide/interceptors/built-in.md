@@ -28,7 +28,7 @@ flowchart LR
 | 2 | **timeout** | Limits request execution time | **Opt-in** (30s when enabled) |
 | 3 | **bulkhead** | Limits concurrent requests | **Opt-in** (capacity 10, queue 10 when enabled) |
 | 4 | **circuitBreaker** | Prevents cascading failures (outbound pattern, see below) | **Opt-in** (threshold 5 when enabled) |
-| 5 | **retry** | Retries transient failures with exponential backoff | **Opt-in** (3 retries when enabled) |
+| 5 | **retry** | Retries transient failures with exponential backoff and jitter (see [Retry delay](#retry-delay)) | **Opt-in** (3 retries when enabled) |
 | 6 | **fallback** | Graceful degradation | **Opt-in** (requires an options object with a handler; `true` is refused) |
 | 7 | **validation** | Validates via `@connectrpc/validate` | Enabled |
 | 8 | **serializer** | JSON serialization for protobuf | **Opt-in** |
@@ -96,6 +96,15 @@ opening clears the timeout without aborting the stream; later caller cancellatio
 still reaches it. Retry can repeat opening failures, but cannot restart a response
 iterator that fails after opening.
 
+## Retry delay {#retry-delay}
+
+The pause between attempts is exponential with decorrelated jitter: the retry
+interceptor uses the `ExponentialBackoff` of its `cockatiel` dependency with that
+library's default generator, scaled by `initialDelay` and capped at `maxDelay`. The
+delays are randomized, so the interceptor does not guarantee exact values or a fixed
+multiplier between attempts. Do not build timing assumptions on them; if you need a
+fixed schedule, write your own interceptor.
+
 ## Circuit Breaker: Placement and Error Classification
 
 The circuit breaker is an **outbound/client-side pattern**: it protects the caller from a sick upstream (fail fast instead of waiting on timeouts) and gives that upstream room to recover. On a server's inbound stack it degenerates into error-rate load shedding — for inbound protection prefer explicit `timeout` + `bulkhead`.
@@ -112,6 +121,8 @@ const transport = createConnectTransport({
   ],
 });
 ```
+
+**One breaker per interceptor.** Each `createCircuitBreakerInterceptor()` call creates one breaker, and that breaker counts the failures of every call that passes through the returned interceptor (streaming calls are skipped by default), whatever the service or method. Two upstreams that must trip independently need two interceptors, each on its own transport.
 
 **Error classification.** By default only infrastructure errors count as circuit failures: `Unknown`, `DeadlineExceeded`, `Internal`, `Unavailable`, `DataLoss`, `ResourceExhausted` (plus any non-`ConnectError` thrown value). Business codes (`invalid_argument`, `not_found`, `failed_precondition`, `already_exists`, ...) are expected responses of a healthy service: they never open the breaker, and in half-open state they close it.
 

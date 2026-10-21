@@ -498,7 +498,9 @@ to the built-in schedule.
 
 Either way the error is an `AmqpConnectionError`. Its `cause` is the hook's error:
 the thrown error, or an error stating the invalid return or that the hook must be
-synchronous. Its message names the last connection error, or says "none observed"
+synchronous. If the hook throws a value that is not an `Error` (a string, for
+example), `cause` is an `Error` whose message is `recovery.backoff threw <value>`, and
+the thrown value itself is that error's own `cause`. Its message names the last connection error, or says "none observed"
 when the hook failed during an initial connect without `initialConnectMaxRetries`,
 a window the adapter cannot observe.
 :::
@@ -538,7 +540,7 @@ const adapter = AmqpAdapter({
 
 | `type` | Fields | When |
 |---|---|---|
-| `connected` | `reconnected` | Once per successful connect; `reconnected` is `false` for the first connect and `true` after recovery. |
+| `connected` | `reconnected` | Once per successful connect; `reconnected` is `false` for the first connect and `true` after recovery. Delivered only after the adapter accepts `publish()` and `subscribe()`, so a callback may call them. |
 | `disconnected` | `error` | Once per connection loss. Not reported for your own `disconnect()`. With `recovery: false`, `error` is the broker's own close error when there is one (`code` carries the reply code, for example `320` for a forced close). |
 | `reconnecting` | `attempt`, `delay`, `error` | Once per scheduled reconnect, and per startup attempt with `initialConnectMaxRetries`. |
 | `reconnect-failed` | `error` | Terminal: retry budget exhausted, fatal topology drift, startup budget exhausted, or a failed `backoff` hook. See [When recovery gives up](#recovery-gives-up). |
@@ -684,9 +686,11 @@ How it behaves:
 - **Backoff.** Attempt `n` waits the delay the reconnect formula gives for `n`
   (`initialDelay`, `factor`, `jitter`, `maxDelay`; the defaults apply when
   `recovery.backoff` is set, and `maxRetries` is not consulted). A failure that can heal,
-  such as a queue the broker has not made available yet, is retried without a limit. The attempt counter restarts only
+  such as a queue the broker has not made available yet, is retried without a limit. The attempt counter restarts
   after the consumer has been consuming for `maxDelay` without a new loss, so a queue that
-  vanishes after every restore sees growing delays instead of a tight loop.
+  vanishes after every restore sees growing delays instead of a tight loop. It also
+  restarts, without that wait, when connection recovery re-creates the subscription's
+  consumer on the new connection, and when you call `unsubscribe()` or `disconnect()`.
 - **A loss during `subscribe()` is not lost.** If the broker ends the consumer before the
   subscription setup has returned, the adapter holds the loss and reports `consumer-lost`
   right after the setup returns. With `recovery` enabled the consumer is then restored like

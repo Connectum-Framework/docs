@@ -360,6 +360,11 @@ npx @connectum/cli proto sync --from localhost:5000 --out ./generated --dry-run
 | `--dry-run` | Connect, list the services and files, generate nothing |
 | `--timeout` | Time limit of each reflection request in milliseconds: an integer from 1 to 99999999 (the longest limit an eight-digit `grpc-timeout` header can carry), written in plain decimal digits: a value with a leading zero, such as `007`, is rejected like any other invalid value (default `10000`) |
 
+`--dry-run` prints `Connected to <url>`, a `Services:` list of fully qualified service names
+as the server reports them (for example `grpc.health.v1.Health`), a `Files:` list of the
+file names in the fetched descriptors, and the line `Would generate to: <out>`. Each entry
+is on its own line, prefixed with `  - `.
+
 The command either obtains a descriptor for **every** service the server lists or fails
 with a non-zero exit code. If the server lists a service that reflection cannot describe,
 the error names each such service and nothing is generated (this holds for `--dry-run`

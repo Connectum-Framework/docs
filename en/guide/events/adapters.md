@@ -272,9 +272,17 @@ before the group first commits an offset are not delivered. Once the group has
 committed, messages published while it is stopped are delivered on restart. Set
 `fromBeginning: true` to read a topic's history with a new group.
 
+A subscription without an explicit `group` gets a new group named `connectum-<uuid>`
+every time `subscribe()` runs. That group has never committed an offset, so with the
+default `fromBeginning: false` a restarted service starts at the end of each topic and
+the events published while it was down are not delivered. Set `group` (the `group`
+option of the event bus) to a stable name for any subscription that must not lose them.
+
 ### Wildcard subscriptions {#kafka-wildcards}
 
-`*` and `>` are converted to a regular expression over topic names. Two
+`*` and `>` are converted to a regular expression over topic names. A pattern
+longer than 256 characters, wildcard or literal, is refused: `subscribe()` rejects
+with `Topic pattern exceeds maximum length (256): <length>`. Two
 properties differ from NATS:
 
 - A pattern that **opens with a wildcard** never matches topics whose name starts
