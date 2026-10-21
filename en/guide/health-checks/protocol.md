@@ -44,6 +44,19 @@ healthcheckManager.update(ServingStatus.SERVING, 'my.service.v1.MyService');
 healthcheckManager.update(ServingStatus.NOT_SERVING);
 ```
 
+Every probe reads this one state:
+
+```mermaid
+flowchart TD
+    App["Your code<br/>update(), set(), register()"] --> Mgr["healthcheckManager<br/>status per service<br/>and component"]
+    Mgr --> GrpcRead["gRPC Health:<br/>Check, Watch, List"]
+    Mgr --> HttpRead["HTTP endpoints,<br/>when httpEnabled"]
+    GrpcRead --> Router["Pass the server's request gate<br/>as router RPCs"]
+    HttpRead --> Plain["Served outside the router,<br/>no request gate"]
+
+    class Mgr accent
+```
+
 ### ServingStatus Values
 
 | Status | Value | Description |

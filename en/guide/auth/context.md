@@ -9,6 +9,22 @@ outline: deep
 
 All authentication interceptors in `@connectum/auth` store the verified identity in `AuthContext` via `AsyncLocalStorage`. This makes the identity available to any code running within the request scope -- service handlers, other interceptors, and utility functions.
 
+The context is created once per request, inside the authentication interceptor:
+
+```mermaid
+flowchart TD
+    Req["Incoming request"] --> Authn["Authentication interceptor<br/>verifies the identity"]
+    Authn --> Hdr["With propagateHeaders:<br/>identity written to the<br/>request's x-auth headers"]
+    Hdr --> Run["runWithAuthContext<br/>AsyncLocalStorage.run"]
+    Run --> Down["Later interceptors and the handler"]
+    Down --> Read["getAuthContext() or<br/>requireAuthContext()"]
+    Hdr -.->|"only for headers listed in<br/>the server's propagateHeaders"| Out["Headers on outgoing<br/>ctx.call and ctx.stream"]
+
+    class Run accent
+```
+
+Streaming responses are wrapped so that every `next`, `return`, and `throw` of the response stream runs inside the same context.
+
 ## Accessing Auth Context in Handlers
 
 ### Optional Access

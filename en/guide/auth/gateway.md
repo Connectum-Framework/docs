@@ -9,6 +9,25 @@ outline: deep
 
 `createGatewayAuthInterceptor` reads identity headers from a gateway that has already authenticated the caller. Before accepting those fields, the interceptor checks a configured trust header. It does not verify the end-user token itself.
 
+The interceptor decides in this order:
+
+```mermaid
+flowchart TD
+    Req["Request"] --> Skip{"Method in skipMethods?"}
+    Skip -->|"yes"| Strip1["Strip gateway headers,<br/>pass through unauthenticated"]
+    Skip -->|"no"| Trust{"Trust header present and<br/>matches expectedValues?"}
+    Trust -->|"no"| E1["Unauthenticated:<br/>Untrusted request source"]
+    Trust -->|"yes"| Subject{"Subject header present?"}
+    Subject -->|"no"| E2["Unauthenticated:<br/>Missing subject header"]
+    Subject -->|"yes"| Build["Build AuthContext from headerMapping"]
+    Build --> Strip2["Strip the mapped and trust headers"]
+    Strip2 --> Run["Run the handler with<br/>the AuthContext"]
+
+    class E1 critical
+    class E2 critical
+    class Run positive
+```
+
 ## Configuration
 
 ```typescript

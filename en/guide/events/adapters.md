@@ -548,6 +548,16 @@ which accepts either one shared instance or a factory. With a factory,
 `createBroadcastSubscribers` calls it once per reactor when it builds the buses,
 so every reactor gets an independent connection and consumer group:
 
+```mermaid
+flowchart TD
+    Broker[("Broker topic")] -->|"delivered to group pricing"| Pricing["EventBus, group pricing<br/>adapter from the factory"]
+    Broker -->|"delivered to group audit"| Audit["EventBus, group audit<br/>adapter from the factory"]
+    Pricing --> PH["Pricing handlers"]
+    Audit --> AH["Audit handlers"]
+
+    class Broker accent
+```
+
 ```typescript
 import { createBroadcastSubscribers, type EventAdapterFactory } from '@connectum/events';
 import { NatsAdapter } from '@connectum/events-nats';

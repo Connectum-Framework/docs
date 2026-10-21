@@ -25,9 +25,27 @@ encoding and decoding.
 
 The in-process transport reuses the `ConnectRouter` that `createServer()` has already built and dispatches client calls directly to the registered handlers. The client API is identical to a remote ConnectRPC client (`createClient(Service, transport)`), so the same caller code works whether the callee is local or remote.
 
-**When to use:**
+A call reaches the same router by either path. Everything after the router is shared:
 
-- **Modular monolith** — multiple bounded contexts hosted in a single process call each other over typed RPC contracts without the network overhead.
+```mermaid
+flowchart TD
+    Net["Network client"] --> Wire["HTTP/2 and TLS"]
+    Wire --> Strip["Server drops a forged<br/>transport marker header"]
+    Local["server.client(), localClient(),<br/>createLocalTransport()"] --> Mark["Client interceptors:<br/>marker, yours, stream binding"]
+    Mark --> Codec["Binary protobuf codec,<br/>headers cloned"]
+    Strip --> Router["Server router"]
+    Codec --> Router
+    Router --> Gate["requestGate and readMaxBytes"]
+    Gate --> Chain["Server interceptors, in configured order"]
+    Chain --> Handler["Service handler"]
+
+    class Router accent
+```
+
+Server interceptors, request admission, and the shutdown signal sit after the
+router, so neither path can skip them. The client interceptors you pass to
+`createLocalTransport()` run on the in-process side; an HTTP caller configures
+its own. — multiple bounded contexts hosted in a single process call each other over typed RPC contracts without the network overhead.
 - **Backend-for-Frontend (BFF)** — a BFF process embeds upstream services for low-latency composition.
 - **Tests** — exercise the full server-side interceptor chain (validation, auth, OTEL) without binding ports.
 - **Polyglot deployment** — a single client codebase that automatically routes to a local registered service or falls back to a remote HTTP transport based on the runtime topology.
