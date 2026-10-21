@@ -223,6 +223,12 @@ createDefaultInterceptors({ fallback: true });  // TypeError: fallback must be f
 createDefaultInterceptors({ timeout: null });   // TypeError: timeout must be true, false or an options object, got null
 ```
 
+### Refusals of access are not replaced {#fallback-access-refusals}
+
+A fallback value stands in for a failed dependency, a timeout or a bug, never for a caller who is not allowed. A failure with the code `Unauthenticated` or `PermissionDenied` is rethrown as it is and the `handler` is not called for it. This holds wherever the authentication or authorization interceptor stands relative to the fallback interceptor, and also for a refusal raised by the service handler itself. Failures with any other code, and errors that are not a `ConnectError`, still receive the fallback value.
+
+Keep the authentication and authorization interceptors in front of the default interceptors, as the [authentication guide](/en/guide/auth) shows: the order still decides what the rest of the chain, such as a rate limit or a cache, does for an unauthenticated caller.
+
 ### Fallback response {#fallback-response}
 
 The response the fallback interceptor synthesises carries only the protocol headers it needs, on a server chain and on a client transport alike:
