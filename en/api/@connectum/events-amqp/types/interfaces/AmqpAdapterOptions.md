@@ -12,7 +12,7 @@ Options for creating an AMQP/RabbitMQ adapter.
 
 > `readonly` `optional` **consumerOptions?**: [`AmqpConsumerOptions`](AmqpConsumerOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:76](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L76)
+Defined in: [packages/events-amqp/src/types.ts:81](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L81)
 
 Consumer options.
 
@@ -22,7 +22,7 @@ Consumer options.
 
 > `readonly` `optional` **exchange?**: `string`
 
-Defined in: [packages/events-amqp/src/types.ts:28](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L28)
+Defined in: [packages/events-amqp/src/types.ts:33](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L33)
 
 Exchange name for publishing and subscribing.
 
@@ -38,7 +38,7 @@ Exchange name for publishing and subscribing.
 
 > `readonly` `optional` **exchangeOptions?**: [`AmqpExchangeOptions`](AmqpExchangeOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:66](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L66)
+Defined in: [packages/events-amqp/src/types.ts:71](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L71)
 
 Exchange assertion options.
 
@@ -48,7 +48,7 @@ Exchange assertion options.
 
 > `readonly` `optional` **exchangeType?**: `"headers"` \| `"topic"` \| `"direct"` \| `"fanout"`
 
-Defined in: [packages/events-amqp/src/types.ts:61](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L61)
+Defined in: [packages/events-amqp/src/types.ts:66](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L66)
 
 Exchange type. The EventBus selects handlers by matching each delivered
 event type against the subscription patterns and acknowledges events
@@ -90,7 +90,7 @@ every wanted event, never a subset of them.
 
 > `readonly` `optional` **failFastOnInitialSetupError?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:197](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L197)
+Defined in: [packages/events-amqp/src/types.ts:202](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L202)
 
 Fail fast on a topology setup failure on the FIRST connect, instead of
 entering amqplib's infinite recovery loop.
@@ -135,7 +135,7 @@ false
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/types.ts:323](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L323)
+Defined in: [packages/events-amqp/src/types.ts:330](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L330)
 
 Connection lifecycle callbacks. Connection errors are surfaced here —
 not just logged.
@@ -146,7 +146,7 @@ not just logged.
 
 > `readonly` `optional` **publisherOptions?**: [`AmqpPublisherOptions`](AmqpPublisherOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:81](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L81)
+Defined in: [packages/events-amqp/src/types.ts:86](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L86)
 
 Publisher options.
 
@@ -156,7 +156,7 @@ Publisher options.
 
 > `readonly` `optional` **publishRetry?**: `boolean` \| [`AmqpPublishRetryOptions`](AmqpPublishRetryOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:317](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L317)
+Defined in: [packages/events-amqp/src/types.ts:324](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L324)
 
 Opt-in bounded publish retry for CONNECTION-CLASS outcomes (since 1.3.0).
 
@@ -229,7 +229,7 @@ undefined (disabled — behavior unchanged)
 
 > `readonly` `optional` **publishTimeoutMs?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:338](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L338)
+Defined in: [packages/events-amqp/src/types.ts:345](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L345)
 
 Per-publish broker-outcome deadline in milliseconds. A publish whose
 ack/nack/return/connection-loss outcome does not arrive in time
@@ -253,7 +253,7 @@ delay a timer honors) is capped to it. There is no "no timeout" value.
 
 > `readonly` `optional` **queueOptions?**: [`AmqpQueueOptions`](AmqpQueueOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:71](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L71)
+Defined in: [packages/events-amqp/src/types.ts:76](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L76)
 
 Default queue assertion options.
 
@@ -263,7 +263,7 @@ Default queue assertion options.
 
 > `readonly` `optional` **queueOverrides?**: `Record`\<`string`, [`AmqpQueueOverride`](AmqpQueueOverride.md)\>
 
-Defined in: [packages/events-amqp/src/types.ts:127](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L127)
+Defined in: [packages/events-amqp/src/types.ts:132](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L132)
 
 Map a consumer group name to an externally-named queue.
 
@@ -277,7 +277,7 @@ lets a subscription attach to a queue from an external contract
 
 > `readonly` `optional` **recovery?**: `boolean` \| [`AmqpRecoveryOptions`](AmqpRecoveryOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:161](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L161)
+Defined in: [packages/events-amqp/src/types.ts:166](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L166)
 
 Automatic connection recovery (delegated to amqplib's opt-in
 recovery). Enabled by default; pass `false` to restore
@@ -320,7 +320,7 @@ true (amqplib defaults: 100ms initial, ×2, 30s cap, jitter 0.2, infinite retrie
 
 > `readonly` `optional` **serialization?**: [`AmqpSerializationOptions`](AmqpSerializationOptions.md)
 
-Defined in: [packages/events-amqp/src/types.ts:92](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L92)
+Defined in: [packages/events-amqp/src/types.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L97)
 
 Message serialization metadata and optional wire transcoding.
 
@@ -336,9 +336,14 @@ adapter directly against an external AsyncAPI contract.
 
 > `readonly` `optional` **socketOptions?**: `Record`\<`string`, `unknown`\>
 
-Defined in: [packages/events-amqp/src/types.ts:21](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L21)
+Defined in: [packages/events-amqp/src/types.ts:26](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L26)
 
 Socket options passed to `amqplib.connect()`.
+
+`noDelay` is `true` unless you set it: the adapter turns Nagle's algorithm off on its
+connections (the working connection and the startup probe), because with it on a publish
+that follows the delivery of the previous message on the same connection waited about
+40 ms. Pass `{ noDelay: false }` to get amqplib's own default back.
 
 ***
 
@@ -346,7 +351,7 @@ Socket options passed to `amqplib.connect()`.
 
 > `readonly` `optional` **topology?**: [`AmqpTopology`](AmqpTopology.md)
 
-Defined in: [packages/events-amqp/src/types.ts:100](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L100)
+Defined in: [packages/events-amqp/src/types.ts:105](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L105)
 
 Explicit topology to declare on connect (and re-declare after
 recovery): exchanges, queues with arbitrary external names and raw
@@ -359,7 +364,7 @@ exchange-to-exchange.
 
 > `readonly` `optional` **topologyMode?**: [`AmqpTopologyMode`](../type-aliases/AmqpTopologyMode.md)
 
-Defined in: [packages/events-amqp/src/types.ts:118](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L118)
+Defined in: [packages/events-amqp/src/types.ts:123](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L123)
 
 How topology is established:
 - `"assert"` (default) — declare idempotently (assertExchange/assertQueue/bind);
@@ -386,7 +391,7 @@ How topology is established:
 
 > `readonly` `optional` **treatTopologyErrorAsFatal?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:253](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L253)
+Defined in: [packages/events-amqp/src/types.ts:260](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L260)
 
 Treat DETERMINISTIC topology drift during steady-state recovery as
 fatal: stop the reconnect cycle instead of retrying forever against a
@@ -407,7 +412,9 @@ AND reply text) — NOT the error class: transient causes wrapped into
 internal error `541`, resource locked `405`, a mid-setup connection
 drop) stay in normal recovery. Only replies that name a condition which
 cannot heal without a configuration or topology change are fatal:
-- `404` "no queue" / "no exchange" (the object is missing);
+- `404` with `no queue '<name>'` / `no exchange '<name>'` in the reply
+  text (the object is missing; the name in single quotes is part of the
+  match, so a text that merely contains "no queue" is not fatal);
 - `406` "inequivalent arg" (redeclare with different arguments),
   "invalid arg", "unknown exchange type" / "invalid exchange type".
 

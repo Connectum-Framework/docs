@@ -2,7 +2,7 @@
 
 # Interface: EventBus
 
-Defined in: [packages/events/src/types.ts:414](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L414)
+Defined in: [packages/events/src/types.ts:434](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L434)
 
 EventBus interface -- manages adapter, routes, and middleware
 
@@ -12,7 +12,7 @@ EventBus interface -- manages adapter, routes, and middleware
 
 > **publish**\<`Desc`\>(`schema`, `data`, `options?`): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:428](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L428)
+Defined in: [packages/events/src/types.ts:448](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L448)
 
 Publish a typed event
 
@@ -46,7 +46,7 @@ Publish a typed event
 
 > **start**(`options?`): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:424](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L424)
+Defined in: [packages/events/src/types.ts:444](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L444)
 
 Start the event bus: connect adapter, set up subscriptions.
 
@@ -74,7 +74,7 @@ shutdown or per-event timeout will abort in-flight processing.
 
 > **stop**(): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:426](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L426)
+Defined in: [packages/events/src/types.ts:446](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L446)
 
 Stop the event bus: drain subscriptions, disconnect adapter
 

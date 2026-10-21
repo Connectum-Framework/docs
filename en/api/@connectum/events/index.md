@@ -17,8 +17,13 @@
 - [BroadcastReactor](interfaces/BroadcastReactor.md)
 - [BroadcastSubscribersOptions](interfaces/BroadcastSubscribersOptions.md)
 
+## Type Aliases
+
+- [SubscriptionPatternRule](type-aliases/SubscriptionPatternRule.md)
+
 ## Functions
 
+- [assertSubscriptionPatterns](functions/assertSubscriptionPatterns.md)
 - [composeMiddleware](functions/composeMiddleware.md)
 - [createBroadcastSubscribers](functions/createBroadcastSubscribers.md)
 - [createEventBus](functions/createEventBus.md)

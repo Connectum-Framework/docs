@@ -2,7 +2,7 @@
 
 # Interface: BaseAttributeParams
 
-Defined in: [shared.ts:205](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L205)
+Defined in: [shared.ts:208](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L208)
 
 Parameters for building base RPC attributes.
 
@@ -12,7 +12,7 @@ Parameters for building base RPC attributes.
 
 > **method**: `string`
 
-Defined in: [shared.ts:207](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L207)
+Defined in: [shared.ts:210](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L210)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [shared.ts:207](https://github.com/Connectum-Framework/connectum/blo
 
 > **serverAddress**: `string`
 
-Defined in: [shared.ts:208](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L208)
+Defined in: [shared.ts:211](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L211)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [shared.ts:208](https://github.com/Connectum-Framework/connectum/blo
 
 > `optional` **serverPort?**: `number`
 
-Defined in: [shared.ts:209](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L209)
+Defined in: [shared.ts:212](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L212)
 
 ***
 
@@ -36,4 +36,4 @@ Defined in: [shared.ts:209](https://github.com/Connectum-Framework/connectum/blo
 
 > **service**: `string`
 
-Defined in: [shared.ts:206](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L206)
+Defined in: [shared.ts:209](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L209)

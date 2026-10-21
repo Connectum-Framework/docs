@@ -4,7 +4,7 @@
 
 > **EventAdapterFactory** = () => [`EventAdapter`](../interfaces/EventAdapter.md)
 
-Defined in: [packages/events/src/types.ts:148](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L148)
+Defined in: [packages/events/src/types.ts:156](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L156)
 
 A zero-argument factory producing a fresh [EventAdapter](../interfaces/EventAdapter.md).
 

@@ -4,7 +4,7 @@
 
 > **getServiceMetadata**(): `object`
 
-Defined in: [config.ts:171](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L171)
+Defined in: [config.ts:192](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L192)
 
 Gets service metadata from environment variables
 

@@ -4,7 +4,7 @@
 
 > **createRetryInterceptor**(`options?`): `Interceptor`
 
-Defined in: [retry.ts:61](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/retry.ts#L61)
+Defined in: [retry.ts:66](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/retry.ts#L66)
 
 Create retry interceptor
 
@@ -14,6 +14,11 @@ Cancellation interrupts backoff and prevents future attempts. An already
 running handler is awaited so bulkheads continue to account for active work;
 handlers and I/O must observe the signal to stop promptly. A cancelled attempt
 cannot become a successful retry result when it completes later.
+
+The delay between attempts follows cockatiel's `ExponentialBackoff` with its
+default decorrelated-jitter generator, scaled by `initialDelay` and capped at
+`maxDelay`. The delays are randomized, so exact values and multipliers are not
+guaranteed.
 
 Use retries only for idempotent operations. Streaming is skipped by default;
 opting in retries opening failures, not errors while consuming an opened stream.

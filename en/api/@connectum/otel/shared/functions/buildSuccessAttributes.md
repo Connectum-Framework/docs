@@ -4,7 +4,7 @@
 
 > **buildSuccessAttributes**(): `Record`\<`string`, `string`\>
 
-Defined in: [shared.ts:198](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L198)
+Defined in: [shared.ts:201](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L201)
 
 Attributes of a successfully completed unary call: `rpc.response.status_code="OK"`.
 `error.type` is deliberately absent, the convention forbids it on success.

@@ -4,6 +4,6 @@
 
 > `const` **tlsPath**: `string`
 
-Defined in: [packages/core/src/TLSConfig.ts:67](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TLSConfig.ts#L67)
+Defined in: [packages/core/src/TLSConfig.ts:76](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TLSConfig.ts#L76)
 
 Exported for backward compatibility

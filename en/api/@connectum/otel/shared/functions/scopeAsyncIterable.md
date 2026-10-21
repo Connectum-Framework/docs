@@ -4,7 +4,7 @@
 
 > **scopeAsyncIterable**\<`T`\>(`iterable`, `scope`): [`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols)\<`T`\>
 
-Defined in: [shared.ts:147](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L147)
+Defined in: [shared.ts:150](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L150)
 
 Runs every step of an async iterable inside a fixed OpenTelemetry context.
 

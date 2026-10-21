@@ -4,7 +4,7 @@
 
 > **createCatalogClient**(`options`): [`CatalogClient`](../interfaces/CatalogClient.md)
 
-Defined in: [packages/core/src/catalogClient.ts:125](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L125)
+Defined in: [packages/core/src/catalogClient.ts:126](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L126)
 
 Build a standalone [CatalogClient](../interfaces/CatalogClient.md) from a [ServiceCatalog](../type-aliases/ServiceCatalog.md) and a
 [RemoteResolver](../type-aliases/RemoteResolver.md).
