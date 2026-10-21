@@ -138,7 +138,7 @@ pnpm test:esbuild
 # Node.js tests, Bun tests and esbuild tests in one run
 pnpm test:cross-runtime
 
-# Bun HTTP/2 client floor guard (defined in @connectum/core only)
+# The ctx.call error-trailer test over HTTP/2 on Bun (defined in @connectum/core only)
 pnpm --filter @connectum/core run test:bun:h2
 ```
 
