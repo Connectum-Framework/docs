@@ -126,6 +126,20 @@ attribute. Arguments can contain credentials or personal data; leave recording
 disabled unless the values are safe to export, or use `argsFilter` to redact
 them. An array passed to `recordArgs` selects zero-based argument positions.
 
+Recording never affects the call. If the arguments cannot be recorded (a
+`BigInt`, a circular structure, or an `argsFilter` that throws), the function
+still runs and returns its own result, and the span has no `function.args`
+attribute.
+
+### Thrown values
+
+Any thrown value is a failure, including `null`, `undefined`, `0` and `""`: the
+span ends with status `ERROR` and a recorded exception, and the caller receives
+the original value unchanged. For a value that is not an `Error` the recorded
+message is the text of the value (the empty string is shown as `""`). The same
+holds for `traceAll()`, the server and client interceptors and streams: a stream
+that raises a falsy value ends its span with `ERROR`.
+
 ## Deep Tracing with `traceAll()`
 
 Wrap all methods of an object via Proxy:

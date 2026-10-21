@@ -73,6 +73,26 @@ Connectum passes these values to the trace provider's `BatchSpanProcessor`.
 Tune them against measurements from your service and collector; Connectum has
 no validated spans-per-second capacity threshold.
 
+A value that is not an integer, or is negative, is ignored: Connectum emits a
+Node.js process warning (code `CONNECTUM_OTEL_INVALID_ENV`) naming the variable
+and the rejected value, and uses the default from the table. The OpenTelemetry
+specification asks for the same behaviour for invalid numeric variables. Older
+versions threw when the provider was created, which happens on the first traced
+call.
+
+### Fixed export behaviour
+
+These are not configurable through environment variables:
+
+- Metrics are exported every 10 seconds. `OTEL_METRIC_EXPORT_INTERVAL` is not
+  read.
+- Logs are exported record by record, as each one is emitted (a simple log
+  record processor, no batching).
+- The OpenTelemetry diagnostic logger is set to `ERROR` level when the provider
+  is created, so SDK warnings and info messages are not printed. Warnings from
+  Connectum itself go through the Node.js process warning channel and are not
+  affected.
+
 ### Instrumentations
 
 | Variable | Description |
