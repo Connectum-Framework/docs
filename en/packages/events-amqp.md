@@ -46,7 +46,7 @@ backoff come from amqplib's built-in recovery. For production settings, continue
 | Entry point | Use it to |
 |---|---|
 | [`AmqpAdapter`](/en/api/@connectum/events-amqp/functions/AmqpAdapter) | Connect EventBus to an AMQP broker. |
-| [`AmqpAdapterOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpAdapterOptions) | Configure connection, topology, publishing, recovery, and `publishRetry`. |
+| [`AmqpAdapterOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpAdapterOptions) | Configure connection, topology, publishing, recovery, and `publishRetry`. Since 1.3.0, `socketOptions.noDelay` defaults to `true`; see [Socket options](/en/guide/events/amqp-reliability#socket-options). |
 | [`AmqpLifecycleEvent`](/en/api/@connectum/events-amqp/types/type-aliases/AmqpLifecycleEvent) | Observe the connection through `lifecycle.onLifecycle`. |
 | [`isAutoRetriablePublishError`](/en/api/@connectum/events-amqp/functions/isAutoRetriablePublishError) | Tell whether a publish failure belongs to the error classes `publishRetry` retries. |
 | [`AmqpTopologyError`](/en/api/@connectum/events-amqp/classes/AmqpTopologyError) | Identify a failed declaration through its `object` field. |

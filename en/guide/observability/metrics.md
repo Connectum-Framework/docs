@@ -136,7 +136,8 @@ those that appear only on some calls:
 | `network.protocol.name`, `network.transport` | `connect_rpc` and `tcp` |
 | `transport` | `http` or `in-process`: which transport carried the call. This is a Connectum attribute, not part of the semantic conventions |
 
-The same attribute names are set on the spans. Prometheus turns dots into
+The spans carry the same attribute names, except that the transport attribute is named
+`connectum.transport` on spans and `transport` on metrics. Prometheus turns dots into
 underscores: `rpc_system_name`, `rpc_method`, `rpc_response_status_code`.
 
 The OpenTelemetry RPC conventions are in the *Development* and *Release Candidate*

@@ -19,8 +19,15 @@ Configure OpenTelemetry exporters, provider management, and integration with obs
 
 | Variable | Description |
 |----------|-------------|
-| `OTEL_SERVICE_NAME` | Optional service name; falls back to `npm_package_name`, then `unknown-service` |
-| `OTEL_RESOURCE_ATTRIBUTES` | Comma-separated resource attributes, including `service.version` and `service.namespace` |
+| `OTEL_SERVICE_NAME` | Optional service name; see the resolution order below |
+| `OTEL_RESOURCE_ATTRIBUTES` | Comma-separated resource attributes, including `service.version` and `service.namespace`; its `service.name` entry is a fallback for the service name |
+| `OTEL_SERVICE_INSTANCE_ID` | Sets `service.instance.id` on the resource; the `instanceId` provider option takes precedence |
+
+The service name is the first of these that is set and non-empty: the `serviceName`
+provider option, `OTEL_SERVICE_NAME`, the `service.name` entry of
+`OTEL_RESOURCE_ATTRIBUTES`, `npm_package_name`, then `unknown-service`. Since 1.3.0,
+`OTEL_SERVICE_NAME` outranks the `OTEL_RESOURCE_ATTRIBUTES` entry, as the OpenTelemetry
+SDK specification requires; before, the entry silently replaced it.
 
 Connectum reads `OTEL_SERVICE_NAME`, but does not read dedicated
 `OTEL_SERVICE_VERSION` or `OTEL_SERVICE_NAMESPACE` variables. The version

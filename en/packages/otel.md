@@ -39,6 +39,13 @@ initProvider({ serviceName: 'orders-service' });
 const interceptor = createOtelInterceptor({ serverPort: 5000 });
 ~~~
 
+Since 1.3.0, the package holds one provider per process whichever subpath you import from:
+`getProvider()` from `@connectum/otel` and from `@connectum/otel/provider` return the same
+object, and a tracer taken from `@connectum/otel/tracer` belongs to the provider that
+`initProvider` created. The subpath builds share one chunk of common modules. In 1.2.x each
+subpath carried a private copy of the provider, so mixing the root and a subpath import
+could create a second provider that competed for OpenTelemetry's global registration.
+
 ## Key Entry Points
 
 | Entry point | Use it to |

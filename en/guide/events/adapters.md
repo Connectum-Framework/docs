@@ -57,6 +57,21 @@ const adapter = NatsAdapter({ servers: 'nats://localhost:4222' });
 - [Module hub](/en/packages/events-nats)
 - [`NatsAdapterOptions`](/en/api/@connectum/events-nats/types/interfaces/NatsAdapterOptions)
 
+### Start position {#nats-start-position}
+
+`consumerOptions.deliverPolicy` sets where a new consumer starts: `"new"` (the default)
+delivers only messages published after the consumer is created, `"all"` delivers every
+available message, and `"last"` delivers the last message of each matching subject. Since
+1.3.0, `"last"` maps to the JetStream policy `last_per_subject`, so a wildcard pattern such
+as `orders.*` starts with the latest message of every subject it matches, not only the
+single most recent message that matches the filter. For a literal pattern nothing changes.
+
+The policy applies only when the consumer is created. A durable consumer that already
+exists keeps the policy it was created with; the adapter logs one warning that names the
+difference (for example `deliver_policy=last (requested last_per_subject)`) and continues
+with the existing configuration. To start such a group with the new policy, delete its
+durable consumer or use a new group name.
+
 ### Overlapping patterns {#nats-overlapping-patterns}
 
 A subscription that lists patterns matching the same subject (`orders.created`,

@@ -12,6 +12,14 @@ docType: adr
 
 > **Update (2026-02-14)**: Added `@connectum/testing` package specification — mock factories, assertion helpers, and test server utility to eliminate test boilerplate (135+ duplicates identified). Design influenced by [connect-es](https://github.com/connectrpc/connect-es) and [protobuf-es](https://github.com/bufbuild/protobuf-es) testing patterns. See [Testing Utilities](#testing-utilities-connectum-testing) section.
 
+> **Update (2026-10-21):** The Decision below names `node:test` as the runner. Every package now
+> runs its suites through `exodus-test` (the `@exodus/test` runner), configured in each package's
+> `test` script. The test files themselves are still written against the `node:test` API
+> (`describe`, `it`, `mock` imported from `node:test`); the runner additionally executes the same
+> files on Bun (`test:bun`) and through esbuild transpilation (`test:esbuild`). See
+> [Contributor Commands](/en/contributing/cli-commands#testing). The decision text below is
+> preserved unchanged.
+
 ---
 
 ## Context
@@ -246,3 +254,4 @@ All tests passing (100% pass rate). Test execution time ~15s.
 | 2025-12-24 | Claude | Initial ADR -- testing strategy with node:test |
 | 2026-02-14 | Claude | Added @connectum/testing package specification (mock factories, assertions, test server) |
 | 2026-10-08 | Documentation review | Restored the original wording of the Decision sentence that an earlier editorial pass had changed; added page metadata. Decision unchanged. |
+| 2026-10-21 | Documentation review | Added an Update note: package suites run through `exodus-test`, with Bun and esbuild variants. Decision text unchanged. |
