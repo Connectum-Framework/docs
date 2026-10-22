@@ -43,6 +43,15 @@ import { MemoryAdapter } from '@connectum/events';
 const adapter = MemoryAdapter();
 ```
 
+Since 1.3.0 `nack(true)` (and `nack()`) redelivers the event to the same
+subscription as a later task, with `attempt` raised by one, so a handler's
+retry-by-nack behaves in tests as it does on a broker. `nack(false)` discards the
+event. A redelivery that is still waiting when the subscription is removed or
+the adapter disconnects is dropped, which is what stops a bus that is draining
+from looping nack, redeliver, nack. A handler that nacks every time is
+redelivered for as long as its subscription lives, as on a broker. Before 1.3.0
+a requeued event was silently lost.
+
 ## NATS JetStream {#nats-jetstream-adapter}
 
 Choose NATS for durable subjects, wildcard routing, and a compact operational

@@ -71,6 +71,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
                     { text: 'AMQP reliability', link: '/en/guide/events/amqp-reliability' },
                     { text: 'Custom topics', link: '/en/guide/events/custom-topics' },
                     { text: 'Middleware', link: '/en/guide/events/middleware' },
+                    { text: 'Relay during shutdown', link: '/en/guide/events/relay-during-shutdown' },
                 ],
             },
         ],
