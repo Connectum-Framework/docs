@@ -136,7 +136,7 @@ the close finish. Three budgets control the drain:
 | Option | Default | Waits for | When the budget runs out |
 |---|---|---|---|
 | `drainTimeout` | `30000` ms | Event handlers that are still running | Remaining handlers are aborted through their `AbortSignal` (`0` aborts them immediately), and the bus then waits for them to return |
-| `drainAbortGrace` | None (unbounded) | Handlers that are still running after the abort | Since 1.3.0. The handlers still running are abandoned: `stop()` disconnects the adapter, their later acknowledgement fails so the broker redelivers the message, and the `observer` is told. `0` abandons at once after the abort |
+| `drainAbortGrace` | None (unbounded) | Handlers that are still running after the abort | Since 1.3.0. The handlers still running are abandoned: `stop()` disconnects the adapter without waiting for the adapter to close the subscription of a handler that is still running, and the `observer` is told. Their later acknowledgement fails; whether the message is delivered again depends on the broker and on whether the handler had already acknowledged it. `0` abandons at once after the abort. Must be finite |
 | `drainPublishTimeout` | Off | `publish()` calls that were already pending when `stop()` began | Nothing is aborted; the bus stops waiting and disconnects the adapter. The bus does not settle an unfinished `publish()` itself: the caller's promise settles later or stays pending, as the adapter decides |
 
 Without `drainAbortGrace`, one handler that ignores its abort signal holds

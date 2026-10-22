@@ -71,13 +71,13 @@ const eventBus = createEventBus({
 });
 ```
 
-Expect `{ type: 'admitted', topic }` for each relayed event. Seeing `{ type: 'rejected', reason: 'aborted' }` means a handler took longer than `drainTimeout`; seeing `{ type: 'abandoned', handlers, publishes }` means work was still running after `drainAbortGrace` and its messages will be redelivered.
+Expect `{ type: 'admitted', topic }` for each relayed event. Seeing `{ type: 'rejected', reason: 'aborted' }` means a handler took longer than `drainTimeout`; seeing `{ type: 'abandoned', handlers, publishes }` means work was still running after `drainAbortGrace` and was given up on; the event does not say whether a message will be delivered again, which depends on the broker and on whether the handler had acknowledged it.
 
 ## When it does not work
 
 - **The handler uses `ctx.signal` and stops before it publishes.** `ctx.signal` also fires when the server starts shutting down (when the bus is run through `createServer({ eventBus })`) and when `drainTimeout` aborts the drain. A handler that cancels its own work on that signal does not reach the publish. `ctx.publish` itself does not look at `ctx.signal`; it looks at the drain abort.
 - **The handler publishes through an injected bus.** That publish is refused while the bus stops. The cost of relaying during shutdown is rewriting such handlers to use `ctx`.
-- **The message is redelivered after `stop()`.** The handler was abandoned, or it failed. With a dead-letter queue configured, a handler that fails during shutdown republishes the event there, and that republish is awaited; make handlers idempotent, because redelivery is the broker's guarantee.
+- **The message is delivered again after `stop()`.** The handler was abandoned before it acknowledged, or it failed. With a dead-letter queue configured, a handler that fails during shutdown republishes the event there, and that republish is awaited; make handlers idempotent, because redelivery is the broker's guarantee.
 
 ## Related
 
