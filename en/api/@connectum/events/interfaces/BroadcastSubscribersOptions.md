@@ -21,11 +21,21 @@ own connection / durable consumer).
 
 ***
 
+### drainAbortGrace?
+
+> `readonly` `optional` **drainAbortGrace?**: `number`
+
+Defined in: [packages/events/src/broadcast.ts:48](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L48)
+
+Shared per-bus wait after the drain abort (ms); unbounded when unset.
+
+***
+
 ### drainPublishTimeout?
 
 > `readonly` `optional` **drainPublishTimeout?**: `number`
 
-Defined in: [packages/events/src/broadcast.ts:48](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L48)
+Defined in: [packages/events/src/broadcast.ts:52](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L52)
 
 Shared per-bus opt-in publish drain budget at `stop()` (ms). Since 1.3.0.
 
@@ -51,6 +61,16 @@ Shared per-bus handler timeout (ms).
 
 ***
 
+### observer?
+
+> `readonly` `optional` **observer?**: [`EventBusObserver`](../types/type-aliases/EventBusObserver.md)
+
+Defined in: [packages/events/src/broadcast.ts:50](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L50)
+
+Shared observer of what each bus's shutdown gave up on.
+
+***
+
 ### reactors
 
 > `readonly` **reactors**: [`BroadcastReactor`](BroadcastReactor.md)[]
@@ -65,6 +85,6 @@ The independent reactors — each becomes its own EventBus with its own group.
 
 > `readonly` `optional` **signal?**: `AbortSignal`
 
-Defined in: [packages/events/src/broadcast.ts:50](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L50)
+Defined in: [packages/events/src/broadcast.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/broadcast.ts#L54)
 
 Shared abort signal for graceful shutdown.

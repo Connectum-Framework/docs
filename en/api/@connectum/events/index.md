@@ -68,6 +68,18 @@ Re-exports [EventBus](types/interfaces/EventBus.md)
 
 ***
 
+### EventBusObserver
+
+Re-exports [EventBusObserver](types/type-aliases/EventBusObserver.md)
+
+***
+
+### EventBusObserverEvent
+
+Re-exports [EventBusObserverEvent](types/type-aliases/EventBusObserverEvent.md)
+
+***
+
 ### EventBusOptions
 
 Re-exports [EventBusOptions](types/interfaces/EventBusOptions.md)
