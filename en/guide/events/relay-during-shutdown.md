@@ -53,7 +53,7 @@ Everything else is refused with an error:
 | `ctx.publish` of an abandoned handler after the bus was started again | Rejected |
 | `bus.publish` from anywhere while the bus stops | Rejected, with an error that says the bus is stopping |
 
-`stop()` waits for the admitted publishes after the handlers have drained and before the adapter is disconnected, even when the handler did not await them. That wait is bounded by `drainAbortGrace` when it is set and unbounded otherwise, like the wait for the handlers themselves. It does not use `drainPublishTimeout`, which only covers `bus.publish()` calls that were pending when `stop()` began.
+`stop()` waits for the admitted publishes after the handlers have drained and before the adapter is disconnected, even when the handler did not await them. That wait is bounded by `drainAbortGrace` when it is set and unbounded otherwise, like the wait for the handlers themselves. It shares the grace window that starts at the abort, so the bus budget stays `drainTimeout` + `drainAbortGrace`. It does not use `drainPublishTimeout`, which only covers `bus.publish()` calls that were pending when `stop()` began.
 
 The republish of the built-in [DLQ middleware](/en/guide/events/middleware) made while the bus stops is awaited the same way.
 
