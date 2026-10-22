@@ -9,12 +9,13 @@ outline: deep
 
 A relay handler consumes an event, transforms it, and publishes the result as another event. `eventBus.stop()` refuses `bus.publish()` before it drains the handlers, so the last hop of a relay that is still running when shutdown begins used to fail: on a broker the message was redelivered, and with retry plus a dead-letter queue it could be dead-lettered although nothing was wrong with it; on `MemoryAdapter` the next hop was dropped.
 
-**Outcome:** a relay handler that is running when `stop()` begins publishes its result through `ctx.publish`, `stop()` waits for that publish before it disconnects the adapter, and you can see in the `observer` what was admitted, refused, or abandoned. Available since 1.3.0. The shutdown budgets themselves are described in [Shutdown Drain](/en/guide/events#shutdown-drain).
+**Outcome:** a relay handler that is running when `stop()` begins publishes its result through `ctx.publish`, `stop()` waits for that publish before it disconnects the adapter (the wait is bounded by `drainAbortGrace` when it is set, so a publish still pending after that window can be unsettled when the adapter disconnects), and you can see in the `observer` what was admitted, refused, or abandoned. Available since 1.3.0. The shutdown budgets themselves are described in [Shutdown Drain](/en/guide/events#shutdown-drain).
 
 ## Prerequisites
 
 - An `EventBus` with at least one handler that publishes another event.
 - An adapter that acknowledges after the handler finishes (`NATS`, `Kafka`, `Redis` or `AMQP`; the choice is in [Adapter selection](/en/guide/events/adapters)).
+- A handler that awaits `ctx.publish` before it calls `ctx.ack()` (or never calls `ctx.ack()` and lets the bus acknowledge after the handler returns). An event acknowledged first is not redelivered when its publish then fails during shutdown.
 
 ## Publish through the context
 
@@ -59,7 +60,7 @@ The republish of the built-in [DLQ middleware](/en/guide/events/middleware) made
 
 ## Verify
 
-Pass an `observer` and stop the bus while a relay handler is running. Each admitted publish is reported, and the adapter is disconnected only after it settled:
+Pass an `observer` and stop the bus while a relay handler is running. Each admitted publish is reported, and the adapter is disconnected after it settled or after `drainAbortGrace` ran out, whichever comes first:
 
 ```typescript
 const eventBus = createEventBus({
@@ -77,7 +78,7 @@ Expect `{ type: 'admitted', topic }` for each relayed event. Seeing `{ type: 're
 
 - **The handler uses `ctx.signal` and stops before it publishes.** `ctx.signal` also fires when the server starts shutting down (when the bus is run through `createServer({ eventBus })`) and when `drainTimeout` aborts the drain. A handler that cancels its own work on that signal does not reach the publish. `ctx.publish` itself does not look at `ctx.signal`; it looks at the drain abort.
 - **The handler publishes through an injected bus.** That publish is refused while the bus stops. The cost of relaying during shutdown is rewriting such handlers to use `ctx`.
-- **The message is delivered again after `stop()`.** The handler was abandoned before it acknowledged, or it failed. With a dead-letter queue configured, a handler that fails during shutdown republishes the event there, and that republish is awaited; make handlers idempotent, because redelivery is the broker's guarantee.
+- **The message is delivered again after `stop()`.** The handler was abandoned before it acknowledged, or it failed. With a dead-letter queue configured, a handler that fails during shutdown republishes the event there, and that republish is awaited; make handlers idempotent, because the broker may deliver the message again (whether it does depends on its configuration and on whether the message was already acknowledged).
 
 ## Related
 
