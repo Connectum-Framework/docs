@@ -2,7 +2,7 @@
 
 # Interface: RetryOptions
 
-Defined in: [packages/events/src/types.ts:287](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L287)
+Defined in: [packages/events/src/types.ts:304](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L304)
 
 Retry middleware options
 
@@ -12,7 +12,7 @@ Retry middleware options
 
 > `optional` **backoff?**: `"fixed"` \| `"exponential"` \| `"linear"`
 
-Defined in: [packages/events/src/types.ts:295](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L295)
+Defined in: [packages/events/src/types.ts:312](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L312)
 
 Backoff strategy
 
@@ -22,7 +22,7 @@ Backoff strategy
 
 > `optional` **initialDelay?**: `number`
 
-Defined in: [packages/events/src/types.ts:297](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L297)
+Defined in: [packages/events/src/types.ts:314](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L314)
 
 Initial delay in ms (default: 1000)
 
@@ -32,7 +32,7 @@ Initial delay in ms (default: 1000)
 
 > `optional` **maxDelay?**: `number`
 
-Defined in: [packages/events/src/types.ts:299](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L299)
+Defined in: [packages/events/src/types.ts:316](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L316)
 
 Maximum delay in ms (default: 30000)
 
@@ -42,7 +42,7 @@ Maximum delay in ms (default: 30000)
 
 > `optional` **maxRetries?**: `number`
 
-Defined in: [packages/events/src/types.ts:293](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L293)
+Defined in: [packages/events/src/types.ts:310](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L310)
 
 Maximum number of retries after the first attempt: an integer of at least 0 (default: 3).
 `0` runs the handler once. Any other value (negative, fractional, `NaN`, infinite) makes
@@ -54,7 +54,7 @@ Maximum number of retries after the first attempt: an integer of at least 0 (def
 
 > `optional` **multiplier?**: `number`
 
-Defined in: [packages/events/src/types.ts:301](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L301)
+Defined in: [packages/events/src/types.ts:318](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L318)
 
 Multiplier for exponential backoff (default: 2)
 
@@ -64,7 +64,7 @@ Multiplier for exponential backoff (default: 2)
 
 > `optional` **retryableErrors?**: (`error`) => `boolean`
 
-Defined in: [packages/events/src/types.ts:303](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L303)
+Defined in: [packages/events/src/types.ts:320](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L320)
 
 Filter: only retry for these error types
 

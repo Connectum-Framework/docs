@@ -2,7 +2,7 @@
 
 # Interface: EventHandlerConfig\<I\>
 
-Defined in: [packages/events/src/types.ts:214](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L214)
+Defined in: [packages/events/src/types.ts:231](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L231)
 
 Per-handler middleware configuration.
 
@@ -22,7 +22,7 @@ and only the per-handler middleware array is applied.
 
 > `readonly` **handler**: [`TypedEventHandler`](../type-aliases/TypedEventHandler.md)\<`I`\>
 
-Defined in: [packages/events/src/types.ts:216](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L216)
+Defined in: [packages/events/src/types.ts:233](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L233)
 
 Event handler function
 
@@ -32,6 +32,6 @@ Event handler function
 
 > `readonly` `optional` **middleware?**: [`EventMiddleware`](../type-aliases/EventMiddleware.md)[]
 
-Defined in: [packages/events/src/types.ts:218](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L218)
+Defined in: [packages/events/src/types.ts:235](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L235)
 
 Per-handler middleware array (overrides global middleware for this handler)

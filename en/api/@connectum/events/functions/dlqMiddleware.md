@@ -17,7 +17,7 @@ Create a DLQ middleware that catches errors from inner middleware
 
 ### adapter
 
-[`EventAdapter`](../types/interfaces/EventAdapter.md)
+`Pick`\<[`EventAdapter`](../types/interfaces/EventAdapter.md), `"publish"`\>
 
 ## Returns
 

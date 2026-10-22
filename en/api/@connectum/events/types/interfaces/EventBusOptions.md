@@ -2,7 +2,7 @@
 
 # Interface: EventBusOptions
 
-Defined in: [packages/events/src/types.ts:336](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L336)
+Defined in: [packages/events/src/types.ts:383](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L383)
 
 EventBus configuration options for createEventBus()
 
@@ -12,9 +12,36 @@ EventBus configuration options for createEventBus()
 
 > **adapter**: [`EventAdapter`](EventAdapter.md)
 
-Defined in: [packages/events/src/types.ts:338](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L338)
+Defined in: [packages/events/src/types.ts:385](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L385)
 
 Adapter instance (e.g., NatsAdapter, KafkaAdapter, MemoryAdapter)
+
+***
+
+### drainAbortGrace?
+
+> `optional` **drainAbortGrace?**: `number`
+
+Defined in: [packages/events/src/types.ts:455](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L455)
+
+Maximum time in milliseconds `stop()` keeps waiting for handlers that are still running
+AFTER `drainTimeout` expired and they were force-aborted. A handler that ignores the abort
+signal is then abandoned: `stop()` goes on to disconnect the adapter without waiting for
+the adapter to close the subscription of a handler that is still running, and the observer
+is told (`abandoned`). The abandoned handler's later acknowledgement may fail (the
+adapter contract does not say); whether its message is delivered again is up to the
+broker and to whether the handler had already acknowledged it.
+
+Total shutdown budget of the bus: `drainTimeout` + `drainAbortGrace` (the handler phase;
+the publish drain runs concurrently with it), plus whatever the transport phase of
+`createServer`'s `shutdown.timeout` took before. Compare the sum with the kill grace period
+of your orchestrator.
+
+Default: `undefined` — the wait after the abort has no limit, as before: a handler that
+never returns holds `stop()` forever. There is no default number because the time handlers
+need to finish after an abort has not been measured. `0` abandons at once after the abort.
+Must be a finite, non-negative number; anything else (negative, `NaN`, `Infinity`) throws a
+`RangeError` from `createEventBus`; leave it unset for an unbounded wait.
 
 ***
 
@@ -22,7 +49,7 @@ Adapter instance (e.g., NatsAdapter, KafkaAdapter, MemoryAdapter)
 
 > `optional` **drainPublishTimeout?**: `number`
 
-Defined in: [packages/events/src/types.ts:414](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L414)
+Defined in: [packages/events/src/types.ts:488](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L488)
 
 Opt-in symmetric publish drain during `stop()`: maximum time in
 milliseconds to wait for in-flight `publish()` promises (started BEFORE
@@ -55,7 +82,7 @@ in-flight publishes race the adapter disconnect exactly as before.
 
 > `optional` **drainTimeout?**: `number`
 
-Defined in: [packages/events/src/types.ts:387](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L387)
+Defined in: [packages/events/src/types.ts:434](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L434)
 
 Maximum time in milliseconds to wait for in-flight event handlers
 to complete during shutdown. After this timeout, remaining handlers
@@ -69,7 +96,7 @@ Default: 30000 (30 seconds). Set to 0 for immediate abort.
 
 > `optional` **group?**: `string`
 
-Defined in: [packages/events/src/types.ts:362](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L362)
+Defined in: [packages/events/src/types.ts:409](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L409)
 
 Consumer group name, passed to every subscription of this bus.
 
@@ -85,7 +112,7 @@ events published during the downtime are not delivered. Set an explicit
 
 > `optional` **handlerTimeout?**: `number`
 
-Defined in: [packages/events/src/types.ts:379](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L379)
+Defined in: [packages/events/src/types.ts:426](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L426)
 
 Per-event handler timeout in milliseconds.
 
@@ -98,9 +125,21 @@ this duration. Default: 30000 (30 seconds).
 
 > `optional` **middleware?**: [`MiddlewareConfig`](MiddlewareConfig.md)
 
-Defined in: [packages/events/src/types.ts:364](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L364)
+Defined in: [packages/events/src/types.ts:411](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L411)
 
 Middleware configuration
+
+***
+
+### observer?
+
+> `optional` **observer?**: [`EventBusObserver`](../type-aliases/EventBusObserver.md)
+
+Defined in: [packages/events/src/types.ts:461](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L461)
+
+Receives what the shutdown could not finish, see [EventBusObserverEvent](../type-aliases/EventBusObserverEvent.md). Called
+synchronously by `stop()`; an error thrown by it (or a promise it returns that rejects)
+is swallowed, because reporting must never prevent the adapter from being disconnected.
 
 ***
 
@@ -108,7 +147,7 @@ Middleware configuration
 
 > `optional` **publishes?**: [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)[]
 
-Defined in: [packages/events/src/types.ts:352](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L352)
+Defined in: [packages/events/src/types.ts:399](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L399)
 
 Event service descriptors this bus publishes to (publish-only, no subscription).
 
@@ -126,7 +165,7 @@ hand-maintaining raw topic strings. Subscribers still register via `routes`.
 
 > `optional` **routes?**: [`EventRoute`](../type-aliases/EventRoute.md)[]
 
-Defined in: [packages/events/src/types.ts:340](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L340)
+Defined in: [packages/events/src/types.ts:387](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L387)
 
 Event routes to register
 
@@ -136,7 +175,7 @@ Event routes to register
 
 > `optional` **signal?**: `AbortSignal`
 
-Defined in: [packages/events/src/types.ts:372](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L372)
+Defined in: [packages/events/src/types.ts:419](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L419)
 
 Abort signal for graceful shutdown.
 
@@ -150,7 +189,7 @@ Automatically set when used with `createServer({ eventBus })`.
 
 > `optional` **strictTopics?**: `boolean`
 
-Defined in: [packages/events/src/types.ts:428](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L428)
+Defined in: [packages/events/src/types.ts:502](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L502)
 
 Reject a `publish()` whose topic cannot be resolved instead of silently
 falling back to the message `typeName`.
