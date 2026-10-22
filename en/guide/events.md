@@ -120,6 +120,7 @@ Every event handler receives an `EventContext` with explicit acknowledgment cont
 | `signal` | `AbortSignal` -- aborted on server shutdown |
 | `ack()` | Acknowledge successful processing |
 | `nack(requeue?)` | Negative acknowledge -- request redelivery |
+| `publish(schema, data, options?)` | Publish on behalf of this delivery; still admitted while the bus stops, see [Relay during shutdown](/en/guide/events/relay-during-shutdown) |
 
 Both `ack()` and `nack()` are idempotent -- calling either multiple times after the first call has no effect.
 
@@ -130,12 +131,32 @@ and drains outstanding work at the same time. It disconnects the adapter once
 both have finished. Closing a subscription on the Redis, Kafka, and NATS
 adapters waits for the handler that is running, so the handler drain does not
 wait for the close: `drainTimeout` aborts a stuck handler, and that is what lets
-the close finish. Two budgets control the drain:
+the close finish. Three budgets control the drain:
 
 | Option | Default | Waits for | When the budget runs out |
 |---|---|---|---|
 | `drainTimeout` | `30000` ms | Event handlers that are still running | Remaining handlers are aborted through their `AbortSignal` (`0` aborts them immediately), and the bus then waits for them to return |
+| `drainAbortGrace` | None (unbounded) | Handlers that are still running after the abort | Since 1.3.0. The handlers still running are abandoned: `stop()` disconnects the adapter without waiting for the adapter to close the subscription of a handler that is still running, and the `observer` is told. Their later acknowledgement may fail; whether the message is delivered again depends on the broker and on whether the handler had already acknowledged it. `0` abandons at once after the abort. Must be finite |
 | `drainPublishTimeout` | Off | `publish()` calls that were already pending when `stop()` began | Nothing is aborted; the bus stops waiting and disconnects the adapter. The bus does not settle an unfinished `publish()` itself: the caller's promise settles later or stays pending, as the adapter decides |
+
+Without `drainAbortGrace`, one handler that ignores its abort signal holds
+`stop()` forever. There is no default number because the time handlers need after
+an abort has not been measured; choose one from what your handlers do, and compare
+the total with your orchestrator's grace period: `shutdown.timeout` (transport
+phase) + `drainTimeout` + `drainAbortGrace`. The handler drain and the publish
+drain run at the same time, so the longer of them counts, not their sum.
+
+`observer` receives what happened to work during the shutdown. It is called
+synchronously by `stop()`, and an error it throws (or a promise it rejects) is
+dropped, because reporting must never prevent the adapter from being
+disconnected.
+
+| Event | When |
+|---|---|
+| `{ type: 'abandoned', handlers, publishes }` | Once per `stop()`, only when something was left: handlers still running after `drainAbortGrace`, publishes still unsettled after their budget |
+| `{ type: 'admitted', topic }` | A `ctx.publish` made while the bus stops was admitted |
+| `{ type: 'rejected', reason }` | A `ctx.publish` made while the bus stops was refused: `aborted` (the drain was aborted) or `not-in-flight` (its handler had returned, or it belongs to an earlier start/stop cycle) |
+| `{ type: 'dlq-republish', topic }` | The built-in DLQ middleware republished a failed event while the bus stops |
 
 Without `drainPublishTimeout`, a pending `publish()` races the adapter
 disconnect, and a broker confirmation can fail because the connection closed
@@ -157,16 +178,21 @@ with every adapter. `undefined`, `0`, and negative values disable it. Tracking
 a publish for the drain adds no unhandled rejection of its own; each caller
 still receives the result of its `publish()` promise and must handle it.
 
-The publish drain does not cover:
+The publish drain does not cover `bus.publish()` calls made after `stop()`
+begins. They reject immediately with an error that says the bus is stopping,
+including calls from handlers that are still draining. A handler that must
+hand its result on during shutdown publishes through `ctx.publish` instead; see
+[Relay during shutdown](/en/guide/events/relay-during-shutdown). The dead letter
+republish of the [DLQ middleware](/en/guide/events/middleware) made while the bus
+stops is awaited before the adapter is disconnected, within `drainAbortGrace`
+when it is set.
 
-- `publish()` calls made after `stop()` begins. They reject immediately,
-  including calls from handlers that are still draining.
-- The dead letter republish of the [DLQ middleware](/en/guide/events/middleware).
-  It publishes through the adapter inside the handler, so it belongs to the
-  handler drain.
+Two `stop()` calls, also when one is made while `start()` is still running,
+share one shutdown and disconnect the adapter once.
 
-`createBroadcastSubscribers` accepts the same `drainTimeout` and
-`drainPublishTimeout` options and passes them to every bus it creates.
+`createBroadcastSubscribers` accepts the same `drainTimeout`, `drainAbortGrace`,
+`drainPublishTimeout` and `observer` options and passes them to every bus it
+creates.
 
 When the bus is passed to `createServer({ eventBus })`, the server stops it in a
 shutdown hook. Hooks run after the server's `shutdown.timeout` phase, so drain

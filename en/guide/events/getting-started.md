@@ -348,6 +348,7 @@ await producerBus.stop();
 
 - [Custom Topics](/en/guide/events/custom-topics) -- override default topic naming via proto options
 - [Middleware](/en/guide/events/middleware) -- configure retry, DLQ, and write custom middleware
+- [Relay during shutdown](/en/guide/events/relay-during-shutdown) -- let a handler that publishes another event finish while the bus stops
 - [Adapters](/en/guide/events/adapters) -- choose the right broker adapter for your deployment
 - [with-events-redpanda](https://github.com/Connectum-Framework/examples/tree/main/with-events-redpanda) -- full saga pattern example
 - [with-events-dlq](https://github.com/Connectum-Framework/examples/tree/main/with-events-dlq) -- DLQ example with NATS JetStream
