@@ -102,6 +102,13 @@ A bus passed as `createServer({ eventBus })` is stopped by a shutdown hook named
 budgets therefore add to the time `stop()` takes; they are not bounded by
 `shutdown.timeout`. See [Shutdown drain](/en/guide/events#shutdown-drain).
 
+The bus stops receiving earlier than that, at step 2: the abort of the shutdown
+signal ends its subscriptions, and a delivery that is still on its way is returned
+to the broker instead of starting a handler with an aborted `ctx.signal`. Handlers
+that are already running finish, may publish through `ctx.publish`, and are drained by
+the hook as before. Since 1.3.0; see
+[Event bus stops receiving at the shutdown signal](/en/migration/events-reception-on-shutdown).
+
 ## Shutdown Hooks
 
 Shutdown hooks allow you to run cleanup logic during shutdown with dependency ordering. Register them via `server.onShutdown()`.
