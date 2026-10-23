@@ -1,6 +1,6 @@
 ---
 title: Peer Dependencies on protobuf and Connect
-description: Keep @bufbuild/protobuf and Connect pins inside the peer ranges Connectum 1.3 declares, and add them yourself on Yarn.
+description: Keep @bufbuild/protobuf and Connect pins inside the peer ranges Connectum 1.3 declares.
 docType: migration
 ---
 
@@ -19,7 +19,6 @@ You need to act if **any** of these is true:
 
 - your `package.json` pins `@bufbuild/protobuf` below `2.16.0`, or `@connectrpc/connect` /
   `@connectrpc/connect-node` below `2.2.0` (or outside the `2.x` line);
-- you install with **Yarn**;
 - you install with `--legacy-peer-deps` or set `legacy-peer-deps=true` in `.npmrc`.
 
 If you use npm 7 or later, pnpm or Bun, and you either do not pin these libraries or pin
@@ -73,8 +72,6 @@ the supported range visible at install time.
 | Pins inside the ranges | one shared copy | one shared copy | one shared copy |
 | Pin below the range | install **fails**: `ERESOLVE unable to resolve dependency tree` | installs your copy and prints `Issues with peer dependencies found`; `pnpm peers check` lists `unmet peer <library>` | installs your copy and prints `warn: incorrect peer dependency "<library>@<version>"` — but see the note below |
 
-Yarn does not install missing peer dependencies. See [Required changes](#required-changes).
-
 ::: warning Bun can stay silent about an old `@bufbuild/protobuf`
 When your project also contains a tool that brings its own in-range `@bufbuild/protobuf`
 — `@bufbuild/protoc-gen-es` and `@connectum/protoc-gen-catalog` both do — Bun 1.4 installs
@@ -92,13 +89,13 @@ loaded. If one is outside the range above, the server is not created and
 PeerDependencyVersionError: @connectum/core loaded peer libraries outside its supported range:
   - @bufbuild/protobuf: loaded 2.12.1 (from /app/node_modules/@bufbuild/protobuf), @connectum/core requires ^2.16.0
 Generated code and the framework must share one in-range copy of each library; an older copy breaks generated types and Connect at runtime.
-Fix: raise your pins to the required ranges (npm install @bufbuild/protobuf@"^2.16.0", or the pnpm / bun / yarn equivalent), or force one in-range version with "overrides" (npm, Bun), pnpm "overrides" or Yarn "resolutions", then reinstall.
+Fix: raise your pins to the required ranges (npm install @bufbuild/protobuf@"^2.16.0", or the pnpm / bun equivalent), or force one in-range version with "overrides" (npm, Bun) or pnpm "overrides", then reinstall.
 ```
 
 Lockstep is checked at startup too. `@connectrpc/connect-node` works only with the exact
 `@connectrpc/connect` version it declares, so the check also fails when the `connect`
 that connect-node loads is another version, or a different copy than the one
-`@connectum/core` loads — a pair Bun and Yarn install without complaint:
+`@connectum/core` loads — a pair Bun installs without complaint:
 
 ```text
   - @connectrpc/connect: loaded 2.2.0 (from /app/node_modules/@connectrpc/connect), @connectrpc/connect-node@2.1.2 requires 2.1.2
@@ -129,9 +126,7 @@ range.
    npm, pnpm or Bun install the peers.
 2. **Regenerate code** with `@bufbuild/protoc-gen-es` 2.16 or later, so generated code
    matches the runtime.
-3. **On Yarn, declare the libraries yourself**, together with `@connectum/core` when you
-   use `@connectum/auth`, `@connectum/events` or `@connectum/interceptors`.
-4. **Do not bypass a conflict** with `--legacy-peer-deps` or `--force`: that puts the
+3. **Do not bypass a conflict** with `--legacy-peer-deps` or `--force`: that puts the
    second copy back.
 
 ## Before and after
@@ -159,12 +154,6 @@ range.
     "@connectum/core": "^1.3.0"
   }
 }
-```
-
-On Yarn, install them explicitly:
-
-```bash
-yarn add @connectum/core @bufbuild/protobuf @connectrpc/connect @connectrpc/connect-node
 ```
 
 ## Verify the upgrade
