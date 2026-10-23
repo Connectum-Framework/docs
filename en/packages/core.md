@@ -27,7 +27,7 @@ bun add @connectum/core
 
 **Peer dependencies:** `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.2.0` and
 `@connectrpc/connect-node` `^2.2.0`, shared with your application. npm 7+, pnpm and Bun
-install missing peers automatically; on Yarn, add them yourself. Keep your own pins inside
+install missing peers automatically. Keep your own pins inside
 these ranges: `createServer()` throws `PeerDependencyVersionError` when a loaded copy is
 outside them, or when `connect` and `connect-node` are out of lockstep (the check is
 skipped when `@connectum/core` is bundled) — see
