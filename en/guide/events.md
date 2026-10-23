@@ -126,6 +126,12 @@ Both `ack()` and `nack()` are idempotent -- calling either multiple times after 
 
 ### Shutdown Drain {#shutdown-drain}
 
+A bus that was started with a shutdown signal (`createServer({ eventBus })` passes
+the server's) closes its subscriptions as soon as that signal aborts, before
+`stop()` runs: a delivery that arrives afterwards is returned to the broker, not
+handled, and handlers already running are left alone (since 1.3.0, see
+[the migration note](/en/migration/events-reception-on-shutdown)).
+
 `eventBus.stop()` closes every subscription, so no new events are delivered,
 and drains outstanding work at the same time. It disconnects the adapter once
 both have finished. Closing a subscription on the Redis, Kafka, and NATS
