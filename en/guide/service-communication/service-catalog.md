@@ -71,9 +71,12 @@ plugins:
     out: gen
     opt: [target=ts, import_extension=.js]
   - local: protoc-gen-connectum-catalog
+    strategy: all
     out: gen
     opt: [target=ts, import_extension=.js]
 ```
+
+Set `strategy: all` on the catalog plugin only; `protoc-gen-es` keeps buf's default. The catalog is one aggregate file, so buf must call the plugin once with every proto file of the module. With buf's default `directory` strategy it calls a local plugin once per proto directory, and every call writes the same `catalog.gen.ts` for its own directory's services. buf keeps one of those files and drops the rest with a `duplicate generated file name "catalog.gen.ts"` warning, but it still exits with code 0: the catalog silently lists only some of your services, and `ctx.call` keys for the others are missing from `ConnectumCallMap`.
 
 The generated file augments `@connectum/core`'s `ConnectumCallMap` (one entry per unary RPC) and `ConnectumStreamMap` (one per streaming RPC), keying each `"<typeName>/<Method>"` to its request/response types:
 
