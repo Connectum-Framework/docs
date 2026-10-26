@@ -189,6 +189,36 @@ the decision at its date and are not rewritten. Amend an ADR only in these ways:
   release and the framework pull request, so readers of the published version
   can tell which behavior they have.
 
+## When you change code
+
+A change that alters what a user sees updates the documentation in the same piece of
+work, not in a follow-up. Update each of these that the change touches:
+
+1. **JSDoc** on every changed public symbol.
+2. **The package README** when the public API, installation, or the quick start changed.
+3. **The guide** that teaches the changed behavior, and the package hub if its entry
+   points changed.
+4. **An example** when the usage pattern changed or the feature is new.
+5. **The ADR** when the change alters the decision it records. Amend it by the rules in
+   the ADR section above (a Current Decision, not a rewrite of history); a decision on a
+   new subject is a new ADR.
+
+Where each one lives:
+
+| Material | Repository | Location |
+|---|---|---|
+| JSDoc | `connectum` | In the source of `packages/<name>/src` |
+| Package README | `connectum` | `packages/<name>/README.md` |
+| Guides, package hubs, migration guides, ADRs | `docs` (this repository) | `en/guide`, `en/packages`, `en/migration`, `en/contributing/adr` |
+| Examples | `examples` | The [examples repository](https://github.com/Connectum-Framework/examples) |
+| API reference | `docs`, generated | `en/api`, produced by TypeDoc from the JSDoc; never edited by hand |
+
+Regenerate the API reference with `pnpm docs:api` in the framework repository after
+you change JSDoc; the TypeDoc run treats every warning as an error, so a broken `{@link}`
+fails it. `pnpm docs:check` executes the documentation's code examples as a consumer of
+the packed packages, which catches an example that no longer matches the code. Both are
+listed in [CLI Commands](/en/contributing/cli-commands).
+
 ## Canonical ownership
 
 When information could appear in several places, these locations win:
