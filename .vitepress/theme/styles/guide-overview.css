@@ -1,0 +1,106 @@
+.vp-doc .guide-map {
+    margin: 24px 0;
+    padding: 22px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 16px;
+    background: var(--vp-c-bg-soft);
+}
+.vp-doc .guide-map ol {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: guide-step;
+}
+.vp-doc .guide-map li {
+    position: relative;
+    min-width: 0;
+    margin: 0;
+    padding: 16px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 10px;
+    background: var(--vp-c-bg);
+    counter-increment: guide-step;
+    overflow-wrap: anywhere;
+}
+.vp-doc .guide-map li::before {
+    content: "0" counter(guide-step);
+    display: block;
+    margin-bottom: 12px;
+    color: var(--vp-c-brand-1);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+.vp-doc .guide-map li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: calc(50% - 4px);
+    right: -17px;
+    width: 8px;
+    height: 8px;
+    border-top: 2px solid var(--vp-c-text-2);
+    border-right: 2px solid var(--vp-c-text-2);
+    transform: rotate(45deg);
+}
+.vp-doc .guide-map strong,
+.vp-doc .guide-map small {
+    display: block;
+}
+.vp-doc .guide-map small {
+    margin-top: 8px;
+    color: var(--vp-c-text-2);
+    font-size: 14px;
+    line-height: 1.6;
+}
+.vp-doc .guide-map figcaption {
+    margin-top: 16px;
+    color: var(--vp-c-text-2);
+    font-size: 14px;
+    line-height: 1.6;
+}
+.vp-doc .guide-sections {
+    margin: 28px 0;
+    padding: 16px 20px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 10px;
+}
+.vp-doc .guide-sections summary {
+    min-height: 24px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.vp-doc .guide-sections li {
+    scroll-margin-top: 100px;
+}
+.vp-doc .guide-sections li:target {
+    border-left: 3px solid var(--vp-c-brand-1);
+    padding-left: 12px;
+}
+.vp-doc .guide-sections a {
+    display: inline-block;
+    min-height: 24px;
+}
+.vp-doc .guide-sections summary:focus-visible,
+.vp-doc .guide-sections a:focus-visible {
+    outline: 2px solid var(--vp-c-brand-1);
+    outline-offset: 4px;
+}
+@media (max-width: 639px) {
+    .vp-doc .guide-map {
+        padding: 16px;
+    }
+    .vp-doc .guide-map ol {
+        grid-auto-flow: row;
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .vp-doc .guide-map li:not(:last-child)::after {
+        top: auto;
+        right: calc(50% - 4px);
+        bottom: -16px;
+        transform: rotate(135deg);
+    }
+}

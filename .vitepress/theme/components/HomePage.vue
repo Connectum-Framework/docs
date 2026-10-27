@@ -71,14 +71,14 @@ const lifecycle = [
     <main ref="homeRoot" class="connectum-home">
         <section class="home-hero" aria-labelledby="home-title">
             <div class="home-hero__copy">
-                <p class="home-eyebrow">gRPC + ConnectRPC for Node.js</p>
+                <p class="home-eyebrow">gRPC + ConnectRPC for TypeScript</p>
                 <h1 id="home-title">From your first RPC to operating a service</h1>
                 <p class="home-hero__lead">
                     Connectum provides a TypeScript service runtime for proto contracts, request
                     middleware, security, observability, and operations.
                 </p>
                 <div class="home-actions">
-                    <a class="home-button home-button--primary" href="/en/guide/quickstart">Build your first service</a>
+                    <a class="home-button home-button--primary" href="/en/builder">Build your service</a>
                     <a class="home-button home-button--secondary" href="/en/reference/">Find an API</a>
                 </div>
                 <dl class="home-support" aria-label="Documentation support information">

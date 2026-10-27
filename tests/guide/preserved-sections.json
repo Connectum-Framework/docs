@@ -1,0 +1,1093 @@
+[
+  {
+    "route": "/en/guide/quickstart",
+    "detail": "/en/guide/quickstart-manual",
+    "sha256": "78655d60b07b8399ecff0f74c5ed3e1c728dc53a819903d4c26f9fc388a273d1",
+    "anchors": [
+      {
+        "id": "build-your-first-connectum-service",
+        "title": "Build Your First Connectum Service"
+      },
+      {
+        "id": "prerequisites",
+        "title": "Prerequisites"
+      },
+      {
+        "id": "_1-project-setup",
+        "title": "1. Project Setup"
+      },
+      {
+        "id": "_2-proto-definition",
+        "title": "2. Proto Definition"
+      },
+      {
+        "id": "_3-code-generation",
+        "title": "3. Code Generation"
+      },
+      {
+        "id": "service-handler",
+        "title": "4. Service Handler"
+      },
+      {
+        "id": "_5-server-entry-point",
+        "title": "5. Server Entry Point"
+      },
+      {
+        "id": "_6-run-test",
+        "title": "6. Run & Test"
+      },
+      {
+        "id": "grpc-grpcurl",
+        "title": "gRPC (grpcurl)"
+      },
+      {
+        "id": "http11-curl",
+        "title": "ConnectRPC over HTTP/1.1"
+      },
+      {
+        "id": "what-you-get-out-of-the-box",
+        "title": "What You Get Out of the Box"
+      },
+      {
+        "id": "7-test-validation",
+        "title": "7. Verify Validation"
+      },
+      {
+        "id": "next-steps",
+        "title": "Next Steps"
+      },
+      {
+        "id": "troubleshooting",
+        "title": "Troubleshooting"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/scaffolding",
+    "detail": "/en/guide/scaffolding-commands",
+    "sha256": "da7914c6cd0e15294b7d906f1b7b2d59d9125c3e26c004fb520638cef1ca6a89",
+    "anchors": [
+      {
+        "id": "scaffolding-a-new-service",
+        "title": "Scaffolding a New Service"
+      },
+      {
+        "id": "connectum-init",
+        "title": "connectum init"
+      },
+      {
+        "id": "optional-modules-auth-events-and-telemetry",
+        "title": "Optional modules: auth, events, and telemetry"
+      },
+      {
+        "id": "options",
+        "title": "Options"
+      },
+      {
+        "id": "project-path-and-name",
+        "title": "Project path and name"
+      },
+      {
+        "id": "no-sample-a-config-only-project",
+        "title": "--no-sample: a config-only project"
+      },
+      {
+        "id": "what-auth-generates",
+        "title": "What --auth generates"
+      },
+      {
+        "id": "buf-lint-rules",
+        "title": "Lint rules in buf.yaml"
+      },
+      {
+        "id": "connectum-option-protos",
+        "title": "Connectum option protos"
+      },
+      {
+        "id": "enums-in-generated-code",
+        "title": "Enums in generated code"
+      },
+      {
+        "id": "interceptor-order",
+        "title": "Interceptor order"
+      },
+      {
+        "id": "dependency-build-scripts-under-pnpm",
+        "title": "Dependency build scripts under pnpm"
+      },
+      {
+        "id": "connectum-generate-service",
+        "title": "connectum generate service"
+      },
+      {
+        "id": "service-names",
+        "title": "Service names"
+      },
+      {
+        "id": "connectum-proto-sync",
+        "title": "connectum proto sync"
+      },
+      {
+        "id": "adding-a-service-by-hand",
+        "title": "Adding a service by hand"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/validation",
+    "detail": "/en/guide/validation-setup",
+    "sha256": "937a1bedb1b7243e69c8d342b9f612dbc8b57d3e4cccb0fb1c2b4cfe3c28e8f5",
+    "anchors": [
+      {
+        "id": "validation",
+        "title": "Validation"
+      },
+      {
+        "id": "overview",
+        "title": "Overview"
+      },
+      {
+        "id": "setup",
+        "title": "Setup"
+      },
+      {
+        "id": "proto-constraints",
+        "title": "Proto Constraints"
+      },
+      {
+        "id": "available-constraints",
+        "title": "Available Constraints"
+      },
+      {
+        "id": "validation-interceptor",
+        "title": "Validation Interceptor"
+      },
+      {
+        "id": "disabling-validation",
+        "title": "Disabling Validation"
+      },
+      {
+        "id": "standalone-usage",
+        "title": "Standalone Usage"
+      },
+      {
+        "id": "error-messages",
+        "title": "Error Messages"
+      },
+      {
+        "id": "custom-validation",
+        "title": "Custom Validation"
+      },
+      {
+        "id": "related",
+        "title": "Related"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/openapi",
+    "detail": "/en/guide/openapi-generation",
+    "sha256": "97791224fab6dec2382d9cf10edeacd7629f131527fca23ebe9952e2e15caee9",
+    "anchors": [
+      {
+        "id": "openapi",
+        "title": "OpenAPI"
+      },
+      {
+        "id": "how-it-works",
+        "title": "How it works"
+      },
+      {
+        "id": "_1-base-spec-template",
+        "title": "1. Base spec template"
+      },
+      {
+        "id": "_2-authz-overlay",
+        "title": "2. Authz overlay"
+      },
+      {
+        "id": "authz-→-openapi-mapping",
+        "title": "Authz → OpenAPI mapping"
+      },
+      {
+        "id": "notes-limitations",
+        "title": "Notes & limitations"
+      },
+      {
+        "id": "verify-the-artifact",
+        "title": "Verify the artifact"
+      },
+      {
+        "id": "related",
+        "title": "Related"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/service-communication/choosing-a-mechanism",
+    "detail": "/en/guide/service-communication/mechanisms",
+    "sha256": "c7a35399b0bef320b63faa0ae20f7540b995008a683a5367e59c64976071e13c",
+    "anchors": [
+      {
+        "id": "choosing-a-communication-mechanism",
+        "title": "Choosing a Communication Mechanism"
+      },
+      {
+        "id": "synchronous-ctx-call-ctx-stream",
+        "title": "Synchronous: ctx.call / ctx.stream"
+      },
+      {
+        "id": "asynchronous-the-eventbus",
+        "title": "Asynchronous: the EventBus"
+      },
+      {
+        "id": "durable-a-saga-with-compensations",
+        "title": "Durable: a saga with compensations"
+      },
+      {
+        "id": "combining-them",
+        "title": "Combining them"
+      },
+      {
+        "id": "reference-examples",
+        "title": "Reference examples"
+      },
+      {
+        "id": "related",
+        "title": "Related"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/service-communication/resolvers",
+    "detail": "/en/guide/service-communication/resolver-configuration",
+    "sha256": "4fdadfc0b71432e231ef6f63fcef6cd86c7229b1ea393723dce72df6931f8b97",
+    "anchors": [
+      {
+        "id": "remote-resolvers",
+        "title": "Remote Resolvers"
+      },
+      {
+        "id": "the-remoteresolver-contract",
+        "title": "The RemoteResolver contract"
+      },
+      {
+        "id": "route-cache-lifetime",
+        "title": "Route cache lifetime"
+      },
+      {
+        "id": "built-in-resolvers",
+        "title": "Built-in resolvers"
+      },
+      {
+        "id": "singletransportresolver-transport",
+        "title": "singleTransportResolver(transport)"
+      },
+      {
+        "id": "mapresolver-typename-transport",
+        "title": "mapResolver({ [typeName]: transport })"
+      },
+      {
+        "id": "dnsresolver-options",
+        "title": "dnsResolver(options)"
+      },
+      {
+        "id": "perserviceenvresolver-map-options",
+        "title": "perServiceEnvResolver(map, options?)"
+      },
+      {
+        "id": "endpoint-hints",
+        "title": "Endpoint hints"
+      },
+      {
+        "id": "composing-resolvers",
+        "title": "Composing resolvers"
+      },
+      {
+        "id": "testing-with-mocks",
+        "title": "Testing with mocks"
+      },
+      {
+        "id": "transport-owned-vs-application-owned-interceptors",
+        "title": "Transport-owned vs application-owned interceptors"
+      },
+      {
+        "id": "kubernetes-istio-and-service-meshes",
+        "title": "Kubernetes, Istio, and service meshes"
+      },
+      {
+        "id": "related",
+        "title": "Related"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/events",
+    "detail": "/en/guide/events/concepts",
+    "sha256": "214914433c293085cf4e144d34478a0160799420aff4374782d993091706acfb",
+    "anchors": [
+      {
+        "id": "events",
+        "title": "Events"
+      },
+      {
+        "id": "architecture",
+        "title": "Architecture"
+      },
+      {
+        "id": "core-concepts",
+        "title": "Core Concepts"
+      },
+      {
+        "id": "proto-first-routing",
+        "title": "Proto-First Routing"
+      },
+      {
+        "id": "adapter-pattern",
+        "title": "Adapter Pattern"
+      },
+      {
+        "id": "middleware-pipeline",
+        "title": "Middleware Pipeline"
+      },
+      {
+        "id": "eventcontext",
+        "title": "EventContext"
+      },
+      {
+        "id": "shutdown-drain",
+        "title": "Shutdown Drain"
+      },
+      {
+        "id": "adapter-comparison",
+        "title": "Adapter Comparison"
+      },
+      {
+        "id": "when-to-use-events",
+        "title": "When to Use Events"
+      },
+      {
+        "id": "learn-more",
+        "title": "Learn More"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/protocols/reflection",
+    "detail": "/en/guide/protocols/reflection-tools",
+    "sha256": "548c035c8777e1216c36e45ab1bec4da97e0bff3cbf6901a9571eac711bbbe92",
+    "anchors": [
+      {
+        "id": "server-reflection",
+        "title": "Server Reflection"
+      },
+      {
+        "id": "why-use-reflection",
+        "title": "Why Use Reflection?"
+      },
+      {
+        "id": "installation",
+        "title": "Installation"
+      },
+      {
+        "id": "quick-setup",
+        "title": "Quick Setup"
+      },
+      {
+        "id": "how-it-works",
+        "title": "How It Works"
+      },
+      {
+        "id": "protocol-behavior",
+        "title": "Protocol Behavior"
+      },
+      {
+        "id": "using-grpcurl-with-reflection",
+        "title": "Using grpcurl with Reflection"
+      },
+      {
+        "id": "list-all-services",
+        "title": "List All Services"
+      },
+      {
+        "id": "describe-a-service",
+        "title": "Describe a Service"
+      },
+      {
+        "id": "describe-a-method",
+        "title": "Describe a Method"
+      },
+      {
+        "id": "describe-a-message-type",
+        "title": "Describe a Message Type"
+      },
+      {
+        "id": "call-a-method",
+        "title": "Call a Method"
+      },
+      {
+        "id": "with-tls",
+        "title": "With TLS"
+      },
+      {
+        "id": "using-buf-curl-with-reflection",
+        "title": "Using buf curl with Reflection"
+      },
+      {
+        "id": "using-postman-insomnia-warthog",
+        "title": "Using Postman / Insomnia / Warthog"
+      },
+      {
+        "id": "conditional-reflection",
+        "title": "Conditional Reflection"
+      },
+      {
+        "id": "adding-reflection-at-runtime",
+        "title": "Adding Reflection at Runtime"
+      },
+      {
+        "id": "complete-example",
+        "title": "Complete Example"
+      },
+      {
+        "id": "collectfileprotos-utility",
+        "title": "collectFileProtos Utility"
+      },
+      {
+        "id": "protocol-registration-details",
+        "title": "Protocol Registration Details"
+      },
+      {
+        "id": "related",
+        "title": "Related"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/production/docker",
+    "detail": "/en/guide/production/docker-configuration",
+    "sha256": "771ffae933d88eb9419e1b8509eedbd4e36655d07a32e749c4eff1b06d6a15c1",
+    "anchors": [
+      {
+        "id": "docker-containerization",
+        "title": "Docker Containerization"
+      },
+      {
+        "id": "multi-stage-dockerfile",
+        "title": "Multi-Stage Dockerfile"
+      },
+      {
+        "id": "recommended-layout",
+        "title": "Recommended Layout"
+      },
+      {
+        "id": "healthcheck-on-a-plaintext-h2c-server",
+        "title": "HEALTHCHECK on a Plaintext h2c Server"
+      },
+      {
+        "id": "runtime-command",
+        "title": "Runtime Command"
+      },
+      {
+        "id": "alpine-variant-node-js-images",
+        "title": "Alpine Variant (Node.js Images)"
+      },
+      {
+        "id": "image-size-comparison-nodejs-images",
+        "title": "Node.js Base Image Choices"
+      },
+      {
+        "id": "dockerignore",
+        "title": ".dockerignore"
+      },
+      {
+        "id": "docker-compose-for-local-development",
+        "title": "Docker Compose for Local Development"
+      },
+      {
+        "id": "otel-collector-configuration",
+        "title": "OTel Collector Configuration"
+      },
+      {
+        "id": "image-optimization-tips",
+        "title": "Image Optimization Tips"
+      },
+      {
+        "id": "_1-layer-caching",
+        "title": "1. Layer Caching"
+      },
+      {
+        "id": "_2-production-dependencies-only",
+        "title": "2. Production Dependencies Only"
+      },
+      {
+        "id": "_3-prune-unnecessary-files",
+        "title": "3. Prune Unnecessary Files"
+      },
+      {
+        "id": "_4-use-dockerignore-aggressively",
+        "title": "4. Use .dockerignore Aggressively"
+      },
+      {
+        "id": "_5-pin-base-image-digests-in-production",
+        "title": "5. Pin Base Image Digests in Production"
+      },
+      {
+        "id": "runtime-configuration",
+        "title": "Runtime Configuration"
+      },
+      {
+        "id": "what-s-next",
+        "title": "What&#39;s Next"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/production/kubernetes",
+    "detail": "/en/guide/production/kubernetes-configuration",
+    "sha256": "b91d87902f73d6aa9776adfdbb0769f8da266b88bfaf9e258cc902bee1b39a90",
+    "anchors": [
+      {
+        "id": "kubernetes-deployment",
+        "title": "Kubernetes Deployment"
+      },
+      {
+        "id": "architecture-overview",
+        "title": "Architecture Overview"
+      },
+      {
+        "id": "namespace",
+        "title": "Namespace"
+      },
+      {
+        "id": "configmap",
+        "title": "ConfigMap"
+      },
+      {
+        "id": "secret",
+        "title": "Secret"
+      },
+      {
+        "id": "deployment",
+        "title": "Deployment"
+      },
+      {
+        "id": "service",
+        "title": "Service"
+      },
+      {
+        "id": "clusterip-internal-grpc-traffic",
+        "title": "ClusterIP (Internal gRPC Traffic)"
+      },
+      {
+        "id": "loadbalancer-external-grpc-access",
+        "title": "LoadBalancer (External gRPC Access)"
+      },
+      {
+        "id": "horizontal-pod-autoscaler-hpa",
+        "title": "Horizontal Pod Autoscaler (HPA)"
+      },
+      {
+        "id": "rbac",
+        "title": "RBAC"
+      },
+      {
+        "id": "shutdown-and-probe-alignment",
+        "title": "Shutdown and Probe Alignment"
+      },
+      {
+        "id": "complete-deployment-script",
+        "title": "Complete Deployment Script"
+      },
+      {
+        "id": "namespace-strategy",
+        "title": "Namespace Strategy"
+      },
+      {
+        "id": "what-s-next",
+        "title": "What&#39;s Next"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/production/envoy-gateway",
+    "detail": "/en/guide/production/envoy-gateway-setup",
+    "sha256": "d4fa9be42d6497def7015acd7cf64102b3b4c58ebb9f78095ad4ee953ebbde04",
+    "anchors": [
+      {
+        "id": "envoy-gateway-openapi",
+        "title": "Envoy Gateway + OpenAPI"
+      },
+      {
+        "id": "request-flow",
+        "title": "Request Flow"
+      },
+      {
+        "id": "prerequisites",
+        "title": "Prerequisites"
+      },
+      {
+        "id": "step-1-annotate-proto-files",
+        "title": "Step 1: Annotate Proto Files"
+      },
+      {
+        "id": "step-2-generate-openapi-spec",
+        "title": "Step 2: Generate OpenAPI Spec"
+      },
+      {
+        "id": "step-3-generate-proto-descriptor",
+        "title": "Step 3: Generate Proto Descriptor"
+      },
+      {
+        "id": "step-4-kubernetes-gateway-api-resources",
+        "title": "Step 4: Kubernetes Gateway API Resources"
+      },
+      {
+        "id": "gatewayclass-and-gateway",
+        "title": "GatewayClass and Gateway"
+      },
+      {
+        "id": "grpcroute-native-grpc-traffic",
+        "title": "GRPCRoute (Native gRPC Traffic)"
+      },
+      {
+        "id": "httproute-rest-to-grpc-transcoding",
+        "title": "HTTPRoute (REST-to-gRPC Transcoding)"
+      },
+      {
+        "id": "step-5-envoy-filter-for-grpc-json-transcoding",
+        "title": "Step 5: Envoy Filter for gRPC-JSON Transcoding"
+      },
+      {
+        "id": "step-6-swagger-ui-deployment",
+        "title": "Step 6: Swagger UI Deployment"
+      },
+      {
+        "id": "rate-limiting",
+        "title": "Rate Limiting"
+      },
+      {
+        "id": "load-balancing",
+        "title": "Load Balancing"
+      },
+      {
+        "id": "full-example-end-to-end-request",
+        "title": "Full Example: End-to-End Request"
+      },
+      {
+        "id": "rest-client-sends-request",
+        "title": "REST Client Sends Request"
+      },
+      {
+        "id": "what-happens-under-the-hood",
+        "title": "What Happens Under the Hood"
+      },
+      {
+        "id": "native-grpc-client-unchanged",
+        "title": "Native gRPC Client (Unchanged)"
+      },
+      {
+        "id": "ci-cd-automate-proto-descriptor-generation",
+        "title": "CI/CD: Automate Proto Descriptor Generation"
+      },
+      {
+        "id": "verify-the-integration",
+        "title": "Verify the integration"
+      },
+      {
+        "id": "what-s-next",
+        "title": "What&#39;s Next"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/production/service-mesh",
+    "detail": "/en/guide/production/service-mesh-setup",
+    "sha256": "3efe5b4208ca8b61d1cc232d767fac9c6ef50581baa911a74f68f9a840d68ad0",
+    "anchors": [
+      {
+        "id": "istio-service-mesh",
+        "title": "Istio Service Mesh"
+      },
+      {
+        "id": "when-to-use-a-service-mesh",
+        "title": "When to Use a Service Mesh"
+      },
+      {
+        "id": "enabling-istio-sidecar-injection",
+        "title": "Enabling Istio Sidecar Injection"
+      },
+      {
+        "id": "verify-injection",
+        "title": "Verify Injection"
+      },
+      {
+        "id": "automatic-mtls",
+        "title": "Automatic mTLS"
+      },
+      {
+        "id": "peerauthentication",
+        "title": "PeerAuthentication"
+      },
+      {
+        "id": "per-service-override",
+        "title": "Per-Service Override"
+      },
+      {
+        "id": "traffic-management",
+        "title": "Traffic Management"
+      },
+      {
+        "id": "virtualservice",
+        "title": "VirtualService"
+      },
+      {
+        "id": "destinationrule",
+        "title": "DestinationRule"
+      },
+      {
+        "id": "canary-deployments",
+        "title": "Canary Deployments"
+      },
+      {
+        "id": "header-based-routing",
+        "title": "Header-Based Routing"
+      },
+      {
+        "id": "observability-integration",
+        "title": "Observability Integration"
+      },
+      {
+        "id": "istio-telemetry-connectum-otel",
+        "title": "Istio Telemetry + @connectum/otel"
+      },
+      {
+        "id": "telemetry-resource",
+        "title": "Telemetry Resource"
+      },
+      {
+        "id": "trace-propagation",
+        "title": "Trace Propagation"
+      },
+      {
+        "id": "circuit-breaking-mesh-vs-application",
+        "title": "Circuit Breaking: Mesh vs Application"
+      },
+      {
+        "id": "comparison",
+        "title": "Comparison"
+      },
+      {
+        "id": "recommended-strategy",
+        "title": "Recommended Strategy"
+      },
+      {
+        "id": "authorization-policies",
+        "title": "Authorization Policies"
+      },
+      {
+        "id": "sidecar-resource-limits",
+        "title": "Sidecar Resource Limits"
+      },
+      {
+        "id": "health-check-configuration-with-istio",
+        "title": "Health Check Configuration with Istio"
+      },
+      {
+        "id": "kiali-service-mesh-dashboard",
+        "title": "Kiali: Service Mesh Dashboard"
+      },
+      {
+        "id": "migration-path",
+        "title": "Migration Path"
+      },
+      {
+        "id": "starting-without-a-mesh",
+        "title": "Starting Without a Mesh"
+      },
+      {
+        "id": "adding-istio-later",
+        "title": "Adding Istio Later"
+      },
+      {
+        "id": "what-s-next",
+        "title": "What&#39;s Next"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/production/architecture",
+    "detail": "/en/guide/production/architecture-details",
+    "sha256": "983f0c8fb86fe33a8544765842f604abc66d09ad4673f539fd0184ebbbcf22a7",
+    "anchors": [
+      {
+        "id": "connectum-runtime-architecture",
+        "title": "Connectum Runtime Architecture"
+      },
+      {
+        "id": "boundary-and-ownership",
+        "title": "Boundary and ownership"
+      },
+      {
+        "id": "runtime-composition",
+        "title": "Runtime composition"
+      },
+      {
+        "id": "network-and-in-process-parity",
+        "title": "Network and in-process parity"
+      },
+      {
+        "id": "catalog-call-routing",
+        "title": "Catalog call routing"
+      },
+      {
+        "id": "extension-seams",
+        "title": "Extension seams"
+      },
+      {
+        "id": "deployment-boundary",
+        "title": "Deployment boundary"
+      },
+      {
+        "id": "build-time-inputs",
+        "title": "Build-time inputs"
+      },
+      {
+        "id": "related",
+        "title": "Related"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/runtime-compatibility",
+    "detail": "/en/guide/runtime-compatibility-details",
+    "sha256": "fc25e34302ede0537871ea687b9c231c116c846fcf7829a133dadd176296f004",
+    "anchors": [
+      {
+        "id": "runtime-compatibility",
+        "title": "Runtime Compatibility"
+      },
+      {
+        "id": "compatibility-matrix",
+        "title": "Runtime requirements and CI coverage"
+      },
+      {
+        "id": "http2-client",
+        "title": "HTTP/2 Client Transport"
+      },
+      {
+        "id": "node-js",
+        "title": "Node.js"
+      },
+      {
+        "id": "bun",
+        "title": "Bun"
+      },
+      {
+        "id": "streaming",
+        "title": "Streaming RPC"
+      },
+      {
+        "id": "node-js-1",
+        "title": "Node.js"
+      },
+      {
+        "id": "bun-1",
+        "title": "Bun"
+      },
+      {
+        "id": "testing",
+        "title": "Testing Utilities"
+      },
+      {
+        "id": "otel",
+        "title": "OpenTelemetry"
+      },
+      {
+        "id": "known-issues",
+        "title": "Known Issues"
+      },
+      {
+        "id": "related",
+        "title": "Related"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/production/in-process-transport",
+    "detail": "/en/guide/production/in-process-transport-details",
+    "sha256": "287ce49077fb3d6439e8e2813e0c16e4bb0bfa65842888853d1547aa6a9bdb53",
+    "anchors": [
+      {
+        "id": "in-process-transport",
+        "title": "In-Process Transport"
+      },
+      {
+        "id": "overview",
+        "title": "Overview"
+      },
+      {
+        "id": "quick-start",
+        "title": "Quick Start"
+      },
+      {
+        "id": "api-reference",
+        "title": "API Reference"
+      },
+      {
+        "id": "server-client-service-options",
+        "title": "server.client(service, options?)"
+      },
+      {
+        "id": "server-localclient-service",
+        "title": "server.localClient(service)"
+      },
+      {
+        "id": "createlocaltransport-server-options",
+        "title": "createLocalTransport(server, options?)"
+      },
+      {
+        "id": "server-hasservice-desc",
+        "title": "server.hasService(desc)"
+      },
+      {
+        "id": "behavioural-parity-guarantees",
+        "title": "Behavioural Parity Guarantees"
+      },
+      {
+        "id": "observability",
+        "title": "Observability"
+      },
+      {
+        "id": "limitations",
+        "title": "Limitations"
+      },
+      {
+        "id": "security-considerations",
+        "title": "Security Considerations"
+      },
+      {
+        "id": "coexistence-with-http",
+        "title": "Coexistence with HTTP"
+      },
+      {
+        "id": "polyglot-deployment-pattern",
+        "title": "Polyglot Deployment Pattern"
+      },
+      {
+        "id": "testing",
+        "title": "Testing"
+      },
+      {
+        "id": "see-also",
+        "title": "See Also"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/production/transport-matrix",
+    "detail": "/en/guide/production/transport-matrix-details",
+    "sha256": "f6aa5b2cecac22e7910671a265df92fbc4ec89c78b52f7b07f86de3db85146a5",
+    "anchors": [
+      {
+        "id": "transport-matrix",
+        "title": "Transport Matrix"
+      },
+      {
+        "id": "server-transport-modes",
+        "title": "Server transport modes"
+      },
+      {
+        "id": "rpc-type-support",
+        "title": "RPC type support"
+      },
+      {
+        "id": "serving-grpc-and-http-1-1-on-one-plaintext-port",
+        "title": "Serving gRPC and HTTP/1.1 on one plaintext port"
+      },
+      {
+        "id": "runtime-support-for-native-grpc",
+        "title": "Runtime support for native gRPC"
+      },
+      {
+        "id": "verified",
+        "title": "Verified behaviour by runtime"
+      },
+      {
+        "id": "server-side-createserver",
+        "title": "Server side -- createServer()"
+      },
+      {
+        "id": "client-side-connectrpc-connect-node",
+        "title": "Client side -- @connectrpc/connect-node"
+      },
+      {
+        "id": "the-two-limitations-are-different-in-kind",
+        "title": "The two limitations are different in kind"
+      },
+      {
+        "id": "not-tested",
+        "title": "Not tested"
+      },
+      {
+        "id": "startup-validation",
+        "title": "Startup validation"
+      },
+      {
+        "id": "learn-more",
+        "title": "Learn More"
+      }
+    ]
+  },
+  {
+    "route": "/en/guide/protocols/custom",
+    "detail": "/en/guide/protocols/custom-implementation",
+    "sha256": "fda161236530a9a049b36401240073fe9f65c3a6d260299d3d4bd2d020d27adc",
+    "anchors": [
+      {
+        "id": "creating-custom-protocol-plugins",
+        "title": "Creating Custom Protocol Plugins"
+      },
+      {
+        "id": "the-protocolregistration-interface",
+        "title": "The ProtocolRegistration Interface"
+      },
+      {
+        "id": "how-protocols-are-registered",
+        "title": "How Protocols Are Registered"
+      },
+      {
+        "id": "creating-a-custom-protocol",
+        "title": "Creating a Custom Protocol"
+      },
+      {
+        "id": "minimal-example-service-info-endpoint",
+        "title": "Minimal Example: Service Info Endpoint"
+      },
+      {
+        "id": "with-http-handler",
+        "title": "With HTTP Handler"
+      },
+      {
+        "id": "unknown-procedures",
+        "title": "Unknown procedures"
+      },
+      {
+        "id": "example-prometheus-metrics-endpoint",
+        "title": "Example: Prometheus Metrics Endpoint"
+      },
+      {
+        "id": "using-protocolcontext",
+        "title": "Using ProtocolContext"
+      },
+      {
+        "id": "protocol-design-guidelines",
+        "title": "Protocol Design Guidelines"
+      },
+      {
+        "id": "related",
+        "title": "Related"
+      }
+    ]
+  }
+]

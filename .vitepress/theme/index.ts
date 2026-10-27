@@ -5,8 +5,10 @@ import type { Theme } from 'vitepress';
 import CopyOrDownloadAsMarkdownButtons from 'vitepress-plugin-llms/vitepress-components/CopyOrDownloadAsMarkdownButtons.vue';
 import Layout from './Layout.vue';
 import CatalogRoutingDiagram from './components/CatalogRoutingDiagram.vue';
+import GuideSections from './components/GuideSections.vue';
 import RuntimeCompositionDiagram from './components/RuntimeCompositionDiagram.vue';
 import './custom.css';
+import './styles/guide-overview.css';
 
 /**
  * Mermaid 11 keeps only dagre in its core; every other layout engine arrives as a
@@ -43,6 +45,7 @@ export default {
     enhanceApp({ app }) {
         app.component('CopyOrDownloadAsMarkdownButtons', CopyOrDownloadAsMarkdownButtons);
         app.component('CatalogRoutingDiagram', CatalogRoutingDiagram);
+        app.component('GuideSections', GuideSections);
         app.component('RuntimeCompositionDiagram', RuntimeCompositionDiagram);
     },
 } satisfies Theme;

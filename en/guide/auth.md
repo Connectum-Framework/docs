@@ -9,8 +9,22 @@ outline: deep
 
 Authentication establishes an `AuthContext`; authorization decides whether that identity may invoke a method. Keep those decisions separate in the interceptor chain even when they are configured together.
 
+<figure class="guide-map" aria-label="Identity is established before method access is decided">
+<ol>
+<li><strong>Who is calling?</strong><small>Authentication verifies a credential and establishes identity.</small></li>
+<li><strong>May they do this?</strong><small>Authorization checks access to this RPC method.</small></li>
+<li><strong>Run the handler</strong><small>Only an admitted call reaches the protected behavior.</small></li>
+</ol>
+<figcaption>A valid credential is not permission to invoke every method.</figcaption>
+</figure>
+
 ## Choose the trust boundary
 
+Start with [JWTs](/en/guide/auth/jwt), a
+[trusted gateway](/en/guide/auth/gateway) or an
+[application session](/en/guide/auth/session).
+
+::: details Internal identity, propagation and transport boundaries
 | Boundary | Start here |
 |---|---|
 | Clients send bearer JWTs directly | [JWT authentication](/en/guide/auth/jwt) |
@@ -26,6 +40,7 @@ trusted gateway or mesh supply a verified identity header and enforce that
 boundary as described in the [gateway guide](/en/guide/auth/gateway). Direct
 application-level peer-certificate/SAN reading is deferred; see
 [ADR-029](/en/contributing/adr/029-internal-service-to-service-auth).
+:::
 
 ## Choose authorization ownership
 
@@ -39,6 +54,9 @@ interceptors: [
   ...createDefaultInterceptors({ errorHandler: false }),
 ]
 ```
+
+This is an interceptor-list excerpt. The JWT and proto-authz guides supply
+imports, credentials, public-method exclusions and the full server setup.
 
 To turn away requests that carry no credential at all before their body is even read, add a server-wide [request gate](/en/guide/security/request-admission) in front of this chain; it runs before every interceptor, so its errors must already be client-safe.
 

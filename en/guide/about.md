@@ -7,42 +7,39 @@ outline: deep
 
 # What Is Connectum?
 
-Connectum is a modular framework for gRPC and ConnectRPC microservices on
-Node.js. It standardizes the service runtime—registration, lifecycle,
-middleware, protocols, and shutdown—while keeping security, communication,
-observability, and broker integrations explicit.
+Connectum builds on ConnectRPC to give TypeScript services a common
+way to start, stop and connect request middleware. Your API stays in Protobuf;
+handlers use the generated types.
 
-The framework is for teams that want consistent production behavior across
-services without adopting an application platform that hides transport and
-middleware decisions.
+Use it when you want shared service conventions instead of assembling lifecycle,
+middleware and service-call wiring separately for each application.
+Direct ConnectRPC can be enough for a small endpoint or an application whose
+existing setup already meets those needs. Connectum is not required just to get
+typed Protobuf RPCs.
 
 ## Mental Model
 
-Every service begins with three things:
+<figure class="guide-map" aria-label="The three pieces of a Connectum service">
+<ol>
+<li><strong>Contract</strong><small>A .proto file defines messages and RPC methods.</small></li>
+<li><strong>Implementation</strong><small>Generated descriptors connect to typed TypeScript handlers.</small></li>
+<li><strong>Server</strong><small>createServer composes services, middleware, protocols and lifecycle policy.</small></li>
+</ol>
+<figcaption>Your contract describes the API; your handlers implement it; the server runs it.</figcaption>
+</figure>
 
-1. **A proto contract** defines messages and RPC methods.
-2. **A service implementation** connects generated descriptors to typed handlers.
-3. **`createServer()`** composes services, protocols, interceptors, and lifecycle policy.
-
-Capabilities are modules around that core:
-
-- Interceptors protect the request path with error handling, validation, and
-  explicitly enabled resilience.
-- Auth modules establish identity and authorization context.
-- The service catalog and EventBus connect services synchronously or asynchronously.
-- Health, reflection, and OpenTelemetry make services inspectable and operable.
+Start with [one working RPC](/en/guide/quickstart), including a request rejected
+by configured validation, without an external broker. Authentication, events,
+telemetry and resilience are optional next steps, not prerequisites.
 
 ## What Connectum Owns
 
-| Concern | Connectum responsibility |
-|---|---|
-| Service runtime | Server creation, registration, lifecycle events, shutdown, TLS |
-| Request pipeline | Ordered ConnectRPC interceptors and method filtering |
-| Contracts | Proto-first validation and generated service/catalog types |
-| Communication | Typed service catalog calls and pluggable event brokers |
-| Security | Authentication, authorization, context propagation, TLS/mTLS |
-| Operations | Health/readiness, reflection, traces, metrics, and logs |
-| Tooling | Scaffolding, service generation, contract sync, and test utilities |
+ConnectRPC supplies the RPC layer; protobuf-es supplies generated message and
+service types; Protovalidate supplies constraint validation. Connectum adds a
+shared server lifecycle, explicit module composition and typed catalog calls.
+Runtime checks depend on the middleware and configuration you actually connect.
+See [Guarantees and limits](/en/reference/guarantees) for prerequisites,
+enforcement layers, limitations and source/test evidence.
 
 Connectum does not provide an ORM, frontend framework, or CommonJS build. Public
 packages ship compiled ESM for Node.js `>=22.13.0`; direct TypeScript execution
@@ -61,18 +58,18 @@ requirements are documented in [Runtime Compatibility](/en/guide/runtime-compati
 
 ## Architecture and Boundaries {#architecture-overview}
 
-Package dependency layers prevent capability modules from becoming an implicit
-monolith. They are an implementation constraint, not the primary way readers
-choose packages. See [Connectum Runtime Architecture](/en/guide/production/architecture)
-for the process boundary and extension seams, and the [ADR index](/en/contributing/adr/)
-for package-decomposition rationale.
+See [Connectum Runtime Architecture](/en/guide/production/architecture) for process
+boundaries and extension points. The [ADR index](/en/contributing/adr/) records
+design decisions, including why capabilities remain separate modules.
 
 ## Non-Goals
 
+::: details What stays outside the framework
 - Managing application databases or domain models
 - Replacing deployment platforms or service meshes
 - Hiding transport, auth, or resilience policy behind implicit defaults
 - Supporting CommonJS or legacy Node.js runtimes
+:::
 
 ## External Resources
 

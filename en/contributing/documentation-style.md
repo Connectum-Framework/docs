@@ -37,6 +37,45 @@ Contributor workflow pages are a separate audience. They describe how to work on
 Connectum itself and use the repository's supported Node.js and pnpm toolchain,
 not consumer-facing runtime or package-manager choices.
 
+## Overview-first Guides
+
+The first page of each Guide sidebar topic teaches one idea before asking the
+reader to configure it. Keep its opening understandable without following an
+API reference, expanding a disclosure or watching an animation.
+
+- Start with a concrete problem and a small mental model. Use a short, labelled
+  visual and, where useful, one code excerpt. Say which imports, generated
+  descriptors or surrounding setup an excerpt assumes.
+- Keep the initial reading path short. Move full setup sequences, exhaustive
+  options, matrices, failure behavior and limitations to a focused page one
+  navigation level deeper. Do not delete technical material to shorten the entry.
+- Link deeper by intent: “Run the example”, “Configure the resolver”, or “Read
+  the complete matrix”. Add that destination beneath the overview in the sidebar.
+- Use the same domain example where concepts meet: Orders asks Inventory for
+  stock. Distinguish an illustration from a live RPC and provide an executable
+  counterpart for a claimed runtime result.
+- Preserve prior fragment URLs. `GuideSections` renders a native disclosure
+  from `.vitepress/guide/sections.json`, with an anchored link to each preserved
+  section. It works without JavaScript; hydration also opens a targeted section.
+  Keep those destinations and IDs synchronized when moving or renaming content.
+
+The first-service entry is an overview; its complete manual tutorial lives at
+[Build your first service step by step](/en/guide/quickstart-manual).
+Compatibility overviews explain the choice; the canonical exact tables live at
+[Runtime requirements and coverage](/en/guide/runtime-compatibility-details) and
+[Transport support and measurements](/en/guide/production/transport-matrix-details).
+
+For simple three- or four-stage mental models, a semantic `figure.guide-map`
+with an ordered list and caption is sufficient. It must remain readable as
+plain text, in both themes, at narrow widths and without JavaScript. Use the
+shared stylesheet, not page-local layout. Branching flows, runtime internals
+and complex relationships still use the diagram rules below. Do not add motion
+where a static model explains the idea better.
+
+Catalogs describe **known contracts**; they do not discover running services.
+Resolvers select remote transports; reflection exposes schemas at a known
+server address. Do not use “service discovery” as if those were the same job.
+
 ## Prose and README guidance
 
 - Start with the reader's task or the result the page explains. Prefer concrete verbs and
@@ -196,8 +235,8 @@ When information could appear in several places, these locations win:
 | Information | Canonical owner | Other pages may contain |
 |---|---|---|
 | Function signatures, option fields, exported types, defaults | Generated API reference | A task-essential subset plus a direct API link |
-| Node.js/Bun support and known runtime limitations | [Runtime Compatibility](/en/guide/runtime-compatibility) | A one-line prerequisite and canonical link |
-| Request/response versus events choice | [Choosing a Communication Mechanism](/en/guide/service-communication/choosing-a-mechanism) | A contextual recommendation and link |
+| Node.js/Bun support and known runtime limitations | [Runtime requirements and coverage](/en/guide/runtime-compatibility-details) | A one-line prerequisite and canonical link |
+| Request/response versus events trade-offs | [Mechanism examples and failure behavior](/en/guide/service-communication/mechanisms) | A contextual recommendation and link |
 | Broker comparison | [Event Adapters](/en/guide/events/adapters) | Adapter-specific setup only |
 | Package installation and orientation | Package hub | A command required by the current task |
 | Required upgrade actions | [Migration](/en/migration/) | A release-note link to the migration |
@@ -226,7 +265,8 @@ one; link to the package API index only when several symbols are equally relevan
 
 - Add `title`, `description`, and `docType` frontmatter to hand-written pages.
 - Use one H1. Keep headings descriptive and preserve established anchors during
-  rewrites; add explicit `{#legacy-anchor}` headings when compatibility requires it.
+  rewrites; use explicit `{#legacy-anchor}` headings or an anchored compatibility
+  disclosure when material moves deeper.
 - Use root-relative internal links beginning with `/en/`, without `.md`.
 - Put every user-facing page in a logical sidebar group, unless it is a documented
   compatibility page intentionally excluded from navigation.

@@ -1,191 +1,38 @@
 ---
-title: Kubernetes Deployment
-description: Deploy Connectum services with Kubernetes resources, health probes, autoscaling, and graceful shutdown.
-docType: how-to
+title: Kubernetes
+description: Run the service image as a workload and let readiness control which replicas receive traffic.
+docType: concept
+outline: 2
 ---
 
 # Kubernetes Deployment
 
-This guide explains the Kubernetes resources used to deploy Connectum services. The linked manifests are a multi-service car-sharing example; adapt names, credentials, scaling limits, and resource requests to your application before applying them.
+Kubernetes runs and replaces your service processes. Connectum owns what
+happens inside each process; Kubernetes owns placement, replicas and how
+traffic reaches them.
 
-::: tip Full Example
-Kubernetes manifests for a multi-service deployment are available in the [car-sharing/k8s](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/k8s) directory.
-:::
+<figure class="guide-map" aria-label="Kubernetes traffic reaches ready service replicas">
+<ol>
+<li><strong>Service address</strong><small>A stable destination for callers.</small></li>
+<li><strong>Ready replicas</strong><small>Readiness determines which pod endpoints receive traffic.</small></li>
+<li><strong>Connectum process</strong><small>Your handlers, middleware and application health state.</small></li>
+</ol>
+<figcaption>A running pod is not automatically a ready application.</figcaption>
+</figure>
 
-## Architecture Overview
+## What you configure
 
-```mermaid
-graph TB
-    subgraph Cluster["Kubernetes Cluster"]
-        subgraph NS["namespace: car-sharing"]
-            subgraph Deploy["Deployments: trips, fleet, billing"]
-                POD1["Pod 1<br/>:5000"]
-                POD2["Pod 2<br/>:5000"]
-                POD3["Pod 3<br/>:5000"]
-            end
-            SVC["Services: trips, fleet, billing"]
-            CM["ConfigMaps: per role"]
-            SEC["Secret: trips internal signing key"]
-            HPA["HPAs: per role"]
-        end
-        INGRESS["Gateway / Ingress<br/>External Access"]
-    end
+- **A Deployment:** the image, resources, configuration and replica lifecycle.
+- **A Service:** an address and protocol compatible with the callers.
+- **Probes and shutdown:** readiness before traffic, then drain within the pod's grace period.
 
-    SVC --> POD1
-    SVC --> POD2
-    SVC --> POD3
-    HPA --> Deploy
-    CM -.-> Deploy
-    SEC -.-> Deploy
-    INGRESS --> SVC
-```
+Keep credentials outside the image. Set resource and scaling values from your
+workload, not by copying the example's replica counts.
 
-## Namespace
+## Go deeper
 
-Create a dedicated namespace for your Connectum services. The linked example manifest creates the `car-sharing` namespace, labels it for the car-sharing application, and enables Istio sidecar injection.
+- [Apply the full deployment recipe and inspect its manifests](/en/guide/production/kubernetes-configuration).
+- [Connect readiness, liveness and termination](/en/guide/health-checks/kubernetes).
+- [Choose the listener and upstream protocol](/en/guide/production/transport-matrix).
 
-See [namespace.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/namespace.yaml) for the full manifest.
-
-## ConfigMap
-
-Store non-sensitive configuration in a ConfigMap. The linked manifests define
-role selection, service ports, identity endpoints, OpenTelemetry export, and
-downstream service addresses. The application sets its shutdown timeout in
-`buildServer()`.
-
-See [configmap.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/configmap.yaml) for the full manifest.
-
-## Secret
-
-Store TLS certificates and sensitive configuration in Secrets. For application-level TLS, create a `kubernetes.io/tls` secret holding the service's TLS certificate and private key, and mount it into the pod.
-
-The [car-sharing/k8s](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/k8s) example relies on Istio for mTLS rather than application-level TLS secrets; it stores gateway configuration (identity provider endpoints) in `configmap.yaml` instead.
-
-::: tip
-For production TLS, consider using [cert-manager](https://cert-manager.io/) to automatically provision and renew certificates. If you are using Istio, the service mesh handles mTLS automatically and you may not need application-level TLS at all.
-:::
-
-## Deployment
-
-The example Deployments configure rolling updates, pod security context, topology spread constraints, startup/liveness/readiness probes against Connectum's HTTP health endpoints, resource limits, and a `preStop` hook for endpoint de-registration.
-
-For full manifests, see the [car-sharing/k8s](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/k8s) directory. It ships one Deployment per role: `deployment-trips.yaml`, `deployment-fleet.yaml`, and `deployment-billing.yaml`.
-
-## Service
-
-### ClusterIP (Internal gRPC Traffic)
-
-For service-to-service communication within the cluster. Create a ClusterIP Service on port 5000 with `appProtocol: grpc` to hint service meshes and ingress controllers about the protocol.
-
-See [services.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/services.yaml) for the full manifest (the car-sharing example exposes one ClusterIP Service per role — fleet, billing, trips).
-
-### LoadBalancer (External gRPC Access)
-
-For direct external gRPC access, expose a TLS HTTP/2 listener through your cloud
-provider's supported load balancer configuration. Verify TLS termination and the
-upstream protocol against the [Transport matrix](/en/guide/production/transport-matrix).
-The car-sharing example fronts external traffic with an Istio Gateway instead of
-a LoadBalancer Service — see the [Service Mesh guide](./service-mesh.md) and
-[car-sharing/istio](https://github.com/Connectum-Framework/examples/tree/main/car-sharing/istio).
-
-## Horizontal Pod Autoscaler (HPA)
-
-The trips HPA ranges from 3 to 12 replicas and targets 70% CPU and 80% memory
-utilization, with stabilization and scaling policies. Fleet and billing each
-range from 2 to 8 replicas and target 70% CPU utilization.
-
-See [hpa.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/hpa.yaml) for the full manifest.
-
-## RBAC
-
-Minimal ServiceAccount for the service. The manifest creates a dedicated ServiceAccount; add RoleBindings if the service needs Kubernetes API access.
-
-See [rbac.yaml](https://github.com/Connectum-Framework/examples/blob/main/car-sharing/k8s/rbac.yaml) for the full manifest.
-
-## Shutdown and Probe Alignment
-
-The canonical shutdown sequence and hook ordering live in [Graceful shutdown](/en/guide/server/graceful-shutdown); probe semantics and status transitions live in [Kubernetes health checks](/en/guide/health-checks/kubernetes). At deployment level, preserve this deadline invariant:
-
-```
-terminationGracePeriodSeconds >= preStop duration
-                               + shutdown.timeout (connection drain)
-                               + maximum application-hook duration
-                               + safety margin
-```
-
-::: danger
-If `terminationGracePeriodSeconds` is shorter than this sum, Kubernetes can SIGKILL the
-pod before cleanup finishes. The car-sharing `deployment-trips.yaml` currently configures
-a 5-second `preStop` sleep, a 10-second `buildServer()` shutdown timeout, and a 20-second
-grace period. The remaining configured time is available for application cleanup and
-other shutdown overhead; it is not a measured hook duration or a guarantee that cleanup
-will finish. Choose the hook budget and margin from your application's shutdown work.
-:::
-
-Enable the HTTP health handler and let the application move status to
-`NOT_SERVING` before drain. The built-in `/healthz` and `/readyz` report the same
-aggregate state; choose a separate liveness endpoint if dependency failure should
-only remove readiness. Plaintext h2c services also need a probe path that speaks
-HTTP/2, such as a gRPC probe or an exec probe using HTTP/2 curl; rewriting a probe
-through an Istio sidecar does not change the application's accepted protocol.
-
-## Complete Deployment Script
-
-The following commands mirror the car-sharing example. They create its `car-sharing` namespace and role resources; the trips Deployment also requires the internal signing key file shown below. These manifests are configuration examples, are not exercised by the automated tests, and do not install Istio or Oathkeeper. Install and configure those components separately before applying the Istio resources.
-
-```bash
-# Create namespace
-kubectl apply -f k8s/namespace.yaml
-
-# Deploy configuration
-kubectl apply -f k8s/rbac.yaml
-node src/internalKeygen.ts ./keys trips
-kubectl -n car-sharing create secret generic trips-internal-signing-key \
-  --from-file=trips.pem=./keys/trips.pem
-kubectl apply -f k8s/configmap.yaml
-
-# Deploy service
-kubectl apply -f k8s/deployment-fleet.yaml
-kubectl apply -f k8s/deployment-billing.yaml
-kubectl apply -f k8s/deployment-trips.yaml
-kubectl apply -f k8s/services.yaml
-kubectl apply -f k8s/hpa.yaml
-
-# Apply the mesh policies after Istio is installed and configured
-kubectl apply -f istio/peer-authentication.yaml
-kubectl apply -f istio/authorization-policy.yaml
-kubectl apply -f istio/destination-rule.yaml
-kubectl apply -f istio/virtual-service.yaml
-kubectl apply -f istio/gateway.yaml
-
-# Verify
-kubectl -n car-sharing get pods -w
-kubectl -n car-sharing get svc
-
-# Check health
-kubectl -n car-sharing exec -it deploy/trips -- \
-  curl -fsS --http2-prior-knowledge http://localhost:5000/healthz
-
-# View logs
-kubectl -n car-sharing logs -f deploy/trips
-
-# Check HPA status
-kubectl -n car-sharing get hpa trips
-```
-
-## Namespace Strategy
-
-For multi-environment setups:
-
-| Namespace | Purpose | Services |
-|---|---|---|
-| `connectum-dev` | Development environment | All services, relaxed limits |
-| `connectum-staging` | Pre-production testing | All services, prod-like config |
-| `connectum` | Production | All services, strict policies |
-| `observability` | Monitoring stack | OTel Collector, Jaeger, Prometheus, Grafana |
-
-## What's Next
-
-- [Envoy Gateway](./envoy-gateway.md) -- Expose gRPC services as REST APIs via Envoy
-- [Service Mesh with Istio](./service-mesh.md) -- Automatic mTLS and advanced traffic management
-- [Microservice Architecture](./architecture.md) -- Architecture patterns and service communication
+<GuideSections route="/en/guide/production/kubernetes" />

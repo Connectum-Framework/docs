@@ -7,3 +7,4 @@ node_modules/
 .vscode/
 .indexing-lock.json
 .tmp/
+.vitepress/catalog/example/gen/

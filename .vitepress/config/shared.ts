@@ -40,7 +40,7 @@ const restorePackageManagerScript = restoreSelection(
 
 export const sharedConfig = defineConfig({
     title: 'Connectum',
-    description: 'gRPC and ConnectRPC framework for TypeScript services on Node.js',
+    description: 'gRPC and ConnectRPC framework for TypeScript',
     head: [
         /* Favicons, generated from public/assets/favicon.svg by scripts/generate-favicons.mjs.
            The SVG is listed first for browsers that take it; the 32px PNG is the fallback,
@@ -54,7 +54,7 @@ export const sharedConfig = defineConfig({
         ['meta', { name: 'theme-color', content: '#1b1b1f', media: '(prefers-color-scheme: dark)' }],
         ['meta', { property: 'og:type', content: 'website' }],
         ['meta', { property: 'og:title', content: 'Connectum' }],
-        ['meta', { property: 'og:description', content: 'gRPC and ConnectRPC framework for TypeScript services on Node.js' }],
+        ['meta', { property: 'og:description', content: 'gRPC and ConnectRPC framework for TypeScript' }],
         ['meta', { property: 'og:image', content: 'https://connectum.dev/assets/splash.png' }],
         ['meta', { property: 'og:url', content: 'https://connectum.dev' }],
         ['meta', { property: 'og:site_name', content: 'Connectum' }],

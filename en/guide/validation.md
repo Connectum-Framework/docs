@@ -1,179 +1,44 @@
 ---
 title: Validation
-description: Proto-first input validation with protovalidate in Connectum services.
-docType: how-to
-outline: deep
+description: Keep request constraints in protobuf and reject invalid input before the handler runs.
+docType: concept
+outline: 2
 ---
 
 # Validation
 
-Connectum uses `@connectrpc/validate` (backed by `@bufbuild/protovalidate`) for schema-based input validation. Constraints are defined directly in `.proto` files and enforced automatically by the validation interceptor.
+Inventory should receive a meaningful SKU, not an empty string. Put that rule
+beside the field in your protobuf contract; the configured validation
+interceptor checks it before the handler runs.
 
-**Outcome:** add constraints to a request message, regenerate code, and verify that an invalid RPC is rejected before its handler runs. The generated [`@connectum/interceptors` API](/en/api/@connectum/interceptors/) remains the exact symbol reference.
+<figure class="guide-map" aria-label="Validation before application work">
+<ol>
+<li><strong>Request</strong><small>A client sends a protobuf message.</small></li>
+<li><strong>Check the rules</strong><small>The validation interceptor evaluates the generated constraints.</small></li>
+<li><strong>Accept or reject</strong><small>Valid input reaches the handler. Invalid input returns INVALID_ARGUMENT.</small></li>
+</ol>
+<figcaption>A schema rule checks input shape. Stock availability remains a business decision in the handler.</figcaption>
+</figure>
 
-## Overview
+## One rule
 
-The validation approach is **proto-first**: validation rules live alongside message definitions in `.proto` files. This ensures the proto schema is the single source of truth for both data structure and constraints.
+With `buf/validate/validate.proto` imported:
 
-```mermaid
-flowchart LR
-    Client[Client] --> Error[errorHandler]
-    Error --> More["..."]
-    More --> Validation[validation]
-    Validation --> Serializer[serializer]
-    Serializer --> Handler[Handler]
-    Validation -->|Invalid request| Rejected[INVALID_ARGUMENT]
-```
-
-Validation runs as the 7th interceptor in the default chain (before serializer, after any explicitly enabled resilience interceptors). Invalid requests are rejected with `INVALID_ARGUMENT` before reaching the handler.
-
-## Setup
-
-Install the required packages:
-
-::: pm
-== npm
-```bash
-npm install @bufbuild/protovalidate @connectrpc/validate
-```
-== pnpm
-```bash
-pnpm add @bufbuild/protovalidate @connectrpc/validate
-```
-== bun
-```bash
-bun add @bufbuild/protovalidate @connectrpc/validate
-```
-:::
-
-The proto dependency is declared separately, in `buf.yaml` (below).
-
-Declare the dependency in `buf.yaml`:
-
-```yaml
-version: v2
-deps:
-  - buf.build/bufbuild/protovalidate
-```
-
-Fetch dependencies:
-
-```bash
-npx buf dep update
-```
-
-## Proto Constraints
-
-Import `buf/validate/validate.proto` and annotate fields with constraints:
-
-```protobuf
-syntax = "proto3";
-import "buf/validate/validate.proto";
-
-// OrderItem and ShippingAddress are application messages defined elsewhere.
-message CreateOrderRequest {
-  // String constraints
-  string customer_id = 1 [(buf.validate.field).string.min_len = 1];
-  string currency = 2 [(buf.validate.field).string = {min_len: 3, max_len: 3}];
-  string email = 3 [(buf.validate.field).string.email = true];
-
-  // Numeric constraints
-  int32 quantity = 4 [(buf.validate.field).int32.gt = 0];
-  int32 page_size = 5 [(buf.validate.field).int32 = {gte: 1, lte: 100}];
-
-  // Repeated constraints
-  repeated OrderItem items = 6 [(buf.validate.field).repeated.min_items = 1];
-
-  // Required message
-  ShippingAddress address = 7 [(buf.validate.field).required = true];
-}
-
-message GetOrderRequest {
-  string order_id = 1 [(buf.validate.field).string.uuid = true];
+```proto
+message CheckStockRequest {
+  string sku = 1 [(buf.validate.field).string.min_len = 1];
 }
 ```
 
-### Available Constraints
+Regenerate the descriptors after changing constraints.
+`createDefaultInterceptors()` includes validation by default; the validation
+dependencies still need to be installed. Defining the annotation alone does
+not install middleware on a server.
 
-| Type | Constraints |
-|------|------------|
-| **String** | `min_len`, `max_len`, `pattern` (regex), `email`, `uri`, `uuid`, `ip`, `hostname` |
-| **Numeric** | `lt`, `lte`, `gt`, `gte`, `in`, `not_in`, `const` |
-| **Repeated** | `min_items`, `max_items`, `unique` |
-| **Message** | `required`, `skip` |
-| **Enum** | `defined_only` |
-| **Map** | `min_pairs`, `max_pairs`, key/value constraints |
+## Go deeper
 
-## Validation Interceptor
+- [Set up validation and test an invalid request](/en/guide/validation-setup).
+- [All constraint examples, error messages and business validation](/en/guide/validation-setup#proto-constraints).
+- [Understand the interceptor chain](/en/guide/interceptors).
 
-Validation is enabled by default in `createDefaultInterceptors()`:
-
-```typescript
-import { createServer } from '@connectum/core';
-import { createDefaultInterceptors } from '@connectum/interceptors';
-
-const server = createServer({
-  services: [routes],
-  interceptors: createDefaultInterceptors(), // validation enabled
-});
-```
-
-### Disabling Validation
-
-```typescript
-const interceptors = createDefaultInterceptors({
-  validation: false,
-});
-```
-
-### Standalone Usage
-
-For custom configuration, use `createValidateInterceptor()` directly:
-
-```typescript
-import { createValidateInterceptor } from '@connectrpc/validate';
-
-const server = createServer({
-  services: [routes],
-  interceptors: [
-    createValidateInterceptor(),
-    // ... other interceptors
-  ],
-});
-```
-
-## Error Messages
-
-When validation fails, the interceptor throws a `ConnectError` with code `INVALID_ARGUMENT`:
-
-```
-Code: INVALID_ARGUMENT
-Message: "customer_id: must be at least 1 characters [string.min_len]"
-```
-
-Error messages include the field path, the violated constraint, and the constraint identifier. This makes it straightforward for clients to display meaningful validation errors.
-
-## Custom Validation
-
-Proto constraints cover structural validation (format, range, presence). For business-level validation (e.g., "email must be unique", "order total must not exceed credit limit"), validate in the service handler:
-
-```typescript
-import { ConnectError, Code } from '@connectrpc/connect';
-
-async createAccount(request: CreateAccountRequest) {
-  // Business validation (beyond proto constraints)
-  const exists = await db.findByEmail(request.email);
-  if (exists) {
-    throw new ConnectError('Email already registered', Code.AlreadyExists);
-  }
-  // ...
-}
-```
-
-## Related
-
-- [Interceptors](/en/guide/interceptors) -- the validation interceptor in the chain
-- [@connectum/interceptors](/en/packages/interceptors) -- Package Guide
-- [ADR-005: Input Validation Strategy](/en/contributing/adr/005-input-validation-strategy) -- design rationale and alternatives
-- [protovalidate documentation](https://github.com/bufbuild/protovalidate) -- full constraint reference
-- [@connectrpc/validate](https://www.npmjs.com/package/@connectrpc/validate) -- official ConnectRPC validation package
+<GuideSections route="/en/guide/validation" />

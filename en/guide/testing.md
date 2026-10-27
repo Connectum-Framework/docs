@@ -9,14 +9,39 @@ outline: deep
 
 Connectum supports two complementary testing layers. Use TypeScript tests for fast handler and transport feedback, then scenario tests for the deployed protocol boundary.
 
+<figure class="guide-map" aria-label="Test from a small decision to the deployed boundary">
+<ol>
+<li><strong>Handler decision</strong><small>Check business results and errors in TypeScript.</small></li>
+<li><strong>In-process RPC</strong><small>Exercise the configured router and middleware without a listener.</small></li>
+<li><strong>Real connection</strong><small>Check protocol, TLS, probes and deployed integration.</small></li>
+</ol>
+<figcaption>A passing local test does not prove that a proxy or certificate is configured correctly.</figcaption>
+</figure>
+
+For a server with the example Inventory implementation registered:
+
+```typescript
+import assert from 'node:assert/strict';
+import { createLocalClient } from '@connectum/testing';
+
+const client = createLocalClient(server, InventoryService);
+const stock = await client.checkStock({ sku: 'A-1' });
+assert.equal(stock.units, 7);
+```
+
 ## Choose a layer
 
+Use [testing helpers](/en/packages/testing) for fast TypeScript feedback, then
+[runn](/en/guide/testing/runn) for the live service boundary.
+
+::: details Match a specific test task to a tool
 | Question | Recommended surface |
 |---|---|
 | Does a handler or interceptor return the expected value/error? | [`@connectum/testing`](/en/packages/testing) with an in-process server/client |
 | Do service-catalog calls resolve without a network listener? | [In-process transport](/en/guide/production/in-process-transport) |
 | Does a running service expose correct gRPC, Connect, health, auth, TLS, or streaming behavior? | [runn](/en/guide/testing/runn) |
 | Do you need Go plugins or JUnit-oriented scenario output? | [scenarigo](/en/guide/testing/scenarigo) |
+:::
 
 ## Recommended path
 

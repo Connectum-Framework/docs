@@ -33,6 +33,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Test catalog learning model
+        run: pnpm catalog:test
+
+      - name: Test overview boundaries and preserved guide content
+        run: pnpm guide:test
+
       - name: Build VitePress
         run: pnpm docs:build
 
