@@ -10,6 +10,7 @@ outline: deep
 Keep handlers focused on business decisions. Interceptors wrap the RPC with
 shared behavior such as error handling, validation or a timeout.
 
+<GuideFlow scene="interceptors">
 <figure class="guide-map" aria-label="An interceptor wraps the handler call">
 <ol>
 <li><strong>Before</strong><small>Read the request, apply policy, then call the next layer.</small></li>
@@ -18,6 +19,7 @@ shared behavior such as error handling, validation or a timeout.
 </ol>
 <figcaption>Order changes behavior. An outer interceptor sees both the request and the inner result.</figcaption>
 </figure>
+</GuideFlow>
 
 ## Start with the default chain
 

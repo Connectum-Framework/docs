@@ -11,6 +11,7 @@ Your service speaks gRPC and Connect, but Swagger UI, API catalogs and SDK
 generators may need an OpenAPI document. Generate it from the same proto
 contracts instead of describing the API twice.
 
+<GuideFlow scene="openapi">
 <figure class="guide-map" aria-label="Generate and annotate the OpenAPI artifact">
 <ol>
 <li><strong>Proto contracts</strong><small>Methods, messages and Connectum auth annotations.</small></li>
@@ -19,6 +20,7 @@ contracts instead of describing the API twice.
 </ol>
 <figcaption>This produces documentation. Runtime interceptors still enforce access.</figcaption>
 </figure>
+</GuideFlow>
 
 ## One shared policy reader
 

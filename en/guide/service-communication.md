@@ -10,6 +10,7 @@ outline: deep
 Orders needs an answer about stock before replying to a customer. It calls
 Inventory's contract and waits for the result. That is the synchronous path.
 
+<GuideFlow scene="service-communication">
 <figure class="guide-map" aria-label="Orders waits for Inventory's answer">
 <ol>
 <li><strong>Orders asks</strong><small>Call Inventory with the requested SKU.</small></li>
@@ -18,6 +19,7 @@ Inventory's contract and waits for the result. That is the synchronous path.
 </ol>
 <figcaption>Use an event instead when another service can react later and no immediate answer is needed.</figcaption>
 </figure>
+</GuideFlow>
 
 Inside the Orders handler, with generated contract types in scope:
 

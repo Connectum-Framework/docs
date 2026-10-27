@@ -10,6 +10,7 @@ outline: 2
 You know a server's address, but do not have its `.proto` files. Reflection
 lets tools such as grpcurl ask that server for its service and message schemas.
 
+<GuideFlow scene="protocols/reflection">
 <figure class="guide-map" aria-label="A tool learns a server's API through reflection">
 <ol>
 <li><strong>Ask the server</strong><small>A reflection client connects to a known address.</small></li>
@@ -18,6 +19,7 @@ lets tools such as grpcurl ask that server for its service and message schemas.
 </ol>
 <figcaption>Reflection discovers an API at one address. It does not find other running servers.</figcaption>
 </figure>
+</GuideFlow>
 
 ## Add it explicitly
 

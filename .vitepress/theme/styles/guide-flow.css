@@ -1,0 +1,141 @@
+.vp-doc .guide-flow {
+    --guide-hop-x: 4px;
+    --guide-hop-y: 0;
+    --guide-transfer-name: guide-transfer;
+    --guide-play-state: paused;
+    margin: 24px 0;
+}
+@media (prefers-reduced-motion: reduce) {
+    .vp-doc .guide-flow {
+        --guide-transfer-name: none;
+    }
+}
+.vp-doc .guide-flow > .guide-map {
+    margin: 0;
+    border-bottom: 0;
+    border-radius: 16px 16px 0 0;
+}
+.vp-doc .guide-flow-demo {
+    padding: 18px 22px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 0 0 16px 16px;
+    background: var(--vp-c-bg);
+}
+.vp-doc .guide-flow-current {
+    min-height: 132px;
+}
+.vp-doc .guide-flow-step {
+    color: var(--vp-c-brand-1);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+.vp-doc .guide-flow-current p {
+    margin: 8px 0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+.vp-doc .guide-flow-demo code {
+    display: inline-block;
+    max-width: 100%;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+.vp-doc .guide-flow-progress {
+    height: 4px;
+    margin: 8px 0 12px;
+    overflow: hidden;
+    border-radius: 4px;
+    background: var(--vp-c-divider);
+}
+.vp-doc .guide-flow-progress > span {
+    display: block;
+    height: 100%;
+    background: var(--vp-c-brand-1);
+    transform: scaleX(var(--guide-progress, 0));
+    transform-origin: left;
+}
+.vp-doc .guide-flow-controls {
+    display: flex;
+    min-height: 36px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--vp-c-text-2);
+    font-size: 12px;
+    line-height: 1.6;
+}
+.vp-doc .guide-flow-controls button {
+    flex-shrink: 0;
+    min-height: 36px;
+    padding: 4px 10px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 6px;
+    color: var(--vp-c-text-1);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+.vp-doc .guide-flow-controls button:hover {
+    border-color: var(--vp-c-brand-1);
+}
+.vp-doc .guide-flow-controls button:focus-visible,
+.vp-doc .guide-flow-transcript summary:focus-visible {
+    outline: 2px solid var(--vp-c-brand-1);
+    outline-offset: 4px;
+}
+.vp-doc .guide-flow-transcript {
+    margin-top: 12px;
+    font-size: 14px;
+}
+.vp-doc .guide-flow-transcript summary {
+    min-height: 24px;
+    cursor: pointer;
+}
+.vp-doc .guide-flow-transcript p {
+    margin: 8px 0 4px;
+}
+.vp-doc .guide-flow--motion[data-step="0"] .guide-map > ol > li:nth-child(1),
+.vp-doc .guide-flow--motion[data-step="1"] .guide-map > ol > li:nth-child(2),
+.vp-doc .guide-flow--motion[data-step="2"] .guide-map > ol > li:nth-child(3),
+.vp-doc .guide-flow--motion[data-step="3"] .guide-map > ol > li:nth-child(4) {
+    border-color: var(--vp-c-brand-1);
+    box-shadow: inset 0 0 0 1px var(--vp-c-brand-1);
+}
+.vp-doc .guide-flow--motion[data-step="0"] .guide-map > ol > li:nth-child(1):not(:last-child)::after,
+.vp-doc .guide-flow--motion[data-step="1"] .guide-map > ol > li:nth-child(2):not(:last-child)::after,
+.vp-doc .guide-flow--motion[data-step="2"] .guide-map > ol > li:nth-child(3):not(:last-child)::after {
+    color: var(--vp-c-brand-1);
+    border-color: currentColor;
+    animation: var(--guide-transfer-name) var(--guide-step-duration) ease-in-out infinite var(--guide-play-state);
+}
+.vp-doc .guide-flow[data-playback="running"] {
+    --guide-play-state: running;
+}
+@keyframes guide-transfer {
+    0%,
+    20%,
+    100% {
+        translate: 0 0;
+    }
+    75% {
+        translate: var(--guide-hop-x) var(--guide-hop-y);
+    }
+}
+@media (max-width: 639px) {
+    .vp-doc .guide-flow {
+        --guide-hop-x: 0;
+        --guide-hop-y: 4px;
+    }
+    .vp-doc .guide-flow-demo {
+        padding: 16px;
+    }
+    .vp-doc .guide-flow-current {
+        min-height: 172px;
+    }
+    .vp-doc .guide-flow-controls {
+        flex-wrap: wrap;
+    }
+}

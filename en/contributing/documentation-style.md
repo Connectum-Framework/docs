@@ -65,12 +65,23 @@ Compatibility overviews explain the choice; the canonical exact tables live at
 [Runtime requirements and coverage](/en/guide/runtime-compatibility-details) and
 [Transport support and measurements](/en/guide/production/transport-matrix-details).
 
-For simple three- or four-stage mental models, a semantic `figure.guide-map`
-with an ordered list and caption is sufficient. It must remain readable as
-plain text, in both themes, at narrow widths and without JavaScript. Use the
-shared stylesheet, not page-local layout. Branching flows, runtime internals
-and complex relationships still use the diagram rules below. Do not add motion
-where a static model explains the idea better.
+For three- or four-stage overview models, keep a semantic `figure.guide-map`
+with an ordered list and caption inside `GuideFlow`. Its `scene` identifies a
+narrated sequence in `.vitepress/guide/motion.ts`. Each stage must correspond to
+one visible card and show concrete data or an artifact, not an unrelated pulse.
+
+The sequence loops automatically, but never moves, hides or types the page's
+explanatory text and code. Provide pause/resume and a native transcript; persist
+the reader's pause choice across Guide navigation. Stop the clock for reduced
+motion, an offscreen diagram or a hidden tab, and clean it up on navigation.
+The illustration must explicitly say it is not live execution. Its static
+figure, caption and transcript remain available without JavaScript.
+
+Use the shared component and stylesheet, not page-local timers or layout.
+Verify motion and pause behavior in a real browser, not only by checking that
+keyframes exist. Keep the existing resolver walkthrough for its routing scenes.
+Branching flows, runtime internals and complex relationships deeper in the Guide
+still use the diagram rules below.
 
 Catalogs describe **known contracts**; they do not discover running services.
 Resolvers select remote transports; reflection exposes schemas at a known

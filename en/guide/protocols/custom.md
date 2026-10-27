@@ -11,6 +11,7 @@ Most applications need only the built-in Health Check and Reflection modules.
 A custom protocol is an extension point for infrastructure RPCs or plain HTTP
 endpoints that do not belong in a business service.
 
+<GuideFlow scene="protocols/custom">
 <figure class="guide-map" aria-label="Initialize once, register routes, then serve">
 <ol>
 <li><strong>Prepare</strong><small>setup reads the mounted-service snapshot and prepares server state.</small></li>
@@ -19,6 +20,7 @@ endpoints that do not belong in a business service.
 </ol>
 <figcaption>One successful setup per server; route registration may happen more than once.</figcaption>
 </figure>
+</GuideFlow>
 
 ## Keep registration repeatable
 

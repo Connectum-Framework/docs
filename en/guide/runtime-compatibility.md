@@ -11,6 +11,7 @@ The runtime requirement depends on **what you execute**. Published framework
 packages are compiled JavaScript. Your application's `.ts` files may need
 native type stripping, tsx, or Bun.
 
+<GuideFlow scene="runtime-compatibility">
 <figure class="guide-map" aria-label="Choose a runtime by the application execution model">
 <ol>
 <li><strong>Package</strong><small>Published @connectum packages declare Node.js ≥22.13.0.</small></li>
@@ -19,6 +20,7 @@ native type stripping, tsx, or Bun.
 </ol>
 <figcaption>A package engine floor, a source execution requirement and a tested integration are different claims.</figcaption>
 </figure>
+</GuideFlow>
 
 ## Choose the path
 

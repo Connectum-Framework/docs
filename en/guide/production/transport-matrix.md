@@ -10,6 +10,7 @@ outline: 2
 The important question is not just “HTTP or gRPC?” It is whether the client,
 proxy and server agree on a protocol all the way through.
 
+<GuideFlow scene="production/transport-matrix">
 <figure class="guide-map" aria-label="Every leg must support the requested protocol">
 <ol>
 <li><strong>Client protocol</strong><small>Native gRPC and bidirectional streaming require HTTP/2.</small></li>
@@ -18,6 +19,7 @@ proxy and server agree on a protocol all the way through.
 </ol>
 <figcaption>HTTP/2 at the edge does not guarantee HTTP/2 reaches the application.</figcaption>
 </figure>
+</GuideFlow>
 
 ## The common choices
 

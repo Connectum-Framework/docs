@@ -10,6 +10,7 @@ outline: 2
 One contract, one handler, one running service. You do not need a broker,
 an identity provider or a telemetry backend to make your first call.
 
+<GuideFlow scene="quickstart">
 <figure class="guide-map" aria-label="From contract to a working RPC">
 <ol>
 <li><strong>Describe</strong><small>A .proto file names the method and its messages.</small></li>
@@ -18,6 +19,7 @@ an identity provider or a telemetry backend to make your first call.
 </ol>
 <figcaption>The first milestone is a real response, plus a rejected invalid request.</figcaption>
 </figure>
+</GuideFlow>
 
 ## What you will build
 

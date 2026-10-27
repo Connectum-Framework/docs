@@ -11,6 +11,7 @@ A container packages your service; it does not change how the service works.
 The image needs the application, generated protobuf code, production
 dependencies and a compatible runtime.
 
+<GuideFlow scene="production/docker">
 <figure class="guide-map" aria-label="Build once, then start the packaged service">
 <ol>
 <li><strong>Prepare</strong><small>Install from a lockfile and generate the contract code.</small></li>
@@ -19,6 +20,7 @@ dependencies and a compatible runtime.
 </ol>
 <figcaption>The image should contain everything required to start without fetching packages.</figcaption>
 </figure>
+</GuideFlow>
 
 ## Three checks before deployment
 

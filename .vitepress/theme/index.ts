@@ -1,12 +1,13 @@
 import elkLayouts from '@mermaid-js/layout-elk';
 import mermaid from 'mermaid';
-import DefaultTheme from 'vitepress/theme';
 import type { Theme } from 'vitepress';
+import DefaultTheme from 'vitepress/theme';
 import CopyOrDownloadAsMarkdownButtons from 'vitepress-plugin-llms/vitepress-components/CopyOrDownloadAsMarkdownButtons.vue';
-import Layout from './Layout.vue';
 import CatalogRoutingDiagram from './components/CatalogRoutingDiagram.vue';
+import GuideFlow from './components/GuideFlow.vue';
 import GuideSections from './components/GuideSections.vue';
 import RuntimeCompositionDiagram from './components/RuntimeCompositionDiagram.vue';
+import Layout from './Layout.vue';
 import './custom.css';
 import './styles/guide-overview.css';
 
@@ -45,6 +46,7 @@ export default {
     enhanceApp({ app }) {
         app.component('CopyOrDownloadAsMarkdownButtons', CopyOrDownloadAsMarkdownButtons);
         app.component('CatalogRoutingDiagram', CatalogRoutingDiagram);
+        app.component('GuideFlow', GuideFlow);
         app.component('GuideSections', GuideSections);
         app.component('RuntimeCompositionDiagram', RuntimeCompositionDiagram);
     },

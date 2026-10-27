@@ -10,6 +10,7 @@ outline: deep
 One server owns one process's RPC boundary. Give it your services and any
 middleware or protocols you need; it owns listening, startup and shutdown.
 
+<GuideFlow scene="server">
 <figure class="guide-map" aria-label="Compose, start and stop one service process">
 <ol>
 <li><strong>Compose</strong><small>Register typed services and explicit capabilities.</small></li>
@@ -18,6 +19,7 @@ middleware or protocols you need; it owns listening, startup and shutdown.
 </ol>
 <figcaption>In-process clients can use registered services before a network listener starts.</figcaption>
 </figure>
+</GuideFlow>
 
 ## Minimal server
 

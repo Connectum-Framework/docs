@@ -19,6 +19,7 @@ typed Protobuf RPCs.
 
 ## Mental Model
 
+<GuideFlow scene="about">
 <figure class="guide-map" aria-label="The three pieces of a Connectum service">
 <ol>
 <li><strong>Contract</strong><small>A .proto file defines messages and RPC methods.</small></li>
@@ -27,6 +28,7 @@ typed Protobuf RPCs.
 </ol>
 <figcaption>Your contract describes the API; your handlers implement it; the server runs it.</figcaption>
 </figure>
+</GuideFlow>
 
 Start with [one working RPC](/en/guide/quickstart), including a request rejected
 by configured validation, without an external broker. Authentication, events,

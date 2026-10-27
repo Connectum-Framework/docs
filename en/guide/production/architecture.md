@@ -11,6 +11,7 @@ Think of Connectum as the inside of one service process, not the whole
 deployment platform. `createServer()` composes that process's services,
 protocols, middleware and lifecycle.
 
+<GuideFlow scene="production/architecture">
 <figure class="guide-map" aria-label="The shared application request path">
 <ol>
 <li><strong>Enter</strong><small>A network or in-process call reaches the registered router.</small></li>
@@ -19,6 +20,7 @@ protocols, middleware and lifecycle.
 </ol>
 <figcaption>The application path is shared; network-specific behavior still belongs to the transport.</figcaption>
 </figure>
+</GuideFlow>
 
 ## Inside and outside
 

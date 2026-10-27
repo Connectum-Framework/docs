@@ -11,6 +11,7 @@ Inventory should receive a meaningful SKU, not an empty string. Put that rule
 beside the field in your protobuf contract; the configured validation
 interceptor checks it before the handler runs.
 
+<GuideFlow scene="validation">
 <figure class="guide-map" aria-label="Validation before application work">
 <ol>
 <li><strong>Request</strong><small>A client sends a protobuf message.</small></li>
@@ -19,6 +20,7 @@ interceptor checks it before the handler runs.
 </ol>
 <figcaption>A schema rule checks input shape. Stock availability remains a business decision in the handler.</figcaption>
 </figure>
+</GuideFlow>
 
 ## One rule
 

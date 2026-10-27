@@ -10,6 +10,7 @@ outline: 2
 Scaffolding writes the starting files. After that, they are your application —
 not hidden framework configuration.
 
+<GuideFlow scene="scaffolding">
 <figure class="guide-map" aria-label="Scaffold, inspect, then change your service">
 <ol>
 <li><strong>Choose</strong><small>Runtime, package manager and the capabilities the service needs.</small></li>
@@ -18,6 +19,7 @@ not hidden framework configuration.
 </ol>
 <figcaption>Generated starting code remains ordinary, editable project code.</figcaption>
 </figure>
+</GuideFlow>
 
 ## Start with the files
 
