@@ -12,8 +12,12 @@ Use these guides to set up the repositories, run framework checks, and follow th
 
 1. **[Development Setup](/en/contributing/development-setup)** -- clone repos, install dependencies, run tests
 2. **[CLI Commands](/en/contributing/cli-commands)** -- all commands for working with the monorepo
-3. **[Documentation Style Guide](/en/contributing/documentation-style)** -- how to write package READMEs and docs pages
-4. **[About Connectum](/en/guide/about)** -- understand the package layers and design
+3. **[Pull Requests](/en/contributing/pull-requests)** -- fork, branch, checks, changesets, and review
+4. **[Commit Messages](/en/contributing/commit-messages)** -- Conventional Commits, scopes, and breaking changes
+5. **[Code Style](/en/contributing/code-style)** -- what Biome and the compiler enforce, and which rules are conventions
+6. **[Testing the Framework](/en/contributing/testing)** -- test layout, runners, and integration suites that need brokers
+7. **[Documentation Style Guide](/en/contributing/documentation-style)** -- how to write package READMEs and docs pages
+8. **[About Connectum](/en/guide/about)** -- understand the package layers and design
 
 ## Repository Structure
 
@@ -34,11 +38,13 @@ Connectum is organized as 3 independent repositories under the [Connectum-Framew
 - **Named parameters** -- prefer options objects over positional arguments
 - Node.js `>=26.0.0` for framework development; see [Runtime Compatibility](/en/guide/runtime-compatibility) for application requirements.
 
+Details and the list of what is enforced by a tool: [Code Style](/en/contributing/code-style).
+
 ### Commits
 
-- Use [Conventional Commits](https://www.conventionalcommits.org/) format
+- Use [Conventional Commits](https://www.conventionalcommits.org/) format; see [Commit Messages](/en/contributing/commit-messages)
 - One logical change per commit
-- Run `pnpm build`, `pnpm typecheck`, `pnpm test`, and `pnpm lint` before opening a pull request.
+- Run `pnpm build`, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and `pnpm lint:repo` before opening a pull request; see [Pull Requests](/en/contributing/pull-requests).
 
 ### Architecture Decision Records
 
