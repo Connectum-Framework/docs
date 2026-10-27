@@ -103,7 +103,7 @@ in the measurements recorded below. Connectum does not use `Bun.serve`:
 | **Bun** (`node:http2` — what Connectum uses) | ✅ | ✅ | ❌ |
 | **Bun** (`Bun.serve`) | ❌ (no HTTP/2 at all)* | ✅ | ❌ |
 | **Deno** (`Deno.serve`) | Not tested | Not tested | Not tested |
-| **Cloudflare Workers** | Not tested | Not tested | Not tested |
+| **Cloudflare Workers** | Not supported by Connectum† | Not supported by Connectum† | Not supported by Connectum† |
 
 \* **Measured on Bun 1.3.13 and 1.3.14**, and the reason is stronger than the missing
 trailers: `Bun.serve` has **no HTTP/2 server at all**. Offered `["h2","http/1.1"]` over
@@ -114,8 +114,11 @@ enable -- `Bun.serve` silently ignores unknown keys, so passing one proves nothi
 1.3.14 adds an HTTP/3 server and an experimental HTTP/2 client for `fetch()`; neither is
 an HTTP/2 *server*.
 
-This project has not tested the Deno or Cloudflare Workers rows. They are left
-unclassified rather than inferred from a response API shape.
+† **Cloudflare Workers is a platform capability, not Connectum support** — see
+[Cloudflare Workers](#cloudflare-workers) below.
+
+This project has not tested the Deno row. It is left unclassified rather than
+inferred from a response API shape.
 
 Connectum builds on neither API. Everything it *does* use is covered in
 [Verified behaviour by runtime](#verified).
@@ -127,13 +130,32 @@ plaintext h2c. **Connect over HTTP/1.1 was verified on Node.js and Bun in the te
 configurations below.** If you
 write your own `Bun.serve` handler and must expose gRPC, terminate it at a
 **sidecar proxy** (Envoy / Caddy) and let the runtime serve Connect / HTTP-1.1.
-This project has not validated equivalent deployments on Deno or Cloudflare Workers.
+This project has not validated an equivalent deployment on Deno.
 
 ::: tip Bun client versions
 Serving worked on the Bun versions recorded below, while Bun's `node:http2` **client** only
 became usable in **Bun 1.2.6** — see
 [Runtime Compatibility](/en/guide/runtime-compatibility#http2-client).
 :::
+
+### Cloudflare Workers {#cloudflare-workers}
+
+`createServer()` is not a Cloudflare Workers entry point, and a Connectum server
+cannot be deployed to Workers today. `createServer()` builds its listener on
+`node:http2` and `node:http` (`createSecureServer`, `http2.createServer`,
+`http.createServer`), and Cloudflare documents `node:http2` in Workers as a
+non-functional stub that "can be imported or required, but does not provide a working
+implementation" ([Node.js compatibility](https://developers.cloudflare.com/workers/runtime-apis/nodejs/)).
+Connectum has no Fetch-style handler for Workers. One is planned; nothing in this
+section describes shipped behavior.
+
+What Cloudflare announces is a platform capability, not a Connectum guarantee.
+[Its announcement](https://blog.cloudflare.com/grpc-workers/) describes a
+**private beta** in which a Worker speaks gRPC-web and the platform translates it
+to and from native gRPC. According to that post, Workers can serve unary and
+server-streaming gRPC APIs; it does not describe client streaming or bidirectional
+streaming for Workers, and presents full bidirectional streaming only for a gRPC
+server running in a container. This project has not run Connectum against that beta.
 
 ## Verified behaviour by runtime {#verified}
 
