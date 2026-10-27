@@ -8,10 +8,12 @@ docType: contributor-guide
 
 This page describes how a change reaches the `main` branch of the
 [connectum](https://github.com/Connectum-Framework/connectum) repository: fork, branch,
-local checks, changeset, pull request, review. The same flow applies to the
-[docs](https://github.com/Connectum-Framework/docs) and
-[examples](https://github.com/Connectum-Framework/examples) repositories, except that
-they have no changesets and no pull request template.
+local checks, changeset, pull request, review. The commands and checks below belong to
+that repository. The [docs](https://github.com/Connectum-Framework/docs) and
+[examples](https://github.com/Connectum-Framework/examples) repositories use the same
+fork-and-pull-request flow, but they have no changesets and no pull request template,
+and their checks differ: the docs repository provides `pnpm docs:validate`,
+`pnpm docs:build` and `pnpm docs:validate:built`, and an example brings its own scripts.
 
 Set up the toolchain first with [Development Setup](/en/contributing/development-setup).
 Every command here runs from the root of the framework repository.
@@ -65,8 +67,10 @@ git push origin main
 
 ## Run the checks before you push
 
-The pull request template asks you to confirm these checks. The repository's CI runs
-the same commands on every pull request.
+The pull request template asks you to confirm `pnpm build && pnpm typecheck && pnpm test`
+and `pnpm lint`. CI covers more than the template: it also runs `pnpm lint:repo`, runs
+the unit and integration tests as separate steps, and has separate Bun and esbuild jobs.
+Running the commands below locally catches most of what CI would report.
 
 ```bash
 pnpm build
@@ -102,8 +106,8 @@ pnpm lint:repo
    whole repository and rewrites formatting and import order in place,
 4. re-stages what Biome changed.
 
-Because the hook rewrites files, commit with a clean index and review the result
-before you push. See [Code Style](/en/contributing/code-style) for what Biome enforces.
+Because the hook rewrites files, stage the changes you intend to commit, make sure
+`git status` shows no `MM` entries, and review the files Biome rewrote before you push. See [Code Style](/en/contributing/code-style) for what Biome enforces.
 
 ## Add a changeset
 

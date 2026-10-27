@@ -113,7 +113,9 @@ Biome fails the lint on a few import patterns, all set in `biome.json`:
 A custom rule also forbids `createRouterTransport` from `@connectrpc/connect` in
 package sources, because a router transport built that way skips the server
 interceptors. Use `createLocalTransport` from `@connectum/core`
-(`lint/no-direct-router-transport.grit`).
+(`lint/no-direct-router-transport.grit`). The rule is switched off for exactly two
+files: `packages/core/src/localTransport.ts`, which implements the local transport, and
+`packages/testing/src/mockResolver.ts` (`biome.json`).
 
 ## Names
 

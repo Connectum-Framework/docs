@@ -216,7 +216,9 @@ Where each one lives:
 Regenerate the API reference with `pnpm docs:api` in the framework repository after
 you change JSDoc; the TypeDoc run treats every warning as an error, so a broken `{@link}`
 fails it. `pnpm docs:check` executes the documentation's code examples as a consumer of
-the packed packages, which catches an example that no longer matches the code. Both are
+the packed packages, which catches an example that no longer matches the code. It packs
+the `dist` of every package as it is and does not build, so run `pnpm build` first after
+any source edit; otherwise it checks the examples against stale output. Both commands are
 listed in [CLI Commands](/en/contributing/cli-commands).
 
 ## Canonical ownership

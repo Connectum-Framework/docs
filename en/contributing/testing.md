@@ -95,8 +95,9 @@ Conventions you will see across the repository:
 - **Mocking.** Use `mock` from `node:test`. [ADR-007](/en/contributing/adr/007-testing-strategy)
   records the intent: mock external dependencies (HTTP requests, the file system,
   external APIs, time-dependent code), not the package's own functions.
-- **Shared helpers.** `@connectum/testing` provides local clients, mock contexts, and the
-  `transportParityTest()` driver, and `@connectum/test-fixtures` provides mock requests,
+- **Shared helpers.** `@connectum/testing` provides local clients and mock contexts, and
+  its separate `@connectum/testing/parity` entry provides the `transportParityTest()`
+  driver (the root entry does not re-export it). `@connectum/test-fixtures` provides mock requests,
   descriptors, and streams. See [`@connectum/test-fixtures`](/en/packages/test-fixtures)
   for what it offers.
 

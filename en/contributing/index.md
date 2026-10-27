@@ -44,7 +44,7 @@ Details and the list of what is enforced by a tool: [Code Style](/en/contributin
 
 - Use [Conventional Commits](https://www.conventionalcommits.org/) format; see [Commit Messages](/en/contributing/commit-messages)
 - One logical change per commit
-- Run `pnpm build`, `pnpm typecheck`, `pnpm test`, and `pnpm lint` before opening a pull request; see [Pull Requests](/en/contributing/pull-requests).
+- Run `pnpm build`, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and `pnpm lint:repo` before opening a pull request; see [Pull Requests](/en/contributing/pull-requests).
 
 ### Architecture Decision Records
 
