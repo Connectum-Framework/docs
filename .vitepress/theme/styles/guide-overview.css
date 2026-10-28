@@ -1,21 +1,3 @@
-/* keep branched diagrams readable; their Mermaid wrapper owns the local scroll. */
-.vp-doc .guide-topic-diagram--scroll .mermaid svg {
-    min-width: 480px;
-}
-
-.vp-doc .guide-topic-diagram--wide .mermaid svg {
-    min-width: 600px;
-}
-
-@media print {
-    .vp-doc :is(.guide-topic-diagram--scroll, .guide-topic-diagram--wide) .mermaid {
-        overflow-x: visible;
-    }
-
-    .vp-doc :is(.guide-topic-diagram--scroll, .guide-topic-diagram--wide) .mermaid svg {
-        min-width: 0;
-    }
-}
 .vp-doc .guide-sections {
     margin: 28px 0;
     padding: 16px 20px;

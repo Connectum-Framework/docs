@@ -72,13 +72,22 @@ shows routing. Share colors, accessibility and motion controls, not choreography
 
 Do not animate an ordered list of cards with a moving highlight or a repeated
 caption. Prefer a static diagram that exposes the relationship: a dependency
-graph, a composition boundary or a request/response sequence. Use the shared
-Mermaid theme and add a readable caption; do not invent page-local palettes.
-Keep compact diagrams at their native size. For broader overview graphs, add
-`guide-topic-diagram--scroll` (480px) or `guide-topic-diagram--wide` (600px) to the
-`technical-diagram` figure so it scrolls locally on a phone. Choose the frame from
-the rendered graph; do not inflate narrow diagrams. Do not return to a universal
-card model.
+graph, a composition boundary or a request/response sequence. For a section root,
+cover its subsections and their relationships before focusing on one request.
+Keep implementation details on the focused pages.
+
+Guide roots embed authored, static SVG from self-contained HTML sources through
+`GuideOverview`. The overview must be visible without JavaScript. Regenerate the
+sources and embeds with `node scripts/guide-diagrams.mjs`; models live under
+`scripts/guide-diagrams/`. Choose a layout for the subject and share only the
+low-level drawing primitives and the approved Connectum skin. Keep the accepted
+Server composition separate from its configuration/lifecycle overview.
+
+Other technical diagrams can use the shared Mermaid theme. Both mechanisms need
+a readable caption; neither should introduce a page-local palette.
+Keep authored diagrams at their native width in a local scroll frame on phones.
+Release that minimum width and clipping for print. Do not inflate a narrow graph
+or return to a universal card model.
 
 For a genuinely causal animation, never move, hide or type the page's explanatory
 text and code. Provide pause/resume and a native transcript; persist the reader's

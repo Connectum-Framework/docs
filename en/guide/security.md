@@ -5,23 +5,18 @@ docType: concept
 outline: deep
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/security.html?raw';
+</script>
+
 # Transport Security
 
 TLS encrypts the connection and authenticates the server. Mutual TLS additionally authenticates the client certificate. Neither replaces application-level identity and authorization when a request crosses a user or gateway trust boundary.
 
-<figure class="technical-diagram" aria-label="Connection security and application authorization are separate">
-
-```mermaid
-flowchart TD
-    accTitle: Connection trust and application policy
-    accDescr: TLS protects the connection and mTLS can also verify the client certificate. Application identity and method authorization remain separate checks when required by the request's trust boundary.
-    Client["Client"] --> TLS[["TLS / mTLS<br/>connection trust"]]
-    TLS --> Application[["Application boundary<br/>identity + method policy<br/>as required"]]
-    Application --> Handler["Handler"]
-    class Application accent
-```
-
-<figcaption>A secure connection does not replace application access policy.</figcaption>
+<figure class="technical-diagram" data-guide-overview="security" aria-label="Connection trust and request admission">
+<GuideOverview :source="overview" />
+<figcaption>Connection trust, pre-body admission and application policy protect different boundaries. Raw HTTP handlers, including HTTP health aliases, bypass RPC admission.</figcaption>
 </figure>
 
 ## Choose the task

@@ -5,28 +5,19 @@ docType: concept
 outline: deep
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/interceptors.html?raw';
+</script>
+
 # Interceptors
 
 Keep handlers focused on business decisions. Interceptors wrap the RPC with
 shared behavior such as error handling, validation or a timeout.
 
-<figure class="technical-diagram" aria-label="An interceptor wraps the handler call">
-
-```mermaid
-sequenceDiagram
-    accTitle: Before and after an RPC handler
-    accDescr: An interceptor applies request policy before calling next. The handler's response or error returns to the wrapper. With several wrappers, this return path unwinds in reverse order.
-    participant I as Interceptor
-    participant H as Handler
-    Note over I: Before
-    I->>H: next(request)
-    activate H
-    H-->>I: Response or error
-    deactivate H
-    Note over I: After / catch
-```
-
-<figcaption>Order changes behavior. An outer interceptor sees both the request and the inner result. With several wrappers, the response or error unwinds through them in reverse order.</figcaption>
+<figure class="technical-diagram" data-guide-overview="interceptors" aria-label="Compose and select RPC interceptors">
+<GuideOverview :source="overview" />
+<figcaption>Composition and selection are separate: service options replace the global chain, while method filtering selects applicable wrappers. Each wrapper can act before next and on its result or error.</figcaption>
 </figure>
 
 ## Start with the default chain

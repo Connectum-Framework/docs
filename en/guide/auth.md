@@ -5,25 +5,18 @@ docType: concept
 outline: deep
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/auth.html?raw';
+</script>
+
 # Auth and Authz
 
 Authentication establishes an `AuthContext`; authorization decides whether that identity may invoke a method. Keep those decisions separate in the interceptor chain even when they are configured together.
 
-<figure class="technical-diagram" aria-label="Identity is established before method access is decided">
-
-```mermaid
-flowchart TD
-    accTitle: Identity and method access are separate checks
-    accDescr: For a protected RPC, authentication verifies the credential and creates AuthContext. Authorization then checks method access. Either failed check rejects the call before the handler.
-    Auth{"Credential<br/>verified?"} -->|AuthContext| Policy{"Method access<br/>allowed?"}
-    Auth -->|no| Reject["Reject call"]
-    Policy -->|no| Reject
-    Policy -->|yes| Handler["Protected handler"]
-    class Handler accent
-    class Reject critical
-```
-
-<figcaption>A valid credential is not permission to invoke every method.</figcaption>
+<figure class="technical-diagram" data-guide-overview="auth" aria-label="Authentication and authorization">
+<GuideOverview :source="overview" />
+<figcaption>Choose authentication for the trust boundary and authorization for the method policy. Context, propagation and testing share the verified identity; attaching client credentials does not verify them.</figcaption>
 </figure>
 
 ## Choose the trust boundary

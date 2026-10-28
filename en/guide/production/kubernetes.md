@@ -5,31 +5,20 @@ docType: concept
 outline: 2
 ---
 
+<script setup>
+import GuideOverview from '../../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../../.vitepress/theme/assets/diagrams/guide/kubernetes.html?raw';
+</script>
+
 # Kubernetes Deployment
 
 Kubernetes runs and replaces your service processes. Connectum owns what
 happens inside each process; Kubernetes owns placement, replicas and how
 traffic reaches them.
 
-<figure class="technical-diagram" aria-label="Kubernetes traffic reaches ready service replicas">
-
-```mermaid
-flowchart TD
-    accTitle: Readiness controls endpoint membership
-    accDescr: Calls reach a Service address and its ready pod endpoints. Application health feeds Kubernetes readiness checks, which determine endpoint membership separately from the RPC traffic path.
-    Caller["Caller"] --> Address["Service address"]
-    Address --> Endpoints["Ready endpoints"]
-    Endpoints --> RPC
-    Health -.-> Readiness["Kubernetes<br/>readiness checks"]
-    Readiness -.->|membership| Endpoints
-    subgraph Pod["Connectum pod"]
-        Health["Application health"]
-        RPC["RPC handlers<br/>+ middleware"]
-    end
-    class Endpoints accent
-```
-
-<figcaption>A running pod is not automatically a ready application. Dashed links carry readiness state; solid links carry calls.</figcaption>
+<figure class="technical-diagram" data-guide-overview="kubernetes" aria-label="Configure replicas and control readiness">
+<GuideOverview :source="overview" />
+<figcaption>Configuration recipes are not a live-validated rollout. Derive resources and scaling from the workload. Keep readiness separate from RPC traffic and budget termination for preStop, drain, hooks and a safety margin.</figcaption>
 </figure>
 
 ## What you configure

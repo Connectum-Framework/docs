@@ -5,28 +5,20 @@ docType: concept
 outline: 2
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/runtime.html?raw';
+</script>
+
 # Runtime Compatibility
 
 The runtime requirement depends on **what you execute**. Published framework
 packages are compiled JavaScript. Your application's `.ts` files may need
 native type stripping, tsx, or Bun.
 
-<figure class="technical-diagram guide-topic-diagram--wide" aria-label="Choose a runtime by the application execution model">
-
-```mermaid
-flowchart TD
-    accTitle: Choose requirements by what the application executes
-    accDescr: Published packages declare Node.js 22.13.0 or newer. Compiled application JavaScript and tsx follow that floor; this project's native TypeScript path needs Node.js 25.2.0 or newer. Bun integrations have their own tested boundaries.
-    Entry{"Application<br/>execution model"} --> JS["JavaScript / tsx<br/>Node ≥22.13.0"]
-    Entry --> Native["Native .ts<br/>Node ≥25.2.0"]
-    Entry --> Bun["Bun<br/>check module limits"]
-    JS --> Integration["Verify transport<br/>and optional modules"]
-    Native --> Integration
-    Bun --> Integration
-    class Entry accent
-```
-
-<figcaption>A package engine floor, a source execution requirement and a tested integration are different claims.</figcaption>
+<figure class="technical-diagram" data-guide-overview="runtime" aria-label="Runtime requirements and feature coverage">
+<GuideOverview :source="overview" />
+<figcaption>A package engine floor, an application execution requirement and a tested integration are separate claims. Contributor and CI environments have their own requirements.</figcaption>
 </figure>
 
 ## Choose the path

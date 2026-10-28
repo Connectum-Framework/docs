@@ -5,25 +5,18 @@ docType: concept
 outline: deep
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/health.html?raw';
+</script>
+
 # Health Checks
 
 `@connectum/healthcheck` implements the gRPC Health Checking Protocol and can expose HTTP endpoints for platform probes. The application owns status transitions; the protocol only reports them.
 
-<figure class="technical-diagram guide-topic-diagram--scroll" aria-label="Application state is reported to platform probes">
-
-```mermaid
-sequenceDiagram
-    accTitle: The application owns readiness
-    accDescr: The application sets its health status. A platform probe reads that status through the configured health protocol and uses readiness to choose traffic destinations.
-    participant P as Platform
-    participant S as Service
-    Note over S: Application sets status
-    P->>S: Health probe
-    S-->>P: Current health status
-    Note over P: Route only if ready
-```
-
-<figcaption>Listening on a port does not automatically mean the service is ready.</figcaption>
+<figure class="technical-diagram" data-guide-overview="health" aria-label="One health registry, multiple protocol views">
+<GuideOverview :source="overview" />
+<figcaption>The application owns transitions. /healthz, /health and /readyz report the same aggregate state. Different liveness and readiness semantics require application-owned checks; changing the path name does not create another state.</figcaption>
 </figure>
 
 With the healthcheck imports and your `routes` in scope:

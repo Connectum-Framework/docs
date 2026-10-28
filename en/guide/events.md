@@ -5,27 +5,20 @@ docType: concept
 outline: 2
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/events.html?raw';
+</script>
+
 # Events
 
 An order was accepted. Inventory or another subscriber may need to react,
 but Orders does not need their answer to this publication. The EventBus
 connects typed protobuf events to consuming handlers through an adapter.
 
-<figure class="technical-diagram" aria-label="An event passes through an adapter to a subscriber">
-
-```mermaid
-flowchart TD
-    accTitle: An adapter delivers the event
-    accDescr: Orders publishes a typed protobuf event. The selected adapter delivers it through memory or a broker to a matching subscription's middleware and handler; no subscriber RPC response is returned.
-    Orders["Orders<br/>OrderCreated"] --> Adapter{"Chosen adapter"}
-    Adapter -->|memory| Memory["In-memory delivery"]
-    Adapter -->|broker| Broker["Broker delivery"]
-    Memory --> Subscriber["Matching subscription<br/>middleware + handler"]
-    Broker --> Subscriber
-    class Subscriber accent
-```
-
-<figcaption>Publication is not an RPC response from the subscriber.</figcaption>
+<figure class="technical-diagram" data-guide-overview="events" aria-label="Publish, consume, recover and drain events">
+<GuideOverview :source="overview" />
+<figcaption>Publishing skips consuming middleware. Local retries re-enter the handler; exhausted failures can produce a DLQ copy, whose publication can also fail. Shutdown relay uses in-flight ctx.publish before the handler returns. Recovery and relay details marked Since 1.3.0 require that release.</figcaption>
 </figure>
 
 ## One publication

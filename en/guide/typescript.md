@@ -5,28 +5,20 @@ docType: concept
 outline: deep
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/typescript.html?raw';
+</script>
+
 # TypeScript
 
 Applications can execute erasable TypeScript directly on the documented Node.js
 line. Connectum packages ship compiled ESM JavaScript and declarations; supported
 versions and tested Bun behavior are in [Runtime Compatibility](/en/guide/runtime-compatibility).
 
-<figure class="technical-diagram guide-topic-diagram--wide" aria-label="Application TypeScript and published framework code are different inputs">
-
-```mermaid
-flowchart TD
-    accTitle: Runtime execution and type checking use different inputs
-    accDescr: Your application source runs through Node.js type stripping, tsx or Bun and consumes compiled framework ESM. TypeScript separately checks the source against published declarations.
-    Source["Your .ts source"] --> Runtime["Node stripping<br/>tsx / Bun"]
-    Source -.-> Check["tsc --noEmit"]
-    Package["Published packages"] --> JS["Compiled ESM .js"]
-    Package --> Types["Type declarations .d.ts"]
-    JS --> Runtime
-    Types --> Check
-    class Check accent
-```
-
-<figcaption>Native execution skips a build step, not type checking.</figcaption>
+<figure class="technical-diagram" data-guide-overview="typescript" aria-label="TypeScript source, generation and execution">
+<GuideOverview :source="overview" />
+<figcaption>Runtime execution consumes JavaScript; type checking consumes declarations. Native stripping requires erasable source, including generated proto enums, and does not replace tsc.</figcaption>
 </figure>
 
 ## Quick Start

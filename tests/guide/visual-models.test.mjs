@@ -26,21 +26,19 @@ test('the generic animation player, clock and stylesheet are removed, not merely
     assert.equal(staticFigures, 0, 'Generic card models must not return to the Guide');
 });
 
-test('the Mermaid pilots explain dependencies and a call sequence', () => {
+test('the About pilot retains dependencies while Interceptors maps the whole section', () => {
     const about = read('en/guide/about.md');
     const interceptors = read('en/guide/interceptors.md');
     for (const source of [about, interceptors]) {
         assert.match(source, /<figure class="technical-diagram"/);
-        assert.match(source, /```mermaid/);
-        assert.match(source, /accTitle:/);
-        assert.match(source, /accDescr:/);
         assert.match(source, /<figcaption>/);
         assert.doesNotMatch(source, /<figure class="guide-map"/);
     }
     assert.match(about, /Handlers\[.*\] --> Service/);
-    assert.match(interceptors, /sequenceDiagram/);
-    assert.match(interceptors, /I->>H: next\(request\)/);
-    assert.match(interceptors, /H-->>I: Response or error/);
+    assert.match(about, /accTitle:/);
+    assert.match(about, /accDescr:/);
+    assert.match(interceptors, /data-guide-overview="interceptors"/);
+    assert.match(interceptors, /<GuideOverview :source="overview" \/>/);
 });
 
 test('Server embeds its static composition source without replacing native code examples', () => {

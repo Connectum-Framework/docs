@@ -5,27 +5,20 @@ docType: concept
 outline: 2
 ---
 
+<script setup>
+import GuideOverview from '../../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../../.vitepress/theme/assets/diagrams/guide/custom-protocols.html?raw';
+</script>
+
 # Creating Custom Protocol Plugins
 
 Most applications need only the built-in Health Check and Reflection modules.
 A custom protocol is an extension point for infrastructure RPCs or plain HTTP
 endpoints that do not belong in a business service.
 
-<figure class="technical-diagram" aria-label="Initialize once, register routes, then serve">
-
-```mermaid
-flowchart TD
-    accTitle: Prepare state once and repeat route registration
-    accDescr: A successful setup prepares protocol state from the mounted-service snapshot. Register adds RPC routes or an explicit HTTP fallback and can run again when another router is built.
-    Snapshot["Mounted-service<br/>snapshot"] --> Setup["setup()"]
-    Setup -->|success| Prepared["Prepared protocol"]
-    Prepared --> Register["register()"]
-    Register --> Routes["RPC routes<br/>or HTTP fallback"]
-    Routes -.->|rebuild router| Register
-    class Register accent
-```
-
-<figcaption>One successful setup per server; route registration may happen more than once.</figcaption>
+<figure class="technical-diagram" data-guide-overview="custom-protocols" aria-label="Custom protocol initialization and routing">
+<GuideOverview :source="overview" />
+<figcaption>Keep setup idempotent because failed initial materialization can retry it. Create a fresh protocol instance per server. Supported RPC content types receive protocol-aware unimplemented errors; other unmatched requests retain 404.</figcaption>
 </figure>
 
 ## Keep registration repeatable

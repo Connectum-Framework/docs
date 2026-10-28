@@ -5,26 +5,19 @@ docType: concept
 outline: 2
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/quickstart.html?raw';
+</script>
+
 # Build Your First Connectum Service
 
 One contract, one handler, one running service. You do not need a broker,
 an identity provider or a telemetry backend to make your first call.
 
-<figure class="technical-diagram" aria-label="From contract to a working RPC">
-
-```mermaid
-flowchart TD
-    accTitle: Build the contract and observe a real reply
-    accDescr: Generate types and descriptors from GreeterService's proto contract, implement SayHello, and start the server. A real client sends a name and receives a greeting.
-    Proto["GreeterService<br/>.proto"] -->|generate| Types["Types + descriptors"]
-    Types --> Handler["SayHello handler"]
-    Handler --> Server["Running server"]
-    Client["RPC client"] -->|name| Server
-    Server -->|greeting| Client
-    class Server accent
-```
-
-<figcaption>The first milestone is a real response, plus a rejected invalid request.</figcaption>
+<figure class="technical-diagram" data-guide-overview="quickstart" aria-label="Build and verify the first RPC">
+<GuideOverview :source="overview" />
+<figcaption>grpcurl uses h2c; curl over plaintext HTTP/1.1 requires changing the listener mode and restarting. Verify a greeting and a rejected invalid request before adding TLS, authentication and resilience.</figcaption>
 </figure>
 
 ## What you will build

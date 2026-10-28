@@ -5,26 +5,20 @@ docType: concept
 outline: 2
 ---
 
+<script setup>
+import GuideOverview from '../../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../../.vitepress/theme/assets/diagrams/guide/mesh.html?raw';
+</script>
+
 # Istio Service Mesh
 
 A mesh can secure and manage connections between service workloads. It is
 not required for Connectum: add it when your deployment needs workload mTLS,
 traffic policy or mesh-level visibility.
 
-<figure class="technical-diagram" aria-label="Mesh policy surrounds the application call">
-
-```mermaid
-flowchart TD
-    accTitle: Mesh connection policy surrounds application policy
-    accDescr: Orders calls through its mesh proxy to the destination proxy using configured workload identity and mTLS. Inventory still applies its own application identity and method policy.
-    Orders["Orders call"] --> Outbound[["Orders workload<br/>mesh proxy"]]
-    Outbound -->|workload mTLS| Inbound
-    Inbound[["Inventory workload<br/>mesh proxy"]] --> Policy["Application policy"]
-    Policy --> Inventory["Inventory handler"]
-    class Policy accent
-```
-
-<figcaption>Workload identity does not by itself authorize a user to invoke an RPC.</figcaption>
+<figure class="technical-diagram" data-guide-overview="mesh" aria-label="Separate mesh and application policy">
+<GuideOverview :source="overview" />
+<figcaption>Recipe overview, not a live-validated mesh deployment. Workload identity does not authorize a user RPC. Retain application TLS when required by the deployment, and coordinate retry ownership and budgets.</figcaption>
 </figure>
 
 ## One owner for each policy

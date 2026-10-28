@@ -5,27 +5,20 @@ docType: concept
 outline: 2
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/validation.html?raw';
+</script>
+
 # Validation
 
 Inventory should receive a meaningful SKU, not an empty string. Put that rule
 beside the field in your protobuf contract; the configured validation
 interceptor checks it before the handler runs.
 
-<figure class="technical-diagram" aria-label="Validation before application work">
-
-```mermaid
-flowchart TD
-    accTitle: Reject invalid input before business work
-    accDescr: The configured validation interceptor checks the request against generated protobuf constraints. Valid input reaches the handler; invalid input returns INVALID_ARGUMENT.
-    Request["Request message"] --> Check{"Schema rules<br/>satisfied?"}
-    Rules["Generated<br/>constraints"] -.-> Check
-    Check -->|yes| Handler["Handler<br/>check stock"]
-    Check -->|no| Error["INVALID_ARGUMENT"]
-    class Handler accent
-    class Error critical
-```
-
-<figcaption>A schema rule checks input shape. Stock availability remains a business decision in the handler.</figcaption>
+<figure class="technical-diagram" data-guide-overview="validation" aria-label="Validate structure before business work">
+<GuideOverview :source="overview" />
+<figcaption>Annotations require installed dependencies, regenerated descriptors and an active interceptor. Structural checks do not establish uniqueness, stock availability or a customer’s credit limit.</figcaption>
 </figure>
 
 ## One rule

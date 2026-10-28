@@ -5,25 +5,19 @@ docType: concept
 outline: 2
 ---
 
+<script setup>
+import GuideOverview from '../../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../../.vitepress/theme/assets/diagrams/guide/transport.html?raw';
+</script>
+
 # Transport Matrix
 
 The important question is not just “HTTP or gRPC?” It is whether the client,
 proxy and server agree on a protocol all the way through.
 
-<figure class="technical-diagram" aria-label="Every leg must support the requested protocol">
-
-```mermaid
-flowchart TD
-    accTitle: Keep native gRPC on HTTP/2 across every leg
-    accDescr: A native gRPC client needs HTTP/2 both to the proxy and from the proxy to the server. An HTTP/1.1 upstream leg breaks that native gRPC path even if the edge accepts HTTP/2.
-    Client["Native gRPC client"] -->|HTTP/2| Proxy["Proxy"]
-    Proxy -->|HTTP/2 upstream| Server["h2c or TLS + ALPN<br/>server listener"]
-    Proxy -.-> Broken["HTTP/1.1 upstream<br/>not native gRPC"]
-    class Server accent
-    class Broken critical
-```
-
-<figcaption>HTTP/2 at the edge does not guarantee HTTP/2 reaches the application.</figcaption>
+<figure class="technical-diagram" data-guide-overview="transport" aria-label="Choose the complete transport path">
+<GuideOverview :source="overview" />
+<figcaption>Native gRPC always needs HTTP/2; Connect bidirectional streaming also needs it. A plaintext listener chooses HTTP/1.1 or h2c. A mixed port needs TLS/ALPN or a suitable proxy.</figcaption>
 </figure>
 
 ## The common choices

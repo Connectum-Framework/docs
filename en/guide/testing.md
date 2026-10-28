@@ -5,25 +5,18 @@ docType: concept
 outline: deep
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/testing.html?raw';
+</script>
+
 # Testing
 
 Connectum supports two complementary testing layers. Use TypeScript tests for fast handler and transport feedback, then scenario tests for the deployed protocol boundary.
 
-<figure class="technical-diagram guide-topic-diagram--wide" aria-label="Test from a small decision to the deployed boundary">
-
-```mermaid
-flowchart TD
-    accTitle: Test different boundaries around the same handler
-    accDescr: Handler checks exercise business decisions. In-process RPC tests also exercise routing and middleware. Deployed scenarios additionally cross the configured network, TLS or proxy boundary.
-    Unit["Handler checks"] --> Handler
-    Local["In-process client"] --> Router
-    Scenario["Deployed scenarios"] --> Network["Network · TLS<br/>proxy configuration"]
-    Network --> Router
-    Router["Server router<br/>+ middleware"] --> Handler["Handler under test"]
-    class Handler accent
-```
-
-<figcaption>A passing local test does not prove that a proxy or certificate is configured correctly.</figcaption>
+<figure class="technical-diagram" data-guide-overview="testing" aria-label="Choose the testing boundary">
+<GuideOverview :source="overview" />
+<figcaption>Local tests bypass network, certificate and proxy configuration. Run success and failure scenarios against the real listener; plaintext gRPC and HTTP/1.1 require separate listener modes.</figcaption>
 </figure>
 
 For a server with the example Inventory implementation registered:

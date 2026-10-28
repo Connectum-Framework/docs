@@ -5,27 +5,19 @@ docType: concept
 outline: 2
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/scaffolding.html?raw';
+</script>
+
 # Scaffolding a New Service
 
 Scaffolding writes the starting files. After that, they are your application —
 not hidden framework configuration.
 
-<figure class="technical-diagram guide-topic-diagram--wide" aria-label="Scaffold, inspect, then change your service">
-
-```mermaid
-flowchart TD
-    accTitle: Scaffolding writes files that your application owns
-    accDescr: Runtime, package manager and capability choices feed the builder or CLI. The resulting project contains editable proto contracts, handlers, server configuration and tests.
-    Choices["Runtime · package manager<br/>capabilities"] --> Scaffold["Builder / CLI"]
-    Scaffold --> Project["Your editable project"]
-    Project --> Proto["Proto contracts"]
-    Project --> Handlers["Handlers"]
-    Project --> Server["Server config"]
-    Project --> Tests["Tests"]
-    class Project accent
-```
-
-<figcaption>Generated starting code remains ordinary, editable project code.</figcaption>
+<figure class="technical-diagram" data-guide-overview="scaffolding" aria-label="Scaffolding commands and owned files">
+<GuideOverview :source="overview" />
+<figcaption>The builder previews a pinned generator; documented 1.3 options and descriptor exports are not available in npm 1.2.x. Optional modules still need their broker, auth configuration and telemetry backend.</figcaption>
 </figure>
 
 ## Start with the files

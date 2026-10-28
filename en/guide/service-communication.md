@@ -5,27 +5,19 @@ docType: concept
 outline: deep
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/service-calls.html?raw';
+</script>
+
 # Service Communication
 
 Orders needs an answer about stock before replying to a customer. It calls
 Inventory's contract and waits for the result. That is the synchronous path.
 
-<figure class="technical-diagram" aria-label="Orders waits for Inventory's answer">
-
-```mermaid
-sequenceDiagram
-    accTitle: Orders waits for the stock result
-    accDescr: The Orders handler calls Inventory with a SKU and waits for its stock result or error before answering the customer.
-    participant O as Orders
-    participant I as Inventory
-    O->>I: CheckStock(sku)
-    activate I
-    I-->>O: Stock result or error
-    deactivate I
-    Note over O: Answer the customer
-```
-
-<figcaption>Use an event instead when another service can react later and no immediate answer is needed.</figcaption>
+<figure class="technical-diagram" data-guide-overview="service-calls" aria-label="Known contracts, selected routes and outgoing policy">
+<GuideOverview :source="overview" />
+<figcaption>The catalog supplies types and descriptors, without deployment addresses. Outgoing policy wraps each catalog call once, on local and remote routes. Locally mounted targets bypass the remote resolver.</figcaption>
 </figure>
 
 Inside the Orders handler, with generated contract types in scope:

@@ -5,31 +5,20 @@ docType: concept
 outline: 2
 ---
 
+<script setup>
+import GuideOverview from '../../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../../.vitepress/theme/assets/diagrams/guide/envoy.html?raw';
+</script>
+
 # Envoy Gateway + OpenAPI
 
 A gateway is an optional edge in front of your services. It can route native
 gRPC traffic. With a separately configured transcoder and descriptors, it can
 also turn an HTTP/JSON request into a gRPC call.
 
-<figure class="technical-diagram guide-topic-diagram--wide" aria-label="An explicitly configured REST-to-gRPC path">
-
-```mermaid
-flowchart TD
-    accTitle: Transcoding needs its own route and descriptors
-    accDescr: A configured gateway can transcode HTTP JSON requests using protobuf descriptors while routing native gRPC separately. Both paths reach the Connectum service's application policy.
-    JSON["HTTP/JSON client"] --> Transcode
-    Native["gRPC client"] --> Route
-    Descriptors["Protobuf<br/>descriptor set"] -.-> Transcode
-    subgraph Gateway["Configured gateway"]
-        Transcode["Route + transcoder"]
-        Route["Native gRPC route"]
-    end
-    Transcode -->|gRPC| Service["Connectum service<br/>application policy"]
-    Route -->|gRPC| Service
-    class Transcode accent
-```
-
-<figcaption>Generating OpenAPI alone does not install a transcoder or expose a REST endpoint.</figcaption>
+<figure class="technical-diagram" data-guide-overview="envoy" aria-label="Keep gateway artifacts separate">
+<GuideOverview :source="overview" />
+<figcaption>Integration plan, not a live-validated manifest set. OpenAPI and Swagger UI document the API; descriptors, mounts, routes and the enabled filter implement transcoding. Native gRPC keeps its own route.</figcaption>
 </figure>
 
 ## Keep the artifacts separate

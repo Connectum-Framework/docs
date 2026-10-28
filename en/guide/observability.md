@@ -5,27 +5,18 @@ docType: concept
 outline: deep
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/observability.html?raw';
+</script>
+
 # Observability
 
 `@connectum/otel` connects RPC telemetry and application instrumentation to OpenTelemetry. Instrumentation decides what signals to create; provider/exporter configuration decides where those signals go.
 
-<figure class="technical-diagram guide-topic-diagram--scroll" aria-label="Telemetry needs both instrumentation and an export destination">
-
-```mermaid
-flowchart TD
-    accTitle: Instrument signals and configure their destination
-    accDescr: RPC and application instrumentation create configured traces, metrics and logs. Provider and exporter configuration sends those signals to the selected telemetry backend.
-    Work["RPC + application<br/>instrumentation"] --> Traces["Traces<br/>call paths"]
-    Work --> Metrics["Metrics<br/>trends"]
-    Work --> Logs["Logs<br/>events"]
-    Traces --> Export["Configured providers<br/>and exporters"]
-    Metrics --> Export
-    Logs --> Export
-    Export --> Backend["Telemetry backend"]
-    class Export accent
-```
-
-<figcaption>Adding an interceptor alone does not configure a production collector or dashboard.</figcaption>
+<figure class="technical-diagram" data-guide-overview="observability" aria-label="Create signals and configure their destination">
+<GuideOverview :source="overview" />
+<figcaption>Instrumentation creates signals; providers configure their resources and destinations. Log correlation needs an active span. Configure remote-parent trust and data recording deliberately.</figcaption>
 </figure>
 
 ## Minimal RPC instrumentation

@@ -6,6 +6,8 @@ outline: deep
 ---
 
 <script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/server.html?raw';
 import ServerCompositionDiagram from '../../.vitepress/theme/components/ServerCompositionDiagram.vue';
 </script>
 
@@ -17,6 +19,11 @@ middleware or protocols you need; it owns listening, startup and shutdown.
 <figure class="technical-diagram" aria-label="The parts of one Connectum server">
 <ServerCompositionDiagram />
 <figcaption>The plates show server composition, not RPC execution order. In-process clients can use registered services before a network listener starts. Lifecycle and shutdown behavior have their own guides below.</figcaption>
+</figure>
+
+<figure class="technical-diagram" data-guide-overview="server" aria-label="Configure, run and stop a server">
+<GuideOverview :source="overview" />
+<figcaption>Configuration, lifecycle and graceful shutdown own different tasks. The drain timeout does not bound shutdown hooks; in-process cancellation remains cooperative.</figcaption>
 </figure>
 
 ## Minimal server
