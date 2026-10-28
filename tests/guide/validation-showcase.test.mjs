@@ -22,8 +22,8 @@ test('each request selects its own recorded RPC result and handler boundary', ()
     assert.deepEqual(
         data.scenarios.map(({ id, code, handlerCalls }) => ({ id, code, handlerCalls })),
         [
-            { id: 'empty', code: 'InvalidArgument', handlerCalls: 0 },
             { id: 'known', code: 'OK', handlerCalls: 1 },
+            { id: 'empty', code: 'InvalidArgument', handlerCalls: 0 },
             { id: 'unknown', code: 'NotFound', handlerCalls: 1 },
         ],
     );
@@ -32,6 +32,13 @@ test('each request selects its own recorded RPC result and handler boundary', ()
         assert.deepEqual(JSON.parse(decoded(scenario.request)), record.request);
         assert.deepEqual(JSON.parse(decoded(scenario.result)), record.response ?? record.error);
     }
+});
+
+test('the first scenario is successful and supplies the initial selected state', () => {
+    assert.equal(data.scenarios[0].id, 'known');
+    assert.equal(data.scenarios[0].code, 'OK');
+    assert.match(read('.vitepress/theme/components/ValidationShowcase.vue'), /const selected = ref<ValidationScenarioId>\(data\.scenarios\[0\]\.id\)/);
+    assert.match(read('en/contributing/documentation-style.md'), /Start each code\/result showcase with a successful scenario/);
 });
 
 test('recorded results cannot silently outlive their executable sources', () => {

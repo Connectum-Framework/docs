@@ -10,8 +10,8 @@ test('recorded outcomes match real RPCs through the validation interceptor', asy
     assert.deepEqual(
         observed.records.map(({ code, handlerCalls }) => ({ code, handlerCalls })),
         [
-            { code: 'InvalidArgument', handlerCalls: 0 },
             { code: 'OK', handlerCalls: 1 },
+            { code: 'InvalidArgument', handlerCalls: 0 },
             { code: 'NotFound', handlerCalls: 1 },
         ],
     );

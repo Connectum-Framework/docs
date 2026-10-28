@@ -5,7 +5,7 @@ import type { ValidationScenarioId } from '../../validation/scenarios.ts';
 import { data } from '../../validation/showcase.data.ts';
 
 const root = ref<HTMLElement>();
-const selected = ref<ValidationScenarioId>('empty');
+const selected = ref<ValidationScenarioId>(data.scenarios[0].id);
 const source = ref<'proto' | 'handler'>('proto');
 const scenario = computed(() => data.scenarios.find((entry) => entry.id === selected.value) ?? data.scenarios[0]);
 const hydrated = ref(false);

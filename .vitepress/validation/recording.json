@@ -9,9 +9,20 @@
         "pnpm-lock.yaml": "db8177f229998e9872c08be0c1913a04b3b967f06f330ac37740d03cdcbdf866",
         "buf.lock": "64c1d1a061dcacc65bfdabe83ea48d472b2b837366cc6355e7142a3387c4ba68",
         "buf.gen.yaml": "e4895b47a69e0a8cfba99e02b81459d38fc39622f25c259d2b340669d5bd2cbf",
-        "../scenarios.ts": "b6468029e2410aa5c22fc781fe2abe8e7dd13f228f24646bc944f4a277b4b50b"
+        "../scenarios.ts": "2b0ff9ccd54c26a75fff5ee399c1df01c19665116f3a43c9b9accb713b23e797"
     },
     "records": [
+        {
+            "id": "known",
+            "request": {
+                "sku": "A-1"
+            },
+            "handlerCalls": 1,
+            "code": "OK",
+            "response": {
+                "units": 7
+            }
+        },
         {
             "id": "empty",
             "request": {
@@ -22,17 +33,6 @@
             "error": {
                 "code": "InvalidArgument",
                 "message": "sku: must be at least 1 characters [string.min_len]"
-            }
-        },
-        {
-            "id": "known",
-            "request": {
-                "sku": "A-1"
-            },
-            "handlerCalls": 1,
-            "code": "OK",
-            "response": {
-                "units": 7
             }
         },
         {

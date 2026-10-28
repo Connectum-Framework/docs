@@ -95,6 +95,10 @@ pause choice across navigation. Pause offscreen/hidden work, keep reduced motion
 static and clean up on navigation. Explicitly distinguish illustrations from
 live execution. Captions and complete explanations remain readable without JS.
 
+Start each code/result showcase with a successful scenario. Place it first in
+the controls and select it by default, including without JavaScript and after
+route navigation. Failure scenarios follow the successful call.
+
 Use shared styling and lifecycle practices; do not duplicate timers per page.
 Verify motion and pause behavior in a real browser, not only by checking that
 keyframes exist. Keep the existing resolver walkthrough for its routing scenes.

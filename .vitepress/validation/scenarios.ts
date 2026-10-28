@@ -1,15 +1,15 @@
 export const validationScenarios = [
     {
-        id: 'empty',
-        label: 'Empty SKU',
-        sku: '',
-        explanation: 'The empty string violates the proto constraint. Validation rejects the request before the handler runs.',
-    },
-    {
         id: 'known',
         label: 'Known SKU',
         sku: 'A-1',
         explanation: 'The request passes validation. The handler looks up A-1 in the example inventory and returns its stock.',
+    },
+    {
+        id: 'empty',
+        label: 'Empty SKU',
+        sku: '',
+        explanation: 'The empty string violates the proto constraint. Validation rejects the request before the handler runs.',
     },
     {
         id: 'unknown',

@@ -22,8 +22,8 @@ invocations with `../recording.json`:
 
 | Request | Result | Handler calls |
 | --- | --- | --- |
-| Empty SKU | `InvalidArgument` from validation | 0 |
 | `A-1` | Stock from the example map | 1 |
+| Empty SKU | `InvalidArgument` from validation | 0 |
 | `UNKNOWN` | `NotFound` from the handler | 1 |
 
 The source hashes also guard the displayed recording against changes to the
