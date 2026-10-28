@@ -72,9 +72,11 @@
     height: 16px;
     accent-color: var(--vp-c-brand-1);
 }
-.vp-doc .assembly-picker label:focus-within {
+.vp-doc .assembly-picker label:has(input:focus-visible) {
     outline: 2px solid var(--vp-c-brand-1);
-    outline-offset: 3px;
+    outline-offset: -2px;
+    box-shadow: none;
+    background: var(--vp-c-brand-soft);
 }
 .vp-doc .assembly-explanation {
     margin: 14px 0 20px;
