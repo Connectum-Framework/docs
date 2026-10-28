@@ -26,11 +26,10 @@ test('the generic animation player, clock and stylesheet are removed, not merely
     assert.equal(staticFigures, 23, 'The unchanged overview models should remain static pending diagram review');
 });
 
-test('the pilot diagrams explain dependencies, public composition and a call sequence', () => {
+test('the Mermaid pilots explain dependencies and a call sequence', () => {
     const about = read('en/guide/about.md');
-    const server = read('en/guide/server.md');
     const interceptors = read('en/guide/interceptors.md');
-    for (const source of [about, server, interceptors]) {
+    for (const source of [about, interceptors]) {
         assert.match(source, /<figure class="technical-diagram"/);
         assert.match(source, /```mermaid/);
         assert.match(source, /accTitle:/);
@@ -39,12 +38,23 @@ test('the pilot diagrams explain dependencies, public composition and a call seq
         assert.doesNotMatch(source, /<figure class="guide-map"/);
     }
     assert.match(about, /Handlers\[.*\] --> Service/);
-    assert.match(server, /Optional\[.*\] -\.-> Server/);
-    assert.match(server, /Server --> Local/);
-    assert.match(server, /Server -->\|start\| Network/);
     assert.match(interceptors, /sequenceDiagram/);
     assert.match(interceptors, /I->>H: next\(request\)/);
     assert.match(interceptors, /H-->>I: Response or error/);
+});
+
+test('Server embeds its static composition source without replacing native code examples', () => {
+    const server = read('en/guide/server.md');
+    const component = read('.vitepress/theme/components/ServerCompositionDiagram.vue');
+    assert.match(server, /<ServerCompositionDiagram \/>/);
+    assert.doesNotMatch(server, /```mermaid|<figure class="guide-map"/);
+    assert.match(server, /not RPC execution order/);
+    assert.match(server, /before a network listener starts/);
+    assert.match(server, /```typescript/);
+    assert.match(server, /::: details Add health, reflection, middleware and shutdown coordination/);
+    assert.match(component, /server-composition\.html\?raw/);
+    assert.match(component, /technical-diagram__art/);
+    assert.doesNotMatch(component, /onMounted|ClientOnly|fetch\(/);
 });
 
 test('the accepted catalog and resolver retain their own visual mechanisms', () => {

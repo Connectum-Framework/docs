@@ -5,25 +5,18 @@ docType: concept
 outline: deep
 ---
 
+<script setup>
+import ServerCompositionDiagram from '../../.vitepress/theme/components/ServerCompositionDiagram.vue';
+</script>
+
 # Server
 
 One server owns one process's RPC boundary. Give it your services and any
 middleware or protocols you need; it owns listening, startup and shutdown.
 
-<figure class="technical-diagram" aria-label="The public inputs and call boundaries of one server">
-
-```mermaid
-flowchart TD
-    accTitle: Compose one server
-    accDescr: Services supply RPC implementations. Interceptors and protocol plugins are optional inputs. In-process clients do not require a listener; start opens the network boundary.
-    Services["services<br/>handlers"] --> Server["createServer"]
-    Optional["Optional inputs<br/>interceptors<br/>protocols"] -.-> Server
-    Server --> Local["In-process<br/>clients"]
-    Server -->|start| Network["Network<br/>listener"]
-    class Server accent
-```
-
-<figcaption>In-process clients can use registered services before a network listener starts. Dashed inputs are optional; lifecycle and shutdown behavior have their own guides below.</figcaption>
+<figure class="technical-diagram" aria-label="The parts of one Connectum server">
+<ServerCompositionDiagram />
+<figcaption>The plates show server composition, not RPC execution order. In-process clients can use registered services before a network listener starts. Lifecycle and shutdown behavior have their own guides below.</figcaption>
 </figure>
 
 ## Minimal server
