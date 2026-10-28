@@ -1,28 +1,26 @@
 {
     "transport": "Connect over HTTP/1.1",
     "sources": {
-        "proto/shop/v1/inventory.proto": "116882f7576b6de9b76d384d97875d47097706c324d803abb76f1d3aad563e13",
+        "proto/shop/v1/inventory.proto": "cd79c02e191190d29ac595333a59956dc4117947d513ab3f3ea23d27396b57f3",
         "src/inventory.ts": "65ea398bce69e0df1490f7e38018bf78ea8d82d196119bb3f2524a679dedbba4",
         "src/server.ts": "12c6796b372a913b7db570e85b8a85767407b4cc299c5f50957b80a88a93cdf4",
-        "src/capture.ts": "70162f20a3de8835663d299bf6ce8647014a25cf584c6c9ced3b4b286a04ae1b",
-        "package.json": "8c9eeb43e0d087a59e8915b24b8bdb25916d5f60522fc59b3fd7b07aeedef932",
-        "pnpm-lock.yaml": "db8177f229998e9872c08be0c1913a04b3b967f06f330ac37740d03cdcbdf866",
+        "src/capture.ts": "7e6b38a2897376bdf3a515333e0634dcd8d881202776108e1fb6b1bfe7d24cf2",
+        "package.json": "ca2456b5ad3007b0b9b51ab33a9b79835baf1704aad02c0dbd74c9c42fa2c8a3",
+        "pnpm-lock.yaml": "ad670a9852e5326496ffc20a59d8bc1205138b2ab17cdb7f223e9ba01940d6db",
         "buf.lock": "64c1d1a061dcacc65bfdabe83ea48d472b2b837366cc6355e7142a3387c4ba68",
         "buf.gen.yaml": "e4895b47a69e0a8cfba99e02b81459d38fc39622f25c259d2b340669d5bd2cbf",
-        "../scenarios.ts": "2b0ff9ccd54c26a75fff5ee399c1df01c19665116f3a43c9b9accb713b23e797"
+        "../scenarios.ts": "be4a12fb9c1ecc4593f4495c0a5b47b2a4c545d867778d29db5626620476bcb5"
     },
     "records": [
         {
             "id": "known",
             "request": {
-                "sku": "A-1"
+                "sku": "A-1",
+                "quantity": 2
             },
             "validation": {
-                "field": "sku",
-                "value": "A-1",
-                "characters": 3,
-                "minimum": "1",
-                "passed": true
+                "passed": true,
+                "issues": []
             },
             "handlerCalls": 1,
             "code": "OK",
@@ -31,16 +29,43 @@
             }
         },
         {
-            "id": "empty",
+            "id": "zero",
             "request": {
-                "sku": ""
+                "sku": "A-1",
+                "quantity": 0
             },
             "validation": {
-                "field": "sku",
-                "value": "",
-                "characters": 0,
-                "minimum": "1",
-                "passed": false
+                "passed": false,
+                "issues": [
+                    {
+                        "field": "quantity",
+                        "rule": "int32.gt",
+                        "message": "must be greater than 0"
+                    }
+                ]
+            },
+            "handlerCalls": 0,
+            "code": "InvalidArgument",
+            "error": {
+                "code": "InvalidArgument",
+                "message": "quantity: must be greater than 0 [int32.gt]"
+            }
+        },
+        {
+            "id": "empty",
+            "request": {
+                "sku": "",
+                "quantity": 2
+            },
+            "validation": {
+                "passed": false,
+                "issues": [
+                    {
+                        "field": "sku",
+                        "rule": "string.min_len",
+                        "message": "must be at least 1 characters"
+                    }
+                ]
             },
             "handlerCalls": 0,
             "code": "InvalidArgument",
@@ -52,14 +77,12 @@
         {
             "id": "unknown",
             "request": {
-                "sku": "UNKNOWN"
+                "sku": "UNKNOWN",
+                "quantity": 2
             },
             "validation": {
-                "field": "sku",
-                "value": "UNKNOWN",
-                "characters": 7,
-                "minimum": "1",
-                "passed": true
+                "passed": true,
+                "issues": []
             },
             "handlerCalls": 1,
             "code": "NotFound",

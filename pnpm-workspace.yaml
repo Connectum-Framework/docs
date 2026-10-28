@@ -31,4 +31,5 @@ overrides:
   'postcss@<8.5.25': '8.5.25'
 
 allowBuilds:
+  '@bufbuild/buf': true
   esbuild: true

@@ -1,0 +1,9 @@
+version: v2
+plugins:
+  - local: protoc-gen-es
+    out: .vitepress/validation/gen
+    opt:
+      - target=ts
+      - import_extension=.ts
+      - erasable_syntax=true
+      - map_imports=buf/validate/:@bufbuild/protovalidate/gen

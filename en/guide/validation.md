@@ -13,22 +13,27 @@ import ValidationShowcase from '../../.vitepress/theme/components/ValidationShow
 
 # Validation
 
-Inventory should receive a meaningful SKU, not an empty string. Put that rule
-beside the field in your protobuf contract; the configured validation
+Inventory should receive a meaningful SKU and a positive quantity. Put those rules
+beside the fields in your protobuf contract; the configured validation
 interceptor checks it before the handler runs.
 
-## One rule
+## Two rules {#one-rule}
 
 With `buf/validate/validate.proto` imported:
 
 <ValidationShowcase>
 <template #contract>
 
-```proto{4}
+```proto{4,9}
 message CheckStockRequest {
   string sku = 1 [
     (buf.validate.field).string = {
       min_len: 1
+    }
+  ];
+  int32 quantity = 2 [
+    (buf.validate.field).int32 = {
+      gt: 0
     }
   ];
 }

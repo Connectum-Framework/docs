@@ -39,10 +39,15 @@ jobs:
       - name: Test overview boundaries and preserved guide content
         run: pnpm guide:test
 
+      - name: Check validation descriptor generation
+        run: |
+          pnpm validation:generate
+          git diff --exit-code -- .vitepress/validation/gen
+
       - name: Typecheck validation showcase
         run: pnpm validation:typecheck
 
-      - name: Test recorded validation RPCs
+      - name: Test validation RPC parity
         run: |
           pnpm --dir .vitepress/validation/example install --frozen-lockfile
           pnpm --dir .vitepress/validation/example generate

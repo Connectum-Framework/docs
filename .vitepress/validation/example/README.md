@@ -1,8 +1,8 @@
-# Validation showcase example
+# Validation example
 
-This example supplies the recorded results shown on the Validation overview.
-It uses the published `@connectum/core` and `@connectum/interceptors` 1.2.0
-packages. The browser displays the recording; it does not start this server.
+This example uses published `@connectum/core` and `@connectum/interceptors` 1.2.0.
+The Validation page runs protovalidate and this handler locally in the browser.
+This directory supplies the real HTTP RPC counterpart, using the same proto.
 
 From this directory, with Node.js >=22.13 and pnpm 11:
 
@@ -13,33 +13,34 @@ pnpm typecheck
 pnpm test
 ```
 
-`buf.lock` pins the validation annotation dependency. Generation retains its
-descriptors so the validation interceptor can read the `min_len` constraint.
+`buf.lock` pins the validation annotations. Generated descriptors retain both
+`string.min_len` and `int32.gt`. The test starts a server on an ephemeral loopback
+port and compares four real Connect requests with `../recording.json`:
 
-The test starts a server on a loopback ephemeral port and sends three real
-Connect requests over HTTP/1.1. It compares response codes, messages and handler
-invocations with `../recording.json`:
+| SKU | Quantity | Result | Handler calls |
+| --- | --- | --- | --- |
+| `A-1` | 2 | Stock from the example map | 1 |
+| `A-1` | 0 | `InvalidArgument` | 0 |
+| Empty | 2 | `InvalidArgument` | 0 |
+| `UNKNOWN` | 2 | `NotFound` | 1 |
 
-| Request | Result | Handler calls |
-| --- | --- | --- |
-| `A-1` | Stock from the example map | 1 |
-| Empty SKU | `InvalidArgument` from validation | 0 |
-| `UNKNOWN` | `NotFound` from the handler | 1 |
-
-The source hashes also guard the displayed recording against changes to the
-contract, handler, server, capture logic and locked dependencies. After an
-intentional example change, inspect the new results before updating the recording:
+The recording is test evidence, not the live form's data source. Guide tests
+compare the browser evaluator with its codes, responses and handler boundaries.
+The captured violations come from protovalidate, not handwritten rule checks.
+Source hashes reject stale captures. After changing this example, inspect new
+results before accepting them:
 
 ```bash
 pnpm record
 pnpm test
 ```
 
-The record includes the decoded response or `ConnectError` fields used by the
-showcase and a rule trace: field value, character count, descriptor-derived
-minimum and whether the RPC reached the handler. The capture rejects a trace
-whose comparison disagrees with that observed interceptor boundary.
+The site commits a small browser descriptor under `../gen/`. From the repository
+root, `pnpm validation:generate` reproduces it using the official generator with
+package-mapped validation imports. CI rejects descriptor drift. An ordinary docs
+build needs only the root dependencies, not this directory's install or ignored
+`gen/` output.
 
-This is not a byte-for-byte dump of HTTP traffic. The inventory map is fixture
-data, not a database adapter. No resilience policy or network service is simulated
-by the browser's path replay.
+The inventory map is fixture data. The handler looks up the SKU; quantity is
+checked by proto validation. No production database or browser-hosted RPC server
+is implied.
