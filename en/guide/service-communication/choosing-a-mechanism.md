@@ -11,12 +11,18 @@ Orders needs to know whether Inventory has stock **before answering** the
 customer. That is a service call. After an order is accepted, other services
 can react to **what happened** through an event.
 
-<figure class="guide-map" aria-label="An order can use both calls and events">
-<ol>
-<li><strong>Check stock</strong><small>Orders calls Inventory and waits for an answer.</small></li>
-<li><strong>Make the decision</strong><small>Orders accepts or rejects the operation.</small></li>
-<li><strong>Notify others</strong><small>An event lets subscribers react independently.</small></li>
-</ol>
+<figure class="technical-diagram guide-topic-diagram--scroll" aria-label="Choose communication by the result the caller needs">
+
+```mermaid
+flowchart TD
+    accTitle: Choose the interaction by its result
+    accDescr: Use a service call for one answer, streaming for a sequence of answers, or an event for an independent later reaction. A workflow can combine calls and events.
+    Choice{"Interaction goal?"} -->|one answer| Call["Service call"]
+    Choice -->|many answers| Stream["Streaming"]
+    Choice -->|later reaction| Event["Event"]
+    class Choice accent
+```
+
 <figcaption>These are different interaction contracts, not competing transport libraries.</figcaption>
 </figure>
 

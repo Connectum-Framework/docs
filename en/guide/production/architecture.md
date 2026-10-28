@@ -11,12 +11,20 @@ Think of Connectum as the inside of one service process, not the whole
 deployment platform. `createServer()` composes that process's services,
 protocols, middleware and lifecycle.
 
-<figure class="guide-map" aria-label="The shared application request path">
-<ol>
-<li><strong>Enter</strong><small>A network or in-process call reaches the registered router.</small></li>
-<li><strong>Apply policy</strong><small>Configured admission and server interceptors guard the RPC.</small></li>
-<li><strong>Run the handler</strong><small>Your typed implementation handles the request.</small></li>
-</ol>
+<figure class="technical-diagram" aria-label="The shared application request path">
+
+```mermaid
+flowchart TD
+    accTitle: Local and network calls share the application boundary
+    accDescr: A network call enters through the transport. An in-process client is already inside the process. Both reach the registered RPC boundary and the typed handler with configured application policy.
+    Network["Network client"] -->|transport| Boundary
+    subgraph Process["One Connectum process"]
+        Local["In-process client"] --> Boundary["RPC boundary<br/>router · admission · interceptors"]
+        Boundary --> Handler["Typed handler"]
+    end
+    class Boundary accent
+```
+
 <figcaption>The application path is shared; network-specific behavior still belongs to the transport.</figcaption>
 </figure>
 

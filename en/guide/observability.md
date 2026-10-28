@@ -9,12 +9,22 @@ outline: deep
 
 `@connectum/otel` connects RPC telemetry and application instrumentation to OpenTelemetry. Instrumentation decides what signals to create; provider/exporter configuration decides where those signals go.
 
-<figure class="guide-map" aria-label="Telemetry needs both instrumentation and an export destination">
-<ol>
-<li><strong>Observe work</strong><small>Instrument an RPC or an application operation.</small></li>
-<li><strong>Create signals</strong><small>Traces show the path; metrics show trends; logs record events.</small></li>
-<li><strong>Export</strong><small>A configured provider sends signals to the chosen destination.</small></li>
-</ol>
+<figure class="technical-diagram guide-topic-diagram--scroll" aria-label="Telemetry needs both instrumentation and an export destination">
+
+```mermaid
+flowchart TD
+    accTitle: Instrument signals and configure their destination
+    accDescr: RPC and application instrumentation create configured traces, metrics and logs. Provider and exporter configuration sends those signals to the selected telemetry backend.
+    Work["RPC + application<br/>instrumentation"] --> Traces["Traces<br/>call paths"]
+    Work --> Metrics["Metrics<br/>trends"]
+    Work --> Logs["Logs<br/>events"]
+    Traces --> Export["Configured providers<br/>and exporters"]
+    Metrics --> Export
+    Logs --> Export
+    Export --> Backend["Telemetry backend"]
+    class Export accent
+```
+
 <figcaption>Adding an interceptor alone does not configure a production collector or dashboard.</figcaption>
 </figure>
 

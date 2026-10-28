@@ -11,12 +11,20 @@ Most applications need only the built-in Health Check and Reflection modules.
 A custom protocol is an extension point for infrastructure RPCs or plain HTTP
 endpoints that do not belong in a business service.
 
-<figure class="guide-map" aria-label="Initialize once, register routes, then serve">
-<ol>
-<li><strong>Prepare</strong><small>setup reads the mounted-service snapshot and prepares server state.</small></li>
-<li><strong>Register</strong><small>register adds routes each time a router is built.</small></li>
-<li><strong>Serve</strong><small>RPC routes or an explicit raw HTTP fallback handle requests.</small></li>
-</ol>
+<figure class="technical-diagram" aria-label="Initialize once, register routes, then serve">
+
+```mermaid
+flowchart TD
+    accTitle: Prepare state once and repeat route registration
+    accDescr: A successful setup prepares protocol state from the mounted-service snapshot. Register adds RPC routes or an explicit HTTP fallback and can run again when another router is built.
+    Snapshot["Mounted-service<br/>snapshot"] --> Setup["setup()"]
+    Setup -->|success| Prepared["Prepared protocol"]
+    Prepared --> Register["register()"]
+    Register --> Routes["RPC routes<br/>or HTTP fallback"]
+    Routes -.->|rebuild router| Register
+    class Register accent
+```
+
 <figcaption>One successful setup per server; route registration may happen more than once.</figcaption>
 </figure>
 

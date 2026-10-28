@@ -10,12 +10,21 @@ outline: 2
 Scaffolding writes the starting files. After that, they are your application —
 not hidden framework configuration.
 
-<figure class="guide-map" aria-label="Scaffold, inspect, then change your service">
-<ol>
-<li><strong>Choose</strong><small>Runtime, package manager and the capabilities the service needs.</small></li>
-<li><strong>Inspect</strong><small>Read the proto, handler, server configuration and tests.</small></li>
-<li><strong>Own</strong><small>Change the contract and implement your application behavior.</small></li>
-</ol>
+<figure class="technical-diagram guide-topic-diagram--wide" aria-label="Scaffold, inspect, then change your service">
+
+```mermaid
+flowchart TD
+    accTitle: Scaffolding writes files that your application owns
+    accDescr: Runtime, package manager and capability choices feed the builder or CLI. The resulting project contains editable proto contracts, handlers, server configuration and tests.
+    Choices["Runtime · package manager<br/>capabilities"] --> Scaffold["Builder / CLI"]
+    Scaffold --> Project["Your editable project"]
+    Project --> Proto["Proto contracts"]
+    Project --> Handlers["Handlers"]
+    Project --> Server["Server config"]
+    Project --> Tests["Tests"]
+    class Project accent
+```
+
 <figcaption>Generated starting code remains ordinary, editable project code.</figcaption>
 </figure>
 

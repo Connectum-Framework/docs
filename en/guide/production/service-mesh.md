@@ -11,12 +11,19 @@ A mesh can secure and manage connections between service workloads. It is
 not required for Connectum: add it when your deployment needs workload mTLS,
 traffic policy or mesh-level visibility.
 
-<figure class="guide-map" aria-label="Mesh policy surrounds the application call">
-<ol>
-<li><strong>Orders workload</strong><small>The application makes its normal service call.</small></li>
-<li><strong>Mesh proxies</strong><small>Configured workload identity, mTLS and traffic rules apply.</small></li>
-<li><strong>Inventory workload</strong><small>The destination still applies its application policy.</small></li>
-</ol>
+<figure class="technical-diagram" aria-label="Mesh policy surrounds the application call">
+
+```mermaid
+flowchart TD
+    accTitle: Mesh connection policy surrounds application policy
+    accDescr: Orders calls through its mesh proxy to the destination proxy using configured workload identity and mTLS. Inventory still applies its own application identity and method policy.
+    Orders["Orders call"] --> Outbound[["Orders workload<br/>mesh proxy"]]
+    Outbound -->|workload mTLS| Inbound
+    Inbound[["Inventory workload<br/>mesh proxy"]] --> Policy["Application policy"]
+    Policy --> Inventory["Inventory handler"]
+    class Policy accent
+```
+
 <figcaption>Workload identity does not by itself authorize a user to invoke an RPC.</figcaption>
 </figure>
 

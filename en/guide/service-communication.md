@@ -10,12 +10,21 @@ outline: deep
 Orders needs an answer about stock before replying to a customer. It calls
 Inventory's contract and waits for the result. That is the synchronous path.
 
-<figure class="guide-map" aria-label="Orders waits for Inventory's answer">
-<ol>
-<li><strong>Orders asks</strong><small>Call Inventory with the requested SKU.</small></li>
-<li><strong>Inventory answers</strong><small>Return stock data, or fail the call.</small></li>
-<li><strong>Orders replies</strong><small>Use the result to answer the customer.</small></li>
-</ol>
+<figure class="technical-diagram" aria-label="Orders waits for Inventory's answer">
+
+```mermaid
+sequenceDiagram
+    accTitle: Orders waits for the stock result
+    accDescr: The Orders handler calls Inventory with a SKU and waits for its stock result or error before answering the customer.
+    participant O as Orders
+    participant I as Inventory
+    O->>I: CheckStock(sku)
+    activate I
+    I-->>O: Stock result or error
+    deactivate I
+    Note over O: Answer the customer
+```
+
 <figcaption>Use an event instead when another service can react later and no immediate answer is needed.</figcaption>
 </figure>
 

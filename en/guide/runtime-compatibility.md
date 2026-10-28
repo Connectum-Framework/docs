@@ -11,12 +11,21 @@ The runtime requirement depends on **what you execute**. Published framework
 packages are compiled JavaScript. Your application's `.ts` files may need
 native type stripping, tsx, or Bun.
 
-<figure class="guide-map" aria-label="Choose a runtime by the application execution model">
-<ol>
-<li><strong>Package</strong><small>Published @connectum packages declare Node.js ≥22.13.0.</small></li>
-<li><strong>Application</strong><small>Native Node.js TypeScript needs ≥25.2.0; tsx follows the package floor.</small></li>
-<li><strong>Integration</strong><small>Check the actual runtime, transport and optional modules you use.</small></li>
-</ol>
+<figure class="technical-diagram guide-topic-diagram--wide" aria-label="Choose a runtime by the application execution model">
+
+```mermaid
+flowchart TD
+    accTitle: Choose requirements by what the application executes
+    accDescr: Published packages declare Node.js 22.13.0 or newer. Compiled application JavaScript and tsx follow that floor; this project's native TypeScript path needs Node.js 25.2.0 or newer. Bun integrations have their own tested boundaries.
+    Entry{"Application<br/>execution model"} --> JS["JavaScript / tsx<br/>Node ≥22.13.0"]
+    Entry --> Native["Native .ts<br/>Node ≥25.2.0"]
+    Entry --> Bun["Bun<br/>check module limits"]
+    JS --> Integration["Verify transport<br/>and optional modules"]
+    Native --> Integration
+    Bun --> Integration
+    class Entry accent
+```
+
 <figcaption>A package engine floor, a source execution requirement and a tested integration are different claims.</figcaption>
 </figure>
 

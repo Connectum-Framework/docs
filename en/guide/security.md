@@ -9,12 +9,18 @@ outline: deep
 
 TLS encrypts the connection and authenticates the server. Mutual TLS additionally authenticates the client certificate. Neither replaces application-level identity and authorization when a request crosses a user or gateway trust boundary.
 
-<figure class="guide-map" aria-label="Connection security and application authorization are separate">
-<ol>
-<li><strong>Client</strong><small>Verify the destination certificate and use the trusted connection.</small></li>
-<li><strong>TLS boundary</strong><small>Encrypt the connection; mTLS also verifies a client certificate.</small></li>
-<li><strong>Application</strong><small>Authenticate the request identity and authorize the method as required.</small></li>
-</ol>
+<figure class="technical-diagram" aria-label="Connection security and application authorization are separate">
+
+```mermaid
+flowchart TD
+    accTitle: Connection trust and application policy
+    accDescr: TLS protects the connection and mTLS can also verify the client certificate. Application identity and method authorization remain separate checks when required by the request's trust boundary.
+    Client["Client"] --> TLS[["TLS / mTLS<br/>connection trust"]]
+    TLS --> Application[["Application boundary<br/>identity + method policy<br/>as required"]]
+    Application --> Handler["Handler"]
+    class Application accent
+```
+
 <figcaption>A secure connection does not replace application access policy.</figcaption>
 </figure>
 

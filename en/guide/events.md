@@ -11,12 +11,20 @@ An order was accepted. Inventory or another subscriber may need to react,
 but Orders does not need their answer to this publication. The EventBus
 connects typed protobuf events to consuming handlers through an adapter.
 
-<figure class="guide-map" aria-label="An event passes through an adapter to a subscriber">
-<ol>
-<li><strong>Publish</strong><small>Orders publishes a protobuf event.</small></li>
-<li><strong>Deliver</strong><small>The chosen adapter passes it through a broker, or memory in tests.</small></li>
-<li><strong>React</strong><small>A matching subscriber runs its middleware and handler.</small></li>
-</ol>
+<figure class="technical-diagram" aria-label="An event passes through an adapter to a subscriber">
+
+```mermaid
+flowchart TD
+    accTitle: An adapter delivers the event
+    accDescr: Orders publishes a typed protobuf event. The selected adapter delivers it through memory or a broker to a matching subscription's middleware and handler; no subscriber RPC response is returned.
+    Orders["Orders<br/>OrderCreated"] --> Adapter{"Chosen adapter"}
+    Adapter -->|memory| Memory["In-memory delivery"]
+    Adapter -->|broker| Broker["Broker delivery"]
+    Memory --> Subscriber["Matching subscription<br/>middleware + handler"]
+    Broker --> Subscriber
+    class Subscriber accent
+```
+
 <figcaption>Publication is not an RPC response from the subscriber.</figcaption>
 </figure>
 

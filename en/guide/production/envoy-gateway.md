@@ -11,12 +11,24 @@ A gateway is an optional edge in front of your services. It can route native
 gRPC traffic. With a separately configured transcoder and descriptors, it can
 also turn an HTTP/JSON request into a gRPC call.
 
-<figure class="guide-map" aria-label="An explicitly configured REST-to-gRPC path">
-<ol>
-<li><strong>HTTP/JSON client</strong><small>A request uses the path defined by your API annotations.</small></li>
-<li><strong>Gateway + transcoder</strong><small>Routing and protobuf descriptors translate the request.</small></li>
-<li><strong>Connectum service</strong><small>The gRPC handler runs with its normal application policy.</small></li>
-</ol>
+<figure class="technical-diagram guide-topic-diagram--wide" aria-label="An explicitly configured REST-to-gRPC path">
+
+```mermaid
+flowchart TD
+    accTitle: Transcoding needs its own route and descriptors
+    accDescr: A configured gateway can transcode HTTP JSON requests using protobuf descriptors while routing native gRPC separately. Both paths reach the Connectum service's application policy.
+    JSON["HTTP/JSON client"] --> Transcode
+    Native["gRPC client"] --> Route
+    Descriptors["Protobuf<br/>descriptor set"] -.-> Transcode
+    subgraph Gateway["Configured gateway"]
+        Transcode["Route + transcoder"]
+        Route["Native gRPC route"]
+    end
+    Transcode -->|gRPC| Service["Connectum service<br/>application policy"]
+    Route -->|gRPC| Service
+    class Transcode accent
+```
+
 <figcaption>Generating OpenAPI alone does not install a transcoder or expose a REST endpoint.</figcaption>
 </figure>
 

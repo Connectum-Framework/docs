@@ -10,12 +10,20 @@ outline: 2
 One contract, one handler, one running service. You do not need a broker,
 an identity provider or a telemetry backend to make your first call.
 
-<figure class="guide-map" aria-label="From contract to a working RPC">
-<ol>
-<li><strong>Describe</strong><small>A .proto file names the method and its messages.</small></li>
-<li><strong>Implement</strong><small>Generated types connect the contract to your TypeScript handler.</small></li>
-<li><strong>Call</strong><small>Start the server, send a request, and read the response.</small></li>
-</ol>
+<figure class="technical-diagram" aria-label="From contract to a working RPC">
+
+```mermaid
+flowchart TD
+    accTitle: Build the contract and observe a real reply
+    accDescr: Generate types and descriptors from GreeterService's proto contract, implement SayHello, and start the server. A real client sends a name and receives a greeting.
+    Proto["GreeterService<br/>.proto"] -->|generate| Types["Types + descriptors"]
+    Types --> Handler["SayHello handler"]
+    Handler --> Server["Running server"]
+    Client["RPC client"] -->|name| Server
+    Server -->|greeting| Client
+    class Server accent
+```
+
 <figcaption>The first milestone is a real response, plus a rejected invalid request.</figcaption>
 </figure>
 

@@ -11,12 +11,18 @@ A container packages your service; it does not change how the service works.
 The image needs the application, generated protobuf code, production
 dependencies and a compatible runtime.
 
-<figure class="guide-map" aria-label="Build once, then start the packaged service">
-<ol>
-<li><strong>Prepare</strong><small>Install from a lockfile and generate the contract code.</small></li>
-<li><strong>Package</strong><small>Copy runtime files and production dependencies into the image.</small></li>
-<li><strong>Run</strong><small>Supply configuration and secrets outside the image.</small></li>
-</ol>
+<figure class="technical-diagram guide-topic-diagram--scroll" aria-label="Build once, then start the packaged service">
+
+```mermaid
+flowchart TD
+    accTitle: Package runtime inputs and supply secrets at launch
+    accDescr: A locked dependency install and protobuf generation prepare the service image. The image contains runtime files, application code, generated code and production dependencies; configuration and secrets are supplied to the running service separately.
+    Build["Locked install<br/>+ protobuf generation"] --> Image[["Service image<br/>runtime · app · generated code<br/>production dependencies"]]
+    Image --> Service["Running service"]
+    Config["Configuration<br/>+ secrets"] -->|at launch| Service
+    class Image accent
+```
+
 <figcaption>The image should contain everything required to start without fetching packages.</figcaption>
 </figure>
 

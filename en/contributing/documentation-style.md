@@ -74,8 +74,11 @@ Do not animate an ordered list of cards with a moving highlight or a repeated
 caption. Prefer a static diagram that exposes the relationship: a dependency
 graph, a composition boundary or a request/response sequence. Use the shared
 Mermaid theme and add a readable caption; do not invent page-local palettes.
-The remaining `figure.guide-map` models are static, pending subject-specific
-diagram review, not templates for new animations.
+Keep compact diagrams at their native size. For broader overview graphs, add
+`guide-topic-diagram--scroll` (480px) or `guide-topic-diagram--wide` (600px) to the
+`technical-diagram` figure so it scrolls locally on a phone. Choose the frame from
+the rendered graph; do not inflate narrow diagrams. Do not return to a universal
+card model.
 
 For a genuinely causal animation, never move, hide or type the page's explanatory
 text and code. Provide pause/resume and a native transcript; persist the reader's

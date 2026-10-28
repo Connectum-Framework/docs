@@ -9,12 +9,20 @@ outline: deep
 
 Connectum supports two complementary testing layers. Use TypeScript tests for fast handler and transport feedback, then scenario tests for the deployed protocol boundary.
 
-<figure class="guide-map" aria-label="Test from a small decision to the deployed boundary">
-<ol>
-<li><strong>Handler decision</strong><small>Check business results and errors in TypeScript.</small></li>
-<li><strong>In-process RPC</strong><small>Exercise the configured router and middleware without a listener.</small></li>
-<li><strong>Real connection</strong><small>Check protocol, TLS, probes and deployed integration.</small></li>
-</ol>
+<figure class="technical-diagram guide-topic-diagram--wide" aria-label="Test from a small decision to the deployed boundary">
+
+```mermaid
+flowchart TD
+    accTitle: Test different boundaries around the same handler
+    accDescr: Handler checks exercise business decisions. In-process RPC tests also exercise routing and middleware. Deployed scenarios additionally cross the configured network, TLS or proxy boundary.
+    Unit["Handler checks"] --> Handler
+    Local["In-process client"] --> Router
+    Scenario["Deployed scenarios"] --> Network["Network · TLS<br/>proxy configuration"]
+    Network --> Router
+    Router["Server router<br/>+ middleware"] --> Handler["Handler under test"]
+    class Handler accent
+```
+
 <figcaption>A passing local test does not prove that a proxy or certificate is configured correctly.</figcaption>
 </figure>
 

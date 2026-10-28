@@ -9,12 +9,20 @@ outline: deep
 
 Authentication establishes an `AuthContext`; authorization decides whether that identity may invoke a method. Keep those decisions separate in the interceptor chain even when they are configured together.
 
-<figure class="guide-map" aria-label="Identity is established before method access is decided">
-<ol>
-<li><strong>Who is calling?</strong><small>Authentication verifies a credential and establishes identity.</small></li>
-<li><strong>May they do this?</strong><small>Authorization checks access to this RPC method.</small></li>
-<li><strong>Run the handler</strong><small>Only an admitted call reaches the protected behavior.</small></li>
-</ol>
+<figure class="technical-diagram" aria-label="Identity is established before method access is decided">
+
+```mermaid
+flowchart TD
+    accTitle: Identity and method access are separate checks
+    accDescr: For a protected RPC, authentication verifies the credential and creates AuthContext. Authorization then checks method access. Either failed check rejects the call before the handler.
+    Auth{"Credential<br/>verified?"} -->|AuthContext| Policy{"Method access<br/>allowed?"}
+    Auth -->|no| Reject["Reject call"]
+    Policy -->|no| Reject
+    Policy -->|yes| Handler["Protected handler"]
+    class Handler accent
+    class Reject critical
+```
+
 <figcaption>A valid credential is not permission to invoke every method.</figcaption>
 </figure>
 

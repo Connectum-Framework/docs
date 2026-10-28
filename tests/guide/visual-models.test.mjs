@@ -23,7 +23,7 @@ test('the generic animation player, clock and stylesheet are removed, not merely
         }
     }
     visit('en/guide');
-    assert.equal(staticFigures, 23, 'The unchanged overview models should remain static pending diagram review');
+    assert.equal(staticFigures, 0, 'Generic card models must not return to the Guide');
 });
 
 test('the Mermaid pilots explain dependencies and a call sequence', () => {

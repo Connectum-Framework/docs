@@ -9,12 +9,20 @@ outline: deep
 
 `@connectum/healthcheck` implements the gRPC Health Checking Protocol and can expose HTTP endpoints for platform probes. The application owns status transitions; the protocol only reports them.
 
-<figure class="guide-map" aria-label="Application state is reported to platform probes">
-<ol>
-<li><strong>Decide readiness</strong><small>Your application decides whether it can accept useful work.</small></li>
-<li><strong>Report status</strong><small>The manager exposes that state through the health protocol.</small></li>
-<li><strong>Route traffic</strong><small>The platform uses readiness to select healthy destinations.</small></li>
-</ol>
+<figure class="technical-diagram guide-topic-diagram--scroll" aria-label="Application state is reported to platform probes">
+
+```mermaid
+sequenceDiagram
+    accTitle: The application owns readiness
+    accDescr: The application sets its health status. A platform probe reads that status through the configured health protocol and uses readiness to choose traffic destinations.
+    participant P as Platform
+    participant S as Service
+    Note over S: Application sets status
+    P->>S: Health probe
+    S-->>P: Current health status
+    Note over P: Route only if ready
+```
+
 <figcaption>Listening on a port does not automatically mean the service is ready.</figcaption>
 </figure>
 

@@ -10,12 +10,20 @@ outline: 2
 You know a server's address, but do not have its `.proto` files. Reflection
 lets tools such as grpcurl ask that server for its service and message schemas.
 
-<figure class="guide-map" aria-label="A tool learns a server's API through reflection">
-<ol>
-<li><strong>Ask the server</strong><small>A reflection client connects to a known address.</small></li>
-<li><strong>Read the schema</strong><small>The server returns descriptors for its mounted services.</small></li>
-<li><strong>Explore or call</strong><small>The tool can describe messages and construct an RPC.</small></li>
-</ol>
+<figure class="technical-diagram" aria-label="A tool learns a server's API through reflection">
+
+```mermaid
+sequenceDiagram
+    accTitle: Query the API at a known server address
+    accDescr: A tool connects to a known server address, requests mounted schema descriptors through reflection, and uses those descriptors to construct an RPC.
+    participant T as Tool
+    participant S as Server
+    T->>S: Reflection query
+    S-->>T: Mounted descriptors
+    T->>S: Constructed RPC
+    S-->>T: RPC result
+```
+
 <figcaption>Reflection discovers an API at one address. It does not find other running servers.</figcaption>
 </figure>
 

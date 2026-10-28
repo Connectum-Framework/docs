@@ -11,12 +11,21 @@ Applications can execute erasable TypeScript directly on the documented Node.js
 line. Connectum packages ship compiled ESM JavaScript and declarations; supported
 versions and tested Bun behavior are in [Runtime Compatibility](/en/guide/runtime-compatibility).
 
-<figure class="guide-map" aria-label="Application TypeScript and published framework code are different inputs">
-<ol>
-<li><strong>Your .ts files</strong><small>Keep syntax compatible with the selected execution model.</small></li>
-<li><strong>Your runtime</strong><small>Node.js type stripping, tsx or Bun executes the application.</small></li>
-<li><strong>Framework packages</strong><small>Published compiled ESM plus declarations supply runtime code and types.</small></li>
-</ol>
+<figure class="technical-diagram guide-topic-diagram--wide" aria-label="Application TypeScript and published framework code are different inputs">
+
+```mermaid
+flowchart TD
+    accTitle: Runtime execution and type checking use different inputs
+    accDescr: Your application source runs through Node.js type stripping, tsx or Bun and consumes compiled framework ESM. TypeScript separately checks the source against published declarations.
+    Source["Your .ts source"] --> Runtime["Node stripping<br/>tsx / Bun"]
+    Source -.-> Check["tsc --noEmit"]
+    Package["Published packages"] --> JS["Compiled ESM .js"]
+    Package --> Types["Type declarations .d.ts"]
+    JS --> Runtime
+    Types --> Check
+    class Check accent
+```
+
 <figcaption>Native execution skips a build step, not type checking.</figcaption>
 </figure>
 
