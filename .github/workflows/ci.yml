@@ -39,6 +39,16 @@ jobs:
       - name: Test overview boundaries and preserved guide content
         run: pnpm guide:test
 
+      - name: Typecheck validation showcase
+        run: pnpm validation:typecheck
+
+      - name: Test recorded validation RPCs
+        run: |
+          pnpm --dir .vitepress/validation/example install --frozen-lockfile
+          pnpm --dir .vitepress/validation/example generate
+          pnpm --dir .vitepress/validation/example typecheck
+          pnpm --dir .vitepress/validation/example test
+
       - name: Build VitePress
         run: pnpm docs:build
 

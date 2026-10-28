@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package shop.v1;
+
+import "buf/validate/validate.proto";
+
+service InventoryService {
+  rpc CheckStock(CheckStockRequest) returns (CheckStockResponse);
+}
+
+message CheckStockRequest {
+  string sku = 1 [
+    (buf.validate.field).string = {
+      min_len: 1
+    }
+  ];
+}
+
+message CheckStockResponse {
+  int32 units = 1;
+}
