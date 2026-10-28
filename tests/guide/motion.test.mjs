@@ -7,7 +7,7 @@ import { GUIDE_STEP_MS, guideBeats, guideFrame } from '../../.vitepress/guide/mo
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 
 test('every narrated overview stage has a reachable frame and loops without changing its source data', () => {
-    assert.equal(Object.keys(guideBeats).length, 27);
+    assert.equal(Object.keys(guideBeats).length, 26);
     for (const [scene, beats] of Object.entries(guideBeats)) {
         const route = `en/guide/${scene}.md`;
         const source = read(route);
@@ -52,12 +52,9 @@ test('the shared clock rejects invalid time instead of rendering a missing stage
     for (const elapsedMs of [-1, Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]) assert.throws(() => guideFrame({ scene: 'server', elapsedMs }), RangeError);
 });
 
-test('catalog animation describes contract formation, not network routing', () => {
-    const beats = guideBeats['service-communication/service-catalog'];
-    assert.equal(beats.length, 4);
-    assert.match(beats[0].message, /proto/);
-    assert.match(beats[1].message, /plugins/);
-    assert.match(beats[2].token, /serviceCatalog/);
-    assert.match(beats[3].message, /type-checked/);
-    for (const beat of beats) assert.doesNotMatch(beat.token, /https?:\/\//);
+test('catalog uses its own composition model rather than the generic player', () => {
+    const catalog = read('en/guide/service-communication/service-catalog.md');
+    assert.match(catalog, /<CatalogAssembly \/>/);
+    assert.doesNotMatch(catalog, /GuideFlow/);
+    assert.ok(!Object.hasOwn(guideBeats, 'service-communication/service-catalog'));
 });

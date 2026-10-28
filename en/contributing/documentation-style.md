@@ -65,10 +65,14 @@ Compatibility overviews explain the choice; the canonical exact tables live at
 [Runtime requirements and coverage](/en/guide/runtime-compatibility-details) and
 [Transport support and measurements](/en/guide/production/transport-matrix-details).
 
-For three- or four-stage overview models, keep a semantic `figure.guide-map`
-with an ordered list and caption inside `GuideFlow`. Its `scene` identifies a
-narrated sequence in `.vitepress/guide/motion.ts`. Each stage must correspond to
-one visible card and show concrete data or an artifact, not an unrelated pulse.
+Choose a visual mechanism for the explanation, not a universal animation with
+different labels. The service catalog uses `CatalogAssembly`: contract files,
+generation boundaries, package delivery and merging. The resolver walkthrough
+shows routing. Share colors, accessibility and motion controls, not choreography.
+
+Existing three- or four-stage `GuideFlow` models retain a semantic
+`figure.guide-map`, ordered list and caption. Their `scene` identifies a narrated
+sequence in `.vitepress/guide/motion.ts`; this is not the default for new models.
 
 The sequence loops automatically, but never moves, hides or types the page's
 explanatory text and code. Provide pause/resume and a native transcript; persist
@@ -77,7 +81,7 @@ motion, an offscreen diagram or a hidden tab, and clean it up on navigation.
 The illustration must explicitly say it is not live execution. Its static
 figure, caption and transcript remain available without JavaScript.
 
-Use the shared component and stylesheet, not page-local timers or layout.
+Use shared styling and lifecycle practices; do not duplicate timers per page.
 Verify motion and pause behavior in a real browser, not only by checking that
 keyframes exist. Keep the existing resolver walkthrough for its routing scenes.
 Branching flows, runtime internals and complex relationships deeper in the Guide

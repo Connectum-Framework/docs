@@ -28,7 +28,7 @@ test('every Guide entry teaches a compact visual model before the detailed path'
         const source = read(`${route.slice(1)}.md`);
         const initial = withoutDisclosures(source);
         assert.match(source, /docType: concept/, route);
-        assert.match(initial, /<figure class="guide-map"|<ResolverWalkthrough>/, `${route}: missing readable model`);
+        assert.match(initial, /<figure class="guide-map"|<ResolverWalkthrough>|<CatalogAssembly \/>/, `${route}: missing readable model`);
         assert.ok(initial.split(/\s+/).length < 650, `${route}: the first reading path has grown into a reference`);
         assert.ok((initial.match(/^```/gm) ?? []).length <= 6, `${route}: more than three initial code blocks`);
         assert.ok((initial.match(/^\|/gm) ?? []).length === 0, `${route}: a dense table is on the initial reading path`);

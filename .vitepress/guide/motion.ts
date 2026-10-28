@@ -132,12 +132,6 @@ export const guideBeats = {
         { message: 'Add routes whenever the server materializes a router.', token: 'register(router)' },
         { message: 'Handle a registered RPC or an explicit HTTP fallback.', token: 'RPC handler or httpHandler' },
     ],
-    'service-communication/service-catalog': [
-        { message: 'The proto defines Inventory and its stock RPC.', token: 'CheckStockRequest → CheckStockResponse' },
-        { message: 'Buf runs the configured message and catalog plugins.', token: 'protoc-gen-es + protoc-gen-connectum-catalog' },
-        { message: 'Generated descriptors and call-map types become available.', token: 'catalog.gen.ts · serviceCatalog' },
-        { message: 'Orders can make a type-checked call to the known contract.', token: 'shop.v1.InventoryService/CheckStock' },
-    ],
 } satisfies Record<string, readonly [GuideBeat, GuideBeat, ...GuideBeat[]]>;
 
 export type GuideScene = keyof typeof guideBeats;

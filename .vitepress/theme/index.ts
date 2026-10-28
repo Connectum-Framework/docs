@@ -3,6 +3,7 @@ import mermaid from 'mermaid';
 import type { Theme } from 'vitepress';
 import DefaultTheme from 'vitepress/theme';
 import CopyOrDownloadAsMarkdownButtons from 'vitepress-plugin-llms/vitepress-components/CopyOrDownloadAsMarkdownButtons.vue';
+import CatalogAssembly from './components/CatalogAssembly.vue';
 import CatalogRoutingDiagram from './components/CatalogRoutingDiagram.vue';
 import GuideFlow from './components/GuideFlow.vue';
 import GuideSections from './components/GuideSections.vue';
@@ -46,6 +47,7 @@ export default {
     enhanceApp({ app }) {
         app.component('CopyOrDownloadAsMarkdownButtons', CopyOrDownloadAsMarkdownButtons);
         app.component('CatalogRoutingDiagram', CatalogRoutingDiagram);
+        app.component('CatalogAssembly', CatalogAssembly);
         app.component('GuideFlow', GuideFlow);
         app.component('GuideSections', GuideSections);
         app.component('RuntimeCompositionDiagram', RuntimeCompositionDiagram);

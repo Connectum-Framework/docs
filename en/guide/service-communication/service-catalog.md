@@ -11,17 +11,7 @@ How does Orders know that Inventory has a `CheckStock` method, accepts a SKU
 and returns a stock count? From **protobuf contracts**, not by scanning the network.
 The service catalog brings those known contracts into the application.
 
-<GuideFlow scene="service-communication/service-catalog">
-<figure class="guide-map" aria-label="How contracts become typed catalog calls">
-<ol>
-<li><strong>.proto</strong><small>Describe services, methods and messages.</small></li>
-<li><strong>Generate</strong><small>Buf runs the message and catalog plugins.</small></li>
-<li><strong>Catalog</strong><small>Service descriptors and TypeScript call-map entries.</small></li>
-<li><strong>Typed call</strong><small>Orders can name Inventory's RPC with checked request and response types.</small></li>
-</ol>
-<figcaption>Build-time contract knowledge. No running service is contacted to form this catalog.</figcaption>
-</figure>
-</GuideFlow>
+<CatalogAssembly />
 
 ## 1. Describe what Inventory offers
 
