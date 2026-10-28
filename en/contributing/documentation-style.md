@@ -93,6 +93,15 @@ server address. Do not use “service discovery” as if those were the same job
 
 ## Prose and README guidance
 
+- Put source examples, executable statements and configuration objects in fenced
+  code blocks with an explicit language. Use VitePress's native highlighting,
+  language label, line numbers and copy control. Inline code is for identifiers,
+  option names and file paths, not complete configuration or call examples.
+- Vue-rendered examples follow the same rule: render a fenced block through the
+  Markdown renderer at build time. Do not interpolate plain text into handwritten
+  `pre`/`code` elements or replace syntax highlighting with a single code color.
+  Check the actual tokens in both themes, including collapsed details and no-JS.
+
 - Start with the reader's task or the result the page explains. Prefer concrete verbs and
   short sentences over greetings, filler, and claims such as “production-ready” or
   “industry-leading” unless the page defines evidence for them.

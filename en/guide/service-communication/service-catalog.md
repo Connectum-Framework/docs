@@ -40,7 +40,15 @@ export const serviceCatalog = {
 
 The same generated module also tells TypeScript which method keys and
 request/response types belong together. Import it into the application and pass
-its value to `createServer({ catalog: serviceCatalog, services: [orders, inventory] })`.
+its value to the server:
+
+```typescript
+createServer({
+  catalog: serviceCatalog,
+  services: [orders, inventory],
+});
+```
+
 The `services` input supplies the implementations; the catalog supplies contract knowledge.
 
 ## 3. Call the known contract

@@ -14,6 +14,11 @@ Its CSS emits catalog entries, joins parts and holds the result before looping;
 reduced-motion and no-JavaScript views show the completed artifacts and native
 transcripts. Do not replace this composition model with the generic card player.
 
+`assembly-code.data.ts` renders the model's exact source strings through the
+VitePress Markdown renderer at build time. Both the selected-layout code and
+the transcript use these native blocks: highlighting, line numbers, copy controls
+and both themes must also survive SSR. Do not replace them with plain `pre` text.
+
 `ResolverWalkthrough.vue` belongs to `en/guide/service-communication/resolvers.md`;
 the executable lesson lives at `en/guide/service-communication/routing-example.md`.
 Complete catalog behavior lives at `en/reference/service-catalog.md`, and resolver

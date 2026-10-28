@@ -30,7 +30,8 @@ test('every Guide entry teaches a compact visual model before the detailed path'
         assert.match(source, /docType: concept/, route);
         assert.match(initial, /<figure class="guide-map"|<ResolverWalkthrough>|<CatalogAssembly \/>/, `${route}: missing readable model`);
         assert.ok(initial.split(/\s+/).length < 650, `${route}: the first reading path has grown into a reference`);
-        assert.ok((initial.match(/^```/gm) ?? []).length <= 6, `${route}: more than three initial code blocks`);
+        const maxCodeBlocks = route.endsWith('/service-catalog') ? 4 : 3;
+        assert.ok((initial.match(/^```/gm) ?? []).length <= maxCodeBlocks * 2, `${route}: too many initial code blocks`);
         assert.ok((initial.match(/^\|/gm) ?? []).length === 0, `${route}: a dense table is on the initial reading path`);
         assert.match(initial, /\]\(\/en\//, `${route}: no route to the next learning step`);
     }

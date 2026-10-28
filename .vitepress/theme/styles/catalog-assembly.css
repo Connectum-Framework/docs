@@ -28,7 +28,7 @@
 .vp-doc .catalog-assembly [data-contract="inventory"] {
     --contract-color: var(--assembly-inventory);
 }
-.vp-doc .catalog-assembly code {
+.vp-doc .catalog-assembly :where(:not(pre)) > code {
     font-size: 12px;
     white-space: normal;
     background: none;
@@ -460,16 +460,8 @@
     font-size: 13px;
     line-height: 1.6;
 }
-.vp-doc .catalog-assembly pre {
+.vp-doc .catalog-assembly div[class*="language-"] {
     margin: 12px 0;
-    padding: 12px;
-    border: 1px solid var(--vp-c-divider);
-    border-radius: 6px;
-    background: var(--vp-c-bg);
-    white-space: pre-wrap;
-}
-.vp-doc .catalog-assembly pre code {
-    white-space: pre-wrap;
 }
 .vp-doc .assembly-descriptor {
     margin: 16px 0;

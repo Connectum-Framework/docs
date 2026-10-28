@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { ASSEMBLY_PAUSE_KEY, type AssemblyLayoutId, assemblyContracts, assemblyLayouts } from '../../catalog/assembly.ts';
+import { data as assemblyCode } from '../../catalog/assembly-code.data.ts';
 
+const highlightedLayouts = assemblyLayouts.map((item) => ({ ...item, codeBlock: assemblyCode[item.id] }));
 const selected = ref<AssemblyLayoutId>('folder');
-const layout = computed(() => assemblyLayouts.find((item) => item.id === selected.value) ?? assemblyLayouts[0]);
+const layout = computed(() => highlightedLayouts.find((item) => item.id === selected.value) ?? highlightedLayouts[0]);
 const root = ref<HTMLElement>();
 const hydrated = ref(false);
 const paused = ref(false);
@@ -155,7 +157,7 @@ onBeforeUnmount(() => {
 
         <details class="assembly-code">
             <summary>Application imports for this layout</summary>
-            <pre><code>{{ layout.code }}</code></pre>
+            <div class="assembly-snippet" v-html="layout.codeBlock" />
             <p v-if="layout.groups.length > 1">
                 For packages, re-export <code>serviceCatalog</code> from the generated module. Its declarations must retain the augmentation of <code>@connectum/core</code>.
             </p>
@@ -185,7 +187,7 @@ onBeforeUnmount(() => {
 
         <details class="assembly-transcript">
             <summary>Read all three build layouts</summary>
-            <div v-for="item in assemblyLayouts" :key="item.id">
+            <div v-for="item in highlightedLayouts" :key="item.id">
                 <p><strong>{{ item.label }}.</strong> {{ item.explanation }}</p>
                 <ul>
                     <li v-for="group in item.groups" :key="group.root">
@@ -193,7 +195,7 @@ onBeforeUnmount(() => {
                         → <code>buf generate</code> → <code>gen/catalog.gen.ts</code><template v-if="group.dependency"> → <code>{{ group.dependency }}</code></template>
                     </li>
                 </ul>
-                <pre><code>{{ item.code }}</code></pre>
+                <div class="assembly-snippet" v-html="item.codeBlock" />
                 <p>{{ item.caveat }}</p>
             </div>
         </details>
