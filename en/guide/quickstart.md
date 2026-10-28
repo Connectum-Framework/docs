@@ -120,7 +120,7 @@ bun add -d typescript @types/node @bufbuild/buf @bufbuild/protoc-gen-es
 The ConnectRPC runtime libraries are **peer dependencies** of Connectum: the copies you
 install here are the ones Connectum uses, so your generated code and the framework share
 one `@bufbuild/protobuf`. Keep them within `@bufbuild/protobuf` `^2.16.0` and
-`@connectrpc/connect` / `@connectrpc/connect-node` `^2.2.0` — see
+`@connectrpc/connect` / `@connectrpc/connect-node` `^2.3.0` — see
 [Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies).
 
 Add the following fields to `package.json`, keeping the `dependencies` and

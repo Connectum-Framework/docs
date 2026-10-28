@@ -35,7 +35,7 @@ HTTP endpoints served outside the router skip all of these checks; see
 
 ## Before you begin
 
-- `@connectum/core` 1.3.0 or later. **Version 1.3.0 is not yet published to npm.** The current-main implementation requires `@connectrpc/connect` 2.2.0, which introduced `requestGate`.
+- `@connectum/core` 1.3.0 or later. **Version 1.3.0 is not yet published to npm.** It requires `@connectrpc/connect` and `@connectrpc/connect-node` `^2.3.0`; `requestGate` itself was introduced in Connect 2.2.0. On a kept-alive HTTP/1 connection, `@connectrpc/connect-node` 2.3.0 discards up to 256 KiB of the unread body of a rejected call. The connection stays reusable only if that drain consumes the whole body; otherwise connect-node answers with `Connection: close` and closes the socket. Your handler still never parses a rejected call's message.
 - Decide what the gate may check. It sees only the call's `HandlerContext`: the service and method descriptors, the request headers, the deadline signal, and context values. It cannot see the request message.
 
 ## Configure a gate

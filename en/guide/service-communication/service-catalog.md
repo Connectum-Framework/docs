@@ -196,7 +196,7 @@ for await (const item of handle.responses) {
 }
 ```
 
-On a **mid-stream transport failure** the iterator follows a **deliver-then-error** policy: it delivers the messages received so far, then throws the terminal `ConnectError`. Consumers that `break` early do not hang.
+On a **mid-stream transport failure** the iterator follows a **deliver-then-error** policy: it delivers the messages received so far, then throws the terminal `ConnectError`. Consumers that `break` early do not hang: with `@connectrpc/connect` 2.3.0 (the floor for `@connectum/core` 1.3.0), a `break` out of a `ctx.stream` loop cancels the target call, so the callee's `context.signal` aborts and its `finally` block runs, on the HTTP and the in-process path alike.
 
 ## Cascade behaviour (`CallOptions`)
 
