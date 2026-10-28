@@ -24,7 +24,7 @@ With `buf/validate/validate.proto` imported:
 <ValidationShowcase>
 <template #contract>
 
-```proto
+```proto{4}
 message CheckStockRequest {
   string sku = 1 [
     (buf.validate.field).string = {

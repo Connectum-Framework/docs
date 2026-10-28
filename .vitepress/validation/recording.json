@@ -4,7 +4,7 @@
         "proto/shop/v1/inventory.proto": "116882f7576b6de9b76d384d97875d47097706c324d803abb76f1d3aad563e13",
         "src/inventory.ts": "65ea398bce69e0df1490f7e38018bf78ea8d82d196119bb3f2524a679dedbba4",
         "src/server.ts": "12c6796b372a913b7db570e85b8a85767407b4cc299c5f50957b80a88a93cdf4",
-        "src/capture.ts": "27aaf4a2418cbe5c99e09ef736a2cc85496bfde81aeeadbd5e612e1e1311b89d",
+        "src/capture.ts": "70162f20a3de8835663d299bf6ce8647014a25cf584c6c9ced3b4b286a04ae1b",
         "package.json": "8c9eeb43e0d087a59e8915b24b8bdb25916d5f60522fc59b3fd7b07aeedef932",
         "pnpm-lock.yaml": "db8177f229998e9872c08be0c1913a04b3b967f06f330ac37740d03cdcbdf866",
         "buf.lock": "64c1d1a061dcacc65bfdabe83ea48d472b2b837366cc6355e7142a3387c4ba68",
@@ -17,6 +17,13 @@
             "request": {
                 "sku": "A-1"
             },
+            "validation": {
+                "field": "sku",
+                "value": "A-1",
+                "characters": 3,
+                "minimum": "1",
+                "passed": true
+            },
             "handlerCalls": 1,
             "code": "OK",
             "response": {
@@ -27,6 +34,13 @@
             "id": "empty",
             "request": {
                 "sku": ""
+            },
+            "validation": {
+                "field": "sku",
+                "value": "",
+                "characters": 0,
+                "minimum": "1",
+                "passed": false
             },
             "handlerCalls": 0,
             "code": "InvalidArgument",
@@ -39,6 +53,13 @@
             "id": "unknown",
             "request": {
                 "sku": "UNKNOWN"
+            },
+            "validation": {
+                "field": "sku",
+                "value": "UNKNOWN",
+                "characters": 7,
+                "minimum": "1",
+                "passed": true
             },
             "handlerCalls": 1,
             "code": "NotFound",

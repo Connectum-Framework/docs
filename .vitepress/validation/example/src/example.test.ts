@@ -8,6 +8,14 @@ test('recorded outcomes match real RPCs through the validation interceptor', asy
     const recorded = JSON.parse(readFileSync(new URL('../../recording.json', import.meta.url), 'utf8'));
     assert.deepEqual(observed, recorded);
     assert.deepEqual(
+        observed.records.map(({ validation }) => validation),
+        [
+            { field: 'sku', value: 'A-1', characters: 3, minimum: '1', passed: true },
+            { field: 'sku', value: '', characters: 0, minimum: '1', passed: false },
+            { field: 'sku', value: 'UNKNOWN', characters: 7, minimum: '1', passed: true },
+        ],
+    );
+    assert.deepEqual(
         observed.records.map(({ code, handlerCalls }) => ({ code, handlerCalls })),
         [
             { code: 'OK', handlerCalls: 1 },

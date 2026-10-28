@@ -36,6 +36,10 @@ pnpm test
 ```
 
 The record includes the decoded response or `ConnectError` fields used by the
-showcase, not a byte-for-byte dump of HTTP traffic. The inventory map is fixture
+showcase and a rule trace: field value, character count, descriptor-derived
+minimum and whether the RPC reached the handler. The capture rejects a trace
+whose comparison disagrees with that observed interceptor boundary.
+
+This is not a byte-for-byte dump of HTTP traffic. The inventory map is fixture
 data, not a database adapter. No resilience policy or network service is simulated
 by the browser's path replay.

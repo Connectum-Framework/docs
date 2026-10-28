@@ -47,7 +47,22 @@ test('recorded results cannot silently outlive their executable sources', () => 
         assert.equal(createHash('sha256').update(source).digest('hex'), hash, `${path}: regenerate the validation recording`);
     }
     const request = read('.vitepress/validation/example/proto/shop/v1/inventory.proto').match(/message CheckStockRequest \{[\s\S]*?\n\}/)[0];
-    assert.ok(read('en/guide/validation.md').includes(`\`\`\`proto\n${request}\n\`\`\``), 'The visible rule differs from the executed contract');
+    assert.ok(read('en/guide/validation.md').includes(`\`\`\`proto{4}\n${request}\n\`\`\``), 'The visible rule differs from the executed contract');
+});
+
+test('the rule explanation records field values, character counts and the proto minimum', () => {
+    assert.deepEqual(
+        data.scenarios.map(({ validation }) => validation),
+        [
+            { field: 'sku', value: 'A-1', characters: 3, minimum: '1', passed: true },
+            { field: 'sku', value: '', characters: 0, minimum: '1', passed: false },
+            { field: 'sku', value: 'UNKNOWN', characters: 7, minimum: '1', passed: true },
+        ],
+    );
+    for (const scenario of data.scenarios) {
+        assert.equal(scenario.validation.value, scenario.sku);
+        assert.equal(scenario.validation.passed, scenario.handlerCalls === 1);
+    }
 });
 
 test('source, input and output use native highlighted copyable code without a browser highlighter', () => {

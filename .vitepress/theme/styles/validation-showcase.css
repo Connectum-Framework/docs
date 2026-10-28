@@ -119,6 +119,12 @@
     background: none;
     font-size: 11px;
 }
+.vp-doc .validation-rule-check code {
+    padding: 0;
+    background: none;
+    color: inherit;
+    font-size: 11px;
+}
 .vp-doc .validation-code div[class*="language-"] {
     margin: 0;
     border-radius: 6px;
@@ -132,6 +138,9 @@
     padding-left: 12px;
     font-size: 12px;
     line-height: 1.8;
+}
+.vp-doc .validation-showcase .validation-contract pre code {
+    width: 100%;
 }
 .vp-doc .validation-code .line-numbers-wrapper {
     padding-top: 20px;
@@ -220,6 +229,13 @@
     font-size: 11px;
     line-height: 1.5;
 }
+.vp-doc .validation-contract .line.highlighted {
+    width: calc(100% + 24px);
+    margin-right: -12px;
+    margin-left: -12px;
+    padding-right: 12px;
+    padding-left: 12px;
+}
 .vp-doc .validation-trace li > em {
     grid-column: 2;
     color: var(--validation-accent);
@@ -229,6 +245,62 @@
 }
 .vp-doc .validation-trace li[data-reached="false"] > em {
     color: var(--vp-c-text-2);
+}
+.vp-doc .validation-rule-check {
+    margin: 8px 0 4px;
+    padding: 8px 10px;
+    border: 1px solid var(--validation-border);
+    border-radius: 4px;
+    background: var(--validation-surface);
+    color: var(--validation-accent);
+    font-size: 11px;
+    line-height: 1.6;
+}
+.vp-doc .validation-rule-check[data-rule-passed="false"] {
+    border-style: dashed;
+}
+.vp-doc .validation-rule-check dl {
+    margin: 0;
+}
+.vp-doc .validation-rule-check dl > div {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 2px 0;
+}
+.vp-doc .validation-rule-check dt,
+.vp-doc .validation-rule-check dd {
+    margin: 0;
+}
+.vp-doc .validation-rule-check dd {
+    font-family: var(--vp-font-family-mono);
+    font-weight: 600;
+}
+.vp-doc .validation-rule-comparison {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 6px 0 0;
+    padding: 4px 0;
+    border-top: 1px solid var(--validation-border);
+}
+.vp-doc .validation-rule-check .validation-rule-decision {
+    margin: 4px 0 0;
+    font-size: 11px;
+    line-height: 1.5;
+}
+.vp-doc .validation-rule-cursor {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--validation-accent);
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: left;
 }
 .vp-doc .validation-explanation {
     margin: 0;
@@ -321,10 +393,31 @@
 }
 @media (prefers-reduced-motion: no-preference) {
     .vp-doc .validation-showcase .validation-path-arrival {
-        animation: validation-arrival 720ms ease-out calc(var(--arrival-step) * 720ms) 1 both paused;
+        animation: validation-arrival 960ms ease-out calc(var(--arrival-step) * 960ms) 1 both paused;
     }
-    .vp-doc .validation-showcase[data-playback="running"] .validation-path-arrival {
+    .vp-doc .validation-showcase .validation-rule-cursor {
+        animation: validation-rule-read 320ms linear calc((3 + var(--rule-step)) * 320ms) 1 both paused;
+    }
+    .vp-doc .validation-showcase[data-playback="running"] .validation-path-arrival,
+    .vp-doc .validation-showcase[data-playback="running"] .validation-rule-cursor {
         animation-play-state: running;
+    }
+}
+@keyframes validation-rule-read {
+    0% {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+    25% {
+        opacity: 1;
+    }
+    75% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scaleX(1);
     }
 }
 @keyframes validation-arrival {
@@ -376,6 +469,7 @@
     }
     .vp-doc .validation-playback-buttons,
     .vp-doc .validation-path-arrival,
+    .vp-doc .validation-rule-cursor,
     .vp-doc .validation-scenarios,
     .vp-doc .validation-source-picker {
         display: none;

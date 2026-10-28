@@ -21,7 +21,7 @@ const playback = computed(() =>
 );
 const trace = computed(() => [
     { name: 'Request', state: 'Received', detail: 'InventoryService / CheckStock', reached: true },
-    { name: 'Proto validation', state: scenario.value.handlerCalls ? 'Passed' : 'Rejected', detail: 'sku · string.min_len = 1', reached: true },
+    { name: 'Proto validation', state: scenario.value.validation.passed ? 'Passed' : 'Rejected', detail: `sku · min_len: ${scenario.value.validation.minimum}`, reached: true },
     {
         name: 'Business handler',
         state: scenario.value.handlerCalls ? 'Called once' : 'Not reached',
@@ -35,7 +35,8 @@ let observer: IntersectionObserver | undefined;
 function select(id: ValidationScenarioId) {
     selected.value = id;
     replaying.value = false;
-    announcement.value = `${scenario.value.label}: ${scenario.value.code}. Handler calls: ${scenario.value.handlerCalls}.`;
+    const check = scenario.value.validation;
+    announcement.value = `${scenario.value.label}: ${check.characters} characters, minimum ${check.minimum}. Validation ${check.passed ? 'passed' : 'failed'}. RPC ${scenario.value.code}. Handler calls: ${scenario.value.handlerCalls}.`;
 }
 function replay() {
     replayKey.value++;
@@ -133,8 +134,32 @@ onBeforeUnmount(() => {
                 <ol class="validation-trace" aria-label="Request execution path">
                     <li v-for="(step, index) in trace" :key="step.name" :data-reached="step.reached">
                         <span class="validation-step-number" aria-hidden="true">{{ index + 1 }}</span>
-                        <div><strong>{{ step.name }}</strong><span>{{ step.detail }}</span></div>
-                        <em>{{ step.state }}</em>
+                        <div>
+                            <strong>{{ step.name }}</strong><span>{{ step.detail }}</span>
+                            <div v-if="index === 1" class="validation-rule-check" :data-rule-passed="scenario.validation.passed">
+                                <dl>
+                                    <div>
+                                        <dt>Read <code>{{ scenario.validation.field }}</code></dt>
+                                        <dd><code>{{ JSON.stringify(scenario.validation.value) }}</code></dd>
+                                        <i v-if="replaying" :key="`value-${replayKey}`" class="validation-rule-cursor" style="--rule-step: 0" aria-hidden="true" />
+                                    </div>
+                                    <div>
+                                        <dt>Count characters</dt>
+                                        <dd>{{ scenario.validation.characters }}</dd>
+                                        <i v-if="replaying" :key="`count-${replayKey}`" class="validation-rule-cursor" style="--rule-step: 1" aria-hidden="true" />
+                                    </div>
+                                </dl>
+                                <p class="validation-rule-comparison">
+                                    <code>{{ scenario.validation.characters }} ≥ {{ scenario.validation.minimum }}</code>
+                                    <strong>{{ scenario.validation.passed ? 'PASS' : 'FAIL' }}</strong>
+                                    <i v-if="replaying" :key="`compare-${replayKey}`" class="validation-rule-cursor" style="--rule-step: 2" aria-hidden="true" />
+                                </p>
+                                <p class="validation-rule-decision">
+                                    {{ scenario.validation.passed ? 'Constraint met. Continue to the handler.' : 'Too short. Reject before the handler.' }}
+                                </p>
+                            </div>
+                        </div>
+                        <em v-if="index !== 1">{{ step.state }}</em>
                         <i
                             v-if="replaying && step.reached"
                             :key="`${replayKey}-${index}`"
@@ -173,6 +198,12 @@ onBeforeUnmount(() => {
             <div v-for="entry in data.scenarios" :key="entry.id" class="validation-transcript-entry">
                 <h4>{{ entry.label }} · {{ entry.code }}</h4>
                 <p>{{ entry.explanation }} Handler calls: {{ entry.handlerCalls }}.</p>
+                <p class="validation-transcript-rule">
+                    Field <code>{{ entry.validation.field }}</code> is <code>{{ JSON.stringify(entry.validation.value) }}</code>:
+                    {{ entry.validation.characters }}
+                    characters ≥ {{ entry.validation.minimum }} required.
+                    <strong>{{ entry.validation.passed ? 'PASS' : 'FAIL' }}</strong>.
+                </p>
                 <div class="validation-code" v-html="entry.request" />
                 <div class="validation-code" v-html="entry.result" />
             </div>
@@ -181,7 +212,10 @@ onBeforeUnmount(() => {
             <summary>Run the example and inspect the server setup</summary>
             <p>From a checkout of the documentation repository, run:</p>
             <div class="validation-code" v-html="data.commands" />
-            <p>The test starts a real Connectum server, sends each request over HTTP, counts handler invocations and compares the results with this recording.</p>
+            <p>
+                The test starts a real Connectum server and sends each request over HTTP. It reads the minimum length from the generated descriptor, records the field value and
+                character count, and checks the rule explanation against actual handler invocations.
+            </p>
             <p>Default interceptors install validation. The generated descriptors retain the constraint imported from <code>buf/validate/validate.proto</code>.</p>
             <div class="validation-code" v-html="data.server" />
             <p>Complete contract:</p>

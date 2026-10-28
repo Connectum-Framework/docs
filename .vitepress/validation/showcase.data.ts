@@ -6,6 +6,7 @@ import { validationScenarios } from './scenarios.ts';
 type RecordedResult = {
     id: ValidationScenarioId;
     request: { sku: string };
+    validation: { field: string; value: string; characters: number; minimum: string; passed: boolean };
     handlerCalls: number;
     code: string;
     response?: { units: number };
@@ -36,6 +37,7 @@ const loader = {
                 return {
                     ...scenario,
                     code: record.code,
+                    validation: record.validation,
                     handlerCalls: record.handlerCalls,
                     message: record.error?.message,
                     request: block(JSON.stringify(record.request, null, 2), 'json'),
