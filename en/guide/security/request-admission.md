@@ -1,15 +1,15 @@
 ---
-title: Reject Requests Before the Body Is Read
+title: Reject Requests Before the Body Is Parsed
 description: Use a server-wide request gate and per-message read limit to turn away unauthenticated or oversized requests cheaply, on HTTP and in-process alike.
 docType: how-to
 outline: deep
 ---
 
-# Reject Requests Before the Body Is Read
+# Reject Requests Before the Body Is Parsed
 
 Authentication interceptors run after the request message is available: for unary calls it has already been received and parsed. Two opt-in `createServer()` options reject a request earlier:
 
-- `requestGate` runs once the request headers arrive, **before any request message is received, decompressed, or parsed**. Throw a `ConnectError` and the call ends without its body ever being read.
+- `requestGate` runs once the request headers arrive, **before any request message is received, decompressed, or parsed**. Throw a `ConnectError` and the call ends without its request message ever being received, decompressed, or parsed. (On a kept-alive HTTP/1 connection the transport may still discard part of the unread body; see [Before you begin](#before-you-begin).)
 - `readMaxBytes` caps the size of each request message. A larger message ends the call with `resource_exhausted` before the handler runs.
 
 Both are unset by default; a server that does not set them behaves exactly as before.
@@ -19,7 +19,7 @@ The checks run in this order for a call to an RPC on the router:
 ```mermaid
 flowchart TD
     Headers["Request headers arrive"] --> Gate{"requestGate<br/>throws?"}
-    Gate -->|"yes"| R1["Call ends with the thrown error,<br/>body never read"]
+    Gate -->|"yes"| R1["Call ends with the thrown error,<br/>message never parsed"]
     Gate -->|"no"| Read{"Message larger<br/>than readMaxBytes?"}
     Read -->|"yes"| R2["resource_exhausted"]
     Read -->|"no"| Chain["Server interceptors:<br/>authentication, validation, and so on"]
