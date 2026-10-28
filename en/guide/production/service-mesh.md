@@ -11,7 +11,6 @@ A mesh can secure and manage connections between service workloads. It is
 not required for Connectum: add it when your deployment needs workload mTLS,
 traffic policy or mesh-level visibility.
 
-<GuideFlow scene="production/service-mesh">
 <figure class="guide-map" aria-label="Mesh policy surrounds the application call">
 <ol>
 <li><strong>Orders workload</strong><small>The application makes its normal service call.</small></li>
@@ -20,7 +19,6 @@ traffic policy or mesh-level visibility.
 </ol>
 <figcaption>Workload identity does not by itself authorize a user to invoke an RPC.</figcaption>
 </figure>
-</GuideFlow>
 
 ## One owner for each policy
 

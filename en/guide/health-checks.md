@@ -9,7 +9,6 @@ outline: deep
 
 `@connectum/healthcheck` implements the gRPC Health Checking Protocol and can expose HTTP endpoints for platform probes. The application owns status transitions; the protocol only reports them.
 
-<GuideFlow scene="health-checks">
 <figure class="guide-map" aria-label="Application state is reported to platform probes">
 <ol>
 <li><strong>Decide readiness</strong><small>Your application decides whether it can accept useful work.</small></li>
@@ -18,7 +17,6 @@ outline: deep
 </ol>
 <figcaption>Listening on a port does not automatically mean the service is ready.</figcaption>
 </figure>
-</GuideFlow>
 
 With the healthcheck imports and your `routes` in scope:
 

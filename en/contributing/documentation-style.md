@@ -70,16 +70,18 @@ different labels. The service catalog uses `CatalogAssembly`: contract files,
 generation boundaries, package delivery and merging. The resolver walkthrough
 shows routing. Share colors, accessibility and motion controls, not choreography.
 
-Existing three- or four-stage `GuideFlow` models retain a semantic
-`figure.guide-map`, ordered list and caption. Their `scene` identifies a narrated
-sequence in `.vitepress/guide/motion.ts`; this is not the default for new models.
+Do not animate an ordered list of cards with a moving highlight or a repeated
+caption. Prefer a static diagram that exposes the relationship: a dependency
+graph, a composition boundary or a request/response sequence. Use the shared
+Mermaid theme and add a readable caption; do not invent page-local palettes.
+The remaining `figure.guide-map` models are static, pending subject-specific
+diagram review, not templates for new animations.
 
-The sequence loops automatically, but never moves, hides or types the page's
-explanatory text and code. Provide pause/resume and a native transcript; persist
-the reader's pause choice across Guide navigation. Stop the clock for reduced
-motion, an offscreen diagram or a hidden tab, and clean it up on navigation.
-The illustration must explicitly say it is not live execution. Its static
-figure, caption and transcript remain available without JavaScript.
+For a genuinely causal animation, never move, hide or type the page's explanatory
+text and code. Provide pause/resume and a native transcript; persist the reader's
+pause choice across navigation. Pause offscreen/hidden work, keep reduced motion
+static and clean up on navigation. Explicitly distinguish illustrations from
+live execution. Captions and complete explanations remain readable without JS.
 
 Use shared styling and lifecycle practices; do not duplicate timers per page.
 Verify motion and pause behavior in a real browser, not only by checking that

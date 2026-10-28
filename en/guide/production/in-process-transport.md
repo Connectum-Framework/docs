@@ -11,7 +11,6 @@ Orders and Inventory can run on one `Server`. A local client reaches Inventory
 without opening a socket, but still goes through the router and configured
 server middleware. It is not a direct call to the handler function.
 
-<GuideFlow scene="production/in-process-transport">
 <figure class="guide-map" aria-label="A local RPC keeps the application boundary">
 <ol>
 <li><strong>Typed client</strong><small>Orders calls the mounted Inventory contract.</small></li>
@@ -20,7 +19,6 @@ server middleware. It is not a direct call to the handler function.
 </ol>
 <figcaption>Messages are copied through the codec, not shared between caller and handler.</figcaption>
 </figure>
-</GuideFlow>
 
 ## A local call
 

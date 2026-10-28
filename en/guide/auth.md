@@ -9,7 +9,6 @@ outline: deep
 
 Authentication establishes an `AuthContext`; authorization decides whether that identity may invoke a method. Keep those decisions separate in the interceptor chain even when they are configured together.
 
-<GuideFlow scene="auth">
 <figure class="guide-map" aria-label="Identity is established before method access is decided">
 <ol>
 <li><strong>Who is calling?</strong><small>Authentication verifies a credential and establishes identity.</small></li>
@@ -18,7 +17,6 @@ Authentication establishes an `AuthContext`; authorization decides whether that 
 </ol>
 <figcaption>A valid credential is not permission to invoke every method.</figcaption>
 </figure>
-</GuideFlow>
 
 ## Choose the trust boundary
 

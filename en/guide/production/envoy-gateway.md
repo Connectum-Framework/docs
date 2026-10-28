@@ -11,7 +11,6 @@ A gateway is an optional edge in front of your services. It can route native
 gRPC traffic. With a separately configured transcoder and descriptors, it can
 also turn an HTTP/JSON request into a gRPC call.
 
-<GuideFlow scene="production/envoy-gateway">
 <figure class="guide-map" aria-label="An explicitly configured REST-to-gRPC path">
 <ol>
 <li><strong>HTTP/JSON client</strong><small>A request uses the path defined by your API annotations.</small></li>
@@ -20,7 +19,6 @@ also turn an HTTP/JSON request into a gRPC call.
 </ol>
 <figcaption>Generating OpenAPI alone does not install a transcoder or expose a REST endpoint.</figcaption>
 </figure>
-</GuideFlow>
 
 ## Keep the artifacts separate
 

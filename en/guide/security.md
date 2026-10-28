@@ -9,7 +9,6 @@ outline: deep
 
 TLS encrypts the connection and authenticates the server. Mutual TLS additionally authenticates the client certificate. Neither replaces application-level identity and authorization when a request crosses a user or gateway trust boundary.
 
-<GuideFlow scene="security">
 <figure class="guide-map" aria-label="Connection security and application authorization are separate">
 <ol>
 <li><strong>Client</strong><small>Verify the destination certificate and use the trusted connection.</small></li>
@@ -18,7 +17,6 @@ TLS encrypts the connection and authenticates the server. Mutual TLS additionall
 </ol>
 <figcaption>A secure connection does not replace application access policy.</figcaption>
 </figure>
-</GuideFlow>
 
 ## Choose the task
 

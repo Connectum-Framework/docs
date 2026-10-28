@@ -9,7 +9,6 @@ outline: deep
 
 `@connectum/otel` connects RPC telemetry and application instrumentation to OpenTelemetry. Instrumentation decides what signals to create; provider/exporter configuration decides where those signals go.
 
-<GuideFlow scene="observability">
 <figure class="guide-map" aria-label="Telemetry needs both instrumentation and an export destination">
 <ol>
 <li><strong>Observe work</strong><small>Instrument an RPC or an application operation.</small></li>
@@ -18,7 +17,6 @@ outline: deep
 </ol>
 <figcaption>Adding an interceptor alone does not configure a production collector or dashboard.</figcaption>
 </figure>
-</GuideFlow>
 
 ## Minimal RPC instrumentation
 

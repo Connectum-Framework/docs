@@ -10,16 +10,24 @@ outline: deep
 Keep handlers focused on business decisions. Interceptors wrap the RPC with
 shared behavior such as error handling, validation or a timeout.
 
-<GuideFlow scene="interceptors">
-<figure class="guide-map" aria-label="An interceptor wraps the handler call">
-<ol>
-<li><strong>Before</strong><small>Read the request, apply policy, then call the next layer.</small></li>
-<li><strong>Handler</strong><small>Run the service's business logic.</small></li>
-<li><strong>After</strong><small>The response or error unwinds through the layers in reverse order.</small></li>
-</ol>
-<figcaption>Order changes behavior. An outer interceptor sees both the request and the inner result.</figcaption>
+<figure class="technical-diagram" aria-label="An interceptor wraps the handler call">
+
+```mermaid
+sequenceDiagram
+    accTitle: Before and after an RPC handler
+    accDescr: An interceptor applies request policy before calling next. The handler's response or error returns to the wrapper. With several wrappers, this return path unwinds in reverse order.
+    participant I as Interceptor
+    participant H as Handler
+    Note over I: Before
+    I->>H: next(request)
+    activate H
+    H-->>I: Response or error
+    deactivate H
+    Note over I: After / catch
+```
+
+<figcaption>Order changes behavior. An outer interceptor sees both the request and the inner result. With several wrappers, the response or error unwinds through them in reverse order.</figcaption>
 </figure>
-</GuideFlow>
 
 ## Start with the default chain
 

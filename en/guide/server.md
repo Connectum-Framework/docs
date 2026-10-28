@@ -10,16 +10,21 @@ outline: deep
 One server owns one process's RPC boundary. Give it your services and any
 middleware or protocols you need; it owns listening, startup and shutdown.
 
-<GuideFlow scene="server">
-<figure class="guide-map" aria-label="Compose, start and stop one service process">
-<ol>
-<li><strong>Compose</strong><small>Register typed services and explicit capabilities.</small></li>
-<li><strong>Listen</strong><small>Start the configured transport and accept network calls.</small></li>
-<li><strong>Drain</strong><small>Stop accepting work and coordinate shutdown.</small></li>
-</ol>
-<figcaption>In-process clients can use registered services before a network listener starts.</figcaption>
+<figure class="technical-diagram" aria-label="The public inputs and call boundaries of one server">
+
+```mermaid
+flowchart TD
+    accTitle: Compose one server
+    accDescr: Services supply RPC implementations. Interceptors and protocol plugins are optional inputs. In-process clients do not require a listener; start opens the network boundary.
+    Services["services<br/>handlers"] --> Server["createServer"]
+    Optional["Optional inputs<br/>interceptors<br/>protocols"] -.-> Server
+    Server --> Local["In-process<br/>clients"]
+    Server -->|start| Network["Network<br/>listener"]
+    class Server accent
+```
+
+<figcaption>In-process clients can use registered services before a network listener starts. Dashed inputs are optional; lifecycle and shutdown behavior have their own guides below.</figcaption>
 </figure>
-</GuideFlow>
 
 ## Minimal server
 

@@ -9,7 +9,6 @@ outline: deep
 
 Connectum supports two complementary testing layers. Use TypeScript tests for fast handler and transport feedback, then scenario tests for the deployed protocol boundary.
 
-<GuideFlow scene="testing">
 <figure class="guide-map" aria-label="Test from a small decision to the deployed boundary">
 <ol>
 <li><strong>Handler decision</strong><small>Check business results and errors in TypeScript.</small></li>
@@ -18,7 +17,6 @@ Connectum supports two complementary testing layers. Use TypeScript tests for fa
 </ol>
 <figcaption>A passing local test does not prove that a proxy or certificate is configured correctly.</figcaption>
 </figure>
-</GuideFlow>
 
 For a server with the example Inventory implementation registered:
 

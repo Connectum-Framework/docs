@@ -19,16 +19,21 @@ typed Protobuf RPCs.
 
 ## Mental Model
 
-<GuideFlow scene="about">
-<figure class="guide-map" aria-label="The three pieces of a Connectum service">
-<ol>
-<li><strong>Contract</strong><small>A .proto file defines messages and RPC methods.</small></li>
-<li><strong>Implementation</strong><small>Generated descriptors connect to typed TypeScript handlers.</small></li>
-<li><strong>Server</strong><small>createServer composes services, middleware, protocols and lifecycle policy.</small></li>
-</ol>
-<figcaption>Your contract describes the API; your handlers implement it; the server runs it.</figcaption>
+<figure class="technical-diagram" aria-label="How a contract becomes a registered service">
+
+```mermaid
+flowchart TD
+    accTitle: From a contract to a registered service
+    accDescr: Generate descriptors and message types from Protobuf. Bind the descriptors to your TypeScript handlers with defineService, then register the service on a server.
+    Contract["Protobuf contract<br/>services · RPCs<br/>messages"] -->|generate| Types["Descriptors<br/>message types"]
+    Types --> Service["defineService<br/>contract + handlers"]
+    Handlers["TypeScript<br/>handlers"] --> Service
+    Service --> Server["createServer<br/>register the service"]
+    class Contract accent
+```
+
+<figcaption>Your contract describes the API; your handlers implement it; the server runs it. Generated descriptors connect the contract and implementation.</figcaption>
 </figure>
-</GuideFlow>
 
 Start with [one working RPC](/en/guide/quickstart), including a request rejected
 by configured validation, without an external broker. Authentication, events,

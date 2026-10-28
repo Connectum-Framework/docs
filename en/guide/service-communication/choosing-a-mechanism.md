@@ -11,7 +11,6 @@ Orders needs to know whether Inventory has stock **before answering** the
 customer. That is a service call. After an order is accepted, other services
 can react to **what happened** through an event.
 
-<GuideFlow scene="service-communication/choosing-a-mechanism">
 <figure class="guide-map" aria-label="An order can use both calls and events">
 <ol>
 <li><strong>Check stock</strong><small>Orders calls Inventory and waits for an answer.</small></li>
@@ -20,7 +19,6 @@ can react to **what happened** through an event.
 </ol>
 <figcaption>These are different interaction contracts, not competing transport libraries.</figcaption>
 </figure>
-</GuideFlow>
 
 ## Choose by the result you need
 

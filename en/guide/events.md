@@ -11,7 +11,6 @@ An order was accepted. Inventory or another subscriber may need to react,
 but Orders does not need their answer to this publication. The EventBus
 connects typed protobuf events to consuming handlers through an adapter.
 
-<GuideFlow scene="events">
 <figure class="guide-map" aria-label="An event passes through an adapter to a subscriber">
 <ol>
 <li><strong>Publish</strong><small>Orders publishes a protobuf event.</small></li>
@@ -20,7 +19,6 @@ connects typed protobuf events to consuming handlers through an adapter.
 </ol>
 <figcaption>Publication is not an RPC response from the subscriber.</figcaption>
 </figure>
-</GuideFlow>
 
 ## One publication
 

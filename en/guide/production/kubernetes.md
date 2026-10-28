@@ -11,7 +11,6 @@ Kubernetes runs and replaces your service processes. Connectum owns what
 happens inside each process; Kubernetes owns placement, replicas and how
 traffic reaches them.
 
-<GuideFlow scene="production/kubernetes">
 <figure class="guide-map" aria-label="Kubernetes traffic reaches ready service replicas">
 <ol>
 <li><strong>Service address</strong><small>A stable destination for callers.</small></li>
@@ -20,7 +19,6 @@ traffic reaches them.
 </ol>
 <figcaption>A running pod is not automatically a ready application.</figcaption>
 </figure>
-</GuideFlow>
 
 ## What you configure
 
