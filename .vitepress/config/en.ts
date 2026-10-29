@@ -259,6 +259,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Error handler and client messages', link: '/en/migration/error-handler-messages' },
                         { text: 'Option descriptors from the packages', link: '/en/migration/option-descriptor-imports' },
                         { text: 'events-amqp 1.3 behavior changes', link: '/en/migration/events-amqp-1.3' },
+                        { text: 'events-amqp option validation', link: '/en/migration/events-amqp-options' },
                     ],
                 },
             ],

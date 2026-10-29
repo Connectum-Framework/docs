@@ -107,6 +107,17 @@ AMQP exposes a redelivery flag, not an exact count: `ctx.attempt` is `1` for a
 first delivery and `2` for any redelivery, including the third or later. Use your
 own durable counter when policy depends on an exact number of deliveries.
 
+For a message from a publisher that is not Connectum, two details matter:
+
+- **Header values.** Scalars (numbers, booleans, strings, byte arrays) reach
+  `ctx.metadata` as their text. An AMQP table or array reaches it as JSON text, for
+  example `{"a":1}` or `[1,"a"]`; a null value is left out.
+- **`eventId` is stable only if the message carries an identity.** It is `x-event-id`
+  when the header is present, else the AMQP `messageId`, else a new random UUID **for
+  every delivery**. A redelivered message from a publisher that sets neither therefore
+  has a different `eventId` each time, and deduplication on `eventId` cannot work. Ask
+  such a publisher to set `messageId`, or deduplicate on a field of the payload.
+
 ## Reliable publishing {#reliable-publishing}
 
 Every `publish()` waits for the broker's outcome for that one message and either
@@ -121,6 +132,12 @@ class tells an at-least-once producer whether to send the message again:
 | `AmqpUnroutableError` | Sent with `mandatory: true` and dropped: no queue bound | No |
 | `AmqpSerializationError` | Never sent: the `serialization.encode` hook threw | No |
 | `AmqpTopologyError` | Not a publish outcome: fix the topology configuration | No |
+| `TypeError` / `RangeError` | Never sent: an argument amqplib cannot encode | No: fix the argument |
+
+The last row is a routing key or `messageId` over 255 bytes, or a `timestamp` that is
+NaN, negative, fractional or infinite. amqplib's own error, which names the field,
+rejects the publish. It is not an `AmqpConnectionError` and `publishRetry` does not
+repeat it, because the same call can never succeed.
 
 A consumer-side `serialization.decode` failure is not in this table: it throws
 nothing. The adapter rejects the message without requeue (the broker drops it, or
@@ -261,6 +278,35 @@ try {
 
 The helper is narrower than the republish column above on purpose: a nack is safe to
 republish later, but it is not retried in a tight loop.
+
+## Invalid options fail at creation {#option-validation}
+
+`AmqpAdapter()` checks its options when you create the adapter and throws an error that
+names the option, instead of failing later at `connect()` or `subscribe()`, or quietly
+using another value:
+
+| Option | Accepted | Error |
+|---|---|---|
+| `options` | an object with a `url` | `TypeError` |
+| `exchangeType` | `"topic"`, `"direct"`, `"fanout"`, `"headers"` | `TypeError` |
+| `topologyMode` | `"assert"`, `"check"`, `"skip"` | `TypeError` |
+| `recovery`, `publishRetry` | a boolean or an object | `TypeError` |
+| `recovery.jitter`, `publishRetry.jitter` | a number from 0 to 1; `NaN` and the infinities use the default, as for the other delay knobs | `RangeError` for a finite value outside 0 to 1, `TypeError` for a non-number |
+| `publishRetry.maxRetries` | a number | `TypeError` |
+| `consumerOptions.prefetch` | an integer from 0 (no limit) to 65535 | `RangeError` |
+| `consumerOptions.redeliveryDelay` | a finite number of ms from 0 to 2147483647 | `RangeError` |
+| `queueOptions.messageTtl`, `queueOptions.maxLength` | a non-negative integer | `RangeError` |
+| `serialization.encode`, `serialization.decode` | a function | `TypeError` |
+| `serialization.contentType` | a string | `TypeError` |
+
+A `topologyMode` such as `"CHECK"` or `"Skip"` used to act as `"assert"` and declare the
+exchange and queues, so spell the mode exactly. [`FakeAmqpAdapter`](#testing-subpath-exports)
+applies the same checks to `exchangeType` and `topologyMode`, so a test cannot pass with
+a value the real adapter refuses. Options that have a documented fallback
+keep it: `publishTimeoutMs`, `recovery.initialConnectMaxRetries` and the retry counts
+normalize a non-finite, negative or fractional number as described where they are
+introduced. See [Option validation in the migration guide](/en/migration/events-amqp-options)
+if an upgrade now fails at startup.
 
 ## Socket options {#socket-options}
 
@@ -634,6 +680,29 @@ The rule exists because the broker treats a second settlement of one delivery ta
 protocol violation: it answers `PRECONDITION_FAILED - unknown delivery tag` and closes
 the consumer channel.
 
+### Space out redeliveries {#redelivery-delay}
+
+A message whose handler keeps throwing is requeued at once, so the broker hands it back
+as fast as it can: about 24,000 times in 3 seconds against RabbitMQ 4.3.6. That keeps a
+CPU core busy and floods the logs. `consumerOptions.redeliveryDelay` holds a failed
+message unacknowledged for that many milliseconds before it is requeued:
+
+```typescript
+const adapter = AmqpAdapter({
+  url: process.env.AMQP_URL ?? 'amqp://localhost:5672',
+  consumerOptions: { redeliveryDelay: 1000 }, // one redelivery per second
+});
+```
+
+The option is off unless you set it (`0` requeues at once, as before). While held, the
+message occupies one `prefetch` slot, and the delay applies to every handler failure of
+this adapter's subscriptions. A message the handler already settled with `ack()` or
+`nack()` is not delayed. `unsubscribe()` ends the wait and requeues a held message at
+once. When the channel closes during the wait (`disconnect()`, a lost connection) the
+wait ends and the broker returns the message by itself. The delay only paces the loop:
+a message that can never succeed still needs the
+[retry and DLQ middleware](/en/guide/events/middleware) to end it.
+
 ### Settling a delivery after the channel closed {#settlement-skipped}
 
 A handler can outlive its connection: it rejects, or calls `ack()` or `nack()`, after
@@ -830,8 +899,33 @@ behavior, run integration tests against a broker.
 
 ## Troubleshooting
 
-- **`connect()` never returns.** The broker is unreachable and `maxRetries` is
-  `Infinity`. Set `initialConnectMaxRetries` to bound startup.
+- **`connect()` never returns.** Either the broker is unreachable and `maxRetries` is
+  `Infinity`, or the broker answers but the topology setup fails the same way every time
+  (see the next entry). Set `initialConnectMaxRetries` to bound startup.
+- **`connect()` hangs although the broker is reachable.** The topology setup runs inside
+  the retry loop, so a failure that cannot heal on its own is retried under the default
+  unlimited budget without an error or an event: an `exchangeType` that the broker does
+  not know, an exchange that already exists with another type, a queue redeclared with
+  different arguments (`406 PRECONDITION_FAILED`). A mistyped `exchangeType` is now
+  rejected when the adapter is created. For the other cases set
+  `failFastOnInitialSetupError: true`: the first setup error then rejects `connect()`
+  with `AmqpTopologyError`. With `lifecycle.onLifecycle` the failure is at least
+  reported once, as `setup-failed { initial: true }`, but `connect()` still waits.
+- **`AmqpTopologyError` says `Connection closed: 541 (INTERNAL-ERROR)` for a queue.**
+  The broker answered the declaration by closing the connection, and the message and
+  `cause` carry its reply. RabbitMQ 4.3 and later refuse a named queue that is not
+  durable (`queueOptions: { durable: false }` with a `group`) unless the deprecated
+  feature `transient_nonexcl_queues` is permitted; keep `durable: true`.
+- **A failed connect lists several addresses.** A hostname that resolves to more than one
+  address (such as `localhost`) is tried on each, and the `cause` names every failure, for
+  example `connect ECONNREFUSED ::1:5672; connect ECONNREFUSED 127.0.0.1:5672`. With
+  `recovery: false` the error thrown is an `AggregateError` with that message.
+- **`TypeError` or `RangeError` from `publish()`.** The routing key, `messageId` or
+  `timestamp` is not something AMQP can encode; see
+  [Reliable publishing](#reliable-publishing).
+- **A message that always fails is redelivered thousands of times per second.** Set
+  `consumerOptions.redeliveryDelay`, and bound the message with the retry and DLQ
+  middleware; see [Space out redeliveries](#redelivery-delay).
 - **`TypeError: AmqpAdapter: recovery.backoff cannot be combined with recovery.<knob>`
   at construction.** `backoff` was set together with `initialDelay`, `maxDelay`,
   `factor` or `jitter`. Remove the knob and compute the delay, including its cap,
