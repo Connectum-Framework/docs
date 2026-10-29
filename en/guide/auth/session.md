@@ -117,13 +117,13 @@ verifies. The cache is bypassed when the mapped `expiresAt` has passed, or when
 its TTL expires. Revoking a session in the backend does not invalidate an already
 cached identity, so choose the TTL to fit your revocation policy.
 
-The cached identity is an immutable snapshot, and the same snapshot is what the
-handler of the request that filled the cache receives. The `AuthContext`, its
-`roles`, `scopes` and `claims` (nested plain objects and arrays included) are
-frozen, so a handler cannot change what a later request with the same token gets;
-an attempt to push a role throws a `TypeError`. `expiresAt` is a copy per request.
-Copy the values you want to change. Without `cache`, the object your verifier
-returns is passed through as it is. The same holds for the `cache` option of
+The cache stores a private copy of the identity, and every request served from it
+receives its own copy: the `AuthContext`, its `roles`, `scopes` and `claims` (nested
+plain objects and arrays included) and `expiresAt`. A handler that changes its
+context, for example by pushing a role, keeps working as it does without a cache,
+and the change stays inside its request; a later request with the same token gets
+what the verifier returned. A cache hit costs one pass over the identity, which is
+small next to a session lookup. The same holds for the `cache` option of
 `createAuthInterceptor`.
 
 ## Full Example

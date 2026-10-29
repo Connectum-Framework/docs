@@ -18,8 +18,8 @@ Check each row against your configuration. Only the rows that match need action;
 | 2 | A method that is both `public` and `internal` (set on the method or inherited from the service) | An `Error` that suggests `public: true, internal: false` |
 | 3 | `signedTokenTrust` issuers that rely on the token's `sub` or `scope` claim | The subject is the issuer name and the scopes are empty; a mapped subject that is absent rejects the call |
 | 4 | `skipMethods: ['*']` on an auth or authorization interceptor | An `Error` when the interceptor is created |
-| 5 | `propagateHeaders: true` and an identity whose subject, type, name or a scope contains NUL, CR, LF or a character above U+00FF | `Unauthenticated`, and the identity is not cached |
-| 6 | A gateway `defaultType` containing NUL, CR, LF or a character above U+00FF | An `Error` when the interceptor is created |
+| 5 | `propagateHeaders: true` and an identity whose subject, type, name or a scope contains NUL, CR or LF (a character above U+00FF is encoded since 1.3.0, see [Auth identity handling](/en/migration/auth-identity)) | `Unauthenticated`, and the identity is not cached |
+| 6 | A gateway `defaultType` containing NUL, CR or LF | An `Error` when the interceptor is created |
 | 7 | A `cache` with `ttl: Infinity` or `NaN`, or `maxSize` below 1, fractional, `NaN` or `Infinity` | A `RangeError` when the interceptor is created |
 
 Rows 1 and 2 are found at startup if you build the interceptor chain with `getPublicMethods(services)` and `getInternalMethods(services)`, because those resolve every method; otherwise the error appears on the first call to the affected method.
@@ -83,9 +83,9 @@ To disable an interceptor, do not put it in the chain (build the list conditiona
 
 ### 5. Unsafe identity with `propagateHeaders`
 
-With `propagateHeaders`, a subject, type, name or any single scope that contains NUL, CR, LF or a character above U+00FF is rejected with `Unauthenticated` (`Authentication failed`) before the identity is cached; the next request with the same credential is verified again. Such values are not cleaned up, because removing a line break would make `al\nice` and `alice` the same subject downstream. With `propagateHeaders` off nothing changes.
+With `propagateHeaders`, a subject, type, name or any single scope that contains NUL, CR or LF is rejected with `Unauthenticated` (`Authentication failed`) before the identity is cached; the next request with the same credential is verified again. Such values are not cleaned up, because removing a line break would make `al\nice` and `alice` the same subject downstream. With `propagateHeaders` off nothing changes.
 
-Fix the identity provider or the mapper so these fields have no line breaks, NUL or characters above U+00FF (a header value is a byte string; a non-Latin name, for example, ended in an internal error before 1.3.0), or keep `propagateHeaders` off. Roles and claims are not affected: characters above U+00FF in them are now written as JSON `\uXXXX` escapes and read back unchanged. Scopes are written exactly as granted and are never edited. `setAuthHeaders` called directly throws a `TypeError` that names the field (`AuthContext.subject`, `type`, `name` or `scopes`) and sets no header; before 1.3.0 NUL was stripped and CR and LF made the platform throw.
+Fix the identity provider or the mapper so these fields have no line breaks or NUL, or keep `propagateHeaders` off. Roles and claims are not affected: characters above U+00FF in them are now written as JSON `\uXXXX` escapes and read back unchanged. Scopes are written exactly as granted and are never edited. `setAuthHeaders` called directly throws a `TypeError` that names the field (`AuthContext.subject`, `type`, `name` or `scopes`) and sets no header; before 1.3.0 NUL was stripped and CR and LF made the platform throw.
 
 ### 6. Gateway `defaultType`
 

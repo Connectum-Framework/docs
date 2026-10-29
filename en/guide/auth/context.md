@@ -153,19 +153,27 @@ const sessionAuth = createSessionAuthInterceptor({
 
 Each field is handled on its own terms when the headers are written:
 
-- **`subject`, `type` and `name`** have control characters removed (tab is kept) and are then cut to a length limit. The same removal and cut apply when a receiver reads them.
-- **`roles` and `claims`** are JSON-encoded, so their content is escaped by the encoding and never altered.
+- **`subject`, `type` and `name`** have control characters removed (tab is kept). Text up to U+00FF (ASCII and Latin-1) is written as is. Text with a character above U+00FF (Cyrillic, CJK, an emoji) is written as `utf-8''` followed by its percent-encoded UTF-8 bytes (an RFC 8187 `ext-value` without a language), and `parseAuthHeaders` and `createGatewayAuthInterceptor` (for the standard `x-auth-*` names) decode it. A text that itself starts with `utf-8''` is encoded too, so reading is unambiguous. A service that reads these headers without `@connectum/auth` sees the encoded form for such users.
+- **`roles` and `claims`** are JSON-encoded, so their content is escaped by the encoding and never altered. Each character above U+00FF is written as a `\uXXXX` escape.
 - **Each scope** is written exactly as granted, joined by single spaces. Scopes are not cleaned: a scope is an RFC 6749 `scope-token`, and editing one could make it equal a privilege nobody granted. For the same reason a scope that contains a space is rejected (see below): the reader splits the header on spaces, so the one granted scope `reports read admin` would arrive as three, `admin` among them.
-- **NUL, CR, LF and characters above U+00FF are rejected, not removed.** A header value is a byte string, so the platform cannot write a character above U+00FF (a Cyrillic name, for example). With `propagateHeaders` on, a subject, type, name or scope that contains one of them, or a scope that contains a space, ends the request with `Unauthenticated` (text `Authentication failed`) before the identity is cached, so the next request with the same credential is verified again. Removing a line break would turn two different subjects (`al\nice` and `alice`) into the same header value. With `propagateHeaders` off the same identity is admitted. `setAuthHeaders` itself throws a `TypeError` that names the field (`AuthContext.subject`, `type`, `name` or `scopes`) and sets no header.
+- **NUL, CR, LF and lone surrogates are rejected, not removed.** With `propagateHeaders` on, a subject, type, name or scope that contains one of them, or a scope that contains a space, ends the request with `Unauthenticated` (text `Authentication failed`) before the identity is cached, so the next request with the same credential is verified again. Removing a line break would turn two different subjects (`al\nice` and `alice`) into the same header value. With `propagateHeaders` off the same identity is admitted. `setAuthHeaders` itself throws a `TypeError` (`UnsafeHeaderValueError`) that names the field (`AuthContext.subject`, `type`, `name` or `scopes`) and sets no header.
 
 Limits and sizes:
 
-- `x-auth-subject` is cut to 512 characters, `x-auth-type` to 128 and `x-auth-name` to 256.
-  An over-long value is **truncated, not rejected**, so two subjects that share their
-  first 512 characters become indistinguishable downstream.
-- `x-auth-roles`, `x-auth-scopes` and `x-auth-claims` have a limit of 8192 characters
-  for the serialized value. A value over the limit is not truncated: the sender leaves
-  that header out, and a receiver ignores it and uses an empty roles, scopes or claims value.
+- `x-auth-subject` holds at most 512 characters, `x-auth-type` 128 and `x-auth-name` 256, counted
+  in the text before encoding.
+- `x-auth-roles`, `x-auth-scopes` and `x-auth-claims` hold at most 8192 characters of the
+  serialized value; the claims limit applies after the `propagatedClaims` filter.
+- A value over its limit is **rejected, never cut or left out**. With `propagateHeaders` on, the
+  request ends with `Unauthenticated` (text `Authentication failed`) and the identity is not cached;
+  `setAuthHeaders` throws a `RangeError` (`HeaderValueTooLargeError`) and sets no header.
+  Cutting would make two subjects that share their first 512 characters one identity, and
+  leaving a role or claim out would stop a deny rule or an `authorize` callback that looks at it
+  from matching. The readers are strict in the same way: `parseAuthHeaders` throws
+  `Unauthenticated` for a value over its limit or a malformed encoded text, and the gateway
+  interceptor rejects a claims header over 8192 characters.
+- To keep large claims out of the headers, filter them with `propagatedClaims` (generic and
+  session interceptors) or turn propagation off.
 
 Loading `@connectum/auth` from two module instances (for example `src` and `dist`
 imports mixed in one process) emits a `CONNECTUM_AUTH_DUP_INIT` process warning once. Both

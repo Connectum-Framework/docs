@@ -48,9 +48,14 @@ const gatewayAuth = createGatewayAuthInterceptor({
 
 `headerMapping` describes how trusted gateway headers become an `AuthContext`.
 `trustSource` checks a header value before accepting the identity fields. The
-example uses a shared secret; the matcher also supports IPv4 CIDR values, which
-still rely on a trusted upstream setting the header rather than a socket peer
-check. An address in the header is read strictly: exactly four decimal octets from
+example uses a shared secret. The matcher can also read IPv4 CIDR values, but a block is
+matched against a header that a caller reaching the service directly chooses itself, so
+`10.0.0.0/8` admits anyone who sends `10.9.9.9`. Creating the interceptor with a CIDR
+block therefore throws unless you set `trustSource.allowCallerControlledCidr: true`; set it only
+when a trusted upstream overwrites that header on every request and no client can reach
+the service without passing through it. Trust based on the address of the connection
+belongs in the mTLS and mesh-identity helpers. Shared secrets are compared in constant
+time. With the option set, an address in the header is read strictly: exactly four decimal octets from
 0 to 255 without leading zeros (`10.0.0.1`), and a CIDR value is such an address, a
 `/` and a prefix of 0 to 32 (`10.0.0.0/8`). A header value that is not an address, or an
 `expectedValues` entry that is not a well-formed block, matches only if it is
@@ -82,7 +87,7 @@ A `roles` value that is a JSON array is used as sent (items that are not strings
 |--------|------|---------|-------------|
 | `defaultType` | `string` | `'gateway'` | Credential type used when the gateway sends no type header |
 
-`defaultType` becomes `AuthContext.type` and, with `propagateHeaders`, the `x-auth-type` header, so a value containing NUL, CR, LF or a character above U+00FF throws when the interceptor is created.
+`defaultType` becomes `AuthContext.type` and, with `propagateHeaders`, the `x-auth-type` header, so a value containing NUL, CR or LF throws when the interceptor is created.
 
 ### trustSource Check
 
@@ -119,7 +124,7 @@ Enabling `propagateHeaders` writes the verified identity back using the standard
 `x-auth-*` names, including all non-empty claims that fit the header limit. This
 option does not restore the gateway trust secret. Choose it only when the next
 hop needs those fields; gateway authentication has no `propagatedClaims` filter.
-An identity that cannot be written into headers (NUL, CR, LF or a character above U+00FF in the subject, type, name or a scope) is rejected with `Unauthenticated`; see [Auth Context](/en/guide/auth/context#propagated-headers).
+An identity that cannot be written into headers (NUL, CR or LF in the subject, type, name or a scope, a scope with a space, or a value that does not fit its header) is rejected with `Unauthenticated`. When the gateway reads the standard `x-auth-*` names it also decodes text that another service wrote as `utf-8''` plus percent-encoded UTF-8, and it rejects a claims header over 8192 characters instead of reading it as empty; see [Auth Context](/en/guide/auth/context#propagated-headers).
 
 `skipMethods` lists methods and `Service/*` patterns; the catch-all `'*'` is refused when the interceptor is created (see [Method Patterns](/en/guide/auth/authorization#method-patterns)).
 
