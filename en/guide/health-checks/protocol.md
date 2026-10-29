@@ -41,7 +41,7 @@ server that misbehaves later:
 An omitted option (or an explicit `undefined`) takes its default. One server answers
 `grpc.health.v1.Health` from one registration: a second `Healthcheck()` in `protocols`,
 or an application service that is already `grpc.health.v1.Health`, makes `start()`
-(and the first `localClient()`) reject with an error naming the service. The check
+(and the first call made through `localClient()`) reject with an error naming the service. The check
 runs when the server builds its routes, not at `createServer()`. One `Healthcheck()`
 value can still be passed to several servers.
 
@@ -94,7 +94,7 @@ flowchart TD
 | `update(status, service?)` | Update status. Without `service`, updates **all** registered entries (services and components). Throws on an unknown name. |
 | `register(component, initialStatus?)` | Register an application health component (default `UNKNOWN`). Re-registering preserves the current status. |
 | `set(component, status)` | Set a component's status (upsert: registers the component if absent). |
-| `subscribe(listener)` | Call `listener` (no arguments) after every change of the registry; returns a function that removes it. `Health.Watch` is built on this. |
+| `subscribe(listener)` | Call `listener` (no arguments) after every change of the registry; returns a function that removes it. `Health.Watch` is built on this. A listener must not change the registry: calling `update`, `register`, `set`, `unregister`, `initialize` or `clear` from inside one throws, so every listener sees the state of the change that notified it. |
 | `unregister(component)` | Remove a registered component. |
 | `getStatus(service)` | Get status of a specific service or component. Returns `ServiceStatus \| undefined` (`undefined` for an unknown name — does not throw). |
 | `getAllStatuses()` | Get a Map of all service and component statuses |
