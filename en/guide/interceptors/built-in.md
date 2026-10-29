@@ -251,7 +251,7 @@ A plain object is checked field by field before the message is built, because `c
 - a value of another kind than its field takes: a number in a string field, a non-boolean in a bool field, a string in an int32 field, a non-array in a repeated field, an enum name instead of its number, a wrong item in a list or map;
 - a number the encoder cannot write: a fraction or a value beyond the range in an int32, `NaN`.
 
-An enum number that the enum does not name is accepted. Behind the error handler the client receives `Internal` with the text `internal error`, and `onError` and the console log show the full text.
+An enum number that the enum does not name is accepted. The forms are those of protobuf-es: a wrapper (`StringValue`, `Int64Value`, ...) in a singular field outside a oneof is its bare value (`name: "cached"`, not `{ value: "cached" }`), and a `Struct` is a plain JSON object; a message object is refused in both places. `Timestamp`, `Duration`, `Value`, `ListValue`, `Any`, `FieldMask` and `Empty` are objects with their own fields (`{ seconds: 1n }`), and a wrapper in a list or a oneof is an object with `value`. Behind the error handler the client receives `Internal` with the text `internal error`, and `onError` and the console log show the full text.
 
 ### Fallback response {#fallback-response}
 
