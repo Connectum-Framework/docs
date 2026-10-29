@@ -148,6 +148,8 @@ Synchronous registry lookup by `desc.typeName`.
 function hasService(desc: DescService): boolean;
 ```
 
+A service the application defines (`services`, `addService()`, narrowed by `enabledServices`) is answered from its definition: the lookup runs no `defineLazyService` factory and `addService()`, `addInterceptor()` and `addProtocol()` stay available. A descriptor that no definition covers can only come from a protocol; when protocols are registered, what they mount is known only once the routes exist, so that lookup builds them and closes those methods, as `server.localClient()` does.
+
 Useful for conditional routing in user code (e.g. when you build a custom transport selector).
 
 ## Behavioural Parity Guarantees
