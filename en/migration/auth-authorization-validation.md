@@ -22,6 +22,7 @@ Check each row against your configuration. Only the rows that match need action;
 | 6 | A method pattern other than `'*'`, `'Service/*'` and `'Service/Method'` in `skipMethods`, a rule's `methods` or `internalMethods` (`'Service/Write*'`, `'acme.v1.*/*'`, a bare service name) | A `TypeError` naming the option and the pattern when the interceptor is created |
 | 7 | A gateway interceptor with `expectedValues: [process.env.X]` and the variable unset, an empty `trustSource.header`, a missing `trustSource`; an internal interceptor without `internalMethods`; a generic interceptor without `verifyCredentials` | A `TypeError` naming the option when the interceptor is created; before, every request failed with `internal` or `Authentication failed` |
 | 8 | `createClientBearerInterceptor` with an unset token, or a token factory that can return `undefined` or `null`; `createClientGatewayInterceptor` with an unset `secret` | A `TypeError` when the interceptor is created, or `Unauthenticated` on the client for that call; before, the server received `Bearer undefined` |
+| 9 | Code that reads `AuthzDeniedError` instances: a rule or proto `requires` denial without `createErrorHandlerInterceptor` | The client gets `PermissionDenied` instead of `internal`; `instanceof ConnectError` is now true for the error and `instanceof AuthzDeniedError` is true only for it |
 
 Rows 1, 5, 6, 7 and the creation-time part of row 8 surface when the server is composed, so a test that builds the chain finds them. Rows 2, 3, 4 and the per-call part of row 8 surface on a call.
 
@@ -117,6 +118,10 @@ Read the variable, fail with your own message when it is missing, and pass only 
 ### 8. Client credentials
 
 `createClientBearerInterceptor` throws a `TypeError` for a static token that is not a non-empty string. A token factory that resolves to anything else fails that call with `Unauthenticated` before a request is sent. Handle the failed refresh in the factory (retry, or throw your own error) so the caller sees the real cause. `createClientGatewayInterceptor` throws a `TypeError` for a `secret` or `subject` that is not a non-empty string.
+
+### 9. `AuthzDeniedError`
+
+A rule denial used to reach the client as `internal` when `createErrorHandlerInterceptor` was not in front of authorization, because Connect did not recognise the error as a `ConnectError`. It now arrives as `PermissionDenied` with the message `Access denied by rule: <rule>`; with the error handler the client still sees only `Access denied`. The error's `name`, `code`, `ruleName`, `authzDetails`, `clientMessage` and `serverDetails` are unchanged. The only difference visible in code is the prototype: the instance is a plain `ConnectError` carrying those fields, so `Object.getPrototypeOf(error)` is `ConnectError.prototype`, and a class that extends `AuthzDeniedError` no longer receives its own prototype. Put the error handler first if the rule name must not reach clients.
 
 ## Verify
 

@@ -307,7 +307,12 @@ Resolved options are cached in a `WeakMap` keyed by method descriptor. After the
 `AuthzDeniedError` carries server-side details such as the rule name. Put
 `createErrorHandlerInterceptor()` before authz so it converts this error through
 the `SanitizableError` protocol and exposes only "Access denied". Without that
-handler, the error's original message includes the rule name.
+handler the client still receives `Code.PermissionDenied` (HTTP 403 over Connect),
+but the message is the original `Access denied by rule: <rule name>`, which
+reveals the rule name. Before 1.3.0 such a denial reached the client as
+`internal`. `AuthzDeniedError` is a `ConnectError` with `name === 'AuthzDeniedError'`,
+and `error instanceof AuthzDeniedError` is true only for it, not for every
+`ConnectError`.
 
 ## Full Example
 
