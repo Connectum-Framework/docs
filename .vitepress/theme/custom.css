@@ -934,19 +934,27 @@
    reverse -- the sidebar anchors the left edge, the outline anchors the right
    edge, and the article sits between them.
 
-   Only the shell grows. The text column keeps a readable measure, because the
-   empty bands were a layout fault, not a reason to set 100-character lines. If
-   the measure ever needs to change, `--connectum-content-width` is the one knob.
+   The article grows with the window up to `--connectum-content-width`, the one
+   knob worth turning: a fixed 688px column on a 2560px screen is what made the
+   page read as squeezed. It stops at 1000px, where a line runs close to 120
+   characters. The measure serves code, tables and wide components as much as
+   prose, so it is wider than a pure reading column would be -- and no wider,
+   because past that point paragraphs stop being readable at all.
+
+   The rules start at 1280px, where VitePress first lays the article and the
+   outline side by side. Starting them at the 1440px layout cap instead would
+   leave the article at 688px until that boundary and then jump it wider in one
+   step.
 
    `!important` on the dimensions is deliberate: VitePress compiles its own
    `.VPDoc.has-aside .content-container[data-v-…]` with higher specificity than
    any plain override can reach from a plain stylesheet.
    ========================================================================== */
 
-@media (min-width: 1440px) {
+@media (min-width: 1280px) {
     :root {
         --vp-layout-max-width: 100%;
-        --connectum-content-width: 800px;
+        --connectum-content-width: 1000px;
     }
 
     /* Growing the content column pushes the outline to the right edge; without
