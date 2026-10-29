@@ -65,11 +65,13 @@ const eventBus = createEventBus({
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `maxRetries` | `number` | `3` | Maximum number of retries after the first attempt, before giving up. An integer of at least `0`; `0` runs the handler once. A negative, fractional, `NaN` or infinite value throws when the middleware is created (`RangeError`; `TypeError` for a non-number) |
-| `backoff` | `"exponential" \| "linear" \| "fixed"` | `"exponential"` | Backoff strategy between retries |
-| `initialDelay` | `number` | `1000` | Initial delay in milliseconds |
-| `maxDelay` | `number` | `30000` | Maximum delay cap in milliseconds |
-| `multiplier` | `number` | `2` | Multiplier for exponential backoff |
+| `backoff` | `"exponential" \| "linear" \| "fixed"` | `"exponential"` | Backoff strategy between retries. Any other name throws (`RangeError`; `TypeError` for a non-string); an unknown name used to behave as `"fixed"` |
+| `initialDelay` | `number` | `1000` | Initial delay in milliseconds: a finite number from `0` to `2147483647` |
+| `maxDelay` | `number` | `30000` | Maximum delay cap in milliseconds: a finite number from `1` to `2147483647` |
+| `multiplier` | `number` | `2` | Multiplier for exponential backoff: a finite number of at least `1` |
 | `retryableErrors` | `(error: unknown) => boolean` | `undefined` | Filter function: only retry if it returns `true` |
+
+Every option in the table except `retryableErrors` is checked when the middleware is created (`retryMiddleware()` itself, or `createEventBus()` for `middleware.retry`). A value outside the range above (`NaN`, a negative number, `Infinity`, a number above `2147483647`, `0` for `maxDelay`, a `multiplier` below `1`, a non-number) throws a `RangeError` or `TypeError` that names the option and the received value, before any event is handled. The ceiling `2147483647` is the longest delay a Node.js timer keeps; a larger delay used to be replaced by 1 ms.
 
 ### Backoff Strategies
 
@@ -145,6 +147,14 @@ const orderEvents: EventRoute = (events) => {
 
 Both classes use `Symbol.for()` branding, so they work across module boundaries and realms.
 
+### Stopping during a retry pause {#stopping-during-a-retry-pause}
+
+An event that waits for its next attempt has failed once and still has retry budget. If the shutdown signal (`server.stop()`) or the drain abort of `eventBus.stop()` ends that wait, the retry middleware returns the event to the broker with `ctx.nack(true)` and finishes without an error. The DLQ middleware never sees it, so nothing is published to the DLQ and the original is not acknowledged.
+
+The broker decides what happens next. A durable broker such as NATS JetStream delivers the event again, to this service after the restart or to another replica of the group, and the retry budget starts over: the event may run up to `maxRetries + 1` more times in the new process. Delivery is at-least-once, so handlers must be idempotent. On NATS the next handler sees `ctx.attempt` 2, because JetStream counts the redelivery. `MemoryAdapter` keeps nothing across a stop, so the event is dropped there.
+
+An abort caused by the per-event `handlerTimeout` is different: the event ran out of time, so it is thrown to the DLQ middleware as a failure (`dlq.error=TimeoutError`). A handler that fails while the bus is stopping is also still dead-lettered; see [Relay events during shutdown](/en/guide/events/relay-during-shutdown).
+
 Retries re-enter the handler within the same broker delivery; they do not request
 a broker redelivery. The retry middleware increments the `RawEvent.attempt` passed
 to inner middleware. The handler's `ctx.attempt` remains the original delivery
@@ -157,7 +167,12 @@ When a handler fails after all retries are exhausted, the DLQ middleware publish
 If the DLQ publish fails, the middleware calls `ctx.nack(false)` and does not
 rethrow. When that settlement is accepted, the original is no longer eligible
 for redelivery: a broker dead-letter policy may retain it, otherwise it can be
-lost. If publishing succeeds but `ctx.ack()` rejects, the same fallback is
+lost. The failure is reported to the bus `observer` as `{ type: 'dlq-failed', topic, eventType, eventId, error }`
+(see [Shutdown drain](/en/guide/events#shutdown-drain)); the bus has no logger of its own, so
+log it there. When you compose `dlqMiddleware()` yourself, its third argument is the same
+callback. A throw from the observer or the callback is dropped and does not change what happens
+to the event. A failed `ctx.ack()` after a successful publish is not reported: the dead-letter
+copy exists. If publishing succeeds but `ctx.ack()` rejects, the same fallback is
 attempted; the context's first-settlement rule makes that later `nack()` a no-op,
 so broker redelivery can still occur. Do not treat this middleware as a guarantee
 that every failed event reaches the DLQ. An event already on the configured DLQ
@@ -194,7 +209,7 @@ const eventBus = createEventBus({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `topic` | `string` | *required* | Topic name for dead letter events |
+| `topic` | `string` | *required* | Topic name for dead letter events: a non-empty string. A missing, empty or blank value, or a non-string, throws when the middleware or the bus is created (`RangeError`, or `TypeError` for a non-string). Whether the broker accepts the name is decided by the adapter at the first publish; a rejected publish is reported as `dlq-failed` |
 | `errorSerializer` | `(error: unknown) => string` | `undefined` | Custom error serializer for DLQ metadata. The default serializes `error.name` only; a custom serializer should return a redacted string. |
 
 ### DLQ Metadata

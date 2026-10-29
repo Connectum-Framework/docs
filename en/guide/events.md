@@ -141,7 +141,7 @@ the close finish. Three budgets control the drain:
 
 | Option | Default | Waits for | When the budget runs out |
 |---|---|---|---|
-| `drainTimeout` | `30000` ms | Event handlers that are still running | Remaining handlers are aborted through their `AbortSignal` (`0` aborts them immediately), and the bus then waits for them to return |
+| `drainTimeout` | `30000` ms | Event handlers that are still running | Remaining handlers are aborted through their `AbortSignal` (`0` aborts them immediately), and the bus then waits for them to return. A finite number from `0` to `2147483647`; `NaN`, a negative number, `Infinity`, a larger number or a non-number makes `createEventBus` throw |
 | `drainAbortGrace` | None (unbounded) | Handlers that are still running after the abort | Since 1.3.0. The handlers still running are abandoned: `stop()` disconnects the adapter without waiting for the adapter to close the subscription of a handler that is still running, and the `observer` is told. Their later acknowledgement may fail; whether the message is delivered again depends on the broker and on whether the handler had already acknowledged it. `0` abandons at once after the abort. Must be finite |
 | `drainPublishTimeout` | Off | `publish()` calls that were already pending when `stop()` began | Nothing is aborted; the bus stops waiting and disconnects the adapter. The bus does not settle an unfinished `publish()` itself: the caller's promise settles later or stays pending, as the adapter decides |
 
@@ -152,10 +152,11 @@ the total with your orchestrator's grace period: `shutdown.timeout` (transport
 phase) + `drainTimeout` + `drainAbortGrace`. The handler drain and the publish
 drain run at the same time, so the longer of them counts, not their sum.
 
-`observer` receives what happened to work during the shutdown. It is called
-synchronously by `stop()`, and an error it throws (or a promise it rejects) is
-dropped, because reporting must never prevent the adapter from being
-disconnected.
+`observer` receives what happened to work during the shutdown, and a dead-letter
+publish that failed at any time. It is called synchronously by the code that
+reports, and an error it throws (or a promise it rejects) is dropped, because
+reporting must never prevent the adapter from being disconnected or change what
+happens to the event.
 
 | Event | When |
 |---|---|
@@ -163,6 +164,7 @@ disconnected.
 | `{ type: 'admitted', topic }` | A `ctx.publish` made while the bus stops was admitted |
 | `{ type: 'rejected', reason }` | A `ctx.publish` made while the bus stops was refused: `aborted` (the drain was aborted) or `not-in-flight` (its handler had returned, or it belongs to an earlier start/stop cycle) |
 | `{ type: 'dlq-republish', topic }` | The built-in DLQ middleware republished a failed event while the bus stops |
+| `{ type: 'dlq-failed', topic, eventType, eventId, error }` | The built-in DLQ middleware could not publish a failed event to `topic`, at any time. The original is nacked without requeue; see [DLQ middleware](/en/guide/events/middleware#dlq-middleware) |
 
 Without `drainPublishTimeout`, a pending `publish()` races the adapter
 disconnect, and a broker confirmation can fail because the connection closed

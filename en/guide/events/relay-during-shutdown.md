@@ -78,7 +78,7 @@ Expect `{ type: 'admitted', topic }` for each relayed event. Seeing `{ type: 're
 
 - **The handler uses `ctx.signal` and stops before it publishes.** `ctx.signal` also fires when the server starts shutting down (when the bus is run through `createServer({ eventBus })`) and when `drainTimeout` aborts the drain. A handler that cancels its own work on that signal does not reach the publish. `ctx.publish` itself does not look at `ctx.signal`; it looks at the drain abort.
 - **The handler publishes through an injected bus.** That publish is refused while the bus stops. The cost of relaying during shutdown is rewriting such handlers to use `ctx`.
-- **The message is delivered again after `stop()`.** The handler was abandoned before it acknowledged, or it failed. With a dead-letter queue configured, a handler that fails during shutdown republishes the event there, and that republish is awaited; make handlers idempotent, because the broker may deliver the message again (whether it does depends on its configuration and on whether the message was already acknowledged).
+- **The message is delivered again after `stop()`.** The handler was abandoned before it acknowledged, or it failed. With a dead-letter queue configured, a handler that fails during shutdown republishes the event there, and that republish is awaited. An event that is only waiting between retries when the stop arrives has not failed: it goes back to the broker instead, see [Stopping during a retry pause](/en/guide/events/middleware#stopping-during-a-retry-pause). Make handlers idempotent, because the broker may deliver the message again (whether it does depends on its configuration and on whether the message was already acknowledged).
 
 ## Related
 
