@@ -159,7 +159,7 @@ outside 1..16 becomes `Code.Internal`, the message is kept).
 The text follows its own rule. A `ConnectError` keeps its text, details and metadata,
 and a `SanitizableError` sends its `clientMessage`. For anything else the client
 receives `internal error` (code `Internal`) or an empty text (when the error carried
-a numeric `code`); the original stays on the server as `cause` of the thrown
+a numeric `code` from 1 to 16 other than `Internal`); the original stays on the server as `cause` of the thrown
 `ConnectError`, as `info.error` of `onError`, and in the console log. Set
 `exposeErrorMessages: true` on the error handler to send the original text instead.
 See [What a client sees when a handler fails](/en/guide/interceptors/built-in#what-a-client-sees-when-a-handler-fails).
