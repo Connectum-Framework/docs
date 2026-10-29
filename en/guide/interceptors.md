@@ -8,6 +8,7 @@ outline: deep
 <script setup>
 import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
 import overview from '../../.vitepress/theme/assets/diagrams/guide/interceptors.html?raw';
+import InterceptorsShowcase from '../../.vitepress/theme/components/InterceptorsShowcase.vue';
 </script>
 
 # Interceptors
@@ -15,10 +16,14 @@ import overview from '../../.vitepress/theme/assets/diagrams/guide/interceptors.
 Keep handlers focused on business decisions. Interceptors wrap the RPC with
 shared behavior such as error handling, validation or a timeout.
 
+<InterceptorsShowcase />
+
+::: details How composition and selection fit together
 <figure class="technical-diagram" data-guide-overview="interceptors" aria-label="Compose and select RPC interceptors">
 <GuideOverview :source="overview" />
 <figcaption>Composition and selection are separate: service options replace the global chain, while method filtering selects applicable wrappers. Each wrapper can act before next and on its result or error.</figcaption>
 </figure>
+:::
 
 ## Start with the default chain
 

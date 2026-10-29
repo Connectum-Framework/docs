@@ -9,6 +9,8 @@
         "guide:test": "node --test tests/guide/*.test.mjs",
         "validation:generate": "buf generate .vitepress/validation/example --template .vitepress/validation/buf.gen.yaml",
         "validation:typecheck": "vue-tsc --noEmit -p tsconfig.validation.json",
+        "interceptors:generate": "buf generate .vitepress/interceptors/example --template .vitepress/interceptors/buf.gen.yaml",
+        "interceptors:typecheck": "vue-tsc --noEmit -p tsconfig.interceptors.json",
         "docs:inventory": "node scripts/docs-inventory.mjs",
         "docs:validate": "node scripts/docs-validate.mjs",
         "docs:validate:built": "node scripts/docs-validate.mjs --built",

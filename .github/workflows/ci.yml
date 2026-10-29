@@ -47,6 +47,19 @@ jobs:
       - name: Typecheck validation showcase
         run: pnpm validation:typecheck
 
+      - name: Check interceptor descriptor generation and types
+        run: |
+          pnpm interceptors:generate
+          git diff --exit-code -- .vitepress/interceptors/gen
+          pnpm interceptors:typecheck
+
+      - name: Test interceptor HTTP parity
+        run: |
+          pnpm --dir .vitepress/interceptors/example install --frozen-lockfile
+          pnpm --dir .vitepress/interceptors/example generate
+          pnpm --dir .vitepress/interceptors/example typecheck
+          pnpm --dir .vitepress/interceptors/example test
+
       - name: Test validation RPC parity
         run: |
           pnpm --dir .vitepress/validation/example install --frozen-lockfile
