@@ -1,3 +1,6 @@
+packages:
+  - '.'
+
 # Advisories are pinned here rather than by upgrading the direct dependency, because
 # every root is dev tooling (vitepress, vitepress-plugin-llms, mermaid) that is already
 # at its latest release. Each target below was checked to be published and to stay
@@ -29,6 +32,8 @@ overrides:
   'markdown-it@>=14.0.0 <14.3.1': '14.3.1'
   'nanoid@>=3.0.0 <3.3.18': '3.3.18'
   'postcss@<8.5.25': '8.5.25'
+  # Keep the transitive Node transport on the same Connect release as the demos.
+  '@connectrpc/connect-node': 2.2.0
 
 allowBuilds:
   '@bufbuild/buf': true

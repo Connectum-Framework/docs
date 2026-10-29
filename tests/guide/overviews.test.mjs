@@ -30,7 +30,7 @@ test('every Guide entry teaches a compact visual model before the detailed path'
         assert.match(source, /docType: concept/, route);
         assert.match(
             initial,
-            /<figure class="technical-diagram(?:\s|")|<ResolverWalkthrough>|<CatalogAssembly \/>|<ValidationShowcase>|<InterceptorsShowcase \/>/,
+            /<figure class="technical-diagram(?:\s|")|<ResolverWalkthrough>|<CatalogAssembly \/>|<ValidationShowcase>|<InterceptorsShowcase \/>|<OpenapiShowcase \/>/,
             `${route}: missing readable model`,
         );
         assert.ok(initial.split(/\s+/).length < 650, `${route}: the first reading path has grown into a reference`);

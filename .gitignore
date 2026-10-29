@@ -12,3 +12,4 @@ node_modules/
 .vitepress/catalog/example/gen/
 .vitepress/validation/example/gen/
 .vitepress/interceptors/example/gen/
+.vitepress/openapi/base/connectum/

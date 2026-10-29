@@ -53,6 +53,13 @@ jobs:
           git diff --exit-code -- .vitepress/interceptors/gen
           pnpm interceptors:typecheck
 
+      - name: Check OpenAPI descriptors and showcase types
+        run: |
+          pnpm openapi:generate
+          pnpm openapi:reader
+          git diff --exit-code -- .vitepress/openapi/gen .vitepress/openapi/generated
+          pnpm openapi:typecheck
+
       - name: Test interceptor HTTP parity
         run: |
           pnpm --dir .vitepress/interceptors/example install --frozen-lockfile

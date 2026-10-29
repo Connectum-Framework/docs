@@ -8,6 +8,7 @@ outline: 2
 <script setup>
 import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
 import overview from '../../.vitepress/theme/assets/diagrams/guide/openapi.html?raw';
+import OpenapiShowcase from '../../.vitepress/theme/components/OpenapiShowcase.vue';
 </script>
 
 # OpenAPI
@@ -16,10 +17,14 @@ Your service speaks gRPC and Connect, but Swagger UI, API catalogs and SDK
 generators may need an OpenAPI document. Generate it from the same proto
 contracts instead of describing the API twice.
 
+<OpenapiShowcase />
+
+::: details How the generated document and runtime policy relate
 <figure class="technical-diagram" data-guide-overview="openapi" aria-label="Generate OpenAPI and overlay auth metadata">
 <GuideOverview :source="overview" />
 <figcaption>The overlay is an example script, not a connectum openapi command. It skips absent POST operations, including the documented streaming case. Credential schemes and extensions do not prove that runtime policy permits a call.</figcaption>
 </figure>
+:::
 
 ## One shared policy reader
 

@@ -15,6 +15,7 @@ overrides:
   markdown-it@>=14.0.0 <14.3.1: 14.3.1
   nanoid@>=3.0.0 <3.3.18: 3.3.18
   postcss@<8.5.25: 8.5.25
+  '@connectrpc/connect-node': 2.2.0
 
 importers:
 
@@ -29,6 +30,9 @@ importers:
       '@connectrpc/connect':
         specifier: 2.2.0
         version: 2.2.0(@bufbuild/protobuf@2.16.0)
+      '@connectum/auth':
+        specifier: 1.2.0
+        version: 1.2.0
       medium-zoom:
         specifier: ^1.1.0
         version: 1.1.0
@@ -60,6 +64,9 @@ importers:
       debug:
         specifier: ^4.4.3
         version: 4.4.3
+      esbuild:
+        specifier: 0.21.5
+        version: 0.21.5
       mermaid:
         specifier: ^11.16.1
         version: 11.16.1
@@ -273,10 +280,25 @@ packages:
   '@chevrotain/types@11.1.2':
     resolution: {integrity: sha512-U+HFai5+zmJCkK86QsaJtoITlboZHBqrVketcO2ROv865xfCMSFpELQoz1GkX5GzME8pTa+3kbKrZHQtI0gdbw==}
 
+  '@connectrpc/connect-node@2.2.0':
+    resolution: {integrity: sha512-E6uUO6e11WdynAuBjuN+0WpHjqxEM9BNDdfDIJHcn49Esg/WxSIbn2y1KFt9XL96IJi01qdBbvubcdpBz1X3Zw==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      '@bufbuild/protobuf': ^2.7.0
+      '@connectrpc/connect': 2.2.0
+
   '@connectrpc/connect@2.2.0':
     resolution: {integrity: sha512-M63OQ1ZFcPUm85CuewJ9G9CMV8LjzGR9935xOnXNQGSazAbwMb3x2W7vXBYM1zqrP7XFD8uxp/dUAhirclgwnQ==}
     peerDependencies:
       '@bufbuild/protobuf': ^2.7.0
+
+  '@connectum/auth@1.2.0':
+    resolution: {integrity: sha512-SMZiVsY1vHLmdRi2EQVyOzFipdMZyrleIOSS0HcXsfp4k+gb75LbmCwspmIqF8L2WfVKLvT8fxe4/uvYoA1Qkg==}
+    engines: {node: '>=22.13.0'}
+
+  '@connectum/core@1.2.0':
+    resolution: {integrity: sha512-3T8MJP8oeWO+cNgMUEImsMqcMR2SgLgTpbc1aAd6K/uzsFtMQQDIjuAnp0OV2uIVlbvkQHwMhO2pPYGyczHTLg==}
+    engines: {node: '>=22.13.0'}
 
   '@docsearch/css@3.8.2':
     resolution: {integrity: sha512-y05ayQFyUmCXze79+56v/4HpycYF3uFqB78pLPrSV5ZKAlDuIAAJNhaRi8tTdRNXh05yxX/TyNnzD6LwSM89vQ==}
@@ -1158,6 +1180,10 @@ packages:
     resolution: {integrity: sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==}
     engines: {node: '>=0.12'}
 
+  env-var@7.5.0:
+    resolution: {integrity: sha512-mKZOzLRN0ETzau2W2QXefbFjo5EF4yWq28OyKb9ICdeNhHJlOE/pHHnz4hdYJ9cNZXcJHo5xN4OT4pzuSHSNvA==}
+    engines: {node: '>=10'}
+
   es-toolkit@1.50.0:
     resolution: {integrity: sha512-OyZKhUVvEep9ITEiwHn8GKnMRQIVqoSIX7WnRbkWgJkllCujilqP2rD0u979tkl8wqyc8ICwlc1UBVv/Sl1G6w==}
 
@@ -1256,6 +1282,9 @@ packages:
   is-what@5.5.0:
     resolution: {integrity: sha512-oG7cgbmg5kLYae2N5IVd3jm2s+vldjxJzK1pcu9LfpGuQ93MQSzo0okvRna+7y5ifrD+20FE8FvjusyGaz14fw==}
     engines: {node: '>=18'}
+
+  jose@6.2.13:
+    resolution: {integrity: sha512-7TIg10ZE1x82YediN+lcrPNvGMKge9yFHQD+Qho/b8y2adfugU3AsvvHfxV0fzyFllT6l9xCjf4RWY9g/Z9PJQ==}
 
   js-yaml@3.15.2:
     resolution: {integrity: sha512-6EuL879VkRA+1Cz578mKMiKvjPNEuk6+r1JaFzoSWejZmtf7xWbIyw1e3KkxlkzTIt9Taw6JBhEppG7utc1P+w==}
@@ -1720,6 +1749,9 @@ packages:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
 
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
+
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
@@ -1929,9 +1961,29 @@ snapshots:
 
   '@chevrotain/types@11.1.2': {}
 
+  '@connectrpc/connect-node@2.2.0(@bufbuild/protobuf@2.16.0)(@connectrpc/connect@2.2.0(@bufbuild/protobuf@2.16.0))':
+    dependencies:
+      '@bufbuild/protobuf': 2.16.0
+      '@connectrpc/connect': 2.2.0(@bufbuild/protobuf@2.16.0)
+
   '@connectrpc/connect@2.2.0(@bufbuild/protobuf@2.16.0)':
     dependencies:
       '@bufbuild/protobuf': 2.16.0
+
+  '@connectum/auth@1.2.0':
+    dependencies:
+      '@bufbuild/protobuf': 2.16.0
+      '@connectrpc/connect': 2.2.0(@bufbuild/protobuf@2.16.0)
+      '@connectum/core': 1.2.0
+      jose: 6.2.13
+
+  '@connectum/core@1.2.0':
+    dependencies:
+      '@bufbuild/protobuf': 2.16.0
+      '@connectrpc/connect': 2.2.0(@bufbuild/protobuf@2.16.0)
+      '@connectrpc/connect-node': 2.2.0(@bufbuild/protobuf@2.16.0)(@connectrpc/connect@2.2.0(@bufbuild/protobuf@2.16.0))
+      env-var: 7.5.0
+      zod: 4.6.7
 
   '@docsearch/css@3.8.2': {}
 
@@ -2770,6 +2822,8 @@ snapshots:
 
   entities@7.0.1: {}
 
+  env-var@7.5.0: {}
+
   es-toolkit@1.50.0: {}
 
   esbuild@0.21.5:
@@ -2875,6 +2929,8 @@ snapshots:
   is-plain-obj@4.1.0: {}
 
   is-what@5.5.0: {}
+
+  jose@6.2.13: {}
 
   js-yaml@3.15.2:
     dependencies:
@@ -3543,5 +3599,7 @@ snapshots:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
+
+  zod@4.6.7: {}
 
   zwitch@2.0.4: {}

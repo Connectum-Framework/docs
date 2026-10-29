@@ -1,0 +1,5 @@
+{
+    "extends": "./tsconfig.validation.json",
+    "compilerOptions": { "resolveJsonModule": true },
+    "include": [".vitepress/theme/components/OpenapiShowcase.vue", ".vitepress/openapi/**/*.ts"]
+}
