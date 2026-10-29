@@ -87,8 +87,24 @@ late success with the cancellation reason. This keeps the bulkhead slot occupied
 until the work actually finishes. An outer timeout or transport can stop the
 caller's wait earlier.
 
+A bulkhead call that waits in the queue leaves it as soon as its request signal
+aborts: it frees its queue place for the next caller, its handler never runs, and
+it fails with `Canceled` (the abort reason itself when that is a `ConnectError`).
+A call that arrives with an already aborted signal fails the same way without
+taking a slot or a queue place. A slot that is already held stays held until the
+work settles, as described above.
+
 Handlers that ignore the signal can still finish and commit side effects.
 Cancellation does not roll them back. Retry only idempotent operations.
+
+The signal a unary call hands downstream follows the caller's signal while the call
+runs, and the caller's own abort reason reaches the handler. It does not stay linked
+afterwards, so many calls can share one long-lived signal, such as an
+application-wide shutdown signal, without piling up memory. An abort that reaches a
+signal-unaware handler only after that handler has returned (over HTTP, the server can
+learn of the cancellation that late) no longer changes the signal that call held. An
+opened stream, with `skipStreaming: false`, keeps following the caller's signal for the
+life of the stream.
 
 Timeout and retry skip streaming calls by default. With `skipStreaming: false`,
 they cover opening the streaming response, not subsequent iteration. Successful
@@ -121,6 +137,8 @@ const transport = createConnectTransport({
   ],
 });
 ```
+
+**One probe in the half-open state.** After `halfOpenAfter` has passed, exactly one call goes through as the probe. A call that arrives while the probe is still running is rejected at once with `Unavailable` and the text `Circuit breaker is open (N consecutive failures)`, the same error as in the open state; it does not wait for the probe and never reaches the handler. A successful probe closes the circuit, so the next call passes. A failed probe opens it again for another `halfOpenAfter`. To bound a slow probe, put the `timeout` interceptor in front of the breaker.
 
 **One breaker per interceptor.** Each `createCircuitBreakerInterceptor()` call creates one breaker, and that breaker counts the failures of every call that passes through the returned interceptor (streaming calls are skipped by default), whatever the service or method. Two upstreams that must trip independently need two interceptors, each on its own transport.
 
@@ -217,10 +235,14 @@ const server = createServer({
 
 Each key accepts only `true`, `false`, `undefined` or an options object. `validation` accepts only a boolean. `fallback` accepts `false` or an options object with a `handler`; there is no default handler, so `fallback: true` is refused. Any other value (`null`, a number, a string, an array, a function) throws a `TypeError` that names the key, for example `timeout must be true, false or an options object, got null`. A value the helper does not understand never switches an interceptor off silently.
 
+The keys are `errorHandler`, `timeout`, `bulkhead`, `circuitBreaker`, `retry`, `fallback`, `validation` and `serializer`. A key outside this list throws a `TypeError` that names it and lists the known keys, so a typo such as `timout` cannot leave a protection off unnoticed. The logger and the method filter are not part of the default chain: create them with `createLoggerInterceptor()` and `createMethodFilterInterceptor()` and add them to the `interceptors` array yourself. An argument that is not an object (`null`, for example) is refused too.
+
 ```typescript
 createDefaultInterceptors({ fallback: { handler: () => ({ items: [] }) } }); // enabled
 createDefaultInterceptors({ fallback: true });  // TypeError: fallback must be false or an options object with a handler, got true
 createDefaultInterceptors({ timeout: null });   // TypeError: timeout must be true, false or an options object, got null
+createDefaultInterceptors({ timout: true });    // TypeError: createDefaultInterceptors: unknown option "timout"; the known options are errorHandler, timeout, bulkhead, circuitBreaker, retry, fallback, validation, serializer
+createDefaultInterceptors(null);                // TypeError: createDefaultInterceptors: options must be an object, got null
 ```
 
 ### Refusals of access are not replaced {#fallback-access-refusals}
@@ -240,7 +262,7 @@ No header of the request is copied into the response, whichever interceptor adde
 
 ## Option ranges and validation {#option-ranges-and-validation}
 
-The numeric options of the resilience interceptors are checked when the factory is called (or when `createDefaultInterceptors()` builds the chain), so a misconfiguration fails at startup instead of changing behavior under load.
+The options of the interceptors are checked when the factory is called (or when `createDefaultInterceptors()` builds the chain), so a misconfiguration fails at startup instead of changing behavior under load. The numeric options come first; the options that are not numbers follow the table of refusals.
 
 | Factory | Option | Accepted value | Default |
 |---|---|---|---|
@@ -263,6 +285,21 @@ A refusal names the factory, the option, the rule and the received value:
 | Not a number (`"30s"`, `null`, `true`; `undefined` selects the default) | `TypeError` | `createTimeoutInterceptor: duration must be an integer from 1 to 2147483647 milliseconds, got "30s"` |
 | A number outside the rule (`NaN`, `Infinity`, a fraction, zero or negative where not allowed, above the ceiling) | `RangeError` | `createBulkheadInterceptor: capacity must be an integer of at least 1, got 1.5` |
 | A `fallback` options object without a function `handler` | `TypeError` | `createFallbackInterceptor: handler must be a function` |
+
+The options that are not numbers are checked in the same way. A wrong type throws a `TypeError`, a right type with a wrong value a `RangeError`, and the message names the factory and the option:
+
+| Factory | Option | Accepted value |
+|---|---|---|
+| every factory that takes options | the options argument | an object (`null`, a number, a string and an array are refused; the factories with defaults still accept no argument) |
+| timeout, bulkhead, circuit breaker, retry, fallback | `skipStreaming` | `true` or `false` |
+| logger | `skipHealthCheck`, `includeTransport`, `includeBodies` | `true` or `false` |
+| serializer | `skipGrpcServices`, `alwaysEmitImplicit`, `ignoreUnknownFields` | `true` or `false` |
+| logger | `level` | `"debug"`, `"info"`, `"warn"` or `"error"` |
+| logger | `logger` | a function, when given |
+| circuit breaker | `failurePredicate` | a function, when given |
+| retry | `retryableCodes` | an array of Connect codes (`Code.Unavailable` and the like); an empty array retries nothing |
+
+A string such as `"no"` is not a boolean: before, it was read as `true`, and `retryableCodes: null` turned the first failing call into `Internal`.
 
 ### Bulkhead refusal
 
@@ -310,7 +347,7 @@ For exact factory options, see the [interceptor API](/en/api/@connectum/intercep
 
 ## Request Logging
 
-`createLoggerInterceptor()` is not part of the default chain. Add it to `interceptors` when you want every RPC except health checks (`skipHealthCheck` defaults to `true`) logged with a request line, a response line and its duration:
+`createLoggerInterceptor()` is not part of the default chain. Add it to `interceptors` when you want every RPC except health checks (`skipHealthCheck` defaults to `true`) logged with a request line, a response line and its duration. The health checks it skips are the calls to the `grpc.health` package, `grpc.health.v1.Health` or the same package under a prefix such as `acme.grpc.health.v1.Probe`. A service whose name only contains the text inside a longer segment, such as `acme.grpc.healthcare.v1.Svc`, is logged:
 
 ```typescript
 import { createServer } from '@connectum/core';
