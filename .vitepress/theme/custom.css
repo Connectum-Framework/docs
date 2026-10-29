@@ -925,6 +925,48 @@
 }
 
 /* ==========================================================================
+   Documentation shell: three columns across the whole window
+
+   VitePress caps the layout at 1440px while the top bar still spans the whole
+   window. On a 2560px display that leaves the sidebar's first column pushed
+   592px in from the edge and 560px of nothing on the right: the body reads as a
+   narrow island under a full-bleed header. Past 1440px the shell here is the
+   reverse -- the sidebar anchors the left edge, the outline anchors the right
+   edge, and the article sits between them.
+
+   Only the shell grows. The text column keeps a readable measure, because the
+   empty bands were a layout fault, not a reason to set 100-character lines. If
+   the measure ever needs to change, `--connectum-content-width` is the one knob.
+
+   `!important` on the dimensions is deliberate: VitePress compiles its own
+   `.VPDoc.has-aside .content-container[data-v-…]` with higher specificity than
+   any plain override can reach from a plain stylesheet.
+   ========================================================================== */
+
+@media (min-width: 1440px) {
+    :root {
+        --vp-layout-max-width: 100%;
+        --connectum-content-width: 800px;
+    }
+
+    /* Growing the content column pushes the outline to the right edge; without
+       this the flex container keeps both columns hugging the centre. */
+    .VPDoc .content {
+        flex: 1 1 auto;
+    }
+
+    .VPDoc .content-container {
+        max-width: var(--connectum-content-width) !important;
+        margin-inline: auto;
+    }
+
+    .VPDoc .aside {
+        max-width: 260px !important;
+        padding-left: 48px;
+    }
+}
+
+/* ==========================================================================
    Mermaid diagrams: shared presentation tokens
 
    Color lives here; geometry lives in .vitepress/config/mermaid.ts. Mermaid
