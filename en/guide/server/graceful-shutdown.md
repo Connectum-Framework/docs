@@ -109,6 +109,12 @@ that are already running finish, may publish through `ctx.publish`, and are drai
 the hook as before. Since 1.3.0; see
 [Event bus stops receiving at the shutdown signal](/en/migration/events-reception-on-shutdown).
 
+Closing a subscription can take time of its own. A Kafka consumer finishes stopping only
+when the fetch request it has open returns, which takes up to five seconds for an idle
+consumer; the consumers of a bus stop together, so the bus waits for the slowest one. Count
+it into the time the `eventbus` hook adds. See
+[Stopping a consumer](/en/guide/events/adapters#kafka-stop-time).
+
 ## Shutdown Hooks
 
 Shutdown hooks allow you to run cleanup logic during shutdown with dependency ordering. Register them via `server.onShutdown()`.
