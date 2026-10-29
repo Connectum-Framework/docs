@@ -153,7 +153,8 @@ When `errorHandler` wraps your interceptor, it normalizes thrown errors to
 numeric `code` is an integer from 1 to 16 (the Connect failure codes) use that value,
 and errors without one, with a non-numeric `code`, or with a number outside 1..16
 (`0`, `17`, a fraction, `NaN`, an HTTP status, a system errno) use `Code.Internal`.
-Errors implementing `SanitizableError` use their explicit client message and code.
+Errors implementing `SanitizableError` use their explicit client message and code (a code
+outside 1..16 becomes `Code.Internal`, the message is kept).
 
 The text follows its own rule. A `ConnectError` keeps its text, details and metadata,
 and a `SanitizableError` sends its `clientMessage`. For anything else the client

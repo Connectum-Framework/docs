@@ -17,9 +17,9 @@ flowchart TD
     Timeout --> Bulkhead[bulkhead]
     Bulkhead --> Breaker[circuitBreaker]
     Breaker --> Retry[retry]
-    Retry --> Fallback[fallback]
-    Fallback --> Validation[validation]
-    Validation --> Serializer[serializer]
+    Retry --> Validation[validation]
+    Validation --> Fallback[fallback]
+    Fallback --> Serializer[serializer]
 ```
 
 | # | Interceptor | Purpose | Default |
@@ -29,8 +29,8 @@ flowchart TD
 | 3 | **bulkhead** | Limits concurrent requests | **Opt-in** (capacity 10, queue 10 when enabled) |
 | 4 | **circuitBreaker** | Prevents cascading failures (outbound pattern, see below) | **Opt-in** (threshold 5 when enabled) |
 | 5 | **retry** | Retries transient failures with exponential backoff and jitter (see [Retry delay](#retry-delay)) | **Opt-in** (3 retries when enabled) |
-| 6 | **fallback** | Graceful degradation | **Opt-in** (requires an options object with a handler; `true` is refused) |
-| 7 | **validation** | Validates via `@connectrpc/validate` | Enabled |
+| 6 | **validation** | Validates via `@connectrpc/validate`; stands outside the fallback, so a rejected request is never answered by the fallback value | Enabled |
+| 7 | **fallback** | Graceful degradation | **Opt-in** (requires an options object with a handler; `true` is refused) |
 | 8 | **serializer** | JSON serialization for protobuf | **Opt-in** |
 
 The order is deliberate: `errorHandler` is outermost (catches everything), `serializer` is innermost (closest to the handler). The order applies to whichever interceptors you enable. In particular, `circuitBreaker` wraps `retry`, so one logical request increments the failure counter at most once regardless of retry attempts.
@@ -49,14 +49,16 @@ The text of a failure often carries a connection string, a query or a value from
 | Thrown by the handler | Client receives |
 |---|---|
 | `ConnectError` | Unchanged: code, text, details, metadata |
-| `SanitizableError` | Its `clientMessage` and code; `serverDetails` stay on the server |
+| `SanitizableError` | Its `clientMessage` and code (`Internal` when the code is not an integer from 1 to 16); `serverDetails` stay on the server |
 | `Error` or a thrown string | `Internal` with the text `internal error` |
 | An error with a numeric `code` that is an integer from 1 to 16 | That code with an empty text |
 | An error with any other numeric `code` (`0`, `17`, `1.5`, `NaN`, an HTTP status, an errno) | `Internal` with the text `internal error` |
 
-Only the codes 1 to 16 (`Canceled` to `Unauthenticated`) are failure codes; `0` means success in gRPC, so another number is not sent to the client as a code. `onError` receives `Internal` for it, and the original error keeps its own `code`.
+Only the codes 1 to 16 (`Canceled` to `Unauthenticated`) are failure codes; `0` means success in gRPC, so another number is not sent to the client as a code. This holds for a `SanitizableError` too: its `clientMessage` is kept and its code becomes `Internal`. `onError` receives the code the client receives, and the original error keeps its own `code`.
 
-The original failure stays on the server: as `cause` of the thrown `ConnectError` (no transport serializes `cause`), as `info.error` of `onError` with its original text, and in the console log.
+The original failure stays on the server: as `cause` of the thrown `ConnectError` (no transport serializes `cause`), as `info.error` of `onError` with its original text, and in the console log. The console log has one entry per handled error: the failure itself, with its stack and `cause`. A second line, `Transformed ConnectError:`, appears only when the client receives something other than what was thrown, and shows it as a short text such as `[internal] internal error`. A `ConnectError` that leaves unchanged, such as a validation failure, is one entry. `includeStackTrace` controls the `stack` field that `onError` receives.
+
+`onError` is a reporting hook and cannot change the outcome of a call. It may be `async`; the interceptor does not wait for it. If it throws, or the promise it returns rejects, the client still receives the error from the table above and the process sees no unhandled rejection. The first failure of the callback is written once to `console.error`; later ones are dropped, because a sink that is down fails on every call.
 
 To send a message on purpose, throw a `ConnectError` or a `SanitizableError`. To send the original text of every failure, set `exposeErrorMessages: true`. The option is server-side, defaults to `false` and does not depend on `NODE_ENV`; use it only for trusted internal callers or while debugging:
 
@@ -228,6 +230,14 @@ createDefaultInterceptors({ timeout: null });   // TypeError: timeout must be tr
 A fallback value stands in for a failed dependency, a timeout or a bug, never for a caller who is not allowed. A failure with the code `Unauthenticated` or `PermissionDenied` is rethrown as it is and the `handler` is not called for it. This holds wherever the authentication or authorization interceptor stands relative to the fallback interceptor, and also for a refusal raised by the service handler itself. Failures with any other code, and errors that are not a `ConnectError`, still receive the fallback value.
 
 Keep the authentication and authorization interceptors in front of the default interceptors, as the [authentication guide](/en/guide/auth) shows: the order still decides what the rest of the chain, such as a rate limit or a cache, does for an unauthenticated caller.
+
+### Rejected requests are not replaced {#fallback-validation}
+
+A request that breaks a validation rule is a client error, not a failed dependency. `createDefaultInterceptors` places `validation` before `fallback`, so the caller receives `INVALID_ARGUMENT`, and neither the service handler nor the `handler` of the fallback runs. When you build the chain yourself, put the validation interceptor before the fallback interceptor: with the order reversed, an invalid request is answered with the fallback value as if it had been served.
+
+### What the handler returns {#fallback-handler-result}
+
+The `handler` returns the response message of the method that failed: a message made with `create(OutputSchema, { ... })`, or a plain object with that message's fields, which the interceptor turns into one. The `{ items: [] }` above works for a method whose response has an `items` field. Any other value fails the call with a `TypeError` that names `createFallbackInterceptor` and the expected type: `undefined`, `null`, a string, an object with a field the type does not have, a field of the wrong type. Behind the error handler the client receives `Internal` with the text `internal error`, and `onError` and the console log show the full text.
 
 ### Fallback response {#fallback-response}
 
