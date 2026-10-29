@@ -125,6 +125,10 @@ server address. Do not use “service discovery” as if those were the same job
   “industry-leading” unless the page defines evidence for them.
 - State technical claims at the level supported by their source. Link to the canonical
   guide or generated API for full behavior instead of repeating a second explanation.
+- Keep package and tool versions out of explanatory prose and demo labels. Pin
+  reproducible inputs in manifests, lockfiles and generated provenance. Include a
+  version in prose only when it defines a compatibility requirement or migration;
+  keep required version fields in actual protocol documents and executable examples.
 - A repository README identifies that repository, gives the commands needed to start or
   validate its work, and links to the canonical user documentation. Keep task-specific
   operational instructions where maintainers need them; do not duplicate a guide or an

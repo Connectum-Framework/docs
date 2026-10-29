@@ -75,7 +75,8 @@ test('a deny policy remains a deny from the actual reader even though credential
 test('the example explicitly refuses contradictory public/internal credentials instead of displaying a stale successful spec', () => {
     const result = run('conflict');
     assert.equal(result.kind, 'rejected');
-    assert.match(result.message, /overlay refuses public: true with internal: true/);
+    assert.match(result.message, /cannot be both public and internal/);
+    assert.match(result.message, /example overlay rejects/);
     assert.equal(result.document, undefined);
     assert.equal(result.output, undefined);
     assert.equal(run('public').kind, 'patched');
@@ -166,7 +167,7 @@ test('the Node inspection command executes every non-default annotation and stre
             const cli = spawnSync(process.execPath, ['scripts/inspect-openapi-overlay.mjs', '--method', method.id, '--annotation', annotation.id], { cwd: root, encoding: 'utf8' });
             if (result.kind === 'rejected') {
                 assert.equal(cli.status, 1);
-                assert.match(cli.stderr, /overlay refuses/);
+                assert.match(cli.stderr, /example overlay rejects/);
                 assert.equal(cli.stdout, '');
             } else {
                 assert.equal(cli.status, 0, cli.stderr);
@@ -184,6 +185,17 @@ test('live JSON uses the VitePress dual-theme token contract and escapes content
     assert.doesNotMatch(html, /<img/);
     assert.match(html, /(?:&lt;|&#x3C;)img/);
     assert.match(html, /<button title="Copy Code" class="copy"><\/button><span class="lang">json<\/span><pre/);
+});
+
+test('explanations name packages without repeating pinned versions and identify the contradictory options', () => {
+    const component = read('.vitepress/theme/components/OpenapiShowcase.vue');
+    assert.match(component, /<code>@connectum\/auth<\/code>/);
+    assert.match(component, /<code>protoc-gen-connect-openapi<\/code>/);
+    assert.match(component, /Public and internal conflict/);
+    assert.doesNotMatch(component, /\b\d+\.\d+\.\d+\b|older readers|Overlay refused the options/);
+    assert.doesNotMatch(read('.vitepress/openapi/example/README.md'), /\b\d+\.\d+\.\d+\b/);
+    assert.match(read('en/contributing/documentation-style.md'), /Keep package and tool versions out of explanatory prose and demo labels/);
+    assert.equal(run('public').document.info.version, base.info.version);
 });
 
 test('every displayed proto snippet compiles to the same effective options as the edited runtime descriptor', () => {

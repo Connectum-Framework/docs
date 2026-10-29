@@ -79,7 +79,7 @@ const denied = computed(() => result.value?.kind === 'patched' && result.value.a
                         <p>The base generator left this streaming path empty. The overlay skips it; changing an auth option does not create the missing operation.</p>
                     </template>
                     <template v-else-if="result?.kind === 'rejected'">
-                        <strong>Overlay refused the options</strong>
+                        <strong>Public and internal conflict</strong>
                         <p>{{ result.message }}</p>
                     </template>
                     <template v-else-if="error"
@@ -93,8 +93,8 @@ const denied = computed(() => result.value?.kind === 'patched' && result.value.a
             </div>
         </div>
         <p class="openapi-local-note">
-            Live authz overlay using <code>resolveMethodAuth</code> from <code>@connectum/auth@1.2.0</code>. The base spec is pre-generated; buf/protoc and an RPC server do not run
-            in this page. The controls edit compiled method options, not arbitrary proto text.
+            Live authz overlay using <code>resolveMethodAuth</code> from <code>@connectum/auth</code>. The base spec is pre-generated; buf/protoc and an RPC server do not run in
+            this page. The controls edit compiled method options, not arbitrary proto text.
         </p>
         <p v-if="phase === 'static'" class="openapi-static-note">Successful build-time overlay. Editing requires JavaScript.</p>
         <details v-if="fullOutput" class="openapi-full-output">
@@ -105,13 +105,13 @@ const denied = computed(() => result.value?.kind === 'patched' && result.value.a
         <details class="openapi-implementation">
             <summary>Read the overlay and generation input</summary>
             <p>
-                The page calls this function on a fresh base document and an edited method descriptor. Its explicit conflict guard refuses contradictory public/internal flags,
-                including with older readers that accept both.
+                The page calls this function on a fresh base document and an edited method descriptor. The public/internal conflict guard belongs to this example overlay; reading
+                the options alone does not validate that combination.
             </p>
             <div class="openapi-code" v-html="data.overlaySource" />
             <p>
-                The checked-in base was generated with <code>protoc-gen-connect-openapi v0.25.7</code>, then given the fixture API version <code>1.0.0</code>. Regenerating it needs
-                network access; ordinary site builds use the committed artifact.
+                The checked-in base was generated with <code>protoc-gen-connect-openapi</code>. A normalization step supplies the required <code>info.version</code>. Regenerating
+                it needs network access; ordinary site builds use the committed artifact. Generator and input versions are recorded in the provenance files.
             </p>
             <div class="openapi-code" v-html="data.generation" />
             <div class="openapi-code" v-html="data.fullProto" />
