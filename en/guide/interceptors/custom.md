@@ -149,8 +149,9 @@ function createRateLimitInterceptor(options: {
 
 ::: warning
 When `errorHandler` wraps your interceptor, it normalizes thrown errors to
-`ConnectError`. Existing Connect errors preserve their code; other errors whose
-numeric `code` is an integer from 1 to 16 (the Connect failure codes) use that value,
+`ConnectError`. Existing Connect errors preserve their code; an `Error` named
+`AbortError` or `TimeoutError` becomes `Code.Canceled`, whatever its `code`; other errors
+whose numeric `code` is an integer from 1 to 16 (the Connect failure codes) use that value,
 and errors without one, with a non-numeric `code`, or with a number outside 1..16
 (`0`, `17`, a fraction, `NaN`, an HTTP status, a system errno) use `Code.Internal`.
 Errors implementing `SanitizableError` use their explicit client message and code (a code
@@ -158,8 +159,8 @@ outside 1..16 becomes `Code.Internal`, the message is kept).
 
 The text follows its own rule. A `ConnectError` keeps its text, details and metadata,
 and a `SanitizableError` sends its `clientMessage`. For anything else the client
-receives `internal error` (code `Internal`) or an empty text (when the error carried
-a numeric `code` from 1 to 16 other than `Internal`); the original stays on the server as `cause` of the thrown
+receives `internal error` (code `Internal`) or an empty text (when the code is `Canceled`
+for an abort, or the error carried a numeric `code` from 1 to 16 other than `Internal`); the original stays on the server as `cause` of the thrown
 `ConnectError`, as `info.error` of `onError`, and in the console log. Set
 `exposeErrorMessages: true` on the error handler to send the original text instead.
 See [What a client sees when a handler fails](/en/guide/interceptors/built-in#what-a-client-sees-when-a-handler-fails).

@@ -50,9 +50,14 @@ The text of a failure often carries a connection string, a query or a value from
 |---|---|
 | `ConnectError` | Unchanged: code, text, details, metadata |
 | `SanitizableError` | Its `clientMessage` and code (`Internal` when the code is not an integer from 1 to 16); `serverDetails` stay on the server |
-| `Error` or a thrown string | `Internal` with the text `internal error` |
-| An error with a numeric `code` that is an integer from 1 to 16 | That code; the text is empty, except for `Internal` (13), which carries `internal error` |
-| An error with any other numeric `code` (`0`, `17`, `1.5`, `NaN`, an HTTP status, an errno) | `Internal` with the text `internal error` |
+| An `Error` named `AbortError` or `TimeoutError` (a `DOMException` from an aborted `fetch` or `AbortSignal.timeout()` too), whatever its `code` | `Canceled` with an empty text |
+| Any other value with an integer `code` from 1 to 16 | That code; the text is empty, except for `Internal` (13), which carries `internal error` |
+| Anything else: an `Error` without a `code`, a thrown string, a `code` that is not an integer from 1 to 16 (`0`, `17`, `1.5`, `NaN`, an HTTP status, an errno, `"ECONNRESET"`) | `Internal` with the text `internal error` |
+
+The rows are checked in this order, and the first match decides. A `SanitizableError` is
+recognised before the name check, so one that happens to be named `AbortError` still sends
+its `clientMessage` and code. With `exposeErrorMessages: true` the rows from the third on
+keep their codes and carry the original text instead; the first two rows do not change.
 
 Only the codes 1 to 16 (`Canceled` to `Unauthenticated`) are failure codes; `0` means success in gRPC, so another number is not sent to the client as a code. This holds for a `SanitizableError` too: its `clientMessage` is kept and its code becomes `Internal`. `onError` receives the code the client receives, and the original error keeps its own `code`.
 
