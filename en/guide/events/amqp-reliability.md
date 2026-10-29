@@ -311,7 +311,11 @@ value applies to the initial connect and to every recovery series, and the count
 resets after each successful connect. Two consequences:
 
 - With the default `Infinity`, `connect()` (and therefore `bus.start()`) waits until
-  the broker is reachable instead of failing.
+  the broker is reachable instead of failing. `disconnect()` ends that wait: the
+  pending `connect()` closes the connection it opened and rejects with
+  `AmqpConnectionError("Adapter closed during the initial connect phase")`, and no
+  retry timer is left. A startup that fails to reach the broker still waits without
+  reporting each failed attempt; set `initialConnectMaxRetries` to see them.
 - A finite `maxRetries` chosen to bound startup also stops steady-state recovery
   after that many consecutive failures in one outage.
 
@@ -831,7 +835,8 @@ behavior, run integration tests against a broker.
 ## Troubleshooting
 
 - **`connect()` never returns.** The broker is unreachable and `maxRetries` is
-  `Infinity`. Set `initialConnectMaxRetries` to bound startup.
+  `Infinity`. Set `initialConnectMaxRetries` to bound startup, and call `disconnect()`
+  to cancel a `connect()` that is still waiting.
 - **`TypeError: AmqpAdapter: recovery.backoff cannot be combined with recovery.<knob>`
   at construction.** `backoff` was set together with `initialDelay`, `maxDelay`,
   `factor` or `jitter`. Remove the knob and compute the delay, including its cap,
