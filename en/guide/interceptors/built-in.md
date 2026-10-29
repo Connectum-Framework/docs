@@ -249,7 +249,9 @@ A plain object is checked field by field before the message is built, because `c
 - `undefined`, `null`, a string, or an array instead of the object;
 - a key that is not a field of the type, in a nested object too, and the bare name of a oneof member;
 - a value of another kind than its field takes: a number in a string field, a non-boolean in a bool field, a string in an int32 field, a non-array in a repeated field, an enum name instead of its number, a wrong item in a list or map;
-- a number the encoder cannot write: a fraction or a value beyond the range in an int32, `NaN`.
+- a number the encoder cannot write: a fraction or a value beyond the range in an int32, `NaN`;
+- a map key that is not the canonical form of its key type: for an integer key a decimal number inside the range without a leading zero, a sign `+`, a space, an exponent, a hexadecimal prefix, `-0` or an empty string; for a bool key only `"true"` or `"false"`. The encoder would read `"01"` as 1 and `"yes"` as `true`, so the response would name a different key. A 64-bit integer given as a string follows the same rule;
+- a string with a lone surrogate (it would be written as U+FFFD), bytes given as an `ArrayBuffer`, a `DataView` or an array with holes or values outside 0 to 255, and a oneof object with keys other than `case` and `value`.
 
 An enum number that the enum does not name is accepted. The forms are those of protobuf-es: a wrapper (`StringValue`, `Int64Value`, ...) in a singular field outside a oneof is its bare value (`name: "cached"`, not `{ value: "cached" }`), and a `Struct` is a plain JSON object; a message object is refused in both places. `Timestamp`, `Duration`, `Value`, `ListValue`, `Any`, `FieldMask` and `Empty` are objects with their own fields (`{ seconds: 1n }`), and a wrapper in a list or a oneof is an object with `value`. Behind the error handler the client receives `Internal` with the text `internal error`, and `onError` and the console log show the full text.
 
