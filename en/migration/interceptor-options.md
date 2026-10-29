@@ -1,6 +1,6 @@
 ---
 title: Interceptor Option Validation
-description: From 1.3.0, the resilience interceptors and createDefaultInterceptors refuse fractional or oversized numbers, fallback true and null or non-object values, and connectum init no longer offers fallback.
+description: From 1.3.0, the resilience interceptors and createDefaultInterceptors refuse fractional or oversized numbers, fallback true and null or non-object values, connectum init no longer offers fallback, validation stands outside the fallback, and the fallback handler must return the response message.
 docType: migration
 ---
 
@@ -66,6 +66,20 @@ createDefaultInterceptors({
   fallback: { handler: () => ({ items: [] }) },
 });
 ```
+
+## Fallback: validation order and handler result {#fallback-order-and-result}
+
+You need to act if you enable `fallback` in `createDefaultInterceptors()` or build a chain with `createFallbackInterceptor`.
+
+| Case | Before | Now |
+|---|---|---|
+| `fallback` enabled, a request breaks a validation rule | The caller got the fallback value as a successful response | The caller gets `INVALID_ARGUMENT`; neither the handler nor the fallback `handler` runs |
+| The fallback `handler` returns a plain object with the response fields (`{ items: [] }`) | On a server the call failed with a `serialize binary: ...` text | The object is turned into the response message |
+| The `handler` returns `undefined`, `null`, a string, or an object that does not fit the response type (an unknown key, a number in a string field, a non-array in a repeated field, ...) | `undefined` failed on a server with a `serialize binary: ...` text; the other values were not checked and were passed on as the response | `TypeError` naming `createFallbackInterceptor`, the expected type and the path of the problem; behind the error handler the client gets `Internal: internal error` |
+
+The default chain order is now `errorHandler, timeout, bulkhead, circuitBreaker, retry, validation, fallback, serializer`. It differs from before only when `fallback` is enabled.
+
+**Action:** if you compose the chain yourself, put the validation interceptor before the fallback interceptor. If your `handler` returns a plain object, check that every key is a field of the method's response; if it returns something else, return `create(OutputSchema, { ... })`. If something relied on a rejected request being answered by the fallback value, handle `INVALID_ARGUMENT` in the caller instead.
 
 ## Verify
 
