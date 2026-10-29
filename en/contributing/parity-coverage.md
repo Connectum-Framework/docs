@@ -27,7 +27,7 @@ suite on the revision you intend to validate.
 | 6 | HTTP / local coexistence (concurrent observation by one interceptor; `server.start()` not required for local invoke) | `packages/testing/tests/parity/coexistence.parity.test.ts` + `packages/core/tests/integration/localTransport.test.ts` | **2** |
 | 7a | OTEL tracing & metrics (unary spans, streaming events, error spans, metrics labels, trace-context propagation, instrument subset, `connectum.transport` attribute) | `packages/otel/tests/parity/otel.parity.test.ts` | **7** |
 | 8 | Request admission (rejecting `requestGate`, `requestGate` throwing a plain `Error`, admitting `requestGate`, `readMaxBytes` over the limit, `readMaxBytes` at the limit, `server.stop()` aborting an in-flight call) | `packages/testing/tests/parity/requestAdmission.parity.test.ts` | **6** |
-| 9 | gRPC Server Reflection (one bidi stream with every request kind: listing, import closure, per-stream "already sent" state, symbol and extension lookup, error answers; the reflection service described by symbol; a bounded error message and a refused oversized request) | `packages/testing/tests/parity/reflection.parity.test.ts` | **3** |
+| 9 | gRPC Server Reflection (one bidi stream with every request kind: listing, import closure, per-stream "already sent" state, symbol and extension lookup, error answers; the reflection service described by symbol; a bounded error message) | `packages/testing/tests/parity/reflection.parity.test.ts` | **3** |
 | **Total** | | | **48** |
 
 Of these, **37 scenarios** (groups 3, 3a, 3b, 3c, 4, 5, 8, 9, except the two

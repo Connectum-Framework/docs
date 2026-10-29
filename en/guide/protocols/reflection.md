@@ -87,7 +87,6 @@ The answers follow the [reflection protocol](https://github.com/grpc/grpc-proto/
 | `all_extension_numbers_of_type` | `base_type_name` set to the requested type, numbers in ascending order. |
 | Unknown file, symbol, extension or type | `error_response` with `NOT_FOUND` (5), naming what was not found. The message repeats at most the first 128 characters of the name, with `…` after a cut name; `original_request` carries the request in full. |
 | Request with no query set | `error_response` with `INVALID_ARGUMENT` (3). |
-| Request message above 64 KiB | The call ends with `resource_exhausted`; nothing is answered. |
 
 An error answers one request only; the stream stays open for the next one.
 
@@ -99,13 +98,13 @@ The two reflection services are not listed, but they are mounted and can be desc
 grpcurl -plaintext localhost:5000 describe grpc.reflection.v1.ServerReflection
 ```
 
-### Request size limit
+### Request size
 
-Each request message is read up to 64 KiB (65536 bytes). A request carries a file name, a symbol or a type name, so valid clients stay far below it; a larger message ends the call with `resource_exhausted`. The limit belongs to the reflection services and applies instead of the server-wide [`readMaxBytes`](/en/guide/security/request-admission#server-defaults-service-overrides), a smaller one included: with `readMaxBytes: 1024` on the server, reflection still reads a request of 10 KiB. There is no option to change it.
+Reflection has no request size limit of its own. A request message is read up to the server-wide [`readMaxBytes`](/en/guide/security/request-admission#configure-a-read-limit), which is unset by default; a request above a limit you set ends the call with `resource_exhausted`. A reflection request carries a file name, a symbol or a type name, so a limit of a few kilobytes is enough for it.
 
 ### Open streams and shutdown
 
-A client may keep a `ServerReflectionInfo` stream open after the last answer, as grpcurl in interactive mode, an IDE plugin or Postman do. The stream follows the call's abort signal: when the server stops, the client cancels or the deadline passes, the handler stops waiting for the next request and ends the stream. `server.stop()` therefore does not wait for [`shutdown.timeout`](/en/guide/server/graceful-shutdown) because of an idle reflection session; the client sees the stream end without an error.
+A client may keep a `ServerReflectionInfo` stream open after the last answer, as grpcurl in interactive mode, an IDE plugin or Postman do. The stream follows the call's abort signal: when the server stops, the client cancels or the deadline passes, the handler stops waiting for the next request and ends the stream. `server.stop()` therefore does not wait for [`shutdown.timeout`](/en/guide/server/graceful-shutdown) because of an idle reflection session; a stream that is waiting for the client's next request ends without an error.
 
 ## Using grpcurl with Reflection
 
