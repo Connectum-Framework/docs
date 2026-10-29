@@ -221,12 +221,17 @@ When an event is routed to the DLQ, the middleware attaches diagnostic metadata:
 | `dlq.original-topic` | Topic the event was originally published to |
 | `dlq.original-id` | Unique event ID from the original message |
 | `dlq.error` | Serialized error; the default is the error name, or `UnknownError` for a non-`Error` value |
-| `dlq.attempt` | Delivery attempt of the original message as the broker adapter reports it (`RawEvent.attempt`); retries made by the retry middleware inside the process are not counted |
+| `dlq.attempt` | Delivery number of the original message as the broker adapter reports it (`RawEvent.attempt`); retries made by the retry middleware inside the process are not counted |
+| `dlq.handler-runs` | How many times the handler was invoked for this delivery, the first run included. It is `1` when no retry middleware is configured, when `maxRetries` is `0`, or when the first error is not retried. Available since 1.3.0 |
 
-`dlq.attempt` is a delivery number, not the number of handler invocations: with
-`retry: { maxRetries: 2 }` and a handler that always fails, the handler runs three
-times and `dlq.attempt` is still the broker's number for that one delivery. Each
-adapter fills it differently:
+The two numbers answer different questions. `dlq.attempt` says how many times the
+broker delivered the message; `dlq.handler-runs` says how many times your handler
+ran for the delivery that ended in the DLQ. With `retry: { maxRetries: 2 }` and a
+handler that always fails, the handler runs three times: `dlq.handler-runs` is `3`
+and `dlq.attempt` is still the broker's number for that one delivery (`1` on a first
+delivery). Read `dlq.handler-runs` to see how hard the handler was tried, and
+`dlq.attempt` to see how often the broker redelivered. Each adapter fills
+`dlq.attempt` differently:
 
 | Adapter | `dlq.attempt` |
 |---------|---------------|
