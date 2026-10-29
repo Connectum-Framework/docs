@@ -80,7 +80,7 @@ try {
     const manifest = {
         name: 'Connectum',
         short_name: 'Connectum',
-        description: 'Production-ready gRPC and ConnectRPC framework for Node.js',
+        description: 'gRPC and ConnectRPC framework for TypeScript',
         icons: [
             { src: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
             { src: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },

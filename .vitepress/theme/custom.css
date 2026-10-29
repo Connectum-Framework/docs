@@ -269,8 +269,7 @@
     transition: border-color 0.2s, background-color 0.2s, box-shadow 0.3s;
 }
 
-.home-goal-card:hover,
-.home-goal-card:focus-visible {
+.home-goal-card:hover {
     border-color: var(--vp-c-brand-1);
     background: var(--home-brand-soft);
     box-shadow: 0 0 28px color-mix(in srgb, var(--vp-c-brand-1) 14%, transparent);
@@ -561,8 +560,7 @@
     transition: border-color 0.2s, background-color 0.2s, box-shadow 0.3s;
 }
 
-.module-card:hover,
-.module-card:focus-within {
+.module-card:hover {
     border-color: var(--vp-c-brand-1);
     background: var(--home-brand-soft, var(--vp-c-brand-soft));
     box-shadow: 0 0 28px color-mix(in srgb, var(--vp-c-brand-1) 13%, transparent);
@@ -663,8 +661,7 @@
     transform: rotate(-45deg);
 }
 
-.home-resources nav a:hover,
-.home-resources nav a:focus-visible {
+.home-resources nav a:hover {
     border-color: var(--vp-c-brand-1);
     color: var(--vp-c-brand-1);
 }
@@ -710,8 +707,7 @@
     transition: border-color 0.2s, background-color 0.2s, box-shadow 0.3s;
 }
 
-.reference-routes > a:hover,
-.reference-routes > a:focus-visible {
+.reference-routes > a:hover {
     border-color: var(--vp-c-brand-1);
     background: var(--home-brand-soft, var(--vp-c-brand-soft));
     box-shadow: 0 0 28px color-mix(in srgb, var(--vp-c-brand-1) 13%, transparent);
@@ -741,11 +737,8 @@
 }
 
 .home-goal-card:hover::before,
-.home-goal-card:focus-visible::before,
 .module-card:hover::before,
-.module-card:focus-within::before,
-.reference-routes > a:hover::before,
-.reference-routes > a:focus-visible::before {
+.reference-routes > a:hover::before {
     opacity: 0.9;
     filter: drop-shadow(0 0 5px color-mix(in srgb, var(--vp-c-brand-1) 48%, transparent));
 }
@@ -763,8 +756,7 @@
     animation: connectum-line-sweep 5.5s linear infinite;
 }
 
-.home-resources nav a:hover::before,
-.home-resources nav a:focus-visible::before {
+.home-resources nav a:hover::before {
     opacity: 0.9;
 }
 
@@ -786,12 +778,6 @@
     font-weight: 400;
 }
 
-.connectum-home a:focus-visible,
-.page-context a:focus-visible,
-.reference-routes a:focus-visible {
-    outline: 3px solid var(--vp-c-brand-1);
-    outline-offset: 3px;
-}
 
 @media (max-width: 960px) {
     .home-hero {
@@ -1069,11 +1055,6 @@
     opacity: 0.85;
 }
 
-.mermaid[data-zoom]:focus-visible,
-.technical-diagram__art[data-zoom]:focus-visible {
-    outline: 3px solid var(--vp-c-brand-1);
-    outline-offset: 4px;
-}
 
 /* Shared fullscreen diagram overlay. */
 .mermaid-zoom-overlay {
@@ -1109,10 +1090,6 @@
     font-weight: 650;
 }
 
-.mermaid-zoom-overlay__close:focus-visible {
-    outline: 3px solid var(--vp-c-brand-1);
-    outline-offset: 3px;
-}
 
 @keyframes mermaid-fade-in {
     from { opacity: 0; }

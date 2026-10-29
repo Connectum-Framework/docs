@@ -1,0 +1,4 @@
+{
+    "extends": "./tsconfig.validation.json",
+    "include": [".vitepress/theme/components/InterceptorsShowcase.vue", ".vitepress/interceptors/*.ts", ".vitepress/interceptors/gen/**/*.ts"]
+}

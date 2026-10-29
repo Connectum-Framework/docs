@@ -1,0 +1,269 @@
+.vp-doc .validation-showcase {
+    --validation-accent: #3153a0;
+    --validation-surface: #eaf0ff;
+    --validation-error: #a72836;
+    --validation-error-bg: #fff0f0;
+    --vp-code-font-size: 12px;
+    --vp-code-line-height: 1.8;
+    margin: 24px 0;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 12px;
+    background: var(--vp-c-bg);
+    overflow-wrap: anywhere;
+}
+.dark .vp-doc .validation-showcase {
+    --validation-accent: #b9cdff;
+    --validation-surface: #202b43;
+    --validation-error: #ffb4bc;
+    --validation-error-bg: #41252c;
+}
+.vp-doc .validation-showcase-heading {
+    padding: 24px 24px 0;
+}
+.vp-doc .validation-eyebrow {
+    margin: 0 0 8px;
+    color: var(--validation-accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.vp-doc .validation-showcase-heading h3 {
+    margin: 0;
+    font-size: 23px;
+    line-height: 1.3;
+    letter-spacing: -0.03em;
+}
+.vp-doc .validation-showcase-heading > p:last-child {
+    margin: 8px 0 20px;
+    color: var(--vp-c-text-2);
+    font-size: 14px;
+}
+.vp-doc .validation-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    border-top: 1px solid var(--vp-c-divider);
+    border-bottom: 1px solid var(--vp-c-divider);
+}
+.vp-doc .validation-source,
+.vp-doc .validation-form {
+    min-width: 0;
+    padding: 16px;
+}
+.vp-doc .validation-source {
+    background: var(--vp-c-bg-soft);
+    border-right: 1px solid var(--vp-c-divider);
+}
+.vp-doc .validation-form-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.vp-doc .validation-pane-heading {
+    margin: 0 0 12px;
+    font-family: var(--vp-font-family-mono);
+    font-size: 12px;
+}
+.vp-doc .validation-form-heading .validation-pane-heading {
+    margin: 0;
+}
+.vp-doc .validation-form button {
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 6px;
+    color: var(--vp-c-text-1);
+    background: var(--vp-c-bg);
+    font-size: 12px;
+    cursor: pointer;
+}
+.vp-doc .validation-form :disabled {
+    cursor: default;
+}
+.vp-doc .validation-field {
+    margin: 0 0 16px;
+}
+.vp-doc .validation-field label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.vp-doc .validation-field input {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid var(--vp-c-text-2);
+    border-radius: 6px;
+    background: var(--vp-c-bg);
+    color: var(--vp-c-text-1);
+    font-family: var(--vp-font-family-mono);
+    font-size: 16px;
+}
+.vp-doc .validation-field input[aria-invalid="true"] {
+    border: 2px solid var(--validation-error);
+    padding: 7px 9px;
+    background: var(--validation-error-bg);
+}
+.vp-doc .validation-hint {
+    margin: 6px 0 0;
+    color: var(--vp-c-text-2);
+    font-size: 12px;
+    line-height: 1.6;
+}
+.vp-doc .validation-field-error {
+    margin: 6px 0 0;
+    color: var(--validation-error);
+    font-size: 12px;
+    line-height: 1.6;
+}
+.vp-doc .validation-field-error:empty {
+    display: none;
+}
+.vp-doc .validation-field-error span {
+    display: block;
+}
+.vp-doc .validation-field-error code {
+    color: inherit;
+    background: none;
+    font-size: 11px;
+}
+.vp-doc .validation-source-note {
+    margin: 12px 0 0;
+    color: var(--vp-c-text-2);
+    font-size: 12px;
+    line-height: 1.6;
+}
+.vp-doc .validation-code {
+    min-width: 0;
+}
+.vp-doc .validation-code div[class*="language-"] {
+    margin: 0;
+    border-radius: 6px;
+}
+.vp-doc .validation-code div[class*="language-"] pre {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.vp-doc .validation-showcase .validation-code pre code {
+    padding-right: 12px;
+    padding-left: 12px;
+    font-size: 12px;
+    line-height: 1.8;
+}
+.vp-doc .validation-showcase .validation-contract pre code {
+    width: 100%;
+}
+.vp-doc .validation-code .line-numbers-wrapper {
+    padding-top: 20px;
+    font-size: 12px;
+    line-height: 1.8;
+}
+.vp-doc .validation-contract .line.highlighted {
+    width: calc(100% + 24px);
+    margin-right: -12px;
+    margin-left: -12px;
+    padding-right: 12px;
+    padding-left: 12px;
+}
+.vp-doc .validation-contract[data-invalid-sku="true"] .line:nth-child(4),
+.vp-doc .validation-contract[data-invalid-quantity="true"] .line:nth-child(9) {
+    box-shadow: inset 3px 0 var(--validation-error);
+    background: var(--validation-error-bg);
+}
+.vp-doc .validation-live-result {
+    padding: 12px;
+    border-left: 3px solid var(--validation-accent);
+    border-radius: 0 6px 6px 0;
+    background: var(--validation-surface);
+}
+.vp-doc .validation-showcase:not([data-state="valid"]) .validation-live-result {
+    border-color: var(--validation-error);
+    background: var(--validation-error-bg);
+}
+.vp-doc .validation-result-heading {
+    font-size: 14px;
+}
+.vp-doc .validation-live-result > p {
+    margin: 8px 0 0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+.vp-doc .validation-boundaries {
+    margin: 12px 0 0;
+    font-size: 12px;
+    line-height: 1.6;
+}
+.vp-doc .validation-boundaries > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0 8px;
+}
+.vp-doc .validation-boundaries dt {
+    color: var(--vp-c-text-2);
+}
+.vp-doc .validation-boundaries dd {
+    margin: 0;
+    font-weight: 600;
+}
+.vp-doc .validation-local-note {
+    margin: 0;
+    padding: 16px 24px;
+    color: var(--vp-c-text-2);
+    font-size: 12px;
+    line-height: 1.7;
+}
+.vp-doc .validation-showcase details {
+    border-top: 1px solid var(--vp-c-divider);
+    padding: 0 24px;
+}
+.vp-doc .validation-showcase summary {
+    display: list-item;
+    min-height: 44px;
+    padding: 12px 0;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.vp-doc .validation-showcase details p {
+    font-size: 13px;
+}
+.vp-doc .validation-showcase details .validation-code {
+    margin: 12px 0 20px;
+}
+.vp-doc .validation-showcase h4 {
+    margin: 20px 0 8px;
+    font-size: 14px;
+}
+@media (max-width: 639px) {
+    .vp-doc .validation-workspace {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .vp-doc .validation-source {
+        border-right: 0;
+        border-bottom: 1px solid var(--vp-c-divider);
+    }
+    .vp-doc .validation-showcase-heading {
+        padding: 20px 16px 0;
+    }
+    .vp-doc .validation-local-note,
+    .vp-doc .validation-showcase details {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+}
+@media print {
+    .vp-doc .validation-workspace {
+        display: block;
+    }
+    .vp-doc .validation-source {
+        border-right: 0;
+    }
+    .vp-doc .validation-form button {
+        display: none;
+    }
+}

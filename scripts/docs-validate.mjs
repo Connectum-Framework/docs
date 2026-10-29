@@ -44,11 +44,14 @@ function cleanHeading(value) {
 function slugify(value) {
     return cleanHeading(value)
         .normalize('NFKD')
-        .toLowerCase()
-        .replace(/[^\p{Letter}\p{Number}\s_-]/gu, '')
-        .replace(/\s+/g, '-')
+        .replace(/[\u0300-\u036f]/g, '')
+        // biome-ignore lint/suspicious/noControlCharactersInRegex: fragment normalization must match VitePress, including removed control characters.
+        .replace(/[\u0000-\u001f]/g, '')
+        .replace(/[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/g, '-')
         .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
+        .replace(/^-|-$/g, '')
+        .replace(/^(\d)/, '_$1')
+        .toLowerCase();
 }
 
 function anchorsFor(source) {
@@ -84,6 +87,24 @@ const pages = new Map(markdownFiles.map((file) => {
     const source = readFileSync(file, 'utf8');
     return [routeFor(file), { file, source, anchors: anchorsFor(source) }];
 }));
+
+// the compatibility disclosure is server-rendered from the same data as these checks.
+const guideSections = JSON.parse(readFileSync(resolve(projectRoot, '.vitepress/guide/sections.json'), 'utf8'));
+for (const section of guideSections) {
+    const overview = pages.get(section.route);
+    const detail = pages.get(section.detail);
+    if (!overview || !detail) {
+        errors.push(`guide section route is missing: ${section.route} → ${section.detail}`);
+        continue;
+    }
+    if (!overview.source.includes(`<GuideSections route="${section.route}" />`)) {
+        errors.push(`${section.route}: missing compatibility disclosure`);
+    }
+    for (const anchor of section.anchors) {
+        if (!detail.anchors.has(anchor.id)) errors.push(`${section.detail}: missing preserved section #${anchor.id}`);
+        overview.anchors.add(anchor.id);
+    }
+}
 
 function resolveRoute(path) {
     if (pages.has(path)) return path;
@@ -230,6 +251,20 @@ if (checkBuiltOutputs) {
     const requiredOutputs = ['sitemap.xml', 'hashmap.json', 'llms.txt', 'llms-full.txt', 'en.md'];
     for (const output of requiredOutputs) {
         if (!existsSync(resolve(buildRoot, output))) errors.push(`missing built output: ${output}`);
+    }
+
+    for (const section of guideSections) {
+        for (const route of [section.route, section.detail]) {
+            const file = resolve(buildRoot, `${route.slice(1)}.html`);
+            if (!existsSync(file)) {
+                errors.push(`missing guide output ${route}`);
+                continue;
+            }
+            const html = readFileSync(file, 'utf8');
+            for (const anchor of section.anchors) {
+                if (!html.includes(`id="${anchor.id}"`)) errors.push(`${route}: built output lost #${anchor.id}`);
+            }
+        }
     }
 
     if (errors.length === 0) {

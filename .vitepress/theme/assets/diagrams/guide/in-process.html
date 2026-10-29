@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Local calls retain the application boundary</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Local calls retain the application boundary</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Local calls retain the application boundary; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 600" role="img" aria-labelledby="in-process-title in-process-desc" data-overview="in-process" data-visual-type="architecture">
+<title id="in-process-title">Local calls retain the application boundary</title>
+<desc id="in-process-desc">Local client APIs exchange copied protobuf messages through shared admission and server middleware for all four RPC kinds, with cooperative cancellation and explicit transport, security and telemetry limits.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="in-process-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<g class="go-zone"><rect x="24" y="24" width="640" height="320" rx="8"/><text class="go-heading" x="40" y="48" text-anchor="start">One Server / monolith, BFF or tests</text></g>
+<path class="go-edge" data-from="inprocess-api" data-to="inprocess-codec" data-points="180,184 180,208" d="M180 184 L180 208" marker-end="url(#in-process-arrow)"/>
+<path class="go-edge" data-from="inprocess-codec" data-to="inprocess-rpc" data-points="312,268 368,268" d="M312 268 L368 268" marker-end="url(#in-process-arrow)"/>
+<path class="go-edge" data-from="inprocess-http" data-to="inprocess-rpc" data-points="504,184 504,208" d="M504 184 L504 208" marker-end="url(#in-process-arrow)"/>
+<g data-node="inprocess-api" data-box="48 80 264 104" data-topics="/en/guide/production/in-process-transport-details"><rect class="go-surface" x="48" y="80" width="264" height="104" rx="6"/><text class="go-name" x="64" y="108" text-anchor="start">Choose the client API</text><text class="go-detail" x="64" y="128" text-anchor="start">server.client(): local / remote</text><text class="go-detail" x="64" y="148" text-anchor="start">localClient(): local only</text><text class="go-detail" x="64" y="168" text-anchor="start">hasService(): typeName lookup</text></g>
+<g data-node="inprocess-http" data-box="368 80 272 104" data-topics="/en/guide/production/in-process-transport-details"><rect class="go-surface" x="368" y="80" width="272" height="104" rx="6"/><text class="go-name" x="384" y="108" text-anchor="start">HTTP coexistence</text><text class="go-detail" x="384" y="128" text-anchor="start">server.start() binds a listener</text><text class="go-detail" x="384" y="148" text-anchor="start">local works before start()</text><text class="go-detail" x="384" y="168" text-anchor="start">check TLS / framing / proxies</text></g>
+<g data-node="inprocess-codec" data-box="48 208 264 120" data-topics="/en/guide/production/in-process-transport-details" data-focal=""><rect class="go-surface" x="48" y="208" width="264" height="120" rx="6"/><text class="go-name" x="64" y="234" text-anchor="start">In-memory boundary</text><text class="go-detail" x="64" y="254" text-anchor="start">createLocalTransport()</text><text class="go-detail" x="64" y="274" text-anchor="start">Protobuf copies · cloned headers</text><text class="go-detail" x="64" y="294" text-anchor="start">No sockets / TLS</text><text class="go-detail" x="64" y="314" text-anchor="start">Best-effort back-pressure</text></g>
+<g data-node="inprocess-rpc" data-box="368 208 272 120" data-topics="/en/guide/production/in-process-transport-details" data-focal=""><rect class="go-surface" x="368" y="208" width="272" height="120" rx="6"/><text class="go-name" x="384" y="234" text-anchor="start">Shared RPC boundary</text><text class="go-detail" x="384" y="254" text-anchor="start">requestGate + readMaxBytes</text><text class="go-detail" x="384" y="274" text-anchor="start">configured server interceptors</text><text class="go-detail" x="384" y="294" text-anchor="start">validation / authz / errors</text><text class="go-detail" x="384" y="314" text-anchor="start">URL + marker never grant access</text></g>
+<g data-node="inprocess-kinds" data-box="24 368 640 80" data-topics="/en/guide/production/in-process-transport-details"><rect class="go-surface" x="24" y="368" width="640" height="80" rx="6"/><text class="go-name" x="40" y="394" text-anchor="start">Four RPC kinds</text><text class="go-detail" x="40" y="414" text-anchor="start">unary · server-stream · client-stream · bidirectional</text><text class="go-detail" x="40" y="434" text-anchor="start">All preserve order; break does not cancel a stream</text></g>
+<g data-node="inprocess-cancel" data-box="24 472 280 104" data-topics="/en/guide/production/in-process-transport-details"><rect class="go-surface" x="24" y="472" width="280" height="104" rx="20"/><text class="go-name" x="40" y="500" text-anchor="start">Cooperative cancellation</text><text class="go-detail" x="40" y="520" text-anchor="start">handler observes AbortSignal</text><text class="go-detail" x="40" y="540" text-anchor="start">stop neither waits nor kills work</text><text class="go-detail" x="40" y="560" text-anchor="start">1.3 abort / yield: unpublished</text></g>
+<g data-node="inprocess-tests" data-box="336 472 328 104" data-topics="/en/guide/production/in-process-transport-details"><path class="go-surface" d="M336 472H648L664 488V576H336Z"/><path class="go-fold" d="M648 472V488H664"/><text class="go-name" x="352" y="500" text-anchor="start">Testing and observability</text><text class="go-detail" x="352" y="520" text-anchor="start">transportParityTest + in-memory OTel</text><text class="go-detail" x="352" y="540" text-anchor="start">span parents differ; sizes not wire bytes</text><text class="go-detail" x="352" y="560" text-anchor="start">test HTTP / TLS / proxies separately</text></g>
+</svg></section>
+<figcaption>Local and HTTP clients can coexist. server.client() selects a local service or configured remoteResolver; local tests do not establish wire, TLS or proxy guarantees. The documented 1.3 stop-abort and parked-yield fixes are not yet published.</figcaption></figure></main></body></html>

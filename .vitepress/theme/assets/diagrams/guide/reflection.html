@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Reflection setup, queries and exposure</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Reflection setup, queries and exposure</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Reflection setup, queries and exposure; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 592" role="img" aria-labelledby="reflection-title reflection-desc" data-overview="reflection" data-visual-type="architecture">
+<title id="reflection-title">Reflection setup, queries and exposure</title>
+<desc id="reflection-desc">Reflection indexes mounted services and their imported descriptors once per successful materialization, shares the index across routers, and answers external tool queries at a known server address.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="reflection-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<path class="go-edge" data-from="setup" data-to="index" data-points="168,152 168,184 312,184 312,208" d="M168 152 L168 176 Q168 184 176 184 L304 184 Q312 184 312 192 L312 208" marker-end="url(#reflection-arrow)"/>
+<path class="go-edge" data-from="snapshot" data-to="index" data-points="520,152 520,208" d="M520 152 L520 208" marker-end="url(#reflection-arrow)"/>
+<path class="go-edge go-dashed" data-from="exposure" data-to="index" data-points="184,272 216,272" d="M184 272 L216 272" marker-end="url(#reflection-arrow)"/>
+<path class="go-edge" data-from="tools" data-to="index" data-points="232,388 232,336" d="M232 388 L232 336" marker-end="url(#reflection-arrow)"/>
+<path class="go-edge go-dashed" data-from="index" data-to="tools" data-points="280,336 280,388" d="M280 336 L280 388" marker-end="url(#reflection-arrow)"/>
+<path class="go-edge" data-from="index" data-to="results" data-points="520,336 520,388" d="M520 336 L520 388" marker-end="url(#reflection-arrow)"/>
+<g data-node="setup" data-box="24 24 288 128" data-topics="/en/guide/protocols/reflection-tools"><rect class="go-surface" x="24" y="24" width="288" height="128" rx="6"/><text class="go-name" x="40" y="64" text-anchor="start">Install + enable Reflection</text><text class="go-detail" x="40" y="84" text-anchor="start">@connectum/reflection + peer dependencies</text><text class="go-detail" x="40" y="104" text-anchor="start">Before start / first local client</text><text class="go-detail" x="40" y="124" text-anchor="start">Plaintext h2c: allowHTTP1: false</text></g>
+<g data-node="snapshot" data-box="376 24 288 128" data-topics="/en/guide/protocols/reflection-tools"><path class="go-surface" d="M376 24H648L664 40V152H376Z"/><path class="go-fold" d="M648 24V40H664"/><text class="go-name" x="392" y="64" text-anchor="start">Mounted-service snapshot</text><text class="go-detail" x="392" y="84" text-anchor="start">Application + earlier protocol services</text><text class="go-detail" x="392" y="104" text-anchor="start">Healthcheck before Reflection is listed</text><text class="go-detail" x="392" y="124" text-anchor="start">Declared-only services excluded</text></g>
+<g data-node="exposure" data-box="24 208 160 128" data-topics="/en/guide/protocols/reflection-tools"><rect class="go-surface" x="24" y="208" width="160" height="128" rx="6"/><text class="go-name" x="40" y="238" text-anchor="start">Exposure</text><text class="go-name" x="40" y="258" text-anchor="start">control</text><text class="go-detail" x="40" y="278" text-anchor="start">Disable or restrict</text><text class="go-detail" x="40" y="298" text-anchor="start">Schema is exposed</text><text class="go-detail" x="40" y="318" text-anchor="start">Known address only</text></g>
+<g data-node="index" data-box="216 208 448 128" data-topics="/en/guide/protocols/reflection-tools" data-focal=""><rect class="go-surface" x="216" y="208" width="448" height="128" rx="6"/><text class="go-name" x="232" y="238" text-anchor="start">Shared reflection index</text><text class="go-detail" x="232" y="258" text-anchor="start">v1 + v1alpha; HTTP and local routers</text><text class="go-detail" x="232" y="278" text-anchor="start">collectFileProtos: files + transitive imports</text><text class="go-detail" x="232" y="298" text-anchor="start">Filename, symbol + extension indexes</text><text class="go-detail" x="232" y="318" text-anchor="start">Setup retries if initial materialization fails</text></g>
+<g data-node="tools" data-box="24 388 288 144" data-topics="/en/guide/protocols/reflection-tools"><rect class="go-surface" x="24" y="388" width="288" height="144" rx="6"/><text class="go-name" x="40" y="426" text-anchor="start">Client tools</text><text class="go-detail" x="40" y="446" text-anchor="start">grpcurl: list / describe / call</text><text class="go-detail" x="40" y="466" text-anchor="start">buf curl: Connect over HTTP/2</text><text class="go-detail" x="40" y="486" text-anchor="start">Postman · Insomnia · Warthog</text><text class="go-detail" x="40" y="506" text-anchor="start">TLS: trust the configured CA</text></g>
+<g data-node="results" data-box="376 388 288 144" data-topics="/en/guide/protocols/reflection-tools"><path class="go-surface" d="M376 388H648L664 404V532H376Z"/><path class="go-fold" d="M648 388V404H664"/><text class="go-name" x="392" y="426" text-anchor="start">Reflection query results</text><text class="go-detail" x="392" y="446" text-anchor="start">Mounted services; descriptor imports</text><text class="go-detail" x="392" y="466" text-anchor="start">Unknown query target: NOT_FOUND</text><text class="go-detail" x="392" y="486" text-anchor="start">Unset query: INVALID_ARGUMENT</text><text class="go-detail" x="392" y="506" text-anchor="start">Errors leave the stream open</text></g>
+<text class="go-detail" x="24" y="568" text-anchor="start">The reflection service is reachable but does not include itself in its listing.</text>
+</svg></section>
+<figcaption>Reflection exposes schemas at one known address; it does not locate servers or replace the generated catalog. Protocol order controls which mounted services appear. Disable or restrict production exposure.</figcaption></figure></main></body></html>

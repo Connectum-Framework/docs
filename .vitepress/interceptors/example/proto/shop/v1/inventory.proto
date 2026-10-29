@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package shop.v1;
+
+service InventoryService {
+  rpc CheckStock(CheckStockRequest) returns (CheckStockResponse);
+}
+
+message CheckStockRequest {
+  string sku = 1;
+}
+
+message CheckStockResponse {
+  int32 units = 1;
+}

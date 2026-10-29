@@ -1,0 +1,2 @@
+# protoc-gen-es ends files with a blank line; keep generation byte-reproducible.
+gen/** whitespace=-blank-at-eof
