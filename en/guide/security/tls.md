@@ -68,10 +68,20 @@ The server looks for:
 Do not combine `dirPath` with only one of `keyPath` or `certPath`; that
 combination is rejected as described above.
 
+### Start-up Errors
+
+When a file cannot be read or is not usable, `server.start()` rejects with an error that names the file by its resolved path and the setting the path came from: `tls.keyPath`, `tls.certPath`, `tls.dirPath`, `TLS_DIR_PATH`, or the default directory. The key and the certificate are parsed on their own and then together, so the message tells a file that is not PEM from a key that does not belong to the certificate (it names both files). The original error is available as `cause`; for a read failure `code` (for example `ENOENT`) and `path` are kept on the error.
+
+```text
+TLS key file "/srv/app/bad.key" (from tls.keyPath) is not a usable PEM private key: error:1E08010C:DECODER routines::unsupported
+```
+
+An operator who relied on the default directory sees that it was used: the message says "the default TLS directory" and gives the path it tried.
+
 ### Environment Variable Configuration
 
 When `keyPath`, `certPath`, and `dirPath` are not supplied, `readTLSCertificates()`
-uses `TLS_DIR_PATH` or its environment-dependent default. The environment schema does
+uses `TLS_DIR_PATH` or its environment-dependent default (`../../../keys` relative to the working directory outside production, the working directory in production). The environment schema does
 not define `TLS_KEY_PATH` or `TLS_CERT_PATH`; pass explicit paths through `tls` instead.
 See [Environment Configuration](/en/guide/server/configuration#tls-configuration) for
 the directory defaults.
@@ -80,7 +90,7 @@ the directory defaults.
 
 ### readTLSCertificates()
 
-Reads TLS key and certificate files:
+Reads TLS key and certificate files. It only reads: a failure to read names the file and the setting, while the check that the content is a usable key and certificate runs when the server starts:
 
 ```typescript
 import { readTLSCertificates } from '@connectum/core';

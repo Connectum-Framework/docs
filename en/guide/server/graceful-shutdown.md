@@ -62,10 +62,12 @@ interface ShutdownOptions {
 | `autoShutdown` | `false` | Automatically install signal handlers |
 | `forceCloseOnTimeout` | `true` | Destroy every remaining client connection (HTTP/1.1, h2c, TLS) if the timeout is exceeded |
 
-`createServer()` validates both values and throws instead of starting a server that would cut connections at once:
+`createServer()` validates the shutdown options and throws instead of starting a server that would cut connections at once or never handle the signal:
 
 - `timeout` must be an integer from `0` to `2147483647` (the largest delay a Node.js timer accepts). `0` means "do not wait for in-flight requests". A number outside that range (`NaN`, `Infinity`, a negative or fractional number, a larger value) throws a `RangeError`; a value that is not a number throws a `TypeError`.
 - `forceCloseOnTimeout` must be a boolean; anything else throws a `TypeError`.
+- `autoShutdown` must be a boolean; anything else (the string `"yes"`, for example) throws a `TypeError`.
+- `signals` must be a non-empty array of signal names the platform knows, such as `'SIGTERM'` or `'SIGUSR2'`. An empty list, a string in place of an array, an unknown or lowercase name, and `SIGKILL` and `SIGSTOP` (a process cannot handle them) throw a `TypeError` or `RangeError` that names `shutdown.signals`, and the signal when one is unknown. The check also runs while `autoShutdown` is off. Without it, such a value left no handler installed, and `SIGTERM` ended the process without running the shutdown hooks.
 
 Both error messages name the option and the rejected value, in the same form as the [`readMaxBytes`](/en/guide/security/request-admission) check. Leaving an option out, or setting it to `undefined`, keeps the default.
 

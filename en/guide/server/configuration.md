@@ -34,7 +34,7 @@ console.log(config.NODE_ENV);       // "development" (default)
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
-| `PORT` | `number` | `5000` | Server port, a whole number from 1 to 65535; a fractional value such as `80.5` is rejected with an error on `PORT` |
+| `PORT` | `number` | `5000` | Server port, a whole number from 1 to 65535 written in decimal digits. A fractional value such as `80.5`, or a notation `Number()` would read (`0x50`, `1e3`, `+80`, spaces around the digits), is rejected with an error on `PORT`; leading zeros stay decimal (`08080` is `8080`) |
 | `LISTEN` | `string` | `"0.0.0.0"` | Listen address |
 | `NODE_ENV` | `enum` | `"development"` | `"development"`, `"production"`, or `"test"` |
 
@@ -57,8 +57,8 @@ console.log(config.NODE_ENV);       // "development" (default)
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
-| `OTEL_SERVICE_NAME` | `string` | -- | Service name reported to the collector |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | `string (url)` | -- | OTLP collector endpoint (e.g. `http://localhost:4318`) |
+| `OTEL_SERVICE_NAME` | `string` | -- | Service name reported to the collector. The core schema accepts any string, an empty one included |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `string (url)` | -- | OTLP collector endpoint, an absolute `http:` or `https:` URL (e.g. `http://localhost:4318`); `localhost:4318` and `ftp://collector` are rejected with an error on the variable |
 
 ### Graceful Shutdown
 
@@ -155,6 +155,8 @@ server.on('ready', () => {
 
 await server.start();
 ```
+
+Options passed to `createServer()` directly get the same fail-fast check as the variables. `port` must be an integer from `0` (a free port chosen by the system) to `65535`, and `host` a non-empty string; any other value, a numeric string such as `"5000"` included, throws a `TypeError` or `RangeError` that names the option. Before this check, a non-numeric string `port` was read as a Unix socket path and an empty `host` bound every interface.
 
 ## TLS Configuration
 
