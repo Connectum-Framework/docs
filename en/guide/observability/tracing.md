@@ -37,12 +37,13 @@ server and on the client interceptor. A bug in them never fails the call. A `fil
 that throws instruments the call (losing telemetry silently is worse than an extra
 span). An `attributeFilter` that throws for an attribute drops that attribute, so an
 attribute is exported only if the filter approved it; the other attributes are kept.
-The error is reported once per interceptor, not once per call, through the
-OpenTelemetry diagnostics channel (`diag.error`). That channel prints nothing until a
-diagnostics logger is registered; creating the provider (for example with
-`initProvider()`) registers one at the `ERROR` level. A failure that happens
-before the provider exists is reported on the next failure, and reporting never
-creates the provider.
+The error is reported through the OpenTelemetry diagnostics channel
+(`diag.error`), not once per call: once per interceptor and callback, and once more
+if the first failure came before the provider existed. That channel prints nothing
+until a diagnostics logger is registered; creating the provider (for example with
+`initProvider()`) registers one at the `ERROR` level, and a logger you registered
+yourself receives the report without a provider. Reporting never creates the
+provider.
 
 ### Span status
 
