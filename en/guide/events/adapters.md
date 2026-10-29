@@ -329,7 +329,9 @@ properties differ from NATS:
   metadata request per wildcard subscription per interval. A discovered topic is
   read from its first message, whatever `fromBeginning` says. The checks use an
   extra admin connection, and subscriptions made only of literal topic names are
-  never checked. If listing the topics fails when the subscription starts,
+  never checked. A wildcard subscription lists the topics once when it starts
+  even with the checks off, so that it can tell a deleted topic from one that
+  never existed (see [a topic is deleted](#kafka-topic-deleted)). If listing the topics fails when the subscription starts,
   `subscribe()` rejects with that error: the same metadata request expands the
   wildcard, and a discovery started from an empty list would read the history of
   every existing topic. A check that fails later (for example because the
@@ -353,6 +355,42 @@ is lost meanwhile. In a measurement with two members at 1 s and 20 s, all 12
 messages sent to the new topic arrived, the last one 15.3 s after the topic was
 created (15.1 s on Redpanda; the exact delay depends on where the 20 s check
 falls). Give the members of a group the same interval.
+
+#### A topic is deleted {#kafka-topic-deleted}
+
+The Kafka client library cannot remove a topic from a running consumer. When a topic that
+a wildcard had matched is deleted, the consumer crashes on its next fetch, and the library
+restarts it with the same topic list, which fails on the deleted topic every time. Without
+help the other topics of the subscription deliver nothing until the library's own metadata
+refresh clears the state; in a measured run with Kafka 4.2.0 on Node 26 the first message
+reached the handler 300.7 s after the deletion, after 936 `consumer-restore-failed` events
+(`topicDiscoveryInterval` made no difference). With the replacement described below the same
+scenario delivered its first message 12.0 s after the deletion, and the lifecycle showed one
+`consumer-lost` and one `consumer-restored`.
+
+The adapter handles it. When a consumer of a wildcard subscription crashes with "unknown
+topic" and the broker's topic list shows that a topic the wildcard had matched is gone, it
+replaces the consumer: the new one joins the same group, subscribes the literal topics and
+the matches that still exist, and starts reading from the group's committed offsets.
+Messages published to the remaining topics meanwhile are delivered after the replacement,
+as with any restart of a consumer in a group that has committed (a topic the group has no
+committed offset for starts where `fromBeginning` says, except a topic that was found after
+the subscription started, which is read from its first message again). A matching topic that
+was created in between is subscribed and read from its first message when discovery is on.
+If the deleted topic is created again and discovery is on, it is consumed again from its
+first message. The recovery works with `topicDiscoveryInterval: false` too; the new consumer
+then keeps the topic list fixed and subscribes no topic created since the start. It cannot be
+turned off.
+
+With `lifecycle.onLifecycle` set you see one `consumer-lost` and then `consumer-restored`;
+the adapter also logs one warning that names the deleted topics. The replacement rebalances
+the group once, like a discovery restart, so messages being handled at that moment are
+delivered again. A crash for any other reason, or a crash while the broker still lists every
+matched topic, stays with the library's own restarts. If creating the replacement fails,
+the error is logged and the attempt is repeated every five seconds.
+
+A subscription to a literal topic name is not replaced: if that topic is deleted, the
+consumer keeps failing until the topic exists again.
 
 ### Related
 
@@ -532,7 +570,9 @@ carries `willRestore` (whether the client restarts the consumer on its own),
 `consumer-restore-failed` a counted `attempt` for each crash before the consumer came
 back, and `consumer-restored` the first group join after a crash. A first join,
 rebalances, the restart that [topic discovery](#kafka-wildcards) causes and your own
-`unsubscribe()` produce nothing.
+`unsubscribe()` produce nothing. When a wildcard subscription loses a matched topic, the
+crash is reported as `consumer-lost` and the replacement consumer's first group join as
+`consumer-restored` (see [a topic is deleted](#kafka-topic-deleted)).
 
 ## Automatic Client Identification
 
