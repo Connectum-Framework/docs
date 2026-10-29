@@ -231,13 +231,13 @@ Both server and client interceptors automatically instrument streaming RPCs (cli
 2. Individual `rpc.message` events are recorded for each sent/received message (when `recordMessages` is enabled)
 3. Span ends when the stream is fully consumed, errors, or is broken
 
-This ensures accurate duration measurement for long-lived streams.
-
-This span lifecycle differs from the client metric lifecycle: streaming
-`rpc.client.call.duration` is recorded when the transport returns the response
-stream, before it is consumed. Streaming request and response size metrics are
-recorded as `0`. `rpc.message.uncompressed_size` is also an estimate: messages
-without a `toBinary()` method produce `0`.
+This ensures accurate duration measurement for long-lived streams. The duration
+metric follows the span: streaming `rpc.client.call.duration` is recorded once,
+when the response stream ends (after the last message, on a failure, or when the
+consumer stops reading), and a stream that fails after it started carries
+`error.type` and `rpc.response.status_code` on its span and its metric point.
+Streaming request and response size metrics are recorded as `0`.
+`rpc.message.uncompressed_size` is the serialized size of each message in bytes.
 
 ### Streaming Attributes
 
@@ -245,7 +245,7 @@ without a `toBinary()` method produce `0`.
 |-----------|-------|-------------|
 | `rpc.message.id` | sequential number | Message sequence number within the stream |
 | `rpc.message.type` | `"SENT"` / `"RECEIVED"` | Message direction |
-| `rpc.message.uncompressed_size` | bytes (estimated) | Estimated message size |
+| `rpc.message.uncompressed_size` | bytes | Serialized size of the message |
 | `network.transport` | `"tcp"` | Network transport protocol |
 
 ## Related

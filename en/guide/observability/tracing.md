@@ -30,18 +30,46 @@ attributes, signal toggles, or data recording that the service requires; use
 for the exact fields. Keep message recording disabled unless its privacy and volume
 impact has been reviewed.
 
+### Callbacks that throw
+
+`filter` and `attributeFilter` run your code on the path of every call, on the
+server and on the client interceptor. A bug in them never fails the call. A `filter`
+that throws instruments the call (losing telemetry silently is worse than an extra
+span). An `attributeFilter` that throws for an attribute drops that attribute, so an
+attribute is exported only if the filter approved it; the other attributes are kept.
+The error is reported through the OpenTelemetry diagnostics channel
+(`diag.error`), not once per call: once per interceptor and callback, and once more
+if the first failure came before the provider existed. That channel prints nothing
+until a diagnostics logger is registered; creating the provider (for example with
+`initProvider()`) registers one at the `ERROR` level, and a logger you registered
+yourself receives the report without a provider. Reporting never creates the
+provider.
+
 ### Span status
 
 A span that ends without a failure keeps the default status, **unset**. The
 interceptors, `traced()` and `traceAll()` never set `OK`: the OpenTelemetry Trace API
 asks instrumentation libraries not to, and the RPC conventions leave the status unset
 when a call succeeds. They set `ERROR`, with the error message, only when the call or
-function fails or is canceled. A stream whose consumer stops early (`return()` or
+function fails. A stream whose consumer stops early (`return()` or
 `break`) also ends unset, because that is neither a failure nor a confirmed success.
 
-To count failures, filter on `status = error`; to count successes, use "status is not
-error" or the `rpc.response.status_code` attribute, which still reports `OK` for a
-successful unary call. Cancellation is reported as `CANCELED` (one L, the Connect
+Which Connect codes are failures depends on the side of the call, as the
+OpenTelemetry Connect RPC conventions define it:
+
+| Span | `ERROR` for | Status unset for |
+|------|-------------|------------------|
+| Client (`createOtelClientInterceptor()`) | every code except `OK` | `OK` |
+| Server (`createOtelInterceptor()`) | `unknown`, `deadline_exceeded`, `unimplemented`, `internal`, `unavailable`, `data_loss`, and an error that is not a `ConnectError` (the server turns it into `unknown`) | every other code, for example `not_found`, `invalid_argument`, `permission_denied`, `unauthenticated`, `failed_precondition`, `canceled` |
+
+The same rule applies to a stream that fails after it started. The code is reported
+either way: `rpc.response.status_code` and `error.type` carry the code name on the
+server span of a `NOT_FOUND` answer, whose status stays unset.
+
+To count failures of the server, filter on `status = error`; to count every non-OK
+answer, use the `rpc.response.status_code` or `error.type` attribute. To count
+successes, use "status is not error" or `rpc.response.status_code`, which still
+reports `OK` for a successful unary call. Cancellation is reported as `CANCELED` (one L, the Connect
 spelling) in `rpc.response.status_code` and `error.type`. Queries over data from
 both Connect and gRPC stacks can match both spellings with `CANCEL+ED`. See
 [RPC telemetry attribute names](/en/migration/otel-rpc-attributes#span-status-is-unset-on-success).
@@ -131,6 +159,16 @@ Recording never affects the call. If the arguments cannot be recorded (a
 still runs and returns its own result, and the span has no `function.args`
 attribute.
 
+### Promises, generators and other results
+
+The span ends when the result of the function is final:
+
+- A returned `Promise`: when it settles. A rejection ends the span with `ERROR`.
+- A returned sync or async generator (the result of calling a `function*` or `async function*`): when the generator is exhausted, throws, or is closed early with `break` or `return()`. A generator function returns before its body has run, so the span stays open while you iterate. Every step of the body runs with the span as the active span, and spans that the body starts are its children. You receive the same generator object, with its prototype and any property the function added to it (a frozen generator is returned as it is, and its span ends at once). A generator that you never iterate never ends its span, because none of its code runs.
+- Anything else, including arrays, `Map`, streams and a thenable that is not a native `Promise`: when the function returns. A thenable is not awaited, because calling its `then` can start work (a lazily executed query builder) that the caller has not asked for yet.
+
+`traceAll()` applies the same rules to every traced method.
+
 ### Thrown values
 
 Any thrown value is a failure, including `null`, `undefined`, `0` and `""`: the
@@ -139,6 +177,12 @@ the original value unchanged. For a value that is not an `Error` the recorded
 message is the text of the value (the empty string is shown as `""`). The same
 holds for `traceAll()`, the server and client interceptors and streams: a stream
 that raises a falsy value ends its span with `ERROR`.
+
+The recorded `exception` event names the class of the error in `exception.type`
+(`ConnectError` for a Connect error, never its numeric code). The Connect code is
+in `error.type` and `rpc.response.status_code` of the span. `error.type` is never
+empty: an error whose class has no name reports the error's `name`, and `_OTHER`
+when that is empty too.
 
 ## Deep Tracing with `traceAll()`
 
@@ -180,6 +224,8 @@ values need redaction before they become span attributes.
 ::: tip Performance
 `traceAll()` uses ES6 Proxy and creates method wrappers lazily on first access. It prevents double-wrapping automatically.
 :::
+
+Property reads pass through untouched. Getters run with the original object as `this`, so a getter over a `#private` field, `Map.size` and `Set.size` work on a traced object. One case cannot be traced: an own method that is neither writable nor configurable, which is every method of a frozen object (`Object.freeze()`). A proxy must return the real value of such a property, so that method is returned as it is and produces no span.
 
 ## Distributed Tracing Across Services
 
