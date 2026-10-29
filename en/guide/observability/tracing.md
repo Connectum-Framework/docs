@@ -39,8 +39,10 @@ span). An `attributeFilter` that throws for an attribute drops that attribute, s
 attribute is exported only if the filter approved it; the other attributes are kept.
 The error is reported once per interceptor, not once per call, through the
 OpenTelemetry diagnostics channel (`diag.error`). That channel prints nothing until a
-diagnostics logger is registered; `initProvider()` registers one at the `ERROR`
-level.
+diagnostics logger is registered; creating the provider (for example with
+`initProvider()`) registers one at the `ERROR` level. A failure that happens
+before the provider exists is reported on the next failure, and reporting never
+creates the provider.
 
 ### Span status
 
@@ -161,7 +163,7 @@ attribute.
 The span ends when the result of the function is final:
 
 - A returned `Promise`: when it settles. A rejection ends the span with `ERROR`.
-- A returned sync or async generator (the result of calling a `function*` or `async function*`): when the generator is exhausted, throws, or is closed early with `break` or `return()`. A generator function returns before its body has run, so the span stays open while you iterate. Every step of the body runs with the span as the active span, and spans that the body starts are its children. You receive an iterator with the same protocol (`next`, `return`, `throw`). A generator that you never iterate never ends its span, because none of its code runs.
+- A returned sync or async generator (the result of calling a `function*` or `async function*`): when the generator is exhausted, throws, or is closed early with `break` or `return()`. A generator function returns before its body has run, so the span stays open while you iterate. Every step of the body runs with the span as the active span, and spans that the body starts are its children. You receive the same generator object, with its prototype and any property the function added to it (a frozen generator is returned as it is, and its span ends at once). A generator that you never iterate never ends its span, because none of its code runs.
 - Anything else, including arrays, `Map`, streams and a thenable that is not a native `Promise`: when the function returns. A thenable is not awaited, because calling its `then` can start work (a lazily executed query builder) that the caller has not asked for yet.
 
 `traceAll()` applies the same rules to every traced method.
