@@ -32,7 +32,7 @@ const authz = createAuthzInterceptor({
 | `name` | `string` | Rule name for logging and debugging |
 | `methods` | `readonly string[]` | Exact method, `Service/*`, or `*` |
 | `requires` | `{ roles?, scopes? }` | Required roles and/or scopes |
-| `effect` | `'allow' \| 'deny'` | What to do when the rule matches |
+| `effect` | `'allow' \| 'deny'` | What to do when the rule matches. Exactly these two lowercase strings; any other value (`'DENY'`, `'block'`) throws a `TypeError` when the interceptor is created |
 
 ### Matching Semantics
 
@@ -50,7 +50,7 @@ const authz = createAuthzInterceptor({
 | `'*'` | All services and methods (allowed in rule `methods` and in `internalMethods`) |
 | `'admin.v1.AdminService/DeleteUser'` | Exact method match |
 
-Partial wildcards such as `Write*` or `admin.v1.*/*` are not supported by auth interceptors. List exact methods or use a complete `Service/*` pattern.
+Partial wildcards such as `Write*` or `admin.v1.*/*` are not supported by auth interceptors. List exact methods or use a complete `Service/*` pattern. A pattern that is not one of the three forms (a partial wildcard, a bare service name, a leading slash) throws a `TypeError` that names the option, the rule and the pattern when the interceptor is created, in `skipMethods`, in a rule's `methods` and in `internalMethods`; it used to be accepted and never matched, so a `deny` rule written that way did nothing.
 
 The catch-all `'*'` is **not accepted in `skipMethods`**. `createAuthInterceptor`, `createJwtAuthInterceptor`, `createSessionAuthInterceptor`, `createGatewayAuthInterceptor` and `createAuthzInterceptor` throw when it is created with `skipMethods: ['*']`, because the option would switch the interceptor off for every method without saying so. To turn an interceptor off, do not register it; to skip a whole service, list `'pkg.v1.Service/*'`. See [Auth option validation](/en/migration/auth-proto-options).
 
@@ -66,7 +66,9 @@ const authz = createAuthzInterceptor({
 });
 ```
 
-If `authorize` returns `true`, the request is allowed. If it returns `false`, the request fails with `Code.PermissionDenied`, including when `defaultPolicy` is `allow`. The default policy applies only when no rule matches and no callback is configured.
+If `authorize` returns (or resolves to) exactly `true`, the request is allowed. Any other result fails the request with `Code.PermissionDenied`, including when `defaultPolicy` is `allow`: `false`, but also `undefined` and a truthy value that is not a boolean, such as the string `'false'` that `(ctx) => ctx.claims.isAdmin` returns for a string claim. Write the comparison out, for example `ctx.claims.isAdmin === true`. The default policy applies only when no rule matches and no callback is configured.
+
+`defaultPolicy` is `'allow'` or `'deny'` and defaults to `'deny'` when omitted. Any other value (`'Deny'`, `''`, `null`) throws a `TypeError` when the interceptor is created, so a typo cannot open the methods that no rule matches. See [Auth authorization and JWT validation](/en/migration/auth-authorization-validation) when upgrading.
 
 ## Proto-Based Authorization
 

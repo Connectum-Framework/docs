@@ -90,6 +90,8 @@ Two contract mistakes are errors, not silent fallbacks. `resolveMethodAuth()` th
 - **A policy string other than `""`, `"allow"` or `"deny"`** (for example `"Allow"` or `"dney"`; the check is case-sensitive). The message names the value, the method and the option (`method_auth.policy` or `service_auth.default_policy`). Before 1.3.0 such a value was read as "not set" and the decision silently fell to `defaultPolicy`.
 - **A method that is both `public` and `internal`**, set on the method or inherited from the service. The message suggests `public: true, internal: false`. Before 1.3.0 `public` silently won.
 
+The options of the interceptor itself are checked when it is created. `createProtoAuthzInterceptor` throws a `TypeError` for a `defaultPolicy` or a rule `effect` that is not exactly `"allow"` or `"deny"` (the same case-sensitive rule as the proto policy; before this check, `"Deny"` or `""` was read as allow), and for a rule `methods` entry other than `*`, `Service/*` or `Service/Method`. See [Auth authorization and JWT validation](/en/migration/auth-authorization-validation).
+
 A service `default_policy` is checked when a method that uses it (has no `policy` of its own) is resolved. Building the list with `getPublicMethods(services)` at startup resolves every method, so these errors surface when the server is composed rather than on the first request. See [Auth option validation](/en/migration/auth-proto-options).
 
 Explicit method-level fields override their service-level counterparts. An
@@ -171,15 +173,16 @@ request to the next interceptor; every deny throws and ends authorization.
 | Order | Condition | Outcome |
 |---|---|---|
 | 1. Proto `public` | Resolved method is public | Allow through this authorization interceptor without checking context. This does not configure authentication; add the method to authn `skipMethods` separately. |
-| 2. Proto `internal` | Resolved method is internal | A missing `AuthContext` throws `Unauthenticated`. If `requires` is `undefined`, allow any caller whose trusted internal context was established upstream. If `requires` is defined, continue to the requirements check below; internal identity and roles/scopes compose inclusively. |
+| 2. Proto `internal` | Resolved method is internal | A missing `AuthContext` throws `Unauthenticated`. If `requires` is `undefined`, allow a caller whose context was established by `createInternalAuthInterceptor` upstream; a context from any other interceptor (an end-user JWT) throws `Unauthenticated` with `Untrusted internal request`. If `requires` is defined, continue to the requirements check below; internal identity and roles/scopes compose inclusively. |
 | 3. Proto `requires` | Requirements are defined, including for an internal method | Missing context throws `Unauthenticated`. Satisfied roles/scopes allow immediately, even if a resolved proto policy is `deny`. Unsatisfied requirements throw `AuthzDeniedError` (`PermissionDenied`) without checking policy, rules, or callback. |
 | 4. Proto policy | No earlier proto decision; resolved policy is `allow` or `deny` | `allow` passes the request; `deny` throws `AuthzDeniedError` (`PermissionDenied`). An unset policy continues. |
 | 5. Programmatic rules | No proto decision; inspect rules in order | The first method-matching rule with no `requires` matches unconditionally, even without context. A rule with `requires` is skipped if context is missing or its requirements fail; evaluation continues. A matching allow passes the request; a matching deny throws `AuthzDeniedError` (`PermissionDenied`). If no rule matches, continue. |
-| 6. `authorize` callback | No earlier decision and a callback is configured | Missing context throws `Unauthenticated`. The callback receives the context and method. `true` passes the request; `false` throws `ConnectError` (`PermissionDenied`). The callback is terminal and is not followed by `defaultPolicy`. |
+| 6. `authorize` callback | No earlier decision and a callback is configured | Missing context throws `Unauthenticated`. The callback receives the context and method. Exactly `true` passes the request; `false` and every other result (a truthy non-boolean such as the string `"false"`, `1`, `{}`, `undefined`) throw `ConnectError` (`PermissionDenied`). The callback is terminal and is not followed by `defaultPolicy`. |
 | 7. `defaultPolicy` | No earlier decision and no callback is configured | `allow` passes the request, with or without context. `deny` throws `Unauthenticated` when context is missing and `ConnectError` (`PermissionDenied`) when context exists. |
 
 For internal methods, `requires === undefined` is distinct from a defined
-requirements object: the former allows a trusted internal caller immediately;
+requirements object: the former allows a caller authenticated by the internal
+interceptor immediately;
 the latter requires a context and evaluates its roles/scopes. An object with
 empty role and scope lists (`requires {}`) is still defined and passes the
 requirements check when context exists.
@@ -220,7 +223,13 @@ are outside this RPC chain.
 
 An `internal` annotation does not authenticate a caller on its own. Skip these
 methods in JWT authentication and install an internal interceptor before proto
-authz. Its trust source must authenticate the calling service:
+authz. Its trust source must authenticate the calling service. Proto authz admits
+an `internal` method without `requires` only for an identity that
+`createInternalAuthInterceptor` established: if the interceptor is missing from the
+chain, or its `internalMethods` do not cover the method, an end-user JWT is
+rejected as `Unauthenticated` (`Untrusted internal request`) instead of reaching the
+handler. An `internal` method with `requires` keeps checking roles and scopes of
+whatever identity is present:
 
 ```typescript
 import {

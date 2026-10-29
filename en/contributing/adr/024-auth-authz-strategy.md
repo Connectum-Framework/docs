@@ -254,7 +254,7 @@ import { createProtoAuthzInterceptor, getInternalMethods, getPublicMethods, reso
 const authz = createProtoAuthzInterceptor({
   defaultPolicy: 'deny',
   rules: [
-    { name: 'admin-fallback', methods: ['admin.v1.*/*'], requires: { roles: ['admin'] }, effect: 'allow' },
+    { name: 'admin-fallback', methods: ['admin.v1.AdminService/*'], requires: { roles: ['admin'] }, effect: 'allow' },
   ],
 });
 ```
