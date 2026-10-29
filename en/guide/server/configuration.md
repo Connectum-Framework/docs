@@ -57,8 +57,8 @@ console.log(config.NODE_ENV);       // "development" (default)
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
-| `OTEL_SERVICE_NAME` | `string` | -- | Service name reported to the collector. The core schema accepts any string, an empty one included |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | `string (url)` | -- | OTLP collector endpoint, an absolute `http:` or `https:` URL (e.g. `http://localhost:4318`); `localhost:4318` and `ftp://collector` are rejected with an error on the variable |
+| `OTEL_SERVICE_NAME` | `string` | -- | Service name reported to the collector. An empty value is read as unset, as the OpenTelemetry SDK reads its own variables |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `string (url)` | -- | OTLP collector endpoint, an absolute `http:` or `https:` URL (e.g. `http://localhost:4318`); `localhost:4318` and `ftp://collector` are rejected with an error on the variable; an empty value is read as unset |
 
 ### Graceful Shutdown
 
