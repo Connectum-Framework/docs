@@ -74,6 +74,8 @@ flowchart LR
 
 A `ConnectError` thrown by `verifySession` or `mapSession` reaches the client **unchanged**: its code and its text are sent verbatim, so write that text for the client (`new ConnectError('Session expired', Code.Unauthenticated)`). Any other thrown value is replaced by `Unauthenticated` with the fixed text `Session verification failed` (from `verifySession`) or `Session mapping failed` (from `mapSession`); its own message never leaves the server. The examples on this page throw a plain `Error` for this reason.
 
+`mapSession` must return a complete `AuthContext`: a string `subject` and `type`, string arrays `roles` and `scopes`, an object `claims`, and, when present, a string `name` and a `Date` `expiresAt`. Any other result (`null` from a failed lookup, `undefined`, `false`, `{}`, a missing or mistyped field) ends the call with `Unauthenticated` and the text `Session mapping failed`, with or without `propagateHeaders`, and is never cached. `verifyCredentials` of `createAuthInterceptor` follows the same rule with the text `Authentication failed`.
+
 ## Cookie-Based Auth
 
 When your session backend reads cookies directly from headers, extract the actual
@@ -114,6 +116,15 @@ header-dependent verifier unless the key uniquely identifies the session it
 verifies. The cache is bypassed when the mapped `expiresAt` has passed, or when
 its TTL expires. Revoking a session in the backend does not invalidate an already
 cached identity, so choose the TTL to fit your revocation policy.
+
+The cached identity is an immutable snapshot, and the same snapshot is what the
+handler of the request that filled the cache receives. The `AuthContext`, its
+`roles`, `scopes` and `claims` (nested plain objects and arrays included) are
+frozen, so a handler cannot change what a later request with the same token gets;
+an attempt to push a role throws a `TypeError`. `expiresAt` is a copy per request.
+Copy the values you want to change. Without `cache`, the object your verifier
+returns is passed through as it is. The same holds for the `cache` option of
+`createAuthInterceptor`.
 
 ## Full Example
 
