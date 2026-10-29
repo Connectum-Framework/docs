@@ -185,6 +185,55 @@ never override `brokers` or `clientId`.
 The `kafkaConfig` option of earlier versions is removed and throws a `TypeError`; see
 [Kafka adapter options](/en/migration/kafka-adapter-options).
 
+#### Validation {#kafka-option-validation}
+
+`KafkaAdapter()` checks these options when it is called and throws an error that names
+the option and the value it received, instead of failing later at `connect()` or
+`subscribe()` with a message that does not:
+
+| Option | Accepted | Error |
+|---|---|---|
+| the options object | an object | `TypeError` |
+| `brokers` | a non-empty array of non-empty `host:port` strings | `TypeError` (not an array, or a bad entry, with its position), `RangeError` (empty) |
+| `clientId` | a non-empty string, or omitted | `TypeError` |
+| `consumerOptions.sessionTimeout` | a finite number of milliseconds above 3000 (the heartbeat interval) | `RangeError` |
+| `retry.retries` | a non-negative integer | `RangeError` |
+| `retry.maxRetryTime`, `initialRetryTime`, `factor`, `multiplier` | a non-negative finite number | `RangeError` |
+| `sasl.mechanism` | `plain`, `scram-sha-256`, `scram-sha-512`, `oauthbearer` or `aws` | `RangeError` |
+
+A SASL mechanism that only the client library knows (a custom one) still goes in
+`clientOptions.sasl`, which replaces the typed `sasl`. See
+[Kafka adapter validation](/en/migration/kafka-option-validation).
+
+#### Connection errors {#kafka-connection-errors}
+
+When a broker's host name resolves to several addresses (`localhost` often does) and every
+one refuses the connection, Node reports the failure with an empty message. The adapter
+fills the reason in from the socket's error code and the broker address, so the error reads
+`Connection error: connect ECONNREFUSED localhost:9092` instead of `Connection error: `.
+The error keeps its class and its `cause`. A publish to a topic name the broker refuses
+fails with an error that names the topic. Kafka accepts names of ASCII letters, digits,
+`.`, `_` and `-`, at most 249 characters; the broker's own error is the `cause`.
+
+Calling `connect()` again while an earlier call is still connecting returns the same
+attempt: both calls settle together, and a failed attempt rejects both with the same
+error and is not remembered. `disconnect()` during `connect()` waits for the attempt and
+then closes the connection.
+
+### Topics that do not exist yet {#kafka-missing-topics}
+
+`subscribe()` on a topic the broker does not have fails at once with an error that names
+the topic and `consumerOptions.allowAutoTopicCreation`. A consumer service that starts
+before the first publisher therefore fails in `bus.start()` unless the topics exist.
+Either create the topics before the services start, or set
+`consumerOptions.allowAutoTopicCreation: true` and let the broker create them: the broker
+must allow it (`auto.create.topics.enable`, on by default in Apache Kafka), and
+`subscribe()` then asks again for up to ten seconds, because the broker answers the first
+request for a missing topic with an error and creates the topic a moment later. If the
+topic does not appear, the error says that the broker did not create it. Wildcard
+patterns only match topics that exist and are not affected. Publishing to a missing topic
+creates it when the broker allows it, as before.
+
 ### Acknowledgement and redelivery {#kafka-ack-redelivery}
 
 Delivery is at-least-once. The adapter commits a partition offset only from the
@@ -288,6 +337,28 @@ The handler is never cancelled by the adapter: the EventBus only aborts `ctx.sig
 after `handlerTimeout` (default `30000` ms), and a handler that ignores that signal
 and never returns holds its place in the group indefinitely. Make long handlers
 honour `ctx.signal`.
+
+### Stopping a consumer {#kafka-stop-time}
+
+Stopping a consumer waits for the fetch request it has open. The broker holds that request
+until a message arrives or the client's `maxWaitTimeInMs` (5000 ms in KafkaJS 2.2.4,
+`consumer/index.js`, and the adapter does not change it) has passed, so an idle consumer
+needs up to five seconds to stop: the rest of the current wait. The time depends on where in
+that five-second cycle `unsubscribe()` or `bus.stop()` is called. In a run against Kafka
+4.2.0 on Node 26 the stop took 4.0 s, 2.0 s and 0.5 s when it was called 1.0 s, 3.0 s and
+4.5 s after the consumer started, and 4.7 s when called 0.3 s after the start. A consumer
+that is receiving messages stops as soon as the fetch in flight returns.
+
+The consumers of a bus stop at the same time, so the cost is that of the slowest one, not
+the sum (three consumers together: 2.8 s). Count up to five seconds into the time that
+`bus.stop()` and the `eventbus` shutdown hook add to a server's shutdown (see
+[graceful shutdown](/en/guide/server/graceful-shutdown#eventbus)) and into
+`terminationGracePeriodSeconds`.
+
+On Node 26 a process that uses the Kafka client also prints
+`TimeoutNegativeWarning: <large negative number> is a negative number. Timeout duration was set to 1.`
+It comes from the client's request queue (KafkaJS 2.2.4, `RequestQueue.scheduleCheckPendingRequests`),
+not from Connectum; the timer runs after 1 ms, as the message says.
 
 ### Start position {#kafka-start-position}
 

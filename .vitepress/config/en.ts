@@ -253,6 +253,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Signed tokens must carry exp', link: '/en/migration/token-expiration' },
                         { text: 'RPC telemetry attribute names', link: '/en/migration/otel-rpc-attributes' },
                         { text: 'Kafka adapter options', link: '/en/migration/kafka-adapter-options' },
+                        { text: 'Kafka adapter validation', link: '/en/migration/kafka-option-validation' },
                         { text: 'In-process calls on shutdown', link: '/en/migration/in-process-shutdown' },
                         { text: 'Event bus reception on shutdown', link: '/en/migration/events-reception-on-shutdown' },
                         { text: 'Logger bodies are opt-in', link: '/en/migration/logger-bodies' },
