@@ -65,7 +65,7 @@ The original failure stays on the server: as `cause` of the thrown `ConnectError
 
 `onError` is a reporting hook and cannot change the outcome of a call. It may be `async`; the interceptor does not wait for it. If it throws, or the promise it returns rejects, the client still receives the error from the table above and the process sees no unhandled rejection. The first failure of the callback is written once to `console.error`; later ones are dropped, because a sink that is down fails on every call.
 
-To send a message on purpose, throw a `ConnectError` or a `SanitizableError`. To send the original text of every failure, set `exposeErrorMessages: true`. The option is server-side, defaults to `false` and does not depend on `NODE_ENV`; use it only for trusted internal callers or while debugging:
+To send a message on purpose, throw a `ConnectError` or a `SanitizableError`. To send the original text of every failure (for a thrown value that is not an `Error`, its string form), set `exposeErrorMessages: true`. The option is server-side, defaults to `false` and does not depend on `NODE_ENV`; use it only for trusted internal callers or while debugging:
 
 ```typescript
 createDefaultInterceptors({ errorHandler: { exposeErrorMessages: true } });
@@ -242,7 +242,16 @@ A request that breaks a validation rule is a client error, not a failed dependen
 
 ### What the handler returns {#fallback-handler-result}
 
-The `handler` returns the response message of the method that failed: a message made with `create(OutputSchema, { ... })`, or a plain object with that message's fields, which the interceptor turns into one. The `{ items: [] }` above works for a method whose response has an `items` field. Any other value fails the call with a `TypeError` that names `createFallbackInterceptor` and the expected type: `undefined`, `null`, a string, an object with a field the type does not have, a field of the wrong type. Behind the error handler the client receives `Internal` with the text `internal error`, and `onError` and the console log show the full text.
+The `handler` returns the response message of the method that failed: a message made with `create(OutputSchema, { ... })`, or a plain object with that message's fields, which the interceptor turns into one. The `{ items: [] }` above works for a method whose response has an `items` field. A field of a oneof is set as `pick: { case: "a", value }`, under the name of the oneof.
+
+A plain object is checked field by field before the message is built, because `create()` alone drops unknown keys and coerces wrong values (a number in a string field becomes `"5"`). The first problem fails the call with a `TypeError` that names `createFallbackInterceptor`, the expected type and the path of the problem. Refused are:
+
+- `undefined`, `null`, a string, or an array instead of the object;
+- a key that is not a field of the type, in a nested object too, and the bare name of a oneof member;
+- a value of another kind than its field takes: a number in a string field, a non-boolean in a bool field, a string in an int32 field, a non-array in a repeated field, an enum name instead of its number, a wrong item in a list or map;
+- a number the encoder cannot write: a fraction or a value beyond the range in an int32, `NaN`.
+
+An enum number that the enum does not name is accepted. Behind the error handler the client receives `Internal` with the text `internal error`, and `onError` and the console log show the full text.
 
 ### Fallback response {#fallback-response}
 

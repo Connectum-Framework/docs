@@ -74,8 +74,8 @@ You need to act if you enable `fallback` in `createDefaultInterceptors()` or bui
 | Case | Before | Now |
 |---|---|---|
 | `fallback` enabled, a request breaks a validation rule | The caller got the fallback value as a successful response | The caller gets `INVALID_ARGUMENT`; neither the handler nor the fallback `handler` runs |
-| The fallback `handler` returns a plain object with the response fields (`{ items: [] }`) | On a server the call failed with a `serialize binary: ...` text; on a client transport the object came back as it was | The object is turned into the response message |
-| The `handler` returns `undefined`, `null`, a string, or an object with a field the response type does not have | The same serialization failure on a server; the value as it was on a client transport | `TypeError` naming `createFallbackInterceptor` and the expected type; behind the error handler the client gets `Internal: internal error` |
+| The fallback `handler` returns a plain object with the response fields (`{ items: [] }`) | On a server the call failed with a `serialize binary: ...` text | The object is turned into the response message |
+| The `handler` returns `undefined`, `null`, a string, or an object that does not fit the response type (an unknown key, a number in a string field, a non-array in a repeated field, ...) | `undefined` failed on a server with a `serialize binary: ...` text; the other values were not checked and were passed on as the response | `TypeError` naming `createFallbackInterceptor`, the expected type and the path of the problem; behind the error handler the client gets `Internal: internal error` |
 
 The default chain order is now `errorHandler, timeout, bulkhead, circuitBreaker, retry, validation, fallback, serializer`. It differs from before only when `fallback` is enabled.
 
