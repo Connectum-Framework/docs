@@ -20,7 +20,7 @@ flowchart TD
     Trust -->|"yes"| Subject{"Subject header present?"}
     Subject -->|"no"| E2["Unauthenticated:<br/>Missing subject header"]
     Subject -->|"yes"| Build["Build AuthContext from headerMapping"]
-    Build --> Strip2["Strip the mapped and trust headers"]
+    Build --> Strip2["Strip the mapped, trust and<br/>x-auth-* headers"]
     Strip2 --> Run["Run the handler with<br/>the AuthContext"]
 
     class E1 critical
@@ -99,10 +99,20 @@ If the header is missing or the value does not match any of the `expectedValues`
 
 ## Header Stripping
 
-On an admitted request, the interceptor deletes the mapped headers, the trust
-header, and any additional `stripHeaders`. It also deletes them on methods listed
-in `skipMethods`, even though authentication is skipped there. Failed trust or
+On an admitted request, the interceptor reads the identity from the mapped headers,
+then deletes the mapped headers, the trust header, any additional `stripHeaders`,
+and every standard `x-auth-*` identity header (`x-auth-subject`, `x-auth-type`,
+`x-auth-name`, `x-auth-roles`, `x-auth-scopes`, `x-auth-claims`), as the JWT,
+generic and session interceptors do. It also deletes them on methods listed in
+`skipMethods`, even though authentication is skipped there. Failed trust or
 subject checks stop the call before downstream interceptors run.
+
+A client-supplied `x-auth-*` header therefore never reaches the next hop, whether
+or not it is one of the mapped headers. This matters with `propagateHeaders`: it
+writes only the identity fields that have a value, so a forged `x-auth-roles`
+would otherwise survive for a user without roles. A gateway that maps the
+`x-auth-*` names itself (for example a service behind another Connectum service)
+still reads them, because the identity is read before the headers are deleted.
 
 With the default `propagateHeaders: false`, the deleted headers remain absent.
 Enabling `propagateHeaders` writes the verified identity back using the standard
@@ -158,7 +168,10 @@ Use a local test secret and call the protected method with both that marker and
 the mapped subject. Repeat with no marker, a wrong marker, and no subject; each
 must return `Code.Unauthenticated`. Supplying identity headers alone must not
 authenticate the caller. Inspect the headers seen by the handler to confirm the
-mapped and trust headers are absent with default propagation settings.
+mapped and trust headers are absent with default propagation settings. Send the
+same request with forged `x-auth-roles`, `x-auth-scopes`, `x-auth-name` and
+`x-auth-claims` headers for a user without those fields: the handler, and any
+service the headers are forwarded to, must not see them.
 
 If a client gateway interceptor is rejected, compare its fixed `x-auth-subject`
 and `x-auth-roles` names with the server's mapping. A trust header match does
