@@ -70,7 +70,7 @@ combination is rejected as described above.
 
 ### Start-up Errors
 
-When a file cannot be read or is not usable, `server.start()` rejects with an error that names the file by its resolved path and the setting the path came from: `tls.keyPath`, `tls.certPath`, `tls.dirPath`, `TLS_DIR_PATH`, or the default directory. The key and the certificate are parsed on their own and then together, so the message tells a file that is not PEM from a key that does not belong to the certificate (it names both files). The original error is available as `cause`; for a read failure `code` (for example `ENOENT`) and `path` are kept on the error.
+When a file cannot be read or is not usable, `server.start()` rejects with an error that names the file by its resolved path and the setting the path came from: `tls.keyPath`, `tls.certPath`, `tls.dirPath`, `TLS_DIR_PATH`, or the default directory. The files are handed to the server as they are; only when it refuses them are the key and the certificate parsed on their own and then together, with the `passphrase` and `ciphers` of `http2Options` the server used, so the message tells a file that is not PEM from a key that does not belong to the certificate (it names both files). For a file that the server refused, the error it threw is the `cause`; for a file that could not be read, the file system error is, and its `code` (for example `ENOENT`) and `path` are kept on the new error. A refusal that is not about the files (an invalid `ciphers` string, say) is reported as the server raised it.
 
 ```text
 TLS key file "/srv/app/bad.key" (from tls.keyPath) is not a usable PEM private key: error:1E08010C:DECODER routines::unsupported
@@ -90,7 +90,7 @@ the directory defaults.
 
 ### readTLSCertificates()
 
-Reads TLS key and certificate files. It only reads: a failure to read names the file and the setting, while the check that the content is a usable key and certificate runs when the server starts:
+Reads TLS key and certificate files. It only reads: a failure to read names the file and the setting; whether the content is a usable key and certificate is decided when the server starts:
 
 ```typescript
 import { readTLSCertificates } from '@connectum/core';
