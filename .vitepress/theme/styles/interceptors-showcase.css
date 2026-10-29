@@ -221,13 +221,6 @@
 .vp-doc .interceptors-error {
     color: var(--vp-c-danger-1);
 }
-.vp-doc .interceptors-showcase button:focus-visible,
-.vp-doc .interceptors-showcase select:focus-visible,
-.vp-doc .interceptors-showcase summary:focus-visible,
-.vp-doc .interceptors-showcase pre:focus-visible {
-    outline: 2px solid var(--vp-c-brand-1);
-    outline-offset: 3px;
-}
 @media (max-width: 639px) {
     .vp-doc .interceptors-workspace {
         grid-template-columns: minmax(0, 1fr);

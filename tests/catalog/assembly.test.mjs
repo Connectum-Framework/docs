@@ -60,10 +60,12 @@ test('only the catalog overview mounts the bespoke assembly illustration', () =>
 test('catalog layout keyboard focus replaces the selection stroke instead of adding an outer frame', () => {
     const css = read('.vitepress/theme/styles/catalog-assembly.css');
     assert.doesNotMatch(css, /\.assembly-picker label:focus-within/);
-    const focus = css.match(/\.assembly-picker label:has\(input:focus-visible\)\s*\{([^}]+)\}/)?.[1];
+    const shared = read('.vitepress/theme/styles/controls.css');
+    const focus = shared.match(/:root :is\(\.assembly-picker label,[^{}]+:has\(input:focus-visible\),[^{}]+\{([^}]+)\}/)?.[1];
     assert.ok(focus, 'The radio group needs a visible keyboard focus indicator');
     assert.match(focus, /outline: 2px solid/);
-    assert.match(focus, /outline-offset: -2px/);
+    assert.match(focus, /outline-offset: -1px/);
+    assert.match(focus, /border-color: transparent/);
     assert.match(focus, /box-shadow: none/);
-    assert.match(focus, /background: var\(--vp-c-brand-soft\)/);
+    assert.match(css, /\.assembly-picker label\.is-selected\s*\{[^}]*border-color: var\(--vp-c-brand-1\)/);
 });

@@ -72,12 +72,6 @@
     height: 16px;
     accent-color: var(--vp-c-brand-1);
 }
-.vp-doc .assembly-picker label:has(input:focus-visible) {
-    outline: 2px solid var(--vp-c-brand-1);
-    outline-offset: -2px;
-    box-shadow: none;
-    background: var(--vp-c-brand-soft);
-}
 .vp-doc .assembly-explanation {
     margin: 14px 0 20px;
     font-size: 14px;
@@ -445,12 +439,6 @@
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-}
-.vp-doc .assembly-controls button:focus-visible,
-.vp-doc .catalog-assembly summary:focus-visible,
-.vp-doc .catalog-assembly pre:focus-visible {
-    outline: 2px solid var(--vp-c-brand-1);
-    outline-offset: 3px;
 }
 .vp-doc .catalog-assembly details {
     margin: 0;

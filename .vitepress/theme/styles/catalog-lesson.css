@@ -24,10 +24,6 @@
 .catalog-walkthrough *::after {
     box-sizing: border-box;
 }
-.catalog-walkthrough :is(button, input, summary, pre):focus-visible {
-    outline: 3px solid var(--catalog-accent);
-    outline-offset: 3px;
-}
 .catalog-scene-picker {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

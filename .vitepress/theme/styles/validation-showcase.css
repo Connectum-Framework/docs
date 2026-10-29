@@ -239,13 +239,6 @@
     margin: 20px 0 8px;
     font-size: 14px;
 }
-.vp-doc .validation-showcase input:focus-visible,
-.vp-doc .validation-showcase button:focus-visible,
-.vp-doc .validation-showcase summary:focus-visible,
-.vp-doc .validation-showcase pre:focus-visible {
-    outline: 2px solid var(--vp-c-brand-1);
-    outline-offset: 3px;
-}
 @media (max-width: 639px) {
     .vp-doc .validation-workspace {
         grid-template-columns: minmax(0, 1fr);

@@ -44,10 +44,6 @@
     cursor: not-allowed;
     opacity: 0.5;
 }
-.service-builder :is(button, a, input, select, summary, pre):focus-visible {
-    outline: 3px solid var(--vp-c-brand-1);
-    outline-offset: 3px;
-}
 .builder-back {
     font-size: 13px;
 }

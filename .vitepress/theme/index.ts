@@ -10,6 +10,7 @@ import RuntimeCompositionDiagram from './components/RuntimeCompositionDiagram.vu
 import Layout from './Layout.vue';
 import './custom.css';
 import './styles/guide-overview.css';
+import './styles/controls.css';
 
 /**
  * Mermaid 11 keeps only dagre in its core; every other layout engine arrives as a

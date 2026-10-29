@@ -20,8 +20,3 @@
     display: inline-block;
     min-height: 24px;
 }
-.vp-doc .guide-sections summary:focus-visible,
-.vp-doc .guide-sections a:focus-visible {
-    outline: 2px solid var(--vp-c-brand-1);
-    outline-offset: 4px;
-}
