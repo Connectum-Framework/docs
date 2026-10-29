@@ -100,10 +100,11 @@ Cancellation does not roll them back. Retry only idempotent operations.
 The signal a unary call hands downstream follows the caller's signal while the call
 runs, and the caller's own abort reason reaches the handler. It does not stay linked
 afterwards, so many calls can share one long-lived signal, such as an
-application-wide shutdown signal, without piling up memory. An abort that reaches a
-signal-unaware handler only after that handler has returned (over HTTP, the server can
-learn of the cancellation that late) no longer changes the signal that call held. An
-opened stream, with `skipStreaming: false`, keeps following the caller's signal for the
+application-wide shutdown signal, without piling up memory. While the handler is still
+running, the caller's abort reaches it. An abort that reaches a signal-unaware handler
+only after that handler has returned (over HTTP, the server can learn of the
+cancellation that late) no longer changes the signal that finished call held: the call
+is over, so there is no running work left to cancel. An opened stream, with `skipStreaming: false`, keeps following the caller's signal for the
 life of the stream.
 
 Timeout and retry skip streaming calls by default. With `skipStreaming: false`,
