@@ -5,18 +5,44 @@ docType: concept
 outline: deep
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/testing.html?raw';
+</script>
+
 # Testing
 
 Connectum supports two complementary testing layers. Use TypeScript tests for fast handler and transport feedback, then scenario tests for the deployed protocol boundary.
 
+<figure class="technical-diagram" data-guide-overview="testing" aria-label="Choose the testing boundary">
+<GuideOverview :source="overview" />
+<figcaption>Local tests bypass network, certificate and proxy configuration. Run success and failure scenarios against the real listener; plaintext gRPC and HTTP/1.1 require separate listener modes.</figcaption>
+</figure>
+
+For a server with the example Inventory implementation registered:
+
+```typescript
+import assert from 'node:assert/strict';
+import { createLocalClient } from '@connectum/testing';
+
+const client = createLocalClient(server, InventoryService);
+const stock = await client.checkStock({ sku: 'A-1' });
+assert.equal(stock.units, 7);
+```
+
 ## Choose a layer
 
+Use [testing helpers](/en/packages/testing) for fast TypeScript feedback, then
+[runn](/en/guide/testing/runn) for the live service boundary.
+
+::: details Match a specific test task to a tool
 | Question | Recommended surface |
 |---|---|
 | Does a handler or interceptor return the expected value/error? | [`@connectum/testing`](/en/packages/testing) with an in-process server/client |
 | Do service-catalog calls resolve without a network listener? | [In-process transport](/en/guide/production/in-process-transport) |
 | Does a running service expose correct gRPC, Connect, health, auth, TLS, or streaming behavior? | [runn](/en/guide/testing/runn) |
 | Do you need Go plugins or JUnit-oriented scenario output? | [scenarigo](/en/guide/testing/scenarigo) |
+:::
 
 ## Recommended path
 

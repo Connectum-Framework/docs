@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "allowImportingTsExtensions": true,
+        "noEmit": true,
+        "strict": true,
+        "verbatimModuleSyntax": true,
+        "erasableSyntaxOnly": true,
+        "skipLibCheck": true
+    },
+    "include": ["src/**/*.ts", "gen/**/*.ts"]
+}

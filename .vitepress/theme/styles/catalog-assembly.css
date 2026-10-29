@@ -1,0 +1,749 @@
+.vp-doc .catalog-assembly {
+    --assembly-orders: #365ac1;
+    --assembly-inventory: #087660;
+    --assembly-duration: 16s;
+    --assembly-play-state: paused;
+    --assembly-fall-name: none;
+    --assembly-sheet-name: none;
+    --assembly-parcel-name: none;
+    --assembly-ink-name: none;
+    --assembly-emit-name: none;
+    --assembly-receive-name: none;
+    --assembly-empty-opacity: 0;
+    --assembly-arrival-shift: -4px;
+    margin: 28px 0;
+    padding: 20px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 16px;
+    background: var(--vp-c-bg-soft);
+    overflow-wrap: anywhere;
+}
+.dark .vp-doc .catalog-assembly {
+    --assembly-orders: #a2b6ff;
+    --assembly-inventory: #70dbc0;
+}
+.vp-doc .catalog-assembly [data-contract="orders"] {
+    --contract-color: var(--assembly-orders);
+}
+.vp-doc .catalog-assembly [data-contract="inventory"] {
+    --contract-color: var(--assembly-inventory);
+}
+.vp-doc .catalog-assembly :where(:not(pre)) > code {
+    font-size: 12px;
+    white-space: normal;
+    background: none;
+    padding: 0;
+}
+.vp-doc .assembly-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.vp-doc .assembly-picker legend {
+    margin-bottom: 12px;
+    color: var(--vp-c-text-1);
+    font-size: 16px;
+    font-weight: 700;
+}
+.vp-doc .assembly-picker label {
+    display: flex;
+    flex: 1 1 130px;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 8px;
+    background: var(--vp-c-bg);
+    font-size: 13px;
+    line-height: 1.4;
+    cursor: pointer;
+}
+.vp-doc .assembly-picker label.is-selected {
+    border-color: var(--vp-c-brand-1);
+    box-shadow: inset 0 0 0 1px var(--vp-c-brand-1);
+}
+.vp-doc .assembly-picker input {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--vp-c-brand-1);
+}
+.vp-doc .assembly-explanation {
+    margin: 14px 0 20px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+.vp-doc .assembly-diagram {
+    margin: 0;
+}
+.vp-doc .assembly-boundary {
+    margin-bottom: 12px;
+    color: var(--vp-c-text-2);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+.vp-doc .assembly-builds {
+    display: grid;
+    gap: 14px;
+}
+.vp-doc .assembly-builds--split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.vp-doc .catalog-assembly .assembly-mobile-origin {
+    display: none;
+}
+.vp-doc .assembly-build {
+    min-width: 0;
+    padding: 12px;
+    border: 1px dashed var(--vp-c-divider);
+    border-radius: 10px;
+    background: var(--vp-c-bg);
+}
+.vp-doc .assembly-root {
+    display: block;
+    margin-bottom: 12px;
+    color: var(--vp-c-text-2);
+    font-weight: 600;
+}
+.vp-doc .assembly-files {
+    display: grid;
+    gap: 10px;
+}
+@media (min-width: 600px) {
+    .vp-doc .catalog-assembly[data-layout="folder"] .assembly-files {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+.vp-doc .assembly-file {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    min-width: 0;
+    padding: 10px;
+    border-left: 3px solid var(--contract-color);
+    border-radius: 4px;
+    background: var(--vp-c-bg-soft);
+}
+.vp-doc .assembly-file-icon {
+    flex-shrink: 0;
+    color: var(--contract-color);
+    font-family: var(--vp-font-family-mono);
+    font-size: 18px;
+}
+.vp-doc .catalog-assembly small {
+    display: block;
+    color: var(--vp-c-text-2);
+    font-size: 12px;
+    line-height: 1.6;
+}
+.vp-doc .assembly-file small {
+    margin-top: 2px;
+}
+.vp-doc .assembly-generator {
+    position: relative;
+    padding: 32px 0 14px;
+    text-align: center;
+}
+.vp-doc .assembly-generator::after {
+    position: absolute;
+    bottom: 2px;
+    left: calc(50% - 3px);
+    width: 6px;
+    height: 10px;
+    border-bottom: 1px solid var(--vp-c-text-2);
+    border-right: 1px solid var(--vp-c-text-2);
+    content: "";
+    transform: rotate(45deg);
+}
+.vp-doc .assembly-generator > code {
+    display: inline-block;
+    padding: 0 12px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 6px;
+    font-weight: 600;
+}
+.vp-doc .assembly-fall {
+    position: absolute;
+    top: 0;
+    left: 25%;
+    display: flex;
+    justify-content: space-evenly;
+    width: 50%;
+    height: 30px;
+    border-left: 1px solid var(--vp-c-divider);
+    border-right: 1px solid var(--vp-c-divider);
+    overflow: hidden;
+}
+.vp-doc .assembly-fall i {
+    display: grid;
+    width: 22px;
+    height: 26px;
+    place-items: center;
+    border: 1px solid var(--contract-color);
+    border-radius: 3px;
+    background: var(--vp-c-bg);
+    color: var(--contract-color);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    opacity: 0;
+    animation: var(--assembly-fall-name) var(--assembly-duration) linear infinite var(--assembly-play-state);
+}
+.vp-doc .assembly-generated {
+    padding: 12px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 6px;
+    box-shadow: 3px 3px 0 var(--vp-c-bg-soft);
+}
+.vp-doc .assembly-generated > strong {
+    font-family: var(--vp-font-family-mono);
+    font-size: 12px;
+}
+.vp-doc .assembly-part-entries {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0;
+}
+.vp-doc .assembly-part-entries > span {
+    position: relative;
+    padding: 2px 6px;
+    border: 1px solid var(--contract-color);
+    border-radius: 4px;
+    color: var(--contract-color);
+    font-family: var(--vp-font-family-mono);
+    font-size: 12px;
+    animation: var(--assembly-emit-name) var(--assembly-duration) linear infinite var(--assembly-play-state);
+}
+.vp-doc .assembly-part-entries > span::after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--contract-color);
+    content: "";
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: var(--assembly-ink-name) var(--assembly-duration) linear infinite var(--assembly-play-state);
+}
+.vp-doc .assembly-delivery {
+    position: relative;
+    margin-top: 10px;
+    padding: 38px 0 0;
+    border-top: 1px dashed var(--vp-c-divider);
+    text-align: center;
+}
+.vp-doc .assembly-parcel {
+    position: absolute;
+    top: 0;
+    left: calc(50% - 18px);
+    width: 36px;
+    border: 1px solid var(--contract-color);
+    border-radius: 3px;
+    color: var(--contract-color);
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0;
+    animation: var(--assembly-parcel-name) var(--assembly-duration) linear infinite var(--assembly-play-state);
+}
+.vp-doc .assembly-join {
+    position: relative;
+    display: flex;
+    min-height: 104px;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 10px;
+}
+.vp-doc .assembly-join::before {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 72px;
+    background: var(--vp-c-divider);
+    content: "";
+}
+.vp-doc .assembly-join--merge::before {
+    display: none;
+}
+.vp-doc .assembly-join-operation {
+    z-index: 1;
+    padding: 3px 8px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 6px;
+    background: var(--vp-c-bg);
+    font-size: 11px;
+    text-align: center;
+}
+.vp-doc .assembly-join-operation > code {
+    font-size: 11px;
+}
+.vp-doc .assembly-join-operation small {
+    font-size: 11px;
+}
+.vp-doc .assembly-join-lines {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 68px;
+    overflow: visible;
+    fill: none;
+    stroke-width: 1.5;
+}
+.vp-doc .assembly-orders-path {
+    stroke: var(--assembly-orders);
+}
+.vp-doc .assembly-inventory-path {
+    stroke: var(--assembly-inventory);
+}
+.vp-doc .assembly-merge-sheet {
+    position: absolute;
+    top: 0;
+    left: calc(50% - 10px);
+    display: grid;
+    width: 20px;
+    height: 24px;
+    place-items: center;
+    border: 1px solid var(--contract-color);
+    border-radius: 3px;
+    background: var(--vp-c-bg);
+    color: var(--contract-color);
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0;
+    animation: var(--assembly-sheet-name) var(--assembly-duration) linear infinite var(--assembly-play-state);
+}
+.vp-doc .assembly-merge-sheet[data-contract="orders"] {
+    --sheet-origin: -25cqw;
+    --sheet-destination: -12px;
+}
+.vp-doc .assembly-merge-sheet[data-contract="inventory"] {
+    --sheet-origin: 25cqw;
+    --sheet-destination: 12px;
+}
+.vp-doc .assembly-diagram {
+    container-type: inline-size;
+}
+.vp-doc .assembly-result {
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 10px;
+    background: var(--vp-c-bg);
+    overflow: hidden;
+}
+.vp-doc .assembly-result-title {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--vp-c-divider);
+    font-size: 14px;
+}
+.vp-doc .assembly-result-title > span {
+    display: block;
+    color: var(--vp-c-text-2);
+    font-size: 12px;
+}
+.vp-doc .assembly-outputs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.vp-doc .assembly-output {
+    min-width: 0;
+    padding: 14px;
+}
+.vp-doc .assembly-output--types {
+    border-left: 1px dashed var(--vp-c-divider);
+}
+.vp-doc .assembly-output-label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--vp-c-text-2);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.vp-doc .assembly-result-entry {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin: 12px 0;
+    color: var(--contract-color);
+    animation: var(--assembly-receive-name) var(--assembly-duration) linear infinite var(--assembly-play-state);
+}
+.vp-doc .assembly-result-entry > code {
+    color: var(--contract-color);
+}
+.vp-doc .assembly-result-entry code > span {
+    color: var(--vp-c-text-2);
+}
+.vp-doc .assembly-entry-mark {
+    display: grid;
+    flex-shrink: 0;
+    width: 20px;
+    height: 24px;
+    place-items: center;
+    border: 1px solid var(--contract-color);
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.vp-doc .assembly-type-entry {
+    margin: 12px 0;
+    padding-left: 8px;
+    border-left: 2px solid var(--contract-color);
+    font-size: 12px;
+    line-height: 1.6;
+    animation: var(--assembly-receive-name) var(--assembly-duration) linear infinite var(--assembly-play-state);
+}
+.vp-doc .assembly-type-entry > strong {
+    color: var(--contract-color);
+}
+.vp-doc .assembly-diagram figcaption {
+    margin-top: 12px;
+    color: var(--vp-c-text-2);
+    font-size: 13px;
+    line-height: 1.6;
+}
+.vp-doc .assembly-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 16px 0;
+    color: var(--vp-c-text-2);
+    font-size: 12px;
+    line-height: 1.6;
+}
+/* a saved pause must not reopen the lesson with permanently empty output files. */
+.vp-doc .catalog-assembly[data-playback="paused"] {
+    --assembly-empty-opacity: 1;
+    --assembly-arrival-shift: 0;
+}
+.vp-doc .assembly-controls button {
+    flex-shrink: 0;
+    min-height: 36px;
+    padding: 4px 10px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 6px;
+    color: var(--vp-c-text-1);
+    background: var(--vp-c-bg);
+    cursor: pointer;
+}
+.vp-doc .catalog-assembly summary {
+    min-height: 36px;
+    padding: 6px 0;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.vp-doc .catalog-assembly details {
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--vp-c-divider);
+}
+.vp-doc .catalog-assembly details p,
+.vp-doc .catalog-assembly details li {
+    font-size: 13px;
+    line-height: 1.6;
+}
+.vp-doc .catalog-assembly div[class*="language-"] {
+    margin: 12px 0;
+}
+.vp-doc .assembly-descriptor {
+    margin: 16px 0;
+    padding-left: 12px;
+    border-left: 3px solid var(--contract-color);
+    font-size: 13px;
+}
+.vp-doc .assembly-descriptor > strong {
+    color: var(--contract-color);
+}
+.vp-doc .assembly-descriptor dl {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 6px 10px;
+    margin: 12px 0;
+}
+.vp-doc .assembly-descriptor dt {
+    color: var(--vp-c-text-2);
+}
+.vp-doc .assembly-descriptor dd {
+    margin: 0;
+}
+
+/* motion copies contract tokens into generated files, then joins catalog parts.
+   all explanatory artifacts stay readable when the decorative copies disappear. */
+@media (prefers-reduced-motion: no-preference) {
+    .vp-doc .catalog-assembly[data-playback="running"],
+    .vp-doc .catalog-assembly[data-playback="paused"],
+    .vp-doc .catalog-assembly[data-playback="waiting"] {
+        --assembly-fall-name: assembly-generate;
+        --assembly-sheet-name: assembly-import;
+        --assembly-ink-name: assembly-write;
+        --assembly-emit-name: assembly-emit;
+        --assembly-receive-name: assembly-receive;
+    }
+    .vp-doc .catalog-assembly[data-layout="packages"] {
+        --assembly-sheet-name: assembly-merge;
+    }
+    .vp-doc .catalog-assembly[data-layout="repositories"] {
+        --assembly-sheet-name: assembly-delivered-merge;
+        --assembly-parcel-name: assembly-deliver;
+        --assembly-receive-name: assembly-delivered-receive;
+    }
+    .vp-doc .catalog-assembly[data-playback="running"] {
+        --assembly-play-state: running;
+    }
+}
+@keyframes assembly-generate {
+    0%,
+    3% {
+        opacity: 0;
+        transform: translateY(-26px);
+    }
+    6% {
+        opacity: 1;
+        transform: translateY(-26px);
+    }
+    14% {
+        opacity: 1;
+        transform: translateY(32px);
+    }
+    17%,
+    100% {
+        opacity: 0;
+        transform: translateY(42px);
+    }
+}
+@keyframes assembly-write {
+    0%,
+    15% {
+        transform: scaleX(0);
+    }
+    22%,
+    96% {
+        transform: scaleX(1);
+    }
+    98%,
+    100% {
+        transform: scaleX(0);
+    }
+}
+@keyframes assembly-emit {
+    0%,
+    15% {
+        opacity: var(--assembly-empty-opacity);
+    }
+    22%,
+    98% {
+        opacity: 1;
+    }
+    100% {
+        opacity: var(--assembly-empty-opacity);
+    }
+}
+@keyframes assembly-receive {
+    0%,
+    48% {
+        opacity: var(--assembly-empty-opacity);
+        transform: translateY(var(--assembly-arrival-shift));
+    }
+    54%,
+    98% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: var(--assembly-empty-opacity);
+        transform: translateY(0);
+    }
+}
+@keyframes assembly-delivered-receive {
+    0%,
+    62% {
+        opacity: var(--assembly-empty-opacity);
+        transform: translateY(var(--assembly-arrival-shift));
+    }
+    68%,
+    98% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: var(--assembly-empty-opacity);
+        transform: translateY(0);
+    }
+}
+@keyframes assembly-import {
+    0%,
+    24% {
+        opacity: 0;
+        transform: translate(var(--sheet-destination), 0);
+    }
+    28% {
+        opacity: 1;
+        transform: translate(var(--sheet-destination), 0);
+    }
+    48% {
+        opacity: 1;
+        transform: translate(var(--sheet-destination), 64px);
+    }
+    54%,
+    100% {
+        opacity: 0;
+        transform: translate(var(--sheet-destination), 78px);
+    }
+}
+@keyframes assembly-merge {
+    0%,
+    24% {
+        opacity: 0;
+        transform: translate(var(--sheet-origin), 0);
+    }
+    28% {
+        opacity: 1;
+        transform: translate(var(--sheet-origin), 0);
+    }
+    35% {
+        opacity: 1;
+        transform: translate(var(--sheet-origin), 16px);
+    }
+    43% {
+        opacity: 1;
+        transform: translate(var(--sheet-destination), 28px);
+    }
+    48% {
+        opacity: 1;
+        transform: translate(var(--sheet-destination), 56px);
+    }
+    54%,
+    100% {
+        opacity: 0;
+        transform: translate(var(--sheet-destination), 68px);
+    }
+}
+@keyframes assembly-deliver {
+    0%,
+    22% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+    24% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    36% {
+        opacity: 1;
+        transform: translateY(14px);
+    }
+    40%,
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+@keyframes assembly-delivered-merge {
+    0%,
+    40% {
+        opacity: 0;
+        transform: translate(var(--sheet-origin), 0);
+    }
+    44% {
+        opacity: 1;
+        transform: translate(var(--sheet-origin), 0);
+    }
+    48% {
+        opacity: 1;
+        transform: translate(var(--sheet-origin), 16px);
+    }
+    57% {
+        opacity: 1;
+        transform: translate(var(--sheet-destination), 28px);
+    }
+    62% {
+        opacity: 1;
+        transform: translate(var(--sheet-destination), 56px);
+    }
+    68%,
+    100% {
+        opacity: 0;
+        transform: translate(var(--sheet-destination), 68px);
+    }
+}
+@media (max-width: 599px) {
+    .vp-doc .catalog-assembly {
+        padding: 14px;
+    }
+    .vp-doc .assembly-build {
+        padding: 8px;
+    }
+    .vp-doc .assembly-builds--split {
+        gap: 8px;
+    }
+    .vp-doc .assembly-builds--split .assembly-file {
+        padding: 6px;
+    }
+    .vp-doc .assembly-builds--split .assembly-file-icon {
+        display: none;
+    }
+    .vp-doc .assembly-builds--split .assembly-file-prefix {
+        display: none;
+    }
+    .vp-doc .assembly-generated {
+        padding: 6px;
+    }
+    .vp-doc .assembly-part-entries > span {
+        padding: 2px 3px;
+    }
+    .vp-doc .assembly-outputs {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .vp-doc .assembly-output--types {
+        border-left: 0;
+        border-top: 1px dashed var(--vp-c-divider);
+    }
+    .vp-doc .assembly-controls {
+        flex-wrap: wrap;
+    }
+}
+@media (max-width: 480px) {
+    .vp-doc .assembly-builds--split {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+    .vp-doc .assembly-builds--split .assembly-file-prefix {
+        display: inline;
+    }
+    .vp-doc .catalog-assembly .assembly-mobile-origin {
+        display: block;
+        margin-top: 14px;
+        text-align: center;
+    }
+    .vp-doc .assembly-join-lines {
+        display: none;
+    }
+    .vp-doc .assembly-join--merge::before {
+        display: block;
+        left: calc(50% - 12px);
+        background: var(--assembly-orders);
+    }
+    .vp-doc .assembly-join--merge::after {
+        position: absolute;
+        top: 0;
+        left: calc(50% + 12px);
+        width: 1px;
+        height: 72px;
+        background: var(--assembly-inventory);
+        content: "";
+    }
+    .vp-doc .assembly-merge-sheet[data-contract="orders"] {
+        --sheet-origin: -12px;
+    }
+    .vp-doc .assembly-merge-sheet[data-contract="inventory"] {
+        --sheet-origin: 12px;
+    }
+}

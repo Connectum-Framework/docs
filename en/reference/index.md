@@ -19,6 +19,10 @@ or migration.
 ## Find the right surface
 
 <div class="reference-routes">
+    <a href="/en/reference/guarantees">
+        <strong>Guarantees and limits</strong>
+        <span>What contract typing and configured runtime behavior provide, with prerequisites and source/test evidence.</span>
+    </a>
     <a href="/en/api/">
         <strong>Exact API symbols</strong>
         <span>Generated TypeDoc for functions, interfaces, types, fields, and defaults.</span>
@@ -27,7 +31,7 @@ or migration.
         <strong>Module selection</strong>
         <span>Purpose, installation, key entry points, and learning routes for every package.</span>
     </a>
-    <a href="/en/guide/runtime-compatibility">
+    <a href="/en/guide/runtime-compatibility-details">
         <strong>Runtime compatibility</strong>
         <span>Canonical Node.js and Bun support matrix, limitations, and verification status.</span>
     </a>
@@ -39,6 +43,9 @@ or migration.
 
 ## Common exact lookups
 
+- [Service catalog configuration and behavior](/en/reference/service-catalog)
+- [Resolver configuration, caching and endpoint hints](/en/guide/service-communication/resolver-configuration)
+- [Transport support and recorded measurements](/en/guide/production/transport-matrix-details)
 - [`CreateServerOptions`](/en/api/@connectum/core/types/interfaces/CreateServerOptions)
 - [`JwtAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/JwtAuthInterceptorOptions)
 - [`DefaultInterceptorOptions`](/en/api/@connectum/interceptors/defaults/interfaces/DefaultInterceptorOptions)

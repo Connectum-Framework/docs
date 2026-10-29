@@ -5,12 +5,36 @@ docType: concept
 outline: deep
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/service-calls.html?raw';
+</script>
+
 # Service Communication
 
-Start from the interaction contract, not the transport library. A caller that needs an immediate answer has different failure and coupling requirements from a consumer reacting asynchronously to an event.
+Orders needs an answer about stock before replying to a customer. It calls
+Inventory's contract and waits for the result. That is the synchronous path.
+
+<figure class="technical-diagram" data-guide-overview="service-calls" aria-label="Known contracts, selected routes and outgoing policy">
+<GuideOverview :source="overview" />
+<figcaption>The catalog supplies types and descriptors, without deployment addresses. Outgoing policy wraps each catalog call once, on local and remote routes. Locally mounted targets bypass the remote resolver.</figcaption>
+</figure>
+
+Inside the Orders handler, with generated contract types in scope:
+
+```typescript
+const stock = await ctx.call(
+  'shop.v1.InventoryService/CheckStock',
+  create(CheckStockRequestSchema, { sku: req.sku }),
+);
+```
 
 ## Choose the mechanism
 
+Learn [how the catalog knows the method](/en/guide/service-communication/service-catalog),
+then [how the server chooses its route](/en/guide/service-communication/resolvers).
+
+::: details Patterns, client policy and other communication choices
 | Need | Canonical route |
 |---|---|
 | Decide between request/response, streaming, and events | [Choosing a mechanism](/en/guide/service-communication/choosing-a-mechanism) |
@@ -20,6 +44,7 @@ Start from the interaction contract, not the transport library. A caller that ne
 | Model fan-out, partial failure, or server streaming | [Communication patterns](/en/guide/service-communication/patterns) |
 | Keep calls in the same process with transport parity | [In-process transport](/en/guide/production/in-process-transport) |
 | React asynchronously through a broker | [Events](/en/guide/events) |
+:::
 
 ## Synchronous baseline
 

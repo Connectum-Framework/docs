@@ -88,6 +88,8 @@ server.on('error', (err) => {
 
 ### Event Ordering
 
+The `error` events described below are emitted only when an `error` listener is registered.
+
 Events always fire in the transition order shown in the state diagram: `start`, `ready`, `stopping`, then `stop`.
 
 `error` may fire at any point. If startup fails before the server is listening, or a `start` listener throws, the sequence is `start → error`. If a `ready` listener throws, `ready` has already been emitted, so the sequence is `start → ready → error`. If the shutdown itself fails (closing the transport or a shutdown hook), it is `stopping → error → stop`: a failed shutdown still ends with `stop`, and `stop()` rejects with the original error, or with an `AggregateError` when the transport close and a hook both failed (see [Graceful Shutdown](/en/guide/server/graceful-shutdown)). A `stopping` or `stop` listener that throws is not a failed shutdown: it is reported through `error` and `stop()` still resolves.
@@ -101,7 +103,15 @@ What happens when a listener throws depends on the phase:
 | `start`, `ready` | Is a startup failure. `start()` rejects with that exception, `error` is emitted, the port, the `autoShutdown` signal handlers and the event bus are released, and the server ends up `stopped`. |
 | `stopping`, `stop` | Is isolated. The remaining listeners of the event still run, the shutdown always reaches `stopped`, and the exception is reported through `error`. `stop()` does not reject because of it. |
 
-If no `error` listener is registered, an exception from a `stopping` or `stop` listener is printed with `console.error` instead of being swallowed. A failed shutdown started by a signal (`autoShutdown`) is reported once through `error` and never becomes an unhandled rejection.
+Register an `error` listener before `start()` to observe startup and shutdown
+failures. Without one, exceptions from `stopping` or `stop` listeners are printed
+with `console.error`, while failures of `start()` or `stop()` are carried by their
+rejected promises.
+
+For signal-triggered shutdown (`autoShutdown`), a failure is reported once through
+`error` only when a listener is registered. The signal handler catches the
+rejection, so it does not become an unhandled rejection; without a listener, a
+shutdown-hook failure can go unreported.
 
 Only synchronous exceptions are covered. An `async` listener that rejects is not awaited by the emitter; handle its errors inside the listener.
 
@@ -162,6 +172,10 @@ server.on('ready', () => {
 
 server.on('stopping', () => {
   healthcheckManager.update(ServingStatus.NOT_SERVING);
+});
+
+server.on('error', (err) => {
+  console.error('Server error:', err);
 });
 
 await server.start();

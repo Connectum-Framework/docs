@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>One process and its extension seams</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>One process and its extension seams</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="One process and its extension seams; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 600" role="img" aria-labelledby="architecture-title architecture-desc" data-overview="architecture" data-visual-type="architecture">
+<title id="architecture-title">One process and its extension seams</title>
+<desc id="architecture-desc">One Connectum process composes shared RPC dispatch, protocol HTTP fallbacks and optional catalog, EventBus and telemetry capabilities while deployment infrastructure and remote systems remain outside.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="architecture-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<text class="go-heading" x="24" y="32" text-anchor="start">Compose one process with createServer()</text>
+<text class="go-detail" x="24" y="56" text-anchor="start">Build time: schemas, descriptors and optional generated catalog</text>
+<g class="go-zone"><rect x="24" y="80" width="424" height="496" rx="8"/><text class="go-heading" x="40" y="104" text-anchor="start">One process / createServer()</text></g>
+<text class="go-tag" x="48" y="124" text-anchor="start">register · start · drain · stop</text>
+<text class="go-heading" x="488" y="104" text-anchor="start">Outside runtime</text>
+<path class="go-edge" data-from="architecture-adapter" data-to="architecture-rpc" data-points="144,216 144,248" d="M144 216 L144 248" marker-end="url(#architecture-arrow)"/>
+<path class="go-edge" data-from="architecture-adapter" data-to="architecture-http" data-points="356,216 356,248" d="M356 216 L356 248" marker-end="url(#architecture-arrow)"/>
+<path class="go-edge" data-from="architecture-rpc" data-to="architecture-catalog" data-points="152,368 152,400" d="M152 368 L152 400" marker-end="url(#architecture-arrow)"/>
+<path class="go-edge go-dashed" data-from="architecture-catalog" data-to="architecture-rpc" data-points="48,444 36,444 36,308 48,308" d="M48 444 L42 444 Q36 444 36 438 L36 314 Q36 308 42 308 L48 308" marker-end="url(#architecture-arrow)"/>
+<path class="go-edge" data-from="architecture-catalog" data-to="architecture-remote" data-points="256,444 272,444 272,388 488,388" d="M256 444 L264 444 Q272 444 272 436 L272 396 Q272 388 280 388 L488 388" marker-end="url(#architecture-arrow)"/>
+<path class="go-edge go-dashed" data-from="architecture-bus" data-to="architecture-backends" data-points="424,444 456,444 456,480 488,480" d="M424 444 L448 444 Q456 444 456 452 L456 472 Q456 480 464 480 L488 480" marker-end="url(#architecture-arrow)"/>
+<path class="go-edge go-dashed" data-from="architecture-otel" data-to="architecture-backends" data-points="424,532 488,532" d="M424 532 L488 532" marker-end="url(#architecture-arrow)"/>
+<g data-node="architecture-adapter" data-box="48 144 376 72" data-topics="/en/guide/production/architecture-details"><rect class="go-surface" x="48" y="144" width="376" height="72" rx="6"/><text class="go-name" x="64" y="166" text-anchor="start">Network adapter + routes</text><text class="go-detail" x="64" y="186" text-anchor="start">TransportManager owns HTTP</text><text class="go-detail" x="64" y="206" text-anchor="start">service / protocol RPC routes</text></g>
+<g data-node="architecture-rpc" data-box="48 248 208 120" data-topics="/en/guide/production/architecture-details" data-focal=""><rect class="go-surface" x="48" y="248" width="208" height="120" rx="6"/><text class="go-name" x="64" y="274" text-anchor="start">Shared RPC</text><text class="go-name" x="64" y="294" text-anchor="start">boundary</text><text class="go-detail" x="64" y="314" text-anchor="start">network + local callers</text><text class="go-detail" x="64" y="334" text-anchor="start">admission + interceptors</text><text class="go-detail" x="64" y="354" text-anchor="start">typed handler + Context</text></g>
+<g data-node="architecture-http" data-box="292 248 132 120" data-topics="/en/guide/production/architecture-details"><rect class="go-surface" x="292" y="248" width="132" height="120" rx="6"/><text class="go-name" x="308" y="274" text-anchor="start">HTTP</text><text class="go-name" x="308" y="294" text-anchor="start">fallback</text><text class="go-detail" x="308" y="314" text-anchor="start">/healthz</text><text class="go-detail" x="308" y="334" text-anchor="start">outside RPC</text><text class="go-detail" x="308" y="354" text-anchor="start">interceptors</text></g>
+<g data-node="architecture-catalog" data-box="48 400 208 88" data-topics="/en/guide/production/architecture-details" data-focal=""><rect class="go-surface" x="48" y="400" width="208" height="88" rx="6"/><text class="go-name" x="64" y="430" text-anchor="start">Optional catalog</text><text class="go-detail" x="64" y="450" text-anchor="start">ctx.call / ctx.stream</text><text class="go-detail" x="64" y="470" text-anchor="start">local or remoteResolver</text></g>
+<g data-node="architecture-bus" data-box="292 400 132 88" data-topics="/en/guide/production/architecture-details"><rect class="go-surface" x="292" y="400" width="132" height="88" rx="6"/><text class="go-name" x="308" y="430" text-anchor="start">EventBus</text><text class="go-detail" x="308" y="450" text-anchor="start">supplied bus</text><text class="go-detail" x="308" y="470" text-anchor="start">start / stop</text></g>
+<g data-node="architecture-otel" data-box="48 504 376 56" data-topics="/en/guide/production/architecture-details"><rect class="go-surface" x="48" y="504" width="376" height="56" rx="6"/><text class="go-name" x="64" y="528" text-anchor="start">Opt-in telemetry</text><text class="go-detail" x="64" y="548" text-anchor="start">provider + server / client interceptors</text></g>
+<g data-node="architecture-infrastructure" data-box="488 136 176 120" data-topics="/en/guide/production/architecture-details"><rect class="go-surface" x="488" y="136" width="176" height="120" rx="6"/><text class="go-name" x="504" y="172" text-anchor="start">Infrastructure</text><text class="go-detail" x="504" y="192" text-anchor="start">gateway / mesh</text><text class="go-detail" x="504" y="212" text-anchor="start">scheduler / registry</text><text class="go-detail" x="504" y="232" text-anchor="start">outside process</text></g>
+<g data-node="architecture-remote" data-box="488 296 176 104" data-topics="/en/guide/production/architecture-details"><rect class="go-surface" x="488" y="296" width="176" height="104" rx="6"/><text class="go-name" x="504" y="334" text-anchor="start">Remote RPC</text><text class="go-detail" x="504" y="354" text-anchor="start">resolver transport</text><text class="go-detail" x="504" y="374" text-anchor="start">crosses process</text></g>
+<g data-node="architecture-backends" data-box="488 440 176 120" data-topics="/en/guide/production/architecture-details"><rect class="go-surface" x="488" y="440" width="176" height="120" rx="6"/><text class="go-name" x="504" y="476" text-anchor="start">Broker /</text><text class="go-name" x="504" y="496" text-anchor="start">OTLP backend</text><text class="go-detail" x="504" y="516" text-anchor="start">explicit integration</text><text class="go-detail" x="504" y="536" text-anchor="start">outside process</text></g>
+</svg></section>
+<figcaption>createServer() owns one process. Catalog, EventBus and OTel are explicit additions; the bus can stay in memory. Protocol HTTP fallbacks sit outside the RPC chain. External infrastructure is selected independently.</figcaption></figure></main></body></html>

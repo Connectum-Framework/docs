@@ -1,0 +1,13 @@
+version: v2
+plugins:
+  - local: protoc-gen-es
+    out: gen
+    opt:
+      - target=ts
+      - import_extension=.ts
+  - local: protoc-gen-connectum-catalog
+    out: gen
+    strategy: all
+    opt:
+      - target=ts
+      - import_extension=.ts

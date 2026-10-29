@@ -148,20 +148,21 @@ function createRateLimitInterceptor(options: {
 ```
 
 ::: warning
-When `errorHandler` wraps your interceptor, it normalizes thrown errors to
-`ConnectError`. Existing Connect errors preserve their code; other errors whose
-numeric `code` is an integer from 1 to 16 (the Connect failure codes) use that value,
-and errors without one, with a non-numeric `code`, or with a number outside 1..16
-(`0`, `17`, a fraction, `NaN`, an HTTP status, a system errno) use `Code.Internal`.
-Errors implementing `SanitizableError` use their explicit client message and code.
+When `errorHandler` wraps your interceptor, it normalizes failures thrown or
+rejected by `next(req)`, not later response-stream iteration or earlier request gates.
+A `ConnectError` is unchanged; a `SanitizableError` sends its explicit client
+message and code.
 
-The text follows its own rule. A `ConnectError` keeps its text, details and metadata,
-and a `SanitizableError` sends its `clientMessage`. For anything else the client
-receives `internal error` (code `Internal`) or an empty text (when the error carried
-a numeric `code`); the original stays on the server as `cause` of the thrown
-`ConnectError`, as `info.error` of `onError`, and in the console log. Set
-`exposeErrorMessages: true` on the error handler to send the original text instead.
-See [What a client sees when a handler fails](/en/guide/interceptors/built-in#what-a-client-sees-when-a-handler-fails).
+For other failures, integer numeric codes 1..16 are accepted; missing,
+non-numeric or invalid codes become `Internal`. Connect-ES additionally maps
+`Error` instances named `AbortError` or `TimeoutError` to `Canceled`.
+With the default message hiding, the resulting code determines the text:
+`Internal` (including numeric `13`) carries `internal error`; other codes carry
+an empty text. `exposeErrorMessages: true` exposes the text of these other failures.
+
+Cause retention and logging are conditional, not universal. See
+[What a client sees when a handler fails](/en/guide/interceptors/built-in#what-a-client-sees-when-a-handler-fails)
+for the exact rules.
 :::
 
 ## Composing with Built-in Interceptors
@@ -231,6 +232,11 @@ const server = createServer({
 
 ## Example: Audit Log Interceptor
 
+This example audits unary RPCs only and bypasses streaming calls. For a stream,
+`await next(req)` opens the response; it does not establish successful completion.
+Observing stream completion and failure requires wrapping response iteration,
+as the built-in [request logger](/en/guide/interceptors/built-in#request-logging) does.
+
 ```typescript
 import type { Interceptor } from '@connectrpc/connect';
 
@@ -240,6 +246,10 @@ function createAuditLogInterceptor(options: {
   const { logger = (e) => console.log('[audit]', JSON.stringify(e)) } = options;
 
   return (next) => async (req) => {
+    if (req.stream) {
+      return next(req);
+    }
+
     const start = performance.now();
     try {
       const response = await next(req);

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Connection trust and request admission</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Connection trust and request admission</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Connection trust and request admission; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 568" role="img" aria-labelledby="security-title security-desc" data-overview="security" data-visual-type="architecture">
+<title id="security-title">Connection trust and request admission</title>
+<desc id="security-desc">TLS and optional enforced mTLS protect the configured connection, while RPC request gates and message limits run before application interceptors and do not guard raw HTTP fallback handlers.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="security-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<path class="go-edge" data-from="connection" data-to="gate" data-points="216,144 216,208" d="M216 144 L216 208" marker-end="url(#security-arrow)"/>
+<path class="go-edge" data-from="connection" data-to="http" data-points="552,144 552,208" d="M552 144 L552 208" marker-end="url(#security-arrow)"/>
+<path class="go-edge" data-from="gate" data-to="limit" data-points="216,280 216,328" d="M216 280 L216 328" marker-end="url(#security-arrow)"/>
+<path class="go-edge" data-from="limit" data-to="application" data-points="216,400 216,448" d="M216 400 L216 448" marker-end="url(#security-arrow)"/>
+<g data-node="connection" data-box="40 40 608 104" data-topics="/en/guide/security/tls /en/guide/security/mtls"><rect class="go-surface" x="40" y="40" width="608" height="104" rx="6"/><text class="go-name" x="56" y="78" text-anchor="start">TLS: verify the server; optional mTLS: verify the client</text><text class="go-detail" x="56" y="98" text-anchor="start">Certificate + key · trusted CA · deployment-managed rotation</text><text class="go-detail" x="56" y="118" text-anchor="start">Enforced mTLS needs both requestCert and rejectUnauthorized</text></g>
+<g data-node="gate" data-box="40 208 352 72" data-topics="/en/guide/security/request-admission" data-focal=""><rect class="go-surface" x="40" y="208" width="352" height="72" rx="6"/><text class="go-name" x="56" y="240" text-anchor="start">Request gate</text><text class="go-detail" x="56" y="260" text-anchor="start">Headers only · before body and interceptors</text></g>
+<g data-node="limit" data-box="40 328 352 72" data-topics="/en/guide/security/request-admission"><rect class="go-surface" x="40" y="328" width="352" height="72" rx="6"/><text class="go-name" x="56" y="360" text-anchor="start">Message-size limit</text><text class="go-detail" x="56" y="380" text-anchor="start">readMaxBytes · each RPC message</text></g>
+<g data-node="application" data-box="40 448 352 72" data-topics=""><rect class="go-surface" x="40" y="448" width="352" height="72" rx="6"/><text class="go-name" x="56" y="480" text-anchor="start">Application interceptors and handler</text><text class="go-detail" x="56" y="500" text-anchor="start">Authentication · authorization · validation</text></g>
+<g data-node="http" data-box="456 208 192 112" data-topics="/en/guide/security/request-admission"><rect class="go-surface" x="456" y="208" width="192" height="112" rx="6"/><text class="go-name" x="472" y="250" text-anchor="start">Raw HTTP</text><text class="go-detail" x="472" y="270" text-anchor="start">Explicit fallback</text><text class="go-detail" x="472" y="290" text-anchor="start">Own admission policy</text></g>
+<text class="go-detail" x="456" y="380" text-anchor="start">RPC admission also applies</text><text class="go-detail" x="456" y="400" text-anchor="start">to local clients and to</text><text class="go-detail" x="456" y="420" text-anchor="start">Health / Reflection RPCs.</text>
+<text class="go-detail" x="40" y="552" text-anchor="start">Gate errors must already be client-safe; gate auditing is application-owned.</text>
+</svg></section>
+<figcaption>Connection trust, pre-body admission and application policy protect different boundaries. Raw HTTP handlers, including HTTP health aliases, bypass RPC admission.</figcaption></figure></main></body></html>

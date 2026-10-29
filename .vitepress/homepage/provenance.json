@@ -1,0 +1,16 @@
+{
+  "revision": "5488016f560134bb",
+  "shikiVersion": "2.5.0",
+  "inputs": {
+    "example/proto/greeter.proto": "646257c35ea4fbb3563887fd3183428cccdd1d307ebb8d890ccb94581849c4e6",
+    "example/src/greeter.ts": "b7474e25382dd128ff9e3fc9c8009e7728d3c0c67f9c7875f8765ed04d1b5017",
+    "example/src/server.ts": "4be02cbf18e816d73586eaed288a3de2c017ca0281726719ce1a13d7e8fbbf87",
+    "example/requests/connect.sh": "e2589c2d4f0e4c9a08d5f5449e18060d0f93a189b15f15abe094f7c2da2c1397",
+    "example/requests/grpc.sh": "4058f21206d0959fd54f51195d326a1f1b2feb988b48bcec7815ee3360d26571",
+    "evidence.json": "f07d9d6fa581b906c6799cb34224e531924ea515e646604c2ab00070cfa02d16",
+    "colors.mjs": "563664153d05dc0be24b412b58d7cb8ade7838eea340bc78505772425d173441"
+  },
+  "generatorSha256": "eeeeb4d58854f31ab906befae91657bfaa22d3910d222cef227c2749ed3bd9e1",
+  "artifactSha256": "8f5e60a7ff17ec62276f9199000ea8b911290ad31d57d584bac90a85e140f0c2",
+  "execution": "Illustration of captured Connect/gRPC results; no service runs in the browser."
+}

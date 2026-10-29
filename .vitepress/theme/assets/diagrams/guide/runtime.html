@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Runtime requirements and feature coverage</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Runtime requirements and feature coverage</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Runtime requirements and feature coverage; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 512" role="img" aria-labelledby="runtime-title runtime-desc" data-overview="runtime" data-visual-type="tree">
+<title id="runtime-title">Runtime requirements and feature coverage</title>
+<desc id="runtime-desc">Requirements depend on whether the application executes compiled JavaScript, native TypeScript or Bun, while client transport, testing helpers, CLI and telemetry each need their own recorded coverage.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="runtime-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<path class="go-edge" data-from="artifact" data-to="compiled" data-points="184,104 184,136 132,136 132,176" d="M184 104 L184 128 Q184 136 176 136 L140 136 Q132 136 132 144 L132 176"/>
+<path class="go-edge" data-from="artifact" data-to="native" data-points="344,104 344,176" d="M344 104 L344 176"/>
+<path class="go-edge" data-from="artifact" data-to="bun" data-points="504,104 504,136 556,136 556,176" d="M504 104 L504 128 Q504 136 512 136 L548 136 Q556 136 556 144 L556 176"/>
+<g data-node="artifact" data-box="40 40 608 64" data-topics="/en/guide/runtime-compatibility-details" data-focal=""><rect class="go-surface" x="40" y="40" width="608" height="64" rx="6"/><text class="go-name" x="56" y="68" text-anchor="start">What executes the application?</text><text class="go-detail" x="56" y="88" text-anchor="start">Choose the artifact first; then check the modules and transport you use.</text></g>
+<g data-node="compiled" data-box="40 176 184 104" data-topics="/en/guide/runtime-compatibility-details"><rect class="go-surface" x="40" y="176" width="184" height="104" rx="6"/><text class="go-name" x="56" y="214" text-anchor="start">Compiled JS / tsx</text><text class="go-detail" x="56" y="234" text-anchor="start">Node ≥22.13.0</text><text class="go-detail" x="56" y="254" text-anchor="start">Published package floor</text></g>
+<g data-node="native" data-box="252 176 184 104" data-topics="/en/guide/runtime-compatibility-details"><rect class="go-surface" x="252" y="176" width="184" height="104" rx="6"/><text class="go-name" x="268" y="214" text-anchor="start">Native .ts</text><text class="go-detail" x="268" y="234" text-anchor="start">Node ≥25.2.0</text><text class="go-detail" x="268" y="254" text-anchor="start">Erasable source</text></g>
+<g data-node="bun" data-box="464 176 184 104" data-topics="/en/guide/runtime-compatibility-details"><rect class="go-surface" x="464" y="176" width="184" height="104" rx="6"/><text class="go-name" x="480" y="214" text-anchor="start">Bun</text><text class="go-detail" x="480" y="234" text-anchor="start">Check feature limits</text><text class="go-detail" x="480" y="254" text-anchor="start">HTTP/2 client boundary</text></g>
+<g data-node="coverage" data-box="40 336 608 136" data-topics="/en/guide/runtime-compatibility-details"><rect class="go-surface" x="40" y="336" width="608" height="136" rx="6"/><text class="go-name" x="56" y="380" text-anchor="start">Coverage is feature-specific</text><text class="go-detail" x="56" y="400" text-anchor="start">Transport / streaming · local testing versus Node-only parity</text><text class="go-detail" x="56" y="420" text-anchor="start">CLI: Node exercised · Bun telemetry: not validated</text><text class="go-detail" x="56" y="440" text-anchor="start">Exact versions and untested combinations belong to the coverage table.</text></g>
+</svg></section>
+<figcaption>A package engine floor, an application execution requirement and a tested integration are separate claims. Contributor and CI environments have their own requirements.</figcaption></figure></main></body></html>

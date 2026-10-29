@@ -1,304 +1,42 @@
 ---
 title: In-Process Transport
-description: Understand in-memory service calls, their parity guarantees, and their transport-specific limits.
+description: Call a service on the same server without a socket, while retaining the configured RPC boundary.
 docType: concept
+outline: 2
 ---
+
+<script setup>
+import GuideOverview from '../../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../../.vitepress/theme/assets/diagrams/guide/in-process.html?raw';
+</script>
 
 # In-Process Transport
 
-The **in-process transport** invokes services registered on the same `Server`
-instance in memory, without HTTP/2, TLS, or sockets. It uses the configured server
-interceptors and request admission, with the parity guarantees and limits below.
-Messages cross an in-memory Connect protocol boundary in binary protobuf form,
-so the handler receives its own decoded copy of each request.
+Orders and Inventory can run on one `Server`. A local client reaches Inventory
+without opening a socket, but still goes through the router and configured
+server middleware. It is not a direct call to the handler function.
 
-::: tip Full API Reference
-TypeScript API documentation: [@connectum/core API Reference](/en/api/@connectum/core/).
-:::
+<figure class="technical-diagram" data-guide-overview="in-process" aria-label="Local calls retain the application boundary">
+<GuideOverview :source="overview" />
+<figcaption>Local and HTTP clients can coexist. server.client() selects a local service or configured remoteResolver; local tests do not establish wire, TLS or proxy guarantees. The documented 1.3 stop-abort and parked-yield fixes are not yet published.</figcaption>
+</figure>
 
-## Overview
+## A local call
 
-A network call between services in the same process still requires a listener,
-protocol framing, and message encoding; a TLS connection also performs a handshake.
-The in-process transport removes the network connection while retaining protobuf
-encoding and decoding.
-
-The in-process transport reuses the `ConnectRouter` that `createServer()` has already built and dispatches client calls directly to the registered handlers. The client API is identical to a remote ConnectRPC client (`createClient(Service, transport)`), so the same caller code works whether the callee is local or remote.
-
-A call reaches the same router by either path. Everything after the router is shared:
-
-```mermaid
-flowchart TD
-    Net["Network client"] --> Wire["HTTP/2 and TLS"]
-    Wire --> Strip["Server drops a forged<br/>transport marker header"]
-    Local["server.client(), localClient(),<br/>createLocalTransport()"] --> Mark["Client interceptors:<br/>marker, yours, stream binding"]
-    Mark --> Codec["Binary protobuf codec,<br/>headers cloned"]
-    Strip --> Router["Server router"]
-    Codec --> Router
-    Router --> Gate["requestGate and readMaxBytes"]
-    Gate --> Chain["Server interceptors, in configured order"]
-    Chain --> Handler["Service handler"]
-
-    class Router accent
-```
-
-Server interceptors, request admission, and the shutdown signal sit after the
-router, so neither path can skip them. The client interceptors you pass to
-`createLocalTransport()` run on the in-process side; an HTTP caller configures
-its own.
-
-**When to use:**
-
-- **Modular monolith** — multiple bounded contexts hosted in a single process call each other over typed RPC contracts without the network overhead.
-- **Backend-for-Frontend (BFF)** — a BFF process embeds upstream services for low-latency composition.
-- **Tests** — exercise the full server-side interceptor chain (validation, auth, OTEL) without binding ports.
-- **Polyglot deployment** — a single client codebase that automatically routes to a local registered service or falls back to a remote HTTP transport based on the runtime topology.
-
-**When NOT to use:**
-
-- **Cross-process calls** — use `createGrpcTransport` / `createConnectTransport` over HTTP/2. The in-process transport is, by design, single-process only.
-- **HTTP-level middleware** — CORS, compression, and similar wire-level concerns do not apply because no data leaves the process.
-
-## Quick Start
+With `inventory` registered on `server` and `InventoryService` generated:
 
 ```typescript
-import { createServer } from '@connectum/core';
-import { GreeterService } from './gen/greeter_pb.js';
-import { greeterRoutes } from './greeter.js';
-
-const server = createServer({
-  services: [greeterRoutes],
-});
-
-// Auto-routing: resolved via the in-process service registry,
-// no server.start() required.
-const greeter = server.client(GreeterService);
-
-const { message } = await greeter.sayHello({ name: 'world' });
-console.log(message); // "Hello, world!"
+const client = server.client(InventoryService);
+const stock = await client.checkStock({ sku: 'A-1' });
 ```
 
-The call executes the interceptors configured on this server. The minimal example
-does not configure validation, authorization, or telemetry. Add those modules
-explicitly; configure client telemetry on `createLocalTransport()` when both
-CLIENT and SERVER spans are required. Their topology can differ across transports,
-as described in [Observability](#observability).
+A local call needs no `server.start()`. Calling a non-local service needs a
+configured resolver. Local tests do not prove TLS, HTTP framing or proxy behavior.
 
-## API Reference
+## Go deeper
 
-### `server.client(service, options?)`
+- [API choices, parity guarantees, cancellation and security limits](/en/guide/production/in-process-transport-details).
+- [Watch local and remote routing](/en/guide/service-communication/resolvers).
+- [Test the deployed boundary too](/en/guide/testing).
 
-Auto-routing client factory. Resolves the transport via the server's internal **service registry**:
-
-- If the service is registered on this `Server` (`server.hasService(service)` returns `true`) — returns an in-process client that dispatches directly to the registered handler and runs the server's `outgoingInterceptors` (unlike `server.localClient()`, which stays plain).
-- Otherwise, if a `remoteResolver` is configured on the server — returns a standard ConnectRPC client over the `Transport` the resolver maps the service to, wrapped in the server's `outgoingInterceptors`. A resolver that returns `null` for the service yields `ConnectError(Code.Unavailable)` at client construction — the resolver runs inside `server.client()`, before any RPC is invoked.
-- Otherwise (not local and no `remoteResolver` configured) — throws `CatalogConfigError` immediately at client construction (fail-fast), naming the service `typeName`.
-
-```typescript
-function client<T extends DescService>(
-  service: T,
-  options?: ServerClientOptions, // { endpoint?: string }
-): Client<T>;
-```
-
-This is the recommended entry point: the same call site works for both in-process and remote deployments without modification. Remote routing is configured once on the server via `remoteResolver`, not per call site — see [Remote Resolvers](/en/guide/service-communication/resolvers).
-
-```typescript
-import { createServer, singleTransportResolver } from '@connectum/core';
-import { createGrpcTransport } from '@connectrpc/connect-node';
-
-const server = createServer({
-  services: [inventoryService],
-  // Services not mounted locally are reached through this resolver.
-  remoteResolver: singleTransportResolver(
-    createGrpcTransport({ baseUrl: process.env.UPSTREAM_URL!, httpVersion: '2' }),
-  ),
-});
-
-// Local if registered on `server`, remote via the resolver otherwise.
-const inventory = server.client(InventoryService);
-```
-
-### `server.localClient(service)`
-
-Low-level helper that always returns an in-process client. Requires the service to be registered on the server — otherwise the first call throws `ConnectError(unimplemented)`.
-
-```typescript
-function localClient<T extends DescService>(service: T): Client<T>;
-```
-
-### `createLocalTransport(server, options?)`
-
-Lowest-level primitive. Returns a ConnectRPC `Transport` bound to the server's router. Use this directly when you need multiple clients with different client-side interceptor stacks over the same server.
-
-```typescript
-function createLocalTransport(
-  server: Server,
-  options?: { interceptors?: Interceptor[] },
-): Transport;
-```
-
-The returned transport behaves like `createRouterTransport` from `@connectrpc/connect` but is wired into the Connectum server lifecycle and the same router that `server.start()` would expose over HTTP.
-
-### `server.hasService(desc)`
-
-Synchronous registry lookup by `desc.typeName`.
-
-```typescript
-function hasService(desc: DescService): boolean;
-```
-
-Useful for conditional routing in user code (e.g. when you build a custom transport selector).
-
-## Behavioural Parity Guarantees
-
-The cross-transport suite uses `transportParityTest` from `@connectum/testing/parity`.
-The driver compares each scenario over `createLocalTransport(server)` and
-`createGrpcTransport({ baseUrl })`, normalizing telemetry transport labels and
-random span identifiers. It also normalizes one read-limit diagnostic: a
-`ResourceExhausted` message may include the observed byte count on HTTP and omit
-it locally, for the same configured `readMaxBytes`. Other reported error fields
-are compared literally.
-
-Guaranteed identical between in-process and HTTP:
-
-- **Server-side interceptor chain** — same interceptors, same order. There is no API to bypass interceptors on the local path.
-- **Validation** — proto-declared `buf.validate` / `protovalidate` rules reject invalid requests with `ConnectError(invalid_argument)` and identical violation details on both transports.
-- **Authorization** — proto-declared authz rules and `@connectum/auth` interceptors apply uniformly. Missing/invalid tokens produce `ConnectError(unauthenticated)`; insufficient scope produces `ConnectError(permission_denied)` with identical metadata.
-- **Error mapping** — `ConnectError` (`code`, `message`, `metadata`, `details`) round-trips identically. With the default error handler configured, an error without a numeric code becomes `Code.Internal` on both paths.
-- **Streaming** — unary, server-stream, client-stream, and bidi RPCs preserve message order. In the upcoming 1.3.0 release, cancellation also resumes a streaming handler parked at `yield` on both transports so its `finally` block can release resources. **Version 1.3.0 is not yet published to npm.** Earlier releases abort `context.signal`, but do not resume a parked in-process generator; over HTTP/2 the handler also remains parked on some tested runtime versions. Leaving a `for await` loop with `break` is not a cancellation on either path: pass an `AbortSignal` and abort it to end the call.
-- **Headers / metadata** — `Headers` objects (including `authorization` and `@connectum/auth` serialized auth headers) round-trip in both directions. Headers are cloned at the boundary to prevent cross-side mutation.
-- **OpenTelemetry tracing and metrics** — see [Observability](#observability) below.
-
-## Observability
-
-`@connectum/otel` instruments the in-process path through the same hooks as HTTP:
-
-- **Client span**: when a client interceptor is configured, `SpanKind.CLIENT`, named by the fully qualified method (`acme.v1.Greeter/SayHello`), with base attributes including `rpc.system.name="connectrpc"` and `rpc.method` (the same string), plus `connectum.transport="in-process"`. `rpc.response.status_code` is `OK` after a successful unary call and the Connect error code name after a `ConnectError` (which also sets `error.type`).
-- **Server span**: `SpanKind.SERVER` with the same attribute set. On the in-process path the server handler runs in the **same async context** as the client call, so the server span is established as a **child of the client span**: the parent comes from the active context (propagated directly in memory, no header round-trip), while a **Link** to the client span is also recorded from the extracted remote context. This is the in-process behaviour under the default `trustRemote: false`. On the HTTP path no async context is shared, so the same default yields a **root span with only the Link** (no parent) — pass `trustRemote: true` to `createOtelInterceptor` to make the server span adopt the extracted context as its parent on both paths, aligning them. The request stream of a client-streaming or bidirectional call is advanced in the caller's context, below the client-side interceptors, not in the handler's, so the caller's generator never runs under the server span.
-- **Stream events**: with `recordMessages: true`, `rpc.message` events (optional, off by default) record `rpc.message.type` as `SENT` or `RECEIVED`, as on HTTP.
-- **Metrics**: the configured interceptors emit `rpc.client.call.duration`, `rpc.server.call.duration`, `rpc.client.request.size`, `rpc.client.response.size`, `rpc.server.request.size`, and `rpc.server.response.size` histograms. Errors add attributes to those measurements, rather than separate counters. The transport label is `transport=in-process` versus `transport=http`. Size estimation calls a message's `toBinary()` method when available and otherwise records zero; ordinary protobuf-es v2 messages do not provide that method. Streaming call-size histograms also record zero, so these are not wire-byte measurements.
-
-Review transport-label filters and span-parent assumptions when migrating dashboards
-or alerts from HTTP to in-process calls.
-
-## Limitations
-
-By design, the in-process transport bypasses HTTP-wire concerns:
-
-- **No HTTP-level middleware** — CORS, compression, HTTP/2 flow control, and similar wire features do not apply because no bytes leave the process. Connect-level admission does apply: a server's `requestGate` and `readMaxBytes` reject in-process requests exactly as they reject HTTP ones — see [Request admission](/en/guide/security/request-admission).
-- **No cross-process / IPC** — for cross-process communication (Unix sockets, separate hosts, worker_threads) use HTTP transports.
-- **Streaming back-pressure** is provided by `AsyncIterable` semantics and is best-effort rather than HTTP/2 flow control. For very high-throughput streaming, prefer HTTP/2.
-- **Messages are serialized, not shared** — the transport encodes each message to binary protobuf and decodes it on the other side, so the handler and the caller never share a message object. You pay the encode/decode cost, but not the network. `Headers` are cloned at the boundary.
-- **Shutdown does not wait for in-process calls** — in the upcoming 1.3.0 release, `server.stop()` aborts `context.signal` of in-flight in-process calls as it does for HTTP calls. **Version 1.3.0 is not yet published to npm.** The shutdown timeout and `forceCloseOnTimeout` act on connections, and an in-process call has none: `stop()` neither waits for it nor kills it. A handler that ignores the signal keeps running. See [Graceful shutdown](/en/guide/server/graceful-shutdown).
-
-## Security Considerations
-
-Two transport-specific values are visible to interceptors. Neither is a security signal:
-
-- **`req.url` is synthetic.** For an in-process call, interceptors see `req.url` as `https://in-memory/<service>/<method>` — for example `https://in-memory/greeter.v1.GreeterService/SayHello`. The origin is set by the ConnectRPC router transport, not by a network peer. Do not parse `req.url` (host, scheme, or path) for authorization or other policy decisions; use `req.service.typeName` and `req.method.name`, which are identical on both transports.
-- **The transport marker is telemetry-only.** The `connectum.transport` span attribute, the `transport` metric label, and the logger's [`includeTransport` tag](/en/guide/interceptors/built-in#request-logging) all come from a framework-internal request marker. The server strips a forged marker from inbound HTTP requests, but the marker is still not an authentication mechanism: do not rely on it to grant or deny access, or to skip checks for "local" callers. The in-process path already runs the full server-side interceptor chain, so authorization applies to it without special cases.
-
-## Coexistence with HTTP
-
-A single `Server` instance can simultaneously serve HTTP clients (after `server.start()`) and in-process clients (available immediately after `createServer()`). Both paths go through the same router and the same interceptor chain, so an interceptor observes both kinds of calls uniformly.
-
-```typescript
-const server = createServer({ services: [routes] });
-
-// In-process client works immediately, no socket bound.
-const local = server.client(MyService);
-await local.doWork({ /* ... */ });
-
-// Bind the configured network transport for external clients.
-await server.start();
-
-// HTTP and in-process clients can be used concurrently.
-```
-
-If you do not call `server.start()`, no port is bound and `server.address` remains `null` — useful for tests and embedded use cases.
-
-## Polyglot Deployment Pattern
-
-The auto-routing `server.client()` enables a single caller codebase that works in both monolithic and distributed deployments.
-
-Remote routing is decided once, when the server is created, by the `remoteResolver`. The call sites never change between topologies.
-
-```typescript
-// shared/server.ts — same call sites in every deployment topology
-import { createServer, singleTransportResolver } from '@connectum/core';
-import { createGrpcTransport } from '@connectrpc/connect-node';
-
-export function buildServer(env: { upstreamUrl?: string }) {
-  return createServer({
-    // Register only the services this process owns; the rest are remote.
-    services: ownedServices,
-    // Services not mounted locally are routed through the resolver.
-    // Omit `remoteResolver` for a pure monolith that hosts everything.
-    remoteResolver: env.upstreamUrl
-      ? singleTransportResolver(
-          createGrpcTransport({ baseUrl: env.upstreamUrl, httpVersion: '2' }),
-        )
-      : undefined,
-  });
-}
-
-// shared/clients.ts — identical in every topology
-export function buildClients(server: Server) {
-  return {
-    inventory: server.client(InventoryService),
-    pricing: server.client(PricingService),
-  };
-}
-```
-
-- **Monolith deployment**: register `InventoryService` and `PricingService` on the same `server` (no `remoteResolver` needed). Both clients route locally.
-- **Distributed deployment**: register only the services owned by this process and configure a `remoteResolver`. Others route remotely through the resolver. No change at the call site.
-- **Hybrid migration**: extract one service at a time. The client side never changes.
-
-If a service is not registered locally and no `remoteResolver` is configured, `server.client()` throws `CatalogConfigError` at construction — a fail-fast signal that deployment topology is misconfigured. A configured resolver that returns `null` for the service surfaces as `ConnectError(Code.Unavailable)` instead — also at construction, since the resolver runs inside `server.client()` before any RPC is invoked.
-
-For the full set of resolver factories (`singleTransportResolver`, `mapResolver`, `dnsResolver`, `perServiceEnvResolver`) see [Remote Resolvers](/en/guide/service-communication/resolvers).
-
-## Testing
-
-`@connectum/testing` ships dedicated helpers for in-process testing:
-
-- **`createLocalClient(server, service)`** — concise client for unit and integration tests without binding ports.
-- **`transportParityTest(name, options)`** — driver that runs a single declarative scenario against both `createGrpcTransport({ baseUrl })` and `createLocalTransport(server)` and structurally diffs the observable outcome (response payload, headers, `ConnectError` fields, OTEL spans modulo `connectum.transport`, metrics modulo `transport` label). Any divergence fails the test.
-- **In-memory OTEL collectors** — `SpanExporter` and `MetricReader` helpers used by the parity driver for assertion on tracing and metrics output.
-
-Use the parity driver to compare custom interceptors and proto-declared rules across
-transports for each scenario you test:
-
-```typescript
-import { ConnectError, createClient } from '@connectrpc/connect';
-import { createDefaultInterceptors } from '@connectum/interceptors';
-import { transportParityTest } from '@connectum/testing/parity';
-
-transportParityTest('greeter.sayHello rejects empty name', {
-  services: [greeterRoutes],
-  interceptors: createDefaultInterceptors(),
-  scenario: async ({ transport }) => {
-    const client = createClient(GreeterService, transport);
-    try {
-      return { response: await client.sayHello({ name: '' }) };
-    } catch (err) {
-      const e = ConnectError.from(err);
-      return { error: { code: e.code, message: e.message } };
-    }
-  },
-  // `compare` is optional; omitted here, the default structural diff asserts
-  // both transports produce the same reported fields after documented normalization.
-});
-```
-
-See [@connectum/testing](/en/packages/testing) for the full API.
-
-## See Also
-
-- [@connectum/core](/en/packages/core) — module overview and generated API routes
-- [@connectum/otel](/en/packages/otel) — `connectum.transport` attribute and `transport` metric label
-- [@connectum/testing](/en/packages/testing) — `createLocalClient`, `transportParityTest`
-- [Connectum Runtime Architecture](/en/guide/production/architecture)
-- [API Reference: @connectum/core](/en/api/@connectum/core/)
+<GuideSections route="/en/guide/production/in-process-transport" />

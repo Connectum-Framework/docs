@@ -1,5 +1,6 @@
 node_modules/
 .vitepress/cache/
+.vitepress/.temp/
 .vitepress/dist/
 *.log
 .DS_Store
@@ -7,3 +8,9 @@ node_modules/
 .vscode/
 .indexing-lock.json
 .tmp/
+.playwright-cli/
+.vitepress/catalog/example/gen/
+.vitepress/validation/example/gen/
+.vitepress/interceptors/example/gen/
+.vitepress/openapi/base/connectum/
+.vitepress/homepage/example/gen/

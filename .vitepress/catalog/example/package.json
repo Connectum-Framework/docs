@@ -1,0 +1,27 @@
+{
+    "name": "catalog-walkthrough",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "generate": "buf generate",
+        "start": "node --import tsx src/server.ts",
+        "typecheck": "tsc --noEmit"
+    },
+    "engines": {
+        "node": ">=22.13.0"
+    },
+    "dependencies": {
+        "@connectum/core": "1.2.0",
+        "@bufbuild/protobuf": "2.16.0",
+        "@connectrpc/connect": "2.2.0",
+        "@connectrpc/connect-node": "2.2.0"
+    },
+    "devDependencies": {
+        "@bufbuild/buf": "1.72.0",
+        "@bufbuild/protoc-gen-es": "2.16.0",
+        "@connectum/protoc-gen-catalog": "1.2.0",
+        "@types/node": "^22.13.0",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3"
+    }
+}

@@ -1,0 +1,30 @@
+{
+  "status": 200,
+  "request": {
+    "name": "Alice"
+  },
+  "response": {
+    "message": "Hello, Alice!"
+  },
+  "calls": {
+    "connect": {
+      "command": "curl --http2-prior-knowledge -fsS \\\n  localhost:5000/greeter.v1.GreeterService/SayHello \\\n  -H 'Content-Type: application/json' -d '{\"name\":\"Alice\"}'",
+      "stdout": "{\"message\":\"Hello, Alice!\"}",
+      "response": {
+        "message": "Hello, Alice!"
+      },
+      "status": 200
+    },
+    "grpc": {
+      "command": "grpcurl -plaintext -import-path proto -proto greeter.proto \\\n  -d '{\"name\":\"Alice\"}' \\\n  localhost:5000 greeter.v1.GreeterService/SayHello",
+      "stdout": "{\n  \"message\": \"Hello, Alice!\"\n}\n",
+      "response": {
+        "message": "Hello, Alice!"
+      }
+    }
+  },
+  "protocol": "Connect and gRPC over plaintext HTTP/2",
+  "sourceRevision": "f1456162e51a1f225f8f0d8c2fb7653eb1181aca",
+  "bufVersion": "1.75.0",
+  "grpcurlVersion": "grpcurl v1.9.4"
+}
