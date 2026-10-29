@@ -35,7 +35,9 @@ const orders = defineService(OrdersService, {
 
 `defineService` returns a `ServiceDefinition` (`{ descriptor, register }`) that you pass to `createServer({ services })`.
 
-`defineLazyService(descriptor, factory)` is the same, but `factory()` runs **only when the service is actually mounted locally** — i.e. when its `typeName` is in `enabledServices` (or `enabledServices` is `undefined`). A service routed to a remote process never instantiates its local dependencies, which is useful for DI-heavy monoliths where wiring a service is expensive. When it is mounted, `factory()` runs **once per server**: HTTP clients, `server.localClient()` and `ctx.call` all reach the same instance, so in-memory state and resources the factory opens (connection pools, caches) are shared rather than duplicated per transport.
+`handlers` must be an object whose present members are functions; a method you leave out answers `unimplemented`. Anything else throws a `TypeError` that names the service. Two definitions for one service type name are rejected by `createServer()` and `addService()` with `CatalogConfigError`.
+
+`defineLazyService(descriptor, factory)` is the same, but `factory()` runs **only when the service is actually mounted locally** — i.e. when its `typeName` is in `enabledServices` (or `enabledServices` is `undefined`). A service routed to a remote process never instantiates its local dependencies, which is useful for DI-heavy monoliths where wiring a service is expensive. When it is mounted, `factory()` runs **once per server**: HTTP clients, `server.localClient()` and `ctx.call` all reach the same instance, so in-memory state and resources the factory opens (connection pools, caches) are shared rather than duplicated per transport. `factory` must be synchronous and return the handlers object: an `async` factory, or a result that is not an object of functions, throws a `TypeError` naming the service when the factory runs.
 
 ## Configuring the catalog
 
@@ -120,7 +122,7 @@ const response = await ctx.call(method, request, options?);
 
 `method` is a `"${typeName}/${Method}"` key. **Note the casing:** the key uses the proto method name (PascalCase, e.g. `.../SayHello`), which is distinct from the camelCase handler name (`sayHello`). `request` is the request message; build it with `create(Schema, { ... })`. The return is a `Promise<response>`.
 
-The transport is chosen automatically: an in-process call when the target is mounted locally (no TCP socket is opened), otherwise the transport supplied by the configured `remoteResolver`. Successful remote resolutions are cached per `(typeName, endpoint)`; a `null` result or thrown error is retried at the next call.
+The transport is chosen automatically: an in-process call when the target is mounted locally (no TCP socket is opened), otherwise the transport supplied by the configured `remoteResolver`. Successful remote resolutions are cached per `(typeName, endpoint)`; a `null` result, a thrown error or a value that is not a `Transport` is not cached, so the next call asks the resolver again.
 
 Each `ctx.call` passes these steps in order, and each failure is a `ConnectError`:
 
@@ -133,10 +135,12 @@ flowchart TD
     Kind -->|"no"| E2["Unimplemented:<br/>use ctx.stream"]
     Kind -->|"yes"| Local{"Mounted on<br/>this server?"}
     Local -->|"yes"| InProc["In-process transport"]
-    Local -->|"no"| Resolver{"remoteResolver result"}
+    Local -->|"no"| HasResolver{"remoteResolver<br/>configured?"}
+    HasResolver -->|"no"| E5["FailedPrecondition"]
+    HasResolver -->|"yes"| Resolver{"remoteResolver result"}
     Resolver -->|"transport"| Remote["Resolver transport"]
     Resolver -->|"null"| E3["Unavailable"]
-    Resolver -->|"throws"| E4["Internal"]
+    Resolver -->|"throws, or returns<br/>something else"| E4["Internal"]
     InProc --> Frame["Build call frame:<br/>deadline, signal, propagated headers"]
     Remote --> Frame
     Frame --> Send["transport.unary"]
@@ -147,6 +151,7 @@ flowchart TD
     class E2 critical
     class E3 warning
     class E4 critical
+    class E5 critical
 ```
 
 ```typescript
@@ -212,13 +217,14 @@ type CallOptions = {
 ```
 
 - **`signal`** — when omitted, the inbound request's `ctx.signal` is injected, so cancelling the inbound RPC cancels every in-flight `ctx.call`. A supplied signal **replaces** the cascade — it is **not** AND-linked with `ctx.signal`.
-- **`timeoutMs`** — when omitted, the remaining inbound deadline (`ctx.timeoutMs()`) is injected. A caller may **shorten** the deadline but never extend it; the effective value is `min(timeoutMs, remaining)`. An over-long override is clamped to the remaining deadline.
+- **`timeoutMs`** — when omitted, the remaining inbound deadline (`ctx.timeoutMs()`) is injected. A caller may **shorten** the deadline but never extend it; the effective value is `min(timeoutMs, remaining)`. An over-long override is clamped to the remaining deadline. The value must be a finite number greater than 0: `0`, a negative number, `NaN` or `Infinity` rejects the call with `Code.InvalidArgument` instead of lifting the inherited deadline. If the inbound deadline has already passed, the nested call fails with `Code.DeadlineExceeded`.
+- **`endpoint`** — an empty string counts as no endpoint: the resolver receives the same context, and shares the same cached transport, as for a call without the option.
 - **Trace context** flows implicitly via the `@connectum/otel` client interceptor when it is mounted in `outgoingInterceptors` — no header plumbing needed.
 - **Headers are NOT propagated by default.** No inbound header leaks onto an outgoing call.
 
 ### Header propagation
 
-Opt in by listing header names in `createServer({ propagateHeaders })`. `defaultPropagateHeaders` is a ready-made allow-list of W3C trace-context headers (`["traceparent", "tracestate"]`) you can spread and extend. `authorization` is deliberately excluded — forwarding credentials is a security-sensitive choice you must make explicitly.
+Opt in by listing header names in `createServer({ propagateHeaders })`. `defaultPropagateHeaders` is a ready-made allow-list of W3C trace-context headers (`["traceparent", "tracestate"]`) you can spread and extend. `authorization` is deliberately excluded — forwarding credentials is a security-sensitive choice you must make explicitly. The list is checked and copied when the server is created: an entry that is not a valid HTTP header name (`"x y"`, `""`, a pseudo-header such as `":authority"`) throws a `TypeError` that names `propagateHeaders`, and changing the array you passed afterwards does not change what is forwarded. `defaultPropagateHeaders` is frozen; spread it to build your own list.
 
 ```typescript
 import { createServer, defaultPropagateHeaders } from '@connectum/core';
@@ -258,7 +264,7 @@ Keep only transport-specific middleware (TLS, compression, a per-upstream gatewa
 
 ## Single-image, multiple roles — `enabledServices`
 
-`enabledServices` is a list of full proto `typeName`s a process mounts **locally**. Any service in `services` whose `typeName` is not listed is treated as remote and reached via the `remoteResolver`. `undefined` mounts every provided service locally. This lets one image play different roles depending on configuration — a modular monolith in one deployment, split processes in another, with no code change.
+`enabledServices` is a list of full proto `typeName`s a process mounts **locally**. Any service in `services` whose `typeName` is not listed is treated as remote and reached via the `remoteResolver`. `undefined` mounts every provided service locally. Every entry must be the `typeName` of a service in `services` (and a key of the catalog, when one is set); `start()` rejects with `CatalogConfigError` naming the entries that match nothing, so a misspelled name cannot leave a running server with nothing mounted. This lets one image play different roles depending on configuration — a modular monolith in one deployment, split processes in another, with no code change.
 
 ```typescript
 import { createServer, parseServicesEnv } from '@connectum/core';
@@ -321,7 +327,9 @@ Connectum splits **configuration mistakes** (programmer errors, thrown eagerly) 
 **`CatalogConfigError`** — a configuration mistake; fails loud with a stack trace. Thrown for:
 
 - `server.client(Desc)` on a service that is **not mounted locally and has no `remoteResolver`** configured (the catalog is not consulted in this path);
-- `enabledServices` that is **not a subset of the catalog** at `start()` (caught by an always-on shape check);
+- `enabledServices` that is **not a subset of the catalog**, or names a service that is not in `services`, at `start()` (caught by an always-on shape check);
+- a catalog **key that differs from its descriptor's `typeName`** in `createServer({ catalog })` or `createCatalogClient({ catalog })`, a `createCatalogClient()` without a `resolver` function, or malformed `dnsResolver` / `perServiceEnvResolver` / `mapResolver` options;
+- the **same service defined twice** (`createServer({ services })`, `addService()`);
 - a **duplicate `typeName`** during `mergeCatalogs`.
 
 **`ConnectError`** — operational failures from `ctx.call` / `ctx.stream`, with the appropriate Connect status code:
@@ -330,8 +338,12 @@ Connectum splits **configuration mistakes** (programmer errors, thrown eagerly) 
 |-----------|------|
 | No catalog configured | `Code.FailedPrecondition` |
 | Unknown service, or known service with unknown method | `Code.Unimplemented` |
+| Target not mounted locally and no `remoteResolver` configured | `Code.FailedPrecondition` (a wiring mistake; the `retry` interceptor does not retry it by default) |
 | `remoteResolver` returns `null` (no route) | `Code.Unavailable` |
 | `remoteResolver` throws | `Code.Internal` (original error preserved as `cause`) |
+| `remoteResolver` returns something that is not a `Transport` or `null` (a string, `undefined`, a `Promise`) | `Code.Internal`, naming the service |
+| `CallOptions.timeoutMs` is not a finite number greater than 0 | `Code.InvalidArgument` |
+| The inbound deadline has already passed | `Code.DeadlineExceeded` |
 
 ## Related
 

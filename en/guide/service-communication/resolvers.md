@@ -56,9 +56,9 @@ const resolver: RemoteResolver = ({ typeName, endpoint }) => {
 
 The contract is strict:
 
-- **Synchronous.** The signature returns `Transport | null` directly — never a `Promise`. The framework caches per `(typeName, endpoint)` and cannot await a resolver.
+- **Synchronous.** The signature returns `Transport | null` directly — never a `Promise`. The framework caches per `(typeName, endpoint)` and cannot await a resolver. A result that is neither `null` nor a `Transport` (a string, `undefined`, a `Promise` from an `async` resolver) fails the call with `Code.Internal` and a message that names the service; it is not cached.
 - **No network I/O.** A resolver must not dial TCP or perform a DNS lookup. It only *maps an identity to a lazily-connecting transport*. ConnectRPC transports (e.g. `createGrpcTransport({ baseUrl })`) do not open a socket until the first RPC, which is exactly what makes a synchronous, I/O-free resolver safe — startup validation never blocks on DNS or a dial.
-- **`null` means "no route."** Returning `null` is an operational miss: the call fails with `Code.Unavailable` — at dispatch time for `ctx.call`, and eagerly at client construction for `server.client()`. (A *missing* `remoteResolver` for a non-local `server.client()` is a different, configuration-time failure — `CatalogConfigError`.)
+- **`null` means "no route."** Returning `null` is an operational miss: the call fails with `Code.Unavailable` — at dispatch time for `ctx.call`, and eagerly at client construction for `server.client()`. (A *missing* `remoteResolver` is a different failure, because retrying cannot fix it: `server.client()` throws `CatalogConfigError` for a non-local service, and `ctx.call` / `ctx.stream` fail with `Code.FailedPrecondition` and the same explanation.)
 - **Successful resolutions are cached per `(typeName, endpoint)`.** Once a route
   returns a transport, subsequent calls reuse it. A `null` result or a thrown
   error is not cached, so the next attempt consults the resolver again.
@@ -155,7 +155,7 @@ const server = createServer({
 
 ## Endpoint hints
 
-For services reachable at several endpoints (multi-region, blue/green, or a tenant-specific upstream), pass an opaque `endpoint` hint. It is forwarded to the resolver as `ctx.endpoint` and is part of the cache key, so distinct endpoints resolve to distinct cached transports. The hint is **ignored for locally-mounted services**.
+For services reachable at several endpoints (multi-region, blue/green, or a tenant-specific upstream), pass an opaque `endpoint` hint. It is forwarded to the resolver as `ctx.endpoint` and is part of the cache key, so distinct endpoints resolve to distinct cached transports. The hint is **ignored for locally-mounted services**. An empty string counts as no endpoint: the resolver receives `{ typeName }` without an `endpoint` property, and the call shares the cached transport of a call made without the option.
 
 From the unified client factory (`ServerClientOptions`):
 
