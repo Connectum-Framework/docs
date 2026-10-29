@@ -66,7 +66,7 @@ const server = createServer({
 | `"package.Service/Method"` | Exact method match | `"user.v1.UserService/GetUser": [cache]` |
 
 ::: tip
-Pattern keys use the protobuf fully-qualified service name (`service.typeName`) plus the method name: `"package.v1.ServiceName/MethodName"`.
+Pattern keys use the protobuf fully-qualified service name (`service.typeName`) plus the method name: `"package.v1.ServiceName/MethodName"`. The service and method names are compared exactly, case included, so `"acme.v1.svc/unary"` is a well-formed key that matches nothing when the service is `acme.v1.Svc` and the method `Unary`. The helper does not see your registered services, so it cannot tell.
 :::
 
 ### Resolution Order
@@ -86,15 +86,25 @@ If no patterns match, the request passes through to the next interceptor in the 
 
 ### Invalid Patterns
 
-The following patterns throw an error at creation time:
+A key must be one of the three forms above, where the service and the method name are not empty and contain no `*`, `/` or whitespace. Any other key could never match a call, so it throws an error at creation time. Without that check, an interceptor registered under a mistyped key (an authorization or audit guard, for example) would stay silently inactive:
 
 ```typescript
 // Empty service name -- throws Error
 createMethodFilterInterceptor({ '/*': [auth] });
+createMethodFilterInterceptor({ '/DeleteUser': [auth] });
 
 // No slash separator -- throws Error
 createMethodFilterInterceptor({ 'SomeService': [auth] });
+
+// Missing method name, wildcard inside a name, extra segment, stray space -- throw Error
+createMethodFilterInterceptor({ 'user.v1.UserService/': [auth] });
+createMethodFilterInterceptor({ '*/*': [auth] });
+createMethodFilterInterceptor({ 'user.v1.UserService/Del*': [auth] });
+createMethodFilterInterceptor({ 'user.v1.UserService/DeleteUser/extra': [auth] });
+createMethodFilterInterceptor({ 'user.v1.UserService/DeleteUser ': [auth] });
 ```
+
+Each value must be an array of functions and the map itself an object. A string, `null`, a single function, or a `null` or `undefined` entry inside the array throws a `TypeError` that names the key and, for an entry, its position. An entry is never skipped silently.
 
 ### Practical Example: Different Resilience Per Method
 
@@ -165,7 +175,7 @@ The built-in resilience interceptors have `skip*` options that serve a different
 |--------|---------|-----|
 | `skipStreaming` | timeout, bulkhead, circuitBreaker, retry, fallback | Resilience patterns wrap the full call. You cannot retry a stream, timeout a long-lived connection, or replace a stream with a fallback value. |
 | `skipGrpcServices` | serializer | Skips operational services whose names start with `grpc.`; it does not select by wire protocol. |
-| `skipHealthCheck` | logger | Convenience shortcut to reduce log noise from frequent health checks. |
+| `skipHealthCheck` | logger | Convenience shortcut to reduce log noise from frequent health checks. It skips the `grpc.health` package, not every service whose name contains that text. |
 
 These options complement `createMethodFilterInterceptor`. Method filtering handles business routing ("which interceptors for which methods"), while `skip*` handles technical limitations ("this interceptor cannot operate on this call type").
 
