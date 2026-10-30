@@ -87,7 +87,7 @@ A `roles` value that is a JSON array is used as sent (items that are not strings
 |--------|------|---------|-------------|
 | `defaultType` | `string` | `'gateway'` | Credential type used when the gateway sends no type header |
 
-`defaultType` becomes `AuthContext.type` and, with `propagateHeaders`, the `x-auth-type` header, so a value containing NUL, CR or LF throws when the interceptor is created.
+`defaultType` becomes `AuthContext.type` and, with `propagateHeaders`, the `x-auth-type` header, so a value containing NUL, CR or LF throws when the interceptor is created. With `propagateHeaders` on, an empty value, a value longer than 128 characters and a value with a lone surrogate throw too, naming `defaultType`, instead of failing each request that falls back to it; with it off they are accepted. Every header name you configure (`headerMapping` values, `trustSource.header`, `stripHeaders`) must be a valid HTTP header name, or creating the interceptor throws and names the option.
 
 ### trustSource Check
 

@@ -75,7 +75,7 @@ const transport = createConnectTransport({
 });
 ```
 
-Provide a secret that matches the server trust source and a stable service subject;
+Creating the interceptor throws if the `secret` is empty, contains NUL, CR, LF or a character above U+00FF, or starts or ends with a space or tab (the platform removes that whitespace from a header value, so the secret would never match), if the `subject` is empty or contains NUL, CR, LF or a lone surrogate, or if `roles` is not an array of strings without holes that fits the roles header. A subject over 512 characters is refused per call. Provide a secret that matches the server trust source and a stable service subject;
 roles are optional. See
 [`ClientGatewayInterceptorOptions`](/en/api/@connectum/auth/interfaces/ClientGatewayInterceptorOptions)
 for exact fields.
