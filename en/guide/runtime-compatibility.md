@@ -85,7 +85,7 @@ import { GreeterService } from '#gen/greeter/v1/greeter_pb.js';
 
 const transport = createConnectTransport({
   baseUrl: 'http://localhost:5000',
-  // httpVersion defaults to '1.1' -- omit or set explicitly
+  httpVersion: '1.1', // the options type requires it; '1.1' is also what a call without it uses at runtime
 });
 
 const client = createClient(GreeterService, transport);
