@@ -162,7 +162,7 @@ describe('my interceptor', () => {
 });
 ```
 
-`createMockFn()` is API-compatible with the subset of `node:test`'s `mock.fn()` that the testing helpers rely on (`.mock.calls`, `.mock.callCount()`), so assertions written against one runtime work on the other. Full API: [@connectum/testing](/en/packages/testing).
+`createMockFn()` is API-compatible with the subset of `node:test`'s `mock.fn()` that the testing helpers rely on: `.mock.callCount()` and `.mock.calls`, where each call records `arguments`, `result`, `error` and `this`, the implementation receives the `this` of the call, and `.mock.calls` returns a copy on every read. It does not record the `stack` and `target` of a call and has none of the other `mock.fn()` members (`mockImplementation()`, `resetCalls()`, `restore()`). Assertions that stay within that subset work on both. Full API: [@connectum/testing](/en/packages/testing).
 
 The `@connectum/testing/parity` subpath registers a `node:test` test
 (`transportParityTest`) and therefore runs on Node.js only. The mock helpers shown above
