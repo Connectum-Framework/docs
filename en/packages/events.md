@@ -26,8 +26,9 @@ bun add @connectum/events
 :::
 
 **Peer dependencies:** `@connectum/core`, `@bufbuild/protobuf` `^2.16.0` and
-`@connectrpc/connect` `^2.2.0`, shared with your application. npm 7+, pnpm and Bun install
-missing peers automatically — see
+`@connectrpc/connect` `^2.2.0`, shared with your application. The package also needs
+`@connectum/core`, which requires `@connectrpc/connect` `^2.3.0`, so 2.3.0 is the lowest
+version that works. npm 7+, pnpm and Bun install missing peers automatically — see
 [Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies).
 
 ## Start Here {#quick-start}

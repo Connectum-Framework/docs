@@ -25,8 +25,9 @@ bun add -d @connectum/testing
 ~~~
 :::
 
-**Peer dependencies:** `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.2.0` and
-`@connectrpc/connect-node` `^2.2.0`, shared with your application. npm 7+, pnpm and Bun
+**Peer dependencies:** `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.3.0` and
+`@connectrpc/connect-node` `^2.3.0`, shared with your application. The package also installs
+`@connectum/core` and `@connectum/test-fixtures` as regular dependencies. npm 7+, pnpm and Bun
 install missing peers automatically — see
 [Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies).
 

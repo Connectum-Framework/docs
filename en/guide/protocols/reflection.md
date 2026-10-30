@@ -41,7 +41,7 @@ bun add @connectum/reflection
 :::
 
 Peer dependencies: `@connectum/core`, `@bufbuild/protobuf` `^2.16.0` and
-`@connectrpc/connect` `^2.2.0` (see
+`@connectrpc/connect` `^2.2.0`; `@connectum/core` raises the working minimum to 2.3.0 (see
 [Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies)).
 
 ## Quick Setup
