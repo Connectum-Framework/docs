@@ -26,11 +26,13 @@ suite on the revision you intend to validate.
 | 5 | Error mapping (`ConnectError(NotFound)`, plain `Error` → `internal`, interceptor-thrown error) | `packages/testing/tests/parity/errors.parity.test.ts` | **3** |
 | 6 | HTTP / local coexistence (concurrent observation by one interceptor; `server.start()` not required for local invoke) | `packages/testing/tests/parity/coexistence.parity.test.ts` + `packages/core/tests/integration/localTransport.test.ts` | **2** |
 | 7a | OTEL tracing & metrics (unary spans, streaming events, error spans, metrics labels, trace-context propagation, instrument subset, `connectum.transport` attribute) | `packages/otel/tests/parity/otel.parity.test.ts` | **7** |
+| 7b | OTEL telemetry through the driver and the default comparison (three scenarios in a row, each recording a client and a server span and one call per duration histogram, following the collector recipe; one test pins what happens when a scenario skips `shutdownProvider()`) | `packages/otel/tests/parity/parityDriver.parity.test.ts` | **3** |
 | 8 | Request admission (rejecting `requestGate`, `requestGate` throwing a plain `Error`, admitting `requestGate`, `readMaxBytes` over the limit, `readMaxBytes` at the limit, `server.stop()` aborting an in-flight call) | `packages/testing/tests/parity/requestAdmission.parity.test.ts` | **6** |
 | 9 | gRPC Server Reflection (one bidi stream with every request kind: listing, import closure, per-stream "already sent" state, symbol and extension lookup, error answers) | `packages/testing/tests/parity/reflection.parity.test.ts` | **1** |
-| **Total** | | | **46** |
+| 10 | Headers, trailers and `ConnectError` metadata reported exactly as the client sees them, without filtering protocol headers (response headers, trailers, error metadata) | `packages/testing/tests/parity/clientView.parity.test.ts` | **3** |
+| **Total** | | | **52** |
 
-Of these, **35 scenarios** (groups 3, 3a, 3b, 3c, 4, 5, 8, 9, except the two
+Of these, **41 scenarios** (groups 3, 3a, 3b, 3c, 4, 5, 7b, 8, 9, 10, except the two
 no-bypass checks of groups 3a and 3b, which are standalone tests) go through the unified
 `transportParityTest()` driver in `@connectum/testing/parity` and produce a
 structural diff between HTTP and local. The 7 OTEL scenarios and 2 coexistence
@@ -48,7 +50,7 @@ coverage:
 |---|:---:|
 | Response payload (unary) | ✅ groups 3a / 3b / 5 |
 | Response payload (streaming) | ✅ group 4 |
-| Response headers / trailers | ✅ group 3 (via driver diff) |
+| Response headers / trailers | ✅ groups 3 and 10 (via driver diff; protocol headers are dropped before comparing) |
 | `ConnectError` code / message | ✅ groups 3a / 3b / 5 |
 | `ConnectError` metadata / details | ✅ groups 3a / 3b |
 | Streaming message order | ✅ group 4 |
@@ -60,7 +62,7 @@ coverage:
 | OTEL span attributes / status | ✅ group 7a |
 | OTEL span events (streaming) | ✅ group 7a |
 | OTEL trace-context propagation | ✅ group 7a |
-| OTEL metrics (names, labels, values) | ✅ group 7a |
+| OTEL metrics (names, labels, values; duration histograms by observation count) | ✅ groups 7a and 7b |
 | Coexistence (one server, two transports) | ✅ group 6 |
 | Server lifecycle (local before `start()`) | ✅ group 6.2 |
 | Request admission (`requestGate`, `readMaxBytes`) | ✅ group 8 |
