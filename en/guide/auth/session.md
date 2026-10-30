@@ -74,7 +74,7 @@ flowchart LR
 
 A `ConnectError` thrown by `verifySession` or `mapSession` reaches the client **unchanged**: its code and its text are sent verbatim, so write that text for the client (`new ConnectError('Session expired', Code.Unauthenticated)`). Any other thrown value is replaced by `Unauthenticated` with the fixed text `Session verification failed` (from `verifySession`) or `Session mapping failed` (from `mapSession`); its own message never leaves the server. The examples on this page throw a plain `Error` for this reason.
 
-`mapSession` must return a complete `AuthContext`: a string `subject` and `type`, string arrays `roles` and `scopes`, an object `claims`, and, when present, a string `name` and a `Date` `expiresAt`. Any other result (`null` from a failed lookup, `undefined`, `false`, `{}`, a missing or mistyped field) ends the call with `Unauthenticated` and the text `Session mapping failed`, with or without `propagateHeaders`, and is never cached. `verifyCredentials` of `createAuthInterceptor` follows the same rule with the text `Authentication failed`.
+`mapSession` must return a complete `AuthContext`: a string `subject` and `type`, arrays `roles` and `scopes` of at most 8192 strings and without holes, an object `claims`, and, when present, a string `name` and a `Date` `expiresAt`. Any other result (`null` from a failed lookup, `undefined`, `false`, `{}`, a missing or mistyped field) ends the call with `Unauthenticated` and the text `Session mapping failed`, with or without `propagateHeaders`, and is never cached. `verifyCredentials` of `createAuthInterceptor` follows the same rule with the text `Authentication failed`.
 
 ## Cookie-Based Auth
 

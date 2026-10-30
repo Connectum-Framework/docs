@@ -32,7 +32,7 @@ A block is matched against the value of the trust header, and a caller that reac
 
 ### Return a complete `AuthContext` from your callbacks
 
-The result needs a string `subject` and `type`, string arrays `roles` and `scopes`, an object `claims`, and, when present, a string `name` and a `Date` `expiresAt`. Any other result ends the call with `Unauthenticated`, with or without `propagateHeaders`, and is not cached. Before, `null`, `undefined`, `false` or `{}` made the call fail with `internal` when headers were propagated, and let the handler run without an identity when they were not.
+The result needs a string `subject` and `type`, arrays `roles` and `scopes` of at most 8192 strings and without holes (a sparse list, a list with a `null` or a number, and a list that cannot be read item by item are all refused), an object `claims`, and, when present, a string `name` and a `Date` `expiresAt`. Any other result ends the call with `Unauthenticated`, with or without `propagateHeaders`, and is not cached. Before, `null`, `undefined`, `false` or `{}` made the call fail with `internal` when headers were propagated, and let the handler run without an identity when they were not.
 
 ### Do not grant a scope that contains a space while propagating headers
 
