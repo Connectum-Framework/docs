@@ -330,7 +330,8 @@ properties differ from NATS:
   read from its first message, whatever `fromBeginning` says. The checks use an
   extra admin connection, and subscriptions made only of literal topic names are
   never checked. A wildcard subscription lists the topics once when it starts
-  even with the checks off, so that it can tell a deleted topic from one that
+  even with the checks off (and once more right after subscribing, so that a topic
+  created in between is not lost), so that it can tell a deleted topic from one that
   never existed (see [a topic is deleted](#kafka-topic-deleted)). If listing the topics fails when the subscription starts,
   `subscribe()` rejects with that error: the same metadata request expands the
   wildcard, and a discovery started from an empty list would read the history of
@@ -386,8 +387,13 @@ With `lifecycle.onLifecycle` set you see one `consumer-lost` and then `consumer-
 the adapter also logs one warning that names the deleted topics. The replacement rebalances
 the group once, like a discovery restart, so messages being handled at that moment are
 delivered again. A crash for any other reason, or a crash while the broker still lists every
-matched topic, stays with the library's own restarts. If creating the replacement fails,
-the error is logged and the attempt is repeated every five seconds.
+matched topic, stays with the library's own restarts. When the adapter takes a crash over,
+it tells the library not to restart that consumer, so the old consumer is never started
+beside its replacement. If creating the replacement fails, the error is logged and the
+attempt is repeated every five seconds. A replacement whose start fails without an error
+from the client (for example because the group may not be joined: the client reports it as
+a crash and returns) counts as failed in the same way: it is disconnected and started again
+five seconds later, and the crash it caused reaches `lifecycle.onLifecycle` like any other.
 
 A subscription to a literal topic name is not replaced: if that topic is deleted, the
 consumer keeps failing until the topic exists again.
