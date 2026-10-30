@@ -265,8 +265,8 @@ For the full set of resolver factories (`singleTransportResolver`, `mapResolver`
 `@connectum/testing` ships dedicated helpers for in-process testing:
 
 - **`createLocalClient(server, service)`** — concise client for unit and integration tests without binding ports.
-- **`transportParityTest(name, options)`** — driver that runs a single declarative scenario against both `createGrpcTransport({ baseUrl })` and `createLocalTransport(server)` and structurally diffs the observable outcome (response payload, headers, `ConnectError` fields, OTEL spans modulo `connectum.transport`, metrics modulo `transport` label). Any divergence fails the test.
-- **In-memory OTEL collectors** — `SpanExporter` and `MetricReader` helpers used by the parity driver for assertion on tracing and metrics output.
+- **`transportParityTest(name, options)`** — driver that runs a single declarative scenario against both `createGrpcTransport({ baseUrl })` and `createLocalTransport(server)` and structurally diffs the observable outcome (response payload, headers, `ConnectError` fields, OTEL spans modulo `connectum.transport`, metrics modulo `transport` label). Any divergence fails the test. Headers, trailers and `ConnectError` metadata are compared without the protocol headers each leg adds (`content-type`, `content-length`, `date`, `grpc-*`), and a duration histogram is compared by observation count rather than by the measured time; see [the parity invariant](/en/contributing/parity-invariant).
+- **In-memory OTEL collectors** — `SpanExporter` and `MetricReader` helpers used by the parity driver for assertion on tracing and metrics output. To collect the telemetry of `@connectum/otel` interceptors, run with `OTEL_TRACES_EXPORTER=none` and `OTEL_METRICS_EXPORTER=none` and call `shutdownProvider()` at the start of every scenario; otherwise every scenario after the first records nothing.
 
 Use the parity driver to compare custom interceptors and proto-declared rules across
 transports for each scenario you test:

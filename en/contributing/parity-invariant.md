@@ -33,6 +33,42 @@ revised or accompanied by a documented carve-out in the spec.
    scenario twice — once over `createGrpcTransport({ baseUrl })` and once over
    `createLocalTransport(server)` — and performs a structural diff on the
    normalized result (response, headers, error, OTEL spans, metrics).
+
+   What the default comparison (`defaultCompare`) treats as equal, beyond
+   identical values:
+
+   - **Protocol headers.** Response headers, trailers and `ConnectError`
+     metadata are compared as application data. The HTTP/2 leg and the
+     in-process leg carry different protocol headers for identical behaviour
+     (`content-type`, `content-length`, `date`, `grpc-encoding`, `grpc-status`,
+     `grpc-message`), so `content-type`, `content-length`, `content-encoding`,
+     `accept-encoding`, `date`, `te` and the `grpc-*` and `connect-*` name
+     families are dropped on both sides first. Every other entry is compared
+     literally, so a scenario can report the headers exactly as the client
+     sees them. A scenario that must compare a protocol header passes its own
+     `compare`.
+   - **Duration histograms.** A histogram measured in a unit of time
+     (`rpc.server.call.duration`, `rpc.client.call.duration`) holds the elapsed
+     time of that run, which differs between runs. It is compared by its
+     observation count and attributes, not by sum, minimum, maximum or buckets.
+     Names, descriptions, units, types and attributes of every metric, and the
+     values of every other metric (sizes, counters, gauges), are compared
+     literally.
+   - **Spans** are compared without trace and span identifiers (only whether a
+     span has a parent), and **`readMaxBytes` rejections** are equal when they
+     name the same limit, whether or not the text includes the observed size.
+
+   Telemetry from `@connectum/otel` reaches `ctx.spans` and `ctx.metrics` only
+   when the scenario sets it up: run with `OTEL_TRACES_EXPORTER=none` and
+   `OTEL_METRICS_EXPORTER=none`, and call `shutdownProvider()` from
+   `@connectum/otel` at the start of every scenario, before registering the
+   collectors with `trace.setGlobalTracerProvider()` and
+   `metrics.setGlobalMeterProvider()`. `@connectum/otel` keeps the tracer of the
+   first provider registered, so without the shutdown every later scenario
+   records nothing, and two empty lists compare as equal; assert that the
+   telemetry you compare is not empty. A second `ctx.metrics.flush()` returns
+   only what was recorded since the previous one, and `flush()` after the run
+   was disposed throws.
 2. **Parity suite** — aggregated by `scripts/parity-suite.sh`, which runs the
    parity tests of `@connectum/testing` (interceptors, validation, streaming,
    error mapping, coexistence, request admission, reflection),
@@ -78,7 +114,10 @@ A small set of behaviours are explicitly transport-specific and are
 - Network-level concerns: TLS, HTTP/2 framing, TCP keepalive, `:authority`
   pseudo-header, real `req.url` host/port.
 - Wire-format concerns: gzip/identity content-encoding negotiation, message
-  framing on the wire.
+  framing on the wire, and the protocol headers that carry them (the driver
+  drops them before comparing headers, trailers and error metadata).
+- The measured time of a duration histogram (its observation count is
+  compared).
 - The synthetic origin `https://in-memory/<service>/<method>` that the in-process
   transport injects for interceptors that read `req.url`.
 - The `connectum.transport` span attribute and the `transport` metric label,
