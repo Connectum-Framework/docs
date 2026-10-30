@@ -268,7 +268,7 @@ const ctx = createMockContext({
 const res = await orderHandler(create(CreateOrderSchema, { sku: 'x' }), ctx);
 ```
 
-`CreateMockContextOptions` also accepts `outgoingInterceptors`, `requestHeader`, `timeoutMs`, and `propagateHeaders` to reproduce production header propagation and the deadline cascade. The chain runs on mock routes exactly as on resolver routes; an interceptor that tags the transport kind (such as the OpenTelemetry client interceptor) observes a mock route as `http`.
+`CreateMockContextOptions` also accepts `outgoingInterceptors`, `requestHeader`, `timeoutMs`, and `propagateHeaders` to reproduce production header propagation and the deadline cascade. The context describes the first method of the first service of the catalog as `ctx.service`, `ctx.method` and `ctx.url`; for a handler of another method pass `method: 'orders.v1.OrderService/CreateOrder'` (the `ctx.call` key format), and pass `signal` to give the handler an abort signal that cascades into its outgoing calls. A mock that throws a `ConnectError` answers with it unchanged; any other exception reaches the handler as a `ConnectError` with code `Internal`, the exception's message and the exception as `cause`. The chain runs on mock routes exactly as on resolver routes; an interceptor that tags the transport kind (such as the OpenTelemetry client interceptor) observes a mock route as `http`.
 
 ## Transport-owned vs application-owned interceptors
 
