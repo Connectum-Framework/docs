@@ -53,6 +53,8 @@ import type { NodeRequest, NodeResponse } from '@connectum/core';
 type HttpHandler = (req: NodeRequest, res: NodeResponse) => boolean;
 ```
 
+`NodeResponse` is an HTTP/1.1 `ServerResponse` or an HTTP/2 `Http2ServerResponse`. Write the answer with the members both classes share: set `res.statusCode`, call `res.setHeader()`, then send the whole body with `res.end()`. `res.writeHead(200, headers)` and `res.write(chunk)` do not compile on that union (TypeScript reports TS2349), because the two classes declare incompatible overloads for them.
+
 ## How Protocols Are Registered
 
 Protocols are passed to `createServer()` via the `protocols` array. A server builds more than one `ConnectRouter` from the same registration: one for the HTTP adapter and one for each in-process transport (`server.localClient()`, the catalog transport behind `ctx.call`). The two methods split along that line:
@@ -153,7 +155,8 @@ function CustomHealthEndpoint(): ProtocolRegistration {
 
     httpHandler(req: NodeRequest, res: NodeResponse): boolean {
       if (req.url === '/healthz' && req.method === 'GET') {
-        res.writeHead(200, { 'content-type': 'application/json' });
+        res.statusCode = 200;
+        res.setHeader('content-type', 'application/json');
         res.end(JSON.stringify({ status: 'ok', timestamp: Date.now() }));
         return true;
       }
@@ -204,7 +207,8 @@ function Metrics(options: {
 
     httpHandler(req: NodeRequest, res: NodeResponse): boolean {
       if (req.url === path && req.method === 'GET') {
-        res.writeHead(200, { 'content-type': 'text/plain; version=0.0.4; charset=utf-8' });
+        res.statusCode = 200;
+        res.setHeader('content-type', 'text/plain; version=0.0.4; charset=utf-8');
         res.end(collect());
         return true;
       }
