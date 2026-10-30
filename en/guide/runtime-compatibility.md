@@ -164,9 +164,13 @@ describe('my interceptor', () => {
 
 `createMockFn()` is API-compatible with the subset of `node:test`'s `mock.fn()` that the testing helpers rely on (`.mock.calls`, `.mock.callCount()`), so assertions written against one runtime work on the other. Full API: [@connectum/testing](/en/packages/testing).
 
-The `@connectum/testing/parity` subpath registers a `node:test` test
-(`transportParityTest`) and therefore runs on Node.js only. The mock helpers shown above
-are separate from that subpath.
+The `@connectum/testing/parity` subpath registers a test through the `node:test` API
+(`transportParityTest`), so it needs a runner that provides that API: `node --test` (or a plain
+`node file.test.mjs`) on Node.js, and `bun test` on Bun. Under Bun 1.4.4, `bun test` runs both
+legs of a parity scenario and reports the same passes and failures as Node.js, including a
+failing comparison. Running the file as a script with `bun file.test.mjs` fails with Bun's own
+`Cannot use test outside of the test runner` error. The project's own parity suites run under
+Bun in its CI. The mock helpers shown above are separate from that subpath.
 
 ## OpenTelemetry {#otel}
 
@@ -187,7 +191,7 @@ packages in your application. This repository does not validate that combination
 |-------|---------|--------|------------|
 | HTTP/2 client transports (`createGrpcTransport()`, `createConnectTransport({ httpVersion: '2' })`) hang on the first RPC | Bun <= 1.2.5 | **Fixed in Bun 1.2.6** | Upgrade Bun; on older Bun use `createConnectTransport()` over HTTP/1.1 (no bidi) |
 | `node:test` mock API unavailable | Bun | By design | Use `bun:test` mock directly |
-| `@connectum/testing/parity` requires `node:test` | Bun | Node.js test registration | Use the main entry point in Bun tests; run parity tests on Node.js |
+| `@connectum/testing/parity` registers tests through `node:test` | Bun | Works under `bun test`; a plain `bun file.test.mjs` fails with `Cannot use test outside of the test runner` | Run parity files with `bun test` |
 | `@connectum/cli` is exercised on Node.js only | Bun | Open | Run the CLI with `npx`; generated code is unaffected |
 | `@connectum/otel` runtime behavior | Bun | Not covered by this project's Bun test suite | Validate the selected exporters and instrumentation in your application |
 
