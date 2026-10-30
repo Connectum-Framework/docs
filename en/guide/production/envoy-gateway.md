@@ -155,7 +155,7 @@ curl https://api.example.com/v1/orders/550e8400-e29b-41d4-a716-446655440000
 ```typescript
 import { createClient } from '@connectrpc/connect';
 import { createGrpcTransport } from '@connectrpc/connect-node';
-import { OrderService } from '#gen/mycompany/orders/v1/orders_pb.js';
+import { OrderService } from '#gen/mycompany/orders/v1/orders_pb.ts';
 
 const transport = createGrpcTransport({
   baseUrl: 'http://api.example.com:9090',

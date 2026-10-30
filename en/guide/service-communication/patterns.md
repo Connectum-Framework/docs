@@ -43,7 +43,7 @@ sequenceDiagram
 ```typescript
 import { defineService } from '@connectum/core';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { OrderService } from '#gen/order/v1/order_pb.js';
+import { OrderService } from '#gen/order/v1/order_pb.ts';
 
 // Sequential: check stock, then process payment.
 // Pass the result to createServer({ services: [orderService], catalog }).
@@ -172,7 +172,7 @@ Use a plain `createClient` client inside a handler only for a service that is no
 
 ```typescript
 import { createClient } from '@connectrpc/connect';
-import { LedgerService } from '#gen/ledger/v1/ledger_pb.js';
+import { LedgerService } from '#gen/ledger/v1/ledger_pb.ts';
 
 const ledgerClient = createClient(LedgerService, ledgerTransport);
 

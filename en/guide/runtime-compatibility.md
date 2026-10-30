@@ -50,7 +50,7 @@ On Node.js, HTTP/2 gRPC clients work out of the box with `createGrpcTransport()`
 ```typescript
 import { createClient } from '@connectrpc/connect';
 import { createGrpcTransport } from '@connectrpc/connect-node';
-import { GreeterService } from '#gen/greeter/v1/greeter_pb.js';
+import { GreeterService } from '#gen/greeter/v1/greeter_pb.ts';
 
 const transport = createGrpcTransport({
   baseUrl: 'http://localhost:5000',
@@ -81,7 +81,7 @@ HTTP/1.1 (the default `httpVersion`):
 ```typescript
 import { createClient } from '@connectrpc/connect';
 import { createConnectTransport } from '@connectrpc/connect-node';
-import { GreeterService } from '#gen/greeter/v1/greeter_pb.js';
+import { GreeterService } from '#gen/greeter/v1/greeter_pb.ts';
 
 const transport = createConnectTransport({
   baseUrl: 'http://localhost:5000',
@@ -111,7 +111,7 @@ On Node.js, both unary and streaming RPCs work with `createGrpcTransport()` or `
 ```typescript
 import { createClient } from '@connectrpc/connect';
 import { createGrpcTransport } from '@connectrpc/connect-node';
-import { MonitorService } from '#gen/monitor/v1/monitor_pb.js';
+import { MonitorService } from '#gen/monitor/v1/monitor_pb.ts';
 
 const transport = createGrpcTransport({
   baseUrl: 'http://localhost:5000',

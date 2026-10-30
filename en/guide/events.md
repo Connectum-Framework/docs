@@ -56,7 +56,7 @@ service OrderEventHandlers {
 
 ```typescript
 import type { EventRoute } from '@connectum/events';
-import { OrderEventHandlers } from '#gen/orders/v1/events_pb.js';
+import { OrderEventHandlers } from '#gen/orders/v1/events_pb.ts';
 
 const orderEvents: EventRoute = (events) => {
   events.service(OrderEventHandlers, {

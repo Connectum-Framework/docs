@@ -105,7 +105,7 @@ plugins:
 The EventBus resolves the publish topic automatically when the publisher process has the relevant service registered — either via `routes` (subscriber side) or via the `publishes` option (publisher-only side). In that case no `PublishOptions.topic` override is needed:
 
 ```typescript
-import { OrderCancelledSchema, OrderEventService } from '#gen/orders/v1/orders_pb.js';
+import { OrderCancelledSchema, OrderEventService } from '#gen/orders/v1/orders_pb.ts';
 
 // Publisher-only process: declare the service in `publishes` so the
 // custom topic from the proto option is resolved automatically.
