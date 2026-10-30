@@ -24,6 +24,28 @@ see [Startup validation](#startup-validation) below.
 | no `tls`, `allowHTTP1: false` | plaintext HTTP/2 (h2c) | `http2.createServer` |
 | `tls` configured | TLS + ALPN (HTTP/2; HTTP/1.1 also accepted when `allowHTTP1: true`) | `http2.createSecureServer` |
 
+### What a client without HTTP/2 sees over TLS {#tls-without-http2}
+
+With `tls` and `allowHTTP1: false`, the listener serves HTTP/2 only, and what a client that cannot speak
+HTTP/2 sees depends on its ALPN offer:
+
+- A client that **offers ALPN protocols but not `h2`** (for example only `http/1.1`) is refused at the TLS layer: the
+  handshake fails with the `no_application_protocol` alert (`ERR_SSL_TLSV1_ALERT_NO_APPLICATION_PROTOCOL` in Node.js).
+- A client that **offers no ALPN at all** completes the handshake, with no negotiated protocol. If it then sends
+  HTTP/1.1, the server answers with a plaintext reply:
+
+  ```text
+  HTTP/1.0 403 Forbidden
+  Content-Type: text/plain
+
+  Missing ALPN Protocol, expected `h2` to be available.
+  If this is a HTTP request: The server was not configured with the `allowHTTP1` option or a listener for the `unknownProtocol` event.
+  ```
+
+  The text comes from `node:http2`, not from Connectum, and the status is `403`, not a TLS failure. Node.js 22.13.0, Node.js 26.12.1
+  and Bun 1.4.4 produce the same reply. A load balancer health check or a legacy client that does not offer ALPN hits this
+  response, so point such probes at an HTTP/2 endpoint. With `allowHTTP1: true` the same client is served over HTTP/1.1.
+
 ## RPC type support
 
 | Transport | Unary | Server streaming | Client streaming | Bidi streaming |
