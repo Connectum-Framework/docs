@@ -18,7 +18,7 @@ You need to act if any of these is true:
 - you turn `propagateHeaders` on and an identity has a scope that contains a space, a subject over 512 characters, a type over 128, a name over 256, or roles, scopes or claims whose serialized value is over 8192 characters;
 - a service that does not use `@connectum/auth` reads `x-auth-subject`, `x-auth-name`, `x-auth-type` or `x-auth-scopes` and can now receive users with non-Latin names.
 
-Otherwise nothing changes for you. Identities that fit, and ASCII and Latin-1 text, are written exactly as before.
+Otherwise nothing changes for you. Identities that fit, and ASCII and Latin-1 text, are written exactly as before, except a subject, name, type or scope with a space or tab at either end: it is now encoded (`utf-8''` plus percent-encoding) instead of being trimmed by the platform, so ` alice` and `alice` stay two subjects.
 
 ## Required changes
 
