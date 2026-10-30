@@ -171,7 +171,7 @@ Limits and sizes:
   leaving a role or claim out would stop a deny rule or an `authorize` callback that looks at it
   from matching. The readers are strict in the same way: `parseAuthHeaders` throws
   `Unauthenticated` for a value over its limit or a malformed encoded text, and the gateway
-  interceptor rejects a claims header over 8192 characters.
+  interceptor rejects a claims header over 8192 characters and, for the standard `x-auth-*` names, the other limits above.
 - To keep large claims out of the headers, filter them with `propagatedClaims` (generic and
   session interceptors) or turn propagation off.
 
