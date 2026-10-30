@@ -75,6 +75,13 @@ action below rather than assuming a direct upgrade to the documented line.
   and code that use the old names or constants). From 1.3, spans also end with an unset
   status on success instead of `OK` (**breaking** for queries that select `status = ok`);
   the guide covers both changes.
+- [OpenTelemetry configuration](/en/migration/otel-configuration) — from 1.3,
+  `@connectum/otel` ignores a wrong `OTEL_*` exporter, protocol or endpoint value with a
+  `CONNECTUM_OTEL_INVALID_ENV` process warning instead of failing every RPC, decodes
+  `OTEL_RESOURCE_ATTRIBUTES` as percent-encoded, rejects a misspelled `initProvider`
+  `settings` value with `TypeError`, and makes a concurrent `shutdownProvider()` wait for
+  the flush (behaviour change for code that relied on the exception, on a literal `%`, or
+  on the second call returning at once).
 - [Kafka adapter options](/en/migration/kafka-adapter-options) — from 1.3,
   `@connectum/events-kafka` has its own option types: `kafkaConfig` is replaced by
   top-level `ssl`, `sasl`, timeouts, `retry` and `logLevel` plus `clientOptions`, and
