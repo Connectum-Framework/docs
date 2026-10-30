@@ -34,6 +34,8 @@ A block is matched against the value of the trust header, and a caller that reac
 
 The result needs a string `subject` and `type`, arrays `roles` and `scopes` of at most 8192 strings and without holes (a sparse list, a list with a `null` or a number, and a list that cannot be read item by item are all refused), an object `claims`, and, when present, a string `name` and a `Date` `expiresAt`. Any other result ends the call with `Unauthenticated`, with or without `propagateHeaders`, and is not cached. Before, `null`, `undefined`, `false` or `{}` made the call fail with `internal` when headers were propagated, and let the handler run without an identity when they were not.
 
+A result that passes this check but cannot be used afterwards ends the call with `Unauthenticated` too: when the identity is copied for the `cache` or written into headers and that fails (a property or `claims` key whose getter throws, a proxy whose trap throws, a cyclic or `BigInt` claim, a `toJSON` that throws), the raw error no longer reaches the client as `internal`, and nothing is cached. The internal-auth interceptor treats a custom trust source result that is not an `AuthContext` like `null`.
+
 ### Do not grant a scope that contains a space while propagating headers
 
 Scopes travel joined by spaces and are split on spaces, so `reports read admin` reached the next hop as three scopes. It is now rejected with `Unauthenticated` (text `Authentication failed`) and is not cached. With `propagateHeaders` off the identity is admitted.
