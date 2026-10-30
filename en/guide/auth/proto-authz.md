@@ -212,7 +212,9 @@ credentials, add their exact service patterns to authentication `skipMethods`
 and add unconditional allow rules to proto authz: `grpc.health.v1.Health/*`,
 `grpc.reflection.v1.ServerReflection/*`, and
 `grpc.reflection.v1alpha.ServerReflection/*`. The proto interceptor has no
-`skipMethods` option. A server-level [request gate](/en/guide/security/request-admission)
+`skipMethods` option. `connectum init --auth` generates exactly this pairing
+for the protocols the project mounts; see
+[What `--auth` generates](/en/guide/scaffolding#what-auth-generates). A server-level [request gate](/en/guide/security/request-admission)
 is a separate check and must also admit those requests. HTTP health endpoints
 are outside this RPC chain.
 

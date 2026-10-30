@@ -135,18 +135,22 @@ when a module has made the service unreachable.
 |------|--------|-------------|
 | `--runtime` | `node` (default), `bun` | Target runtime |
 | `--package-manager` | `pnpm` (default), `npm`, `bun` | Package manager |
-| `--node-exec` | `raw` (default), `tsx` | Node execution model: `raw` runs `.ts` directly (Node ≥25.2); `tsx` compiles (Node ≥22.13) |
+| `--node-exec` | `raw` (default), `tsx` | Node execution model: `raw` runs `.ts` directly (Node ≥25.2); `tsx` compiles (Node ≥22.13). Node runtime only: with `--runtime bun` the flag is refused, because Bun runs TypeScript itself |
 | `--otel` | — | Add OpenTelemetry (interceptor + provider lifecycle) |
 | `--events` | `nats`, `kafka`, `redpanda`, `redis`, `amqp` | Add an EventBus with the chosen adapter |
 | `--auth` | — | Add JWT authentication + proto-driven authorization |
 | `--catalog` | — | Add the service catalog (typed `ctx.call` / `ctx.stream`) |
 | `--resilience` | comma list of `timeout,bulkhead,circuitBreaker,retry` | Enable resilience interceptors; `fallback` is refused, see [Interceptor order](#interceptor-order) |
-| `--healthcheck` / `--no-healthcheck` | — | Include the gRPC health protocol (default on) |
+| `--healthcheck` / `--no-healthcheck` | — | Include the gRPC health protocol (default on). Off also removes the `HEALTHCHECK` of `Dockerfile` and `Dockerfile.bun`, which probes `/healthz`, and the dependency on `@connectum/healthcheck` |
 | `--reflection` / `--no-reflection` | — | Include gRPC server reflection (default on) |
 | `--sample` / `--no-sample` | — | Emit the runnable sample Greeter service (default on); `--no-sample` is [config-only](#no-sample-a-config-only-project) and cannot be combined with `--auth` or `--events` |
 | `--yes`, `-y` | — | Non-interactive; use flags and defaults. `init` also runs non-interactively, without `--yes`, when the environment variable `CI` is `true` or when standard output is not a terminal |
 | `--force` | — | Overwrite existing files |
 | `--ref` | any git ref | Base example ref to fetch (advanced; defaults to the tag pinned for this CLI release) |
+
+A flag a command does not define is an error, not a no-op: `init --evnts nats` stops with
+`Error: connectum init: unknown option --evnts. Valid options: ...`, exit code 1, and writes
+nothing. The same holds for `connectum generate service` and `connectum proto sync`.
 
 Files are written in ascending path order, whatever order the scaffold produced them
 in. The existing files that `init` skips are listed in the same order.
@@ -189,7 +193,7 @@ cd payments
 npx @connectum/cli generate service billing
 ```
 
-### What `--auth` generates
+### What `--auth` generates {#what-auth-generates}
 
 Proto-driven authorization is **deny-by-default**, so the sample service is annotated to
 be both usable and demonstrative:
@@ -202,6 +206,41 @@ be both usable and demonstrative:
 The generated e2e test asserts both directions: the public rpc succeeds and the
 authenticated one is rejected without credentials. Remove the option from `SayHello` once
 you want every method to require a token.
+
+The gRPC Health service and the reflection services (`v1` and `v1alpha`) are open without a
+token, so probes and [`connectum proto sync`](#connectum-proto-sync) work against the
+project. `src/auth.ts` opens them in both places that would otherwise refuse them: the JWT
+interceptor skips them (`skipMethods`), and the authorizer has an unconditional allow rule
+for them. Listing them in `skipMethods` alone is not enough, because the authorizer denies
+by default and answers `unauthenticated`; the
+[proto authorization guide](/en/guide/auth/proto-authz#syncing-public-methods-with-authentication)
+describes the same pairing. A protocol you switch off with `--no-healthcheck` or
+`--no-reflection` is not listed. To require a token for one of them, delete its entry from
+`protocolMethods` in `src/auth.ts`. A project scaffolded before this was fixed keeps its
+`src/auth.ts`: add the same patterns to
+`createProtoAuthzInterceptor({ rules: [{ name: "protocol-endpoints", methods: [...], effect: AuthzEffect.ALLOW }] })`.
+
+The generated `README.md` lists the environment the chain reads, `JWKS_URI`, `JWT_ISSUER`
+and `JWT_AUDIENCE`, so a project needs no reading of `src/auth.ts` to be configured.
+
+### What `--events` needs at run time {#what-events-needs}
+
+The generated event bus connects to its broker when the server starts, so a broker has to be
+reachable first. The address comes from an environment variable with a local default:
+
+| Adapter | Variable | Default |
+|---------|----------|---------|
+| `nats` | `NATS_SERVERS` | `nats://localhost:4222` |
+| `kafka` | `KAFKA_BROKERS` (comma-separated) | `localhost:9092` |
+| `redpanda` | `REDPANDA_BROKERS` (comma-separated) | `localhost:9092` |
+| `redis` | `REDIS_URL` | `redis://localhost:6379` |
+| `amqp` | `AMQP_URL` | `amqp://localhost:5672` |
+
+The project's `README.md` repeats this for the adapter you chose and, for NATS, Redis and
+RabbitMQ, gives a `docker run` line with the image the repository's CI runs the adapter
+against (NATS needs `-js`: the adapter uses JetStream, which the server enables only with
+that flag). Without a reachable NATS server the project exits at startup with
+`server error: ConnectionError: connection refused`.
 
 ### Lint rules in `buf.yaml` {#buf-lint-rules}
 
@@ -335,6 +374,13 @@ This scaffolds:
   `Code.Unimplemented` until you implement them (and, with `--with-events`, an
   `EventRoute` with an ack-by-default handler).
 
+Run it in the root of a project: the directory must have a `package.json`, and with
+`--with-events` that `package.json` must list `@connectum/events` in `dependencies`,
+`devDependencies`, `peerDependencies` or `optionalDependencies`. Otherwise the command stops
+before it writes anything, with a message that names the missing piece
+(`no package.json in "<dir>"`, or `--with-events needs @connectum/events`). To add the
+events module to an existing project, install `@connectum/events` and an adapter first.
+
 It never edits your `src/server.ts` (that file is yours). Instead it prints the exact
 registration to add:
 
@@ -406,6 +452,27 @@ server, not a time the command waits out.
 A full sync prints the size of the fetched descriptor set, then the exact `buf generate`
 command line it runs. The stdout and stderr of `buf` pass straight through to your
 terminal. The output directory is printed only after `buf` has succeeded.
+
+### Failures
+
+A failure caused by the input ends the command with exit code 1 and one line, `Error: ...`,
+that names what failed:
+
+| Situation | Message starts with |
+|-----------|---------------------|
+| Nobody listens at the address | `Cannot connect to http://localhost:1: ECONNREFUSED.` |
+| The server speaks only HTTP/1.1 | `HTTP/2 protocol error talking to <url> (Protocol error).` |
+| The server answers with an error | `Reflection request to <url> failed: [unauthenticated] ...` |
+| The server stays silent | `Reflection request to <url> timed out after <n> ms` |
+| `--from` is empty or not an address | `--from must not be empty.` / `--from "<value>" is not a valid server address.` |
+| `--template` is not an existing file | `--template "<path>" is not an existing file.` |
+| `buf` is not installed | `buf was not found on the PATH.` |
+| `buf generate` fails | `buf generate failed with exit code <n>; see its output above.` |
+
+The address and the template are checked before the command connects. The HTTP/1.1 message
+exists because `createServer()` leaves `allowHTTP1` on by default, which on plain TCP makes the
+server HTTP/1.1-only, while this command speaks gRPC over HTTP/2: set `allowHTTP1: false` on the
+server (the scaffolded projects do).
 
 ## Adding a service by hand
 
