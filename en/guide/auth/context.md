@@ -161,7 +161,7 @@ Each field is handled on its own terms when the headers are written:
 Limits and sizes:
 
 - `x-auth-subject` holds at most 512 characters, `x-auth-type` 128 and `x-auth-name` 256, counted
-  in the text before encoding.
+  in the text before encoding and before control characters are removed, on the writer and on the readers alike.
 - `x-auth-roles`, `x-auth-scopes` and `x-auth-claims` hold at most 8192 characters of the
   serialized value; the claims limit applies after the `propagatedClaims` filter.
 - A value over its limit is **rejected instead of being cut or left out**. With `propagateHeaders` on, the
