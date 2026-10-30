@@ -89,7 +89,17 @@ loaded. If one is outside the range above, the server is not created and
 PeerDependencyVersionError: @connectum/core loaded peer libraries outside its supported range:
   - @bufbuild/protobuf: loaded 2.12.1 (from /app/node_modules/@bufbuild/protobuf), @connectum/core requires ^2.16.0
 Generated code and the framework must share one in-range copy of each library; an older copy breaks generated types and Connect at runtime.
-Fix: raise your pins to the required ranges (npm install @bufbuild/protobuf@"^2.16.0", or the pnpm / bun equivalent), or force one in-range version with "overrides" (npm, Bun) or pnpm "overrides", then reinstall.
+Fix: raise your pins to the required ranges (npm install @bufbuild/protobuf@"^2.16.0", or the pnpm / bun equivalent), or force one in-range version with "overrides" in package.json (npm, Bun), "resolutions" in package.json (Yarn) or "overrides" in pnpm-workspace.yaml (pnpm 11 and later; the "pnpm" field of package.json is no longer read), then reinstall.
+```
+
+The last line of the message names the place each package manager reads. pnpm 11 and 12
+ignore `pnpm.overrides` in `package.json`: they print a warning (`The "pnpm" field in
+package.json is no longer read by pnpm`) and install the unpinned copy. For pnpm, put the
+override in `pnpm-workspace.yaml`:
+
+```yaml
+overrides:
+  '@bufbuild/protobuf': 2.16.0
 ```
 
 Lockstep is checked at startup too. `@connectrpc/connect-node` works only with the exact
