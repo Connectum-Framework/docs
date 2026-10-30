@@ -24,7 +24,7 @@ Otherwise nothing changes for you. Identities that fit, and ASCII and Latin-1 te
 
 ### The gateway interceptor deletes every standard `x-auth-*` header
 
-After `createGatewayAuthInterceptor` has read its mapped input, it removes `x-auth-subject`, `x-auth-type`, `x-auth-name`, `x-auth-roles`, `x-auth-scopes` and `x-auth-claims`, on admitted requests and on `skipMethods`. With `propagateHeaders: true` it then writes the verified identity back. A client-supplied `x-auth-roles` used to survive when the verified identity had no roles, so a service that trusted those headers saw the forged value. The `x-auth-*` names now belong to the verified identity: if you need a client value to reach a handler, have the gateway send it under another name. A gateway that maps `x-auth-*` names in `headerMapping` still reads them.
+After `createGatewayAuthInterceptor` has read its mapped input, it removes `x-auth-subject`, `x-auth-type`, `x-auth-name`, `x-auth-roles`, `x-auth-scopes`, `x-auth-claims` and `x-auth-encoding`, on admitted requests and on `skipMethods`. With `propagateHeaders: true` it then writes the verified identity back. A client-supplied `x-auth-roles` used to survive when the verified identity had no roles, so a service that trusted those headers saw the forged value. The `x-auth-*` names now belong to the verified identity: if you need a client value to reach a handler, have the gateway send it under another name. A gateway that maps `x-auth-*` names in `headerMapping` still reads them.
 
 ### CIDR blocks in `trustSource` need an opt-in
 
@@ -44,7 +44,7 @@ With `propagateHeaders` on, a subject over 512 characters, a type over 128, a na
 
 ### Non-Latin text is encoded, not rejected
 
-A subject, name, type or scope with a character above U+00FF (Cyrillic, CJK, an emoji) used to end the call with `Unauthenticated` when headers were propagated. It is now admitted and written as `utf-8''` plus percent-encoded UTF-8, for example `Иван` becomes `utf-8''%D0%98%D0%B2%D0%B0%D0%BD`. `parseAuthHeaders` and `createGatewayAuthInterceptor` (for the standard `x-auth-*` names) decode it. A service that reads these headers without `@connectum/auth` sees the encoded form for such users and should decode it with `decodeURIComponent` after removing the `utf-8''` prefix.
+A subject, name, type or scope with a character above U+00FF (Cyrillic, CJK, an emoji) used to end the call with `Unauthenticated` when headers were propagated. It is now admitted and written as `utf-8''` plus percent-encoded UTF-8, for example `Иван` becomes `utf-8''%D0%98%D0%B2%D0%B0%D0%BD`. `parseAuthHeaders` and `createGatewayAuthInterceptor` (for the standard `x-auth-*` names) decode it, but only when the sender also set `x-auth-encoding: percent-utf8`, which the writer adds whenever it encoded a text; a literal `utf-8''admin` subject from an older service or another gateway, which sends no such header, stays that literal text. A service that reads these headers without `@connectum/auth` sees the encoded form for such users and should decode it with `decodeURIComponent` after removing the `utf-8''` prefix, when `x-auth-encoding` is present. During a rolling upgrade, an older receiver shows the encoded form for users that were rejected before.
 
 ### Cached identities are copied per request
 

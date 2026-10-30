@@ -122,8 +122,7 @@ receives its own copy: the `AuthContext`, its `roles`, `scopes` and `claims` (ne
 plain objects and arrays included) and `expiresAt`. A handler that changes its
 context, for example by pushing a role, keeps working as it does without a cache,
 and the change stays inside its request; a later request with the same token gets
-what the verifier returned. A cache hit costs one pass over the identity, which is
-small next to a session lookup. The same holds for the `cache` option of
+what the verifier returned. A cache hit costs one pass over the identity. The same holds for the `cache` option of
 `createAuthInterceptor`.
 
 ## Full Example

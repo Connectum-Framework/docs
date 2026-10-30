@@ -54,8 +54,8 @@ matched against a header that a caller reaching the service directly chooses its
 block therefore throws unless you set `trustSource.allowCallerControlledCidr: true`; set it only
 when a trusted upstream overwrites that header on every request and no client can reach
 the service without passing through it. Trust based on the address of the connection
-belongs in the mTLS and mesh-identity helpers. Shared secrets are compared in constant
-time. With the option set, an address in the header is read strictly: exactly four decimal octets from
+belongs in the mTLS and mesh-identity helpers. Shared secrets are compared through
+fixed-size digests with `timingSafeEqual`. With the option set, an address in the header is read strictly: exactly four decimal octets from
 0 to 255 without leading zeros (`10.0.0.1`), and a CIDR value is such an address, a
 `/` and a prefix of 0 to 32 (`10.0.0.0/8`). A header value that is not an address, or an
 `expectedValues` entry that is not a well-formed block, matches only if it is
@@ -107,7 +107,7 @@ If the header is missing or the value does not match any of the `expectedValues`
 On an admitted request, the interceptor reads the identity from the mapped headers,
 then deletes the mapped headers, the trust header, any additional `stripHeaders`,
 and every standard `x-auth-*` identity header (`x-auth-subject`, `x-auth-type`,
-`x-auth-name`, `x-auth-roles`, `x-auth-scopes`, `x-auth-claims`), as the JWT,
+`x-auth-name`, `x-auth-roles`, `x-auth-scopes`, `x-auth-claims`, `x-auth-encoding`), as the JWT,
 generic and session interceptors do. It also deletes them on methods listed in
 `skipMethods`, even though authentication is skipped there. Failed trust or
 subject checks stop the call before downstream interceptors run.
@@ -124,7 +124,7 @@ Enabling `propagateHeaders` writes the verified identity back using the standard
 `x-auth-*` names, including all non-empty claims that fit the header limit. This
 option does not restore the gateway trust secret. Choose it only when the next
 hop needs those fields; gateway authentication has no `propagatedClaims` filter.
-An identity that cannot be written into headers (NUL, CR or LF in the subject, type, name or a scope, a scope with a space, or a value that does not fit its header) is rejected with `Unauthenticated`. When the gateway reads the standard `x-auth-*` names it also decodes text that another service wrote as `utf-8''` plus percent-encoded UTF-8, and it rejects a claims header over 8192 characters instead of reading it as empty; see [Auth Context](/en/guide/auth/context#propagated-headers).
+An identity that cannot be written into headers (NUL, CR or LF in the subject, type, name or a scope, a scope with a space, or a value that does not fit its header) is rejected with `Unauthenticated`. When the gateway reads the standard `x-auth-*` names it also decodes text that another service wrote as `utf-8''` plus percent-encoded UTF-8 (only when the sender set `x-auth-encoding: percent-utf8`), and it rejects a claims header over 8192 characters instead of reading it as empty; see [Auth Context](/en/guide/auth/context#propagated-headers).
 
 `skipMethods` lists methods and `Service/*` patterns; the catch-all `'*'` is refused when the interceptor is created (see [Method Patterns](/en/guide/auth/authorization#method-patterns)).
 
