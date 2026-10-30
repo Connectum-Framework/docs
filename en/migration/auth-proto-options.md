@@ -85,7 +85,7 @@ To disable an interceptor, do not put it in the chain (build the list conditiona
 
 With `propagateHeaders`, a subject, type, name or any single scope that contains NUL, CR or LF is rejected with `Unauthenticated` (`Authentication failed`) before the identity is cached; the next request with the same credential is verified again. Such values are not cleaned up, because removing a line break would make `al\nice` and `alice` the same subject downstream. With `propagateHeaders` off nothing changes.
 
-Fix the identity provider or the mapper so these fields have no line breaks or NUL, or keep `propagateHeaders` off. Roles and claims are not affected: characters above U+00FF in them are now written as JSON `\uXXXX` escapes and read back unchanged. Scopes are written exactly as granted and are never edited. `setAuthHeaders` called directly throws a `TypeError` that names the field (`AuthContext.subject`, `type`, `name` or `scopes`) and sets no header; before 1.3.0 NUL was stripped and CR and LF made the platform throw.
+Fix the identity provider or the mapper so these fields have no line breaks or NUL, or keep `propagateHeaders` off. Roles and claims are not affected: characters above U+00FF in them are now written as JSON `\uXXXX` escapes and read back unchanged. Scopes are written as granted and are not edited (a scope that needs encoding is encoded reversibly, see [Auth identity handling](/en/migration/auth-identity)). `setAuthHeaders` called directly throws a `TypeError` that names the field (`AuthContext.subject`, `type`, `name` or `scopes`) and sets no header; before 1.3.0 NUL was stripped and CR and LF made the platform throw.
 
 ### 6. Gateway `defaultType`
 

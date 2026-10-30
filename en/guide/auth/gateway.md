@@ -112,7 +112,7 @@ generic and session interceptors do. It also deletes them on methods listed in
 `skipMethods`, even though authentication is skipped there. Failed trust or
 subject checks stop the call before downstream interceptors run.
 
-A client-supplied `x-auth-*` header therefore never reaches the next hop, whether
+A client-supplied standard `x-auth-*` identity header therefore does not reach the next hop, whether
 or not it is one of the mapped headers. This matters with `propagateHeaders`: it
 writes only the identity fields that have a value, so a forged `x-auth-roles`
 would otherwise survive for a user without roles. A gateway that maps the

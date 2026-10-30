@@ -18,7 +18,7 @@ You need to act if any of these is true:
 - you turn `propagateHeaders` on and an identity has a scope that contains a space, a subject over 512 characters, a type over 128, a name over 256, or roles, scopes or claims whose serialized value is over 8192 characters;
 - a service that does not use `@connectum/auth` reads `x-auth-subject`, `x-auth-name`, `x-auth-type` or `x-auth-scopes` and can now receive users with non-Latin names.
 
-Otherwise nothing changes for you. Identities that fit, and ASCII and Latin-1 text, are written exactly as before, except a subject, name, type or scope with a space or tab at either end: it is now encoded (`utf-8''` plus percent-encoding) instead of being trimmed by the platform, so ` alice` and `alice` stay two subjects.
+Otherwise nothing changes for you. Identities that fit, and ASCII and Latin-1 text, are written as before, with two exceptions that are now encoded (`utf-8''` plus percent-encoding). A subject, name, type or scope with a space or tab at either end used to be trimmed by the platform, so a subject of U+0020 followed by `alice` and the subject `alice` were one identity; they are now two. A text that itself starts with `utf-8''` is encoded so that readers can tell it from an encoded one.
 
 ## Required changes
 
@@ -44,11 +44,11 @@ With `propagateHeaders` on, a subject over 512 characters, a type over 128, a na
 
 ### Non-Latin text is encoded, not rejected
 
-A subject, name, type or scope with a character above U+00FF (Cyrillic, CJK, an emoji) used to end the call with `Unauthenticated` when headers were propagated. It is now admitted and written as `utf-8''` plus percent-encoded UTF-8, for example `Иван` becomes `utf-8''%D0%98%D0%B2%D0%B0%D0%BD`. `parseAuthHeaders` and `createGatewayAuthInterceptor` (for the standard `x-auth-*` names) decode it, but only when the sender also set `x-auth-encoding: percent-utf8`, which the writer adds whenever it encoded a text; a literal `utf-8''admin` subject from an older service or another gateway, which sends no such header, stays that literal text. A service that reads these headers without `@connectum/auth` sees the encoded form for such users and should decode it with `decodeURIComponent` after removing the `utf-8''` prefix, when `x-auth-encoding` is present. During a rolling upgrade, an older receiver shows the encoded form for users that were rejected before.
+A subject, name, type or scope with a character above U+00FF (Cyrillic, CJK, an emoji) used to end the call with `Unauthenticated` when headers were propagated. It is now admitted and written as `utf-8''` plus percent-encoded UTF-8, for example `Иван` becomes `utf-8''%D0%98%D0%B2%D0%B0%D0%BD`. `parseAuthHeaders` and `createGatewayAuthInterceptor` (for the standard `x-auth-*` names) decode it, but only when the sender also set `x-auth-encoding: percent-utf8`, which the writer adds whenever it encoded a text; a literal `utf-8''admin` subject from an older service or another gateway, which sends no such header, stays that literal text. A service that reads these headers without `@connectum/auth` sees the encoded form for such users and should decode it with `decodeURIComponent` after removing the `utf-8''` prefix, when `x-auth-encoding` is present. During a rolling upgrade, an older receiver shows the encoded form for users that were rejected before, and for texts with a space or tab at either end.
 
 ### Cached identities are copied per request
 
-With `cache`, every request receives its own copy of the cached `AuthContext` (including `roles`, `scopes` and `claims`). Before, the cache returned one mutable object to every request with the same credential, so `getAuthContext().roles.push('admin')` in one handler granted the role to later requests with the same token. Code that changes its context keeps working. Each cache hit costs one pass over the identity.
+With `cache`, every request receives its own copy of the cached `AuthContext` (`roles`, `scopes`, `expiresAt`, and `claims` with its nested plain objects, arrays and dates; other values in `claims`, such as a `Map` or a class instance, are shared). Before, the cache returned one mutable object to every request with the same credential, so `getAuthContext().roles.push('admin')` in one handler granted the role to later requests with the same token. Code that changes its context keeps working. Each cache hit costs one pass over the identity.
 
 ## Before and after
 

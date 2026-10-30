@@ -118,8 +118,9 @@ its TTL expires. Revoking a session in the backend does not invalidate an alread
 cached identity, so choose the TTL to fit your revocation policy.
 
 The cache stores a private copy of the identity, and every request served from it
-receives its own copy: the `AuthContext`, its `roles`, `scopes` and `claims` (nested
-plain objects and arrays included) and `expiresAt`. A handler that changes its
+receives its own copy: the `AuthContext`, its `roles`, `scopes` and `expiresAt`, and
+`claims` with its nested plain objects, arrays and dates. Other values in `claims`
+(a `Map`, a class instance) are shared. A handler that changes its
 context, for example by pushing a role, keeps working as it does without a cache,
 and the change stays inside its request; a later request with the same token gets
 what the verifier returned. A cache hit costs one pass over the identity. The same holds for the `cache` option of
