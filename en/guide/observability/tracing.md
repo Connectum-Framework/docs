@@ -83,10 +83,11 @@ For outgoing RPC calls, use `createOtelClientInterceptor()` to propagate trace c
 import { createConnectTransport } from '@connectrpc/connect-node';
 import { createClient } from '@connectrpc/connect';
 import { createOtelClientInterceptor } from '@connectum/otel';
-import { UserService } from '#gen/user_pb.js';
+import { UserService } from '#gen/user_pb.ts';
 
 const transport = createConnectTransport({
   baseUrl: 'http://user-service:5001',
+  httpVersion: '1.1', // required by the types; use '2' for an upstream that serves HTTP/2
   interceptors: [
     createOtelClientInterceptor({
       serverAddress: 'user-service',   // Required
@@ -219,8 +220,8 @@ import { createServer } from '@connectum/core';
 import { createConnectTransport } from '@connectrpc/connect-node';
 import { createClient } from '@connectrpc/connect';
 import { createOtelInterceptor, createOtelClientInterceptor } from '@connectum/otel';
-import { UserService } from '#gen/user_pb.js';
-import gatewayRoutes from '#gen/routes.js';
+import { UserService } from '#gen/user_pb.ts';
+import gatewayRoutes from '#gen/routes.ts';
 
 // Server: trace incoming requests
 const server = createServer({
@@ -237,6 +238,7 @@ const server = createServer({
 // Client: propagate trace context to Service B
 const transport = createConnectTransport({
   baseUrl: 'http://user-service:5001',
+  httpVersion: '1.1',
   interceptors: [
     createOtelClientInterceptor({
       serverAddress: 'user-service',

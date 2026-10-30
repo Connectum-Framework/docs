@@ -98,8 +98,8 @@ pnpm add @connectrpc/connect @connectrpc/connect-node @bufbuild/protobuf
 # Validation (recommended: @connectrpc/validate)
 pnpm add @bufbuild/protovalidate @connectrpc/validate
 
-# Dev dependencies (buf + code generation)
-pnpm add -D typescript @types/node @bufbuild/buf @bufbuild/protoc-gen-es
+# Dev dependencies (buf + code generation); --allow-build approves the build script of @bufbuild/buf
+pnpm add -D --allow-build=@bufbuild/buf typescript @types/node @bufbuild/buf @bufbuild/protoc-gen-es
 ```
 == bun
 ```bash
@@ -116,6 +116,11 @@ bun add @bufbuild/protovalidate @connectrpc/validate
 bun add -d typescript @types/node @bufbuild/buf @bufbuild/protoc-gen-es
 ```
 :::
+
+pnpm 11 and later stop on dependencies whose build scripts the project has not approved. Without
+`--allow-build=@bufbuild/buf`, the last pnpm command installs the packages but ends with
+`ERR_PNPM_IGNORED_BUILDS` and exit code 1. The flag records the approval in `pnpm-workspace.yaml`
+under `allowBuilds`; see [Dependency build scripts under pnpm](/en/guide/scaffolding#dependency-build-scripts-under-pnpm).
 
 The ConnectRPC runtime libraries are **peer dependencies** of Connectum: the copies you
 install here are the ones Connectum uses, so your generated code and the framework share

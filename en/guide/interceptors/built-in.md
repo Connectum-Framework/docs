@@ -116,6 +116,7 @@ import { createCircuitBreakerInterceptor } from '@connectum/interceptors';
 
 const transport = createConnectTransport({
   baseUrl: 'http://upstream:5000',
+  httpVersion: '1.1', // required by the types; use '2' for an upstream that serves HTTP/2
   interceptors: [
     createCircuitBreakerInterceptor({ threshold: 5, halfOpenAfter: 30_000 }),
   ],

@@ -10,7 +10,7 @@ outline: deep
 Authentication interceptors run after the request message is available: for unary calls it has already been received and parsed. Two opt-in `createServer()` options reject a request earlier:
 
 - `requestGate` runs once the request headers arrive, **before any request message is received, decompressed, or parsed**. Throw a `ConnectError` and the call ends without its body ever being read.
-- `readMaxBytes` caps the size of each request message. A larger message ends the call with `resource_exhausted` before the handler runs.
+- `readMaxBytes` caps the encoded size of each request message (JSON bytes for a JSON client, protobuf bytes for a binary one). A larger message ends the call with `resource_exhausted` before the handler runs.
 
 Both are unset by default; a server that does not set them behaves exactly as before.
 
@@ -118,7 +118,7 @@ const server = createServer({
 });
 ```
 
-A message exactly at the limit is accepted. The limit applies per message, so on a client-streaming or bidi call each message is checked separately. The value must be an integer from 1 to 4294967295 (Connect's maximum). `createServer()` throws a `RangeError` naming `readMaxBytes` for anything else — `0`, negatives, fractions, `NaN`, `Infinity` — and a `TypeError` for a non-number, so a misconfigured limit cannot silently turn into no limit.
+A message exactly at the limit is accepted. The limit counts the bytes of the message in the encoding the client chose, so the same logical message can fit for one client and not for another. For a message with a single `text` string field (and `readMaxBytes: 102`), the longest accepted text is 100 ASCII characters for a gRPC client, a Connect client with binary encoding, and an in-process call, because the protobuf message takes `N + 2` bytes (tag, length byte and the text). A Connect client with JSON encoding gets 91 characters, because `{"text":"..."}` takes `N + 11` bytes. The gRPC envelope header (5 bytes) is not counted. Choose the limit with the largest encoding your clients use in mind. The limit applies per message, so on a client-streaming or bidi call each message is checked separately. The value must be an integer from 1 to 4294967295 (Connect's maximum). `createServer()` throws a `RangeError` naming `readMaxBytes` for anything else — `0`, negatives, fractions, `NaN`, `Infinity` — and a `TypeError` for a non-number, so a misconfigured limit cannot silently turn into no limit.
 
 ## What the gate and the limit cover
 

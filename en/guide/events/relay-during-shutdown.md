@@ -22,7 +22,7 @@ A relay handler consumes an event, transforms it, and publishes the result as an
 Replace the publish through an injected bus with `ctx.publish`. The context belongs to one delivery, so it carries the right to publish for exactly the time that delivery is being handled.
 
 ```typescript
-import { OrderShippedSchema } from '#gen/orders/v1/events_pb.js';
+import { OrderShippedSchema } from '#gen/orders/v1/events_pb.ts';
 
 export const orderEvents: EventRoute = (events) => {
   events.service(OrderEventHandlers, {

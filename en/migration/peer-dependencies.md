@@ -70,12 +70,14 @@ the supported range visible at install time.
 |---|---|---|---|
 | Libraries not listed in your `package.json` | installed automatically | installed automatically | installed automatically |
 | Pins inside the ranges | one shared copy | one shared copy | one shared copy |
-| Pin below the range | install **fails**: `ERESOLVE unable to resolve dependency tree` | installs your copy and prints `Issues with peer dependencies found`; `pnpm peers check` lists `unmet peer <library>` | installs your copy and prints `warn: incorrect peer dependency "<library>@<version>"` — but see the note below |
+| Pin below the range | install **fails**: `ERESOLVE unable to resolve dependency tree` | installs your copy and prints `Issues with peer dependencies found`; `pnpm peers check` lists `unmet peer <library>` | installs your copy and, in the setups tested with Bun 1.4.4, prints **no warning** — see the note below |
 
-::: warning Bun can stay silent about an old `@bufbuild/protobuf`
-When your project also contains a tool that brings its own in-range `@bufbuild/protobuf`
-— `@bufbuild/protoc-gen-es` and `@connectum/protoc-gen-catalog` both do — Bun 1.4 installs
-a too-old `@bufbuild/protobuf` pin **without a warning**. The startup check below catches it.
+::: warning Bun does not warn about a pin below the range
+Bun 1.4.4 installed a pin below the range without any warning in every setup tried: a
+too-old `@bufbuild/protobuf` next to `@connectum/core`, the same setup with
+`@bufbuild/protoc-gen-es` added, and a `@connectrpc/connect` older than the one
+`@connectrpc/connect-node` requires, with no Connectum package at all. Do not rely on Bun's
+install output; the startup check below is what stops such an installation.
 :::
 
 ## What happens at startup

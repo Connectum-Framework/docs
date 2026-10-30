@@ -106,7 +106,7 @@ A protocol that registers a gRPC service to return metadata about the running se
 ```typescript
 import type { ConnectRouter } from '@connectrpc/connect';
 import type { ProtocolRegistration, ProtocolContext } from '@connectum/core';
-import { InfoService } from '#gen/info_pb.js';
+import { InfoService } from '#gen/info_pb.ts';
 
 function ServerInfo(): ProtocolRegistration {
   const startedAt = new Date().toISOString();

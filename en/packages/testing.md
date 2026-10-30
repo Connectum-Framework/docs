@@ -25,8 +25,9 @@ bun add -d @connectum/testing
 ~~~
 :::
 
-**Peer dependencies:** `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.2.0` and
-`@connectrpc/connect-node` `^2.2.0`, shared with your application. npm 7+, pnpm and Bun
+**Peer dependencies:** `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.3.0` and
+`@connectrpc/connect-node` `^2.3.0`, shared with your application. The package also installs
+`@connectum/core` and `@connectum/test-fixtures` as regular dependencies. npm 7+, pnpm and Bun
 install missing peers automatically — see
 [Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies).
 
@@ -46,6 +47,21 @@ await withTestServer({ services: [greeterService] }, async (server) => {
   assert.equal(response.message, 'Hello, Ada!');
 });
 ~~~
+
+## Mocks, Fakes and Assertions {#mocks-and-assertions}
+
+The main entry also re-exports the unit-test helpers of `@connectum/test-fixtures`, so one import covers a
+test that does not start a server:
+
+| Symbol | Use it to |
+|---|---|
+| [`createMockRequest`](/en/api/@connectum/testing/index/functions/createMockRequest) | Build a simplified request for an interceptor unit test. |
+| [`createMockNext`](/en/api/@connectum/testing/index/functions/createMockNext), [`createMockNextError`](/en/api/@connectum/testing/index/functions/createMockNextError), [`createMockNextSlow`](/en/api/@connectum/testing/index/functions/createMockNextSlow) | Build a `next` function that resolves, throws a `ConnectError`, or resolves after a delay. |
+| [`createMockFn`](/en/api/@connectum/testing/index/functions/createMockFn) | Create a function that records its calls (`.mock.calls`, `.mock.callCount()`). |
+| [`createMockStream`](/en/api/@connectum/testing/index/functions/createMockStream) | Create an async iterable that yields given items, for streaming handlers and interceptors. |
+| [`createFakeService`](/en/api/@connectum/testing/index/functions/createFakeService), [`createFakeMethod`](/en/api/@connectum/testing/index/functions/createFakeMethod), [`createMockDescMessage`](/en/api/@connectum/testing/index/functions/createMockDescMessage), [`createMockDescField`](/en/api/@connectum/testing/index/functions/createMockDescField), [`createMockDescMethod`](/en/api/@connectum/testing/index/functions/createMockDescMethod) | Build protobuf descriptors without running code generation. |
+| [`assertConnectError`](/en/api/@connectum/testing/index/functions/assertConnectError) | Assert that a thrown value is a `ConnectError` with the expected code and, optionally, a matching message. |
+| [`MOCK_RESPONSE_HEADER`](/en/api/@connectum/testing/index/variables/MOCK_RESPONSE_HEADER) | Name of the response header that marks a call served by `mockResolver()`. |
 
 ## Key Entry Points
 
