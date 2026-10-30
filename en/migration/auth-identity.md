@@ -15,7 +15,7 @@ You need to act if any of these is true:
 - a handler, or a `propagateHeaders` list, relies on `x-auth-*` headers that the **client** sent through `createGatewayAuthInterceptor`;
 - `trustSource.expectedValues` of `createGatewayAuthInterceptor` contains an IPv4 CIDR block such as `10.0.0.0/8`;
 - `verifyCredentials` (`createAuthInterceptor`) or `mapSession` (`createSessionAuthInterceptor`) can return anything other than a complete `AuthContext`, for example `null` after a failed lookup or an object without `scopes` or `claims`;
-- you turn `propagateHeaders` on and an identity has a scope that contains a space, a subject over 512 characters, a type over 128, a name over 256, or roles, scopes or claims whose serialized value is over 8192 characters;
+- you turn `propagateHeaders` on and an identity has a scope that is empty or contains a space, a subject over 512 characters, a type over 128, a name over 256, or roles, scopes or claims whose serialized value is over 8192 characters;
 - a service that does not use `@connectum/auth` reads `x-auth-subject`, `x-auth-name`, `x-auth-type` or `x-auth-scopes` and can now receive users with non-Latin names.
 
 Otherwise nothing changes for you. Identities that fit, and ASCII and Latin-1 text, are written as before, with two exceptions that are now encoded (`utf-8''` plus percent-encoding). A subject, name, type or scope with a space or tab at either end used to be trimmed by the platform, so a subject of U+0020 followed by `alice` and the subject `alice` were one identity; they are now two. A text that itself starts with `utf-8''` is encoded so that readers can tell it from an encoded one.
@@ -36,9 +36,9 @@ The result needs a string `subject` and `type`, arrays `roles` and `scopes` of a
 
 A result that passes this check but cannot be used afterwards ends the call with `Unauthenticated` too: when the identity is copied for the `cache` or written into headers and that fails (a property or `claims` key whose getter throws, a proxy whose trap throws, a cyclic or `BigInt` claim, a `toJSON` that throws), the raw error no longer reaches the client as `internal`, and nothing is cached. The internal-auth interceptor treats a custom trust source result that is not an `AuthContext` like `null`.
 
-### Do not grant a scope that contains a space while propagating headers
+### Do not grant an empty scope or a scope that contains a space while propagating headers
 
-Scopes travel joined by spaces and are split on spaces, so `reports read admin` reached the next hop as three scopes. It is now rejected with `Unauthenticated` (text `Authentication failed`) and is not cached. With `propagateHeaders` off the identity is admitted.
+Scopes travel joined by spaces and are split on spaces, with empty pieces dropped, so `reports read admin` reached the next hop as three scopes and the empty scope in `a`, an empty scope, `b` was lost. Both are now rejected with `Unauthenticated` (text `Authentication failed`) and are not cached. With `propagateHeaders` off the identity is admitted.
 
 ### Identities that do not fit their headers are refused
 
