@@ -34,6 +34,16 @@ expected issuer, audience, age, and algorithms for your identity provider. Use
 [`JwtAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/JwtAuthInterceptorOptions)
 for the complete field contract and defaults.
 
+Omit `issuer`, `audience` or `maxTokenAge` to skip that check. A value that is
+present must be usable, and the factory throws when it is created otherwise:
+`issuer` and `audience` take a non-empty string or an array of non-empty strings,
+and `maxTokenAge` a number of seconds above 0 or a duration string such as `'1h'`, `'30 minutes'` or `'7d'` (units: seconds, minutes, hours, days, weeks, years; a text such as `'1month'` is refused, and so is one that reads as zero or negative: `'0s'`, `'-1h'`, `'1h ago'`).
+An empty string is therefore an error and not a way to switch a check off, which
+matters for `issuer: process.env.JWT_ISSUER ?? ''`; read the variable, fail when it
+is missing, and pass only a real value. An empty array matches no token.
+See [Auth authorization and JWT validation](/en/migration/auth-authorization-validation)
+when upgrading.
+
 A token must carry an `exp` (expiration time) claim: a signed token without one
 never expires, so one that leaks stays valid until the signing key is rotated. A
 token without `exp`, or with an `exp` in the past, is rejected as `Unauthenticated`.
@@ -43,9 +53,9 @@ when upgrading.
 
 ### Errors and Skipped Methods
 
-A token that fails verification (bad signature, wrong issuer or audience, expired, no `exp`) ends the call with `Unauthenticated` and the fixed text `Authentication failed`; the text of the verification error is not sent to the client. A valid token with no subject fails with `JWT missing subject claim`. For the generic `createAuthInterceptor`, a `ConnectError` thrown by `verifyCredentials` is the exception: it reaches the client unchanged, so write its text for the client.
+A token that fails verification (bad signature, wrong issuer or audience, expired, no `exp`) ends the call with `Unauthenticated` and the fixed text `Authentication failed`; the text of the verification error is not sent to the client. A valid token whose subject is missing, an empty string or not a string (a number, a boolean, an object) fails with `JWT missing subject claim`; the subject is `claimsMapping.subject` when it names a string claim, and `sub` otherwise. For the generic `createAuthInterceptor`, a `ConnectError` thrown by `verifyCredentials` is the exception: it reaches the client unchanged, so write its text for the client.
 
-`skipMethods` takes exact methods and `Service/*` patterns. The catch-all `'*'` is refused when the interceptor is created, because it would switch authentication off for every method; to disable the interceptor, do not register it.
+`skipMethods` takes exact methods and `Service/*` patterns. The catch-all `'*'` is refused when the interceptor is created, because it would switch authentication off for every method; to disable the interceptor, do not register it. Any other pattern, such as `Service/Read*`, is refused too: it matches nothing.
 
 ## HMAC Secret
 

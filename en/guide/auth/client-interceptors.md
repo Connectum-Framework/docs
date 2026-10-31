@@ -50,6 +50,8 @@ const bearerAuth = createClientBearerInterceptor({
 });
 ```
 
+A static `token` must be a non-empty string: `createClientBearerInterceptor` throws a `TypeError` when it is created with anything else, which is what an unset environment variable gives (`process.env.API_TOKEN` is `undefined`). A factory that resolves to anything but a non-empty string, for example `undefined` or `null` after a failed refresh, fails that call on the client with `Code.Unauthenticated` and the message `@connectum/auth: createClientBearerInterceptor token factory returned ...; expected a non-empty string`. No request is sent, so the server never sees `Authorization: Bearer undefined`. A factory that throws keeps its own error. See [Auth authorization and JWT validation](/en/migration/auth-authorization-validation) when upgrading.
+
 `token` accepts either a static credential or an async factory. See
 [`ClientBearerInterceptorOptions`](/en/api/@connectum/auth/interfaces/ClientBearerInterceptorOptions)
 for the exact contract.
@@ -76,7 +78,9 @@ const transport = createConnectTransport({
 ```
 
 Provide a secret that matches the server trust source and a stable service subject;
-roles are optional. See
+roles are optional. `secret` and `subject` must be non-empty strings: an unset
+environment variable throws a `TypeError` when the interceptor is created, where it
+used to send `x-gateway-secret: undefined`. See
 [`ClientGatewayInterceptorOptions`](/en/api/@connectum/auth/interfaces/ClientGatewayInterceptorOptions)
 for exact fields.
 
