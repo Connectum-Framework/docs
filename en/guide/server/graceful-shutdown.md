@@ -89,9 +89,23 @@ Steps 6 and 7 run even if closing the transport fails before the timeout, so you
 
 When a hook fails, `stop()` rejects with the first failure. Hooks that do not depend on the failed one and have already started keep running, but `stop()` does not wait for them; hooks that depend on the failed one do not run at all. Only the first failure is reported. Keep hooks independent and let each one catch and log its own errors if the others must finish before `stop` is emitted.
 
+### Server streams {#streams-on-stop}
+
+A server stream whose handler is still sending when step 2 aborts the signal is ended by the framework. The client receives the messages already sent and then an error:
+
+| How the stream ends | What the client sees |
+|---|---|
+| The handler ignores `ctx.signal` and `stop()` cuts the stream | `unavailable` ("the server is shutting down"), over Connect, gRPC and in-process alike |
+| A deadline expires while the stream is sending | `deadline_exceeded` |
+| The client aborts the call | `canceled` |
+| The handler returns by itself after it sees the abort | A normal end: that is the handler's decision |
+| The handler converts the abort reason itself, for example `throw ConnectError.from(ctx.signal.reason)` | The error the handler raised: `canceled` |
+
+A normal end of stream means "the list is complete" to a client, so a stream the server had to cut must not look like one. `unavailable` tells a client that the call can be retried against another instance. Upgrading from 1.2, where such a stream ended without an error: see [Streams cut by stop()](/en/migration/shutdown-stream-cut).
+
 ### In-process calls
 
-The upcoming 1.3.0 release adds in-process cancellation to step 2. **This release is not yet published to npm.** In its current-main implementation, `context.signal` is aborted for calls made through `server.localClient()`, `server.client()` for a local service, `createLocalTransport()`, and `ctx.call` / `ctx.stream` to a local service; every hop of a local `ctx.call` chain sees it directly. A handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP.
+The upcoming 1.3.0 release adds in-process cancellation to step 2. **This release is not yet published to npm.** In its current-main implementation, `context.signal` is aborted for calls made through `server.localClient()`, `server.client()` for a local service, `createLocalTransport()`, and `ctx.call` / `ctx.stream` to a local service; every hop of a local `ctx.call` chain sees it directly. A handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP, and an in-process stream whose handler ignores the signal is cut with `unavailable` exactly like an HTTP one (see [Server streams](#streams-on-stop)).
 
 Steps 4 and 5 act on connections, and an in-process call has none: `stop()` neither waits for it nor destroys it, so a handler that ignores the signal keeps running and still completes its call. A local call made after `stop()` starts with an already-aborted signal. Upgrading from 1.2: see [In-process calls on shutdown](/en/migration/in-process-shutdown).
 
