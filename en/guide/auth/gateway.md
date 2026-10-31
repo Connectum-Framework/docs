@@ -97,7 +97,7 @@ trustSource: {
 
 If the header is missing or the value does not match any of the `expectedValues`, the interceptor throws `Unauthenticated`.
 
-The factory checks its required options when it is created and throws a `TypeError` that names the option: `headerMapping` and `trustSource` must be objects, `trustSource.header` a non-empty string, and `trustSource.expectedValues` an array whose entries are all non-empty strings. The `!` in `process.env.GATEWAY_SECRET!` only silences the type checker; when the variable is not set the entry is `undefined`, and the error says `trustSource.expectedValues[0] must be a non-empty string`. The message names the kind of the bad value and never its content, because the value may be a secret. An empty list keeps its own error, `requires non-empty trustSource.expectedValues`. See [Auth authorization and JWT validation](/en/migration/auth-authorization-validation) when upgrading.
+The factory checks its required options when it is created and throws a `TypeError` that names the option: `headerMapping` and `trustSource` must be objects, `trustSource.header` a valid HTTP header name, and `trustSource.expectedValues` an array whose entries are all non-empty strings. The `!` in `process.env.GATEWAY_SECRET!` only silences the type checker; when the variable is not set the entry is `undefined`, and the error says `trustSource.expectedValues[0] must be a non-empty string`. The message names the kind of the bad value and never its content, because the value may be a secret. An empty list keeps its own error, `requires non-empty trustSource.expectedValues`. See [Auth authorization and JWT validation](/en/migration/auth-authorization-validation) when upgrading.
 
 ## Header Stripping
 
