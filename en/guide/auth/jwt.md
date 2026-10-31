@@ -37,7 +37,7 @@ for the complete field contract and defaults.
 Omit `issuer`, `audience` or `maxTokenAge` to skip that check. A value that is
 present must be usable, and the factory throws when it is created otherwise:
 `issuer` and `audience` take a non-empty string or an array of non-empty strings,
-and `maxTokenAge` a number of seconds above 0 or a duration string such as `'1h'`, `'30 minutes'` or `'7d'` (units: seconds, minutes, hours, days, weeks, years; a text such as `'1month'` is refused).
+and `maxTokenAge` a number of seconds above 0 or a duration string such as `'1h'`, `'30 minutes'` or `'7d'` (units: seconds, minutes, hours, days, weeks, years; a text such as `'1month'` is refused, and so is one that reads as zero or negative: `'0s'`, `'-1h'`, `'1h ago'`).
 An empty string is therefore an error and not a way to switch a check off, which
 matters for `issuer: process.env.JWT_ISSUER ?? ''`; read the variable, fail when it
 is missing, and pass only a real value. An empty array matches no token.
