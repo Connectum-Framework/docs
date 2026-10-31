@@ -74,6 +74,8 @@ flowchart LR
 
 A `ConnectError` thrown by `verifySession` or `mapSession` reaches the client **unchanged**: its code and its text are sent verbatim, so write that text for the client (`new ConnectError('Session expired', Code.Unauthenticated)`). Any other thrown value is replaced by `Unauthenticated` with the fixed text `Session verification failed` (from `verifySession`) or `Session mapping failed` (from `mapSession`); its own message never leaves the server. The examples on this page throw a plain `Error` for this reason.
 
+`mapSession` must return a complete `AuthContext`: a string `subject` and `type`, arrays `roles` and `scopes` of at most 8192 strings and without holes, an object `claims`, and, when present, a string `name` and a `Date` `expiresAt`. Any other result (`null` from a failed lookup, `undefined`, `false`, `{}`, a missing or mistyped field) ends the call with `Unauthenticated` and the text `Session mapping failed`, with or without `propagateHeaders`, and is never cached. `verifyCredentials` of `createAuthInterceptor` follows the same rule with the text `Authentication failed`.
+
 ## Cookie-Based Auth
 
 When your session backend reads cookies directly from headers, extract the actual
@@ -114,6 +116,15 @@ header-dependent verifier unless the key uniquely identifies the session it
 verifies. The cache is bypassed when the mapped `expiresAt` has passed, or when
 its TTL expires. Revoking a session in the backend does not invalidate an already
 cached identity, so choose the TTL to fit your revocation policy.
+
+The cache stores a private copy of the identity, and every request served from it
+receives its own copy: the `AuthContext`, its `roles`, `scopes` and `expiresAt`, and
+`claims` with its nested plain objects, arrays and dates. Other values in `claims`
+(a `Map`, a class instance) are shared. A handler that changes its
+context, for example by pushing a role, keeps working as it does without a cache,
+and the change stays inside its request; a later request with the same token gets
+what the verifier returned. A cache hit costs one pass over the identity. The same holds for the `cache` option of
+`createAuthInterceptor`.
 
 ## Full Example
 
