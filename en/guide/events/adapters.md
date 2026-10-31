@@ -212,6 +212,15 @@ for good (the adapter logs that the subscription receives nothing more). The ada
 create a deleted stream itself, and `publish()` rejects while the stream does not exist. If the
 stream is lost again while the new consumer is being read, the consumer is created again first.
 
+How soon the adapter notices the loss depends on the server. When the server answers a waiting
+request for messages with `consumer deleted` or `no responders`, the adapter reacts at once. On
+nats-server 2.9 the server sometimes sends no answer at all to a request that was already
+waiting; the client then notices the loss only after it misses two idle heartbeats, which took
+30 to 45 s in the measurements (nats-server 2.9.25). On 2.10.29 and 2.15.0 this did not happen in
+60 deletions each. The adapter keeps the pull request cadence of every subscription as it is, so
+the delay on 2.9 is a known limit; use nats-server 2.10 or later when a subscription must resume
+sooner after its stream is recreated.
+
 A subscription that lists overlapping patterns (see above) recreates one consumer per pattern.
 Until a pattern's own consumer is back, a delivery of another pattern cannot know where the
 missing one starts and runs the handler itself, so an event can run the handler twice in that
