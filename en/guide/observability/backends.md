@@ -87,14 +87,38 @@ specification asks for the same behaviour for invalid numeric variables. Older
 versions threw when the provider was created, which happens on the first traced
 call.
 
+### Batch Log Record Processor
+
+Log records sent over OTLP (`otlp`, `otlp/http`, `otlp/http-protobuf`,
+`otlp/grpc`) are queued and exported in batches, the way spans are. A batch
+leaves when it is full or after `OTEL_BLRP_SCHEDULE_DELAY` milliseconds, so a
+record reaches the collector up to one second after it is emitted with the
+default settings. `shutdownProvider()` sends the records still in the queue; a
+process that exits without calling it loses them.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OTEL_BLRP_SCHEDULE_DELAY` | `1000` | Schedule delay (ms) |
+| `OTEL_BLRP_MAX_QUEUE_SIZE` | `2048` | Max queued log records |
+| `OTEL_BLRP_MAX_EXPORT_BATCH_SIZE` | `512` | Max log records per export batch |
+| `OTEL_BLRP_EXPORT_TIMEOUT` | `10000` | Export timeout (ms) |
+
+A record that arrives while the queue is full and a batch is being exported is
+dropped. An invalid value is handled as for the span variables above: a
+`CONNECTUM_OTEL_INVALID_ENV` process warning and the default from the table.
+
+Before 1.3.0 every record was exported on its own. The OTLP exporter refuses
+every request above its limit of 10 concurrent exports and does not retry, so
+100 records emitted in one tick to a collector that answered in 100 ms
+delivered 10. The `console` exporter still prints each record when it is
+emitted.
+
 ### Fixed export behaviour
 
 These are not configurable through environment variables:
 
 - Metrics are exported every 10 seconds. `OTEL_METRIC_EXPORT_INTERVAL` is not
   read.
-- Logs are exported record by record, as each one is emitted (a simple log
-  record processor, no batching).
 - The OpenTelemetry diagnostic logger is set to `ERROR` level when the provider
   is created, so SDK warnings and info messages are not printed. Warnings from
   Connectum itself go through the Node.js process warning channel and are not
