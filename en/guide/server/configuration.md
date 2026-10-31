@@ -65,7 +65,9 @@ console.log(config.NODE_ENV);       // "development" (default)
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
 | `GRACEFUL_SHUTDOWN_ENABLED` | `boolean` | `true` | Enable automatic graceful shutdown on SIGTERM/SIGINT |
-| `GRACEFUL_SHUTDOWN_TIMEOUT_MS` | `number` | `30000` | Maximum time (ms) to wait for in-flight requests (0--300000) |
+| `GRACEFUL_SHUTDOWN_TIMEOUT_MS` | `number` | `30000` | Maximum time (ms) to wait for in-flight requests: a whole number from 0 to 300000 |
+
+An empty or whitespace-only `GRACEFUL_SHUTDOWN_TIMEOUT_MS` and a fractional value such as `1.5` are rejected with an issue on the variable, the way an empty `PORT` is. Leave the variable out to get the default. `0` is accepted and means "do not wait for in-flight requests" (see [Graceful Shutdown](/en/guide/server/graceful-shutdown#shutdown-options)).
 
 ::: tip
 Boolean environment variables accept `"true"`, `"false"`, `"1"`, `"0"`, `"yes"`, and `"no"`.

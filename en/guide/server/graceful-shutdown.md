@@ -59,7 +59,7 @@ interface ShutdownOptions {
 |--------|---------|-------------|
 | `timeout` | `30000` | Maximum time (ms) to wait for in-flight requests |
 | `signals` | `['SIGTERM', 'SIGINT']` | OS signals that trigger shutdown |
-| `autoShutdown` | `false` | Automatically install signal handlers |
+| `autoShutdown` | `false` | Automatically install signal handlers when `start()` begins ([signals during startup](#stop-during-start)) |
 | `forceCloseOnTimeout` | `true` | Destroy every remaining client connection (HTTP/1.1, h2c, TLS) if the timeout is exceeded |
 
 `createServer()` validates both values and throws instead of starting a server that would cut connections at once:
@@ -87,7 +87,7 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 
 Steps 6 and 7 run even if closing the transport fails before the timeout, so your hooks always get to release their resources, and step 7 also runs if a hook fails. On this failure path the server emits `error` and then still emits `stop`, and `stop()` rejects with the error that occurred — or with an `AggregateError` carrying both when the transport close and a hook both failed. A close failure that only arrives after the timeout has already won is logged, not thrown: if the hooks succeed, `stop()` resolves normally.
 
-When a hook fails, `stop()` rejects with the first failure. Hooks that do not depend on the failed one and have already started keep running, but `stop()` does not wait for them; hooks that depend on the failed one do not run at all. Only the first failure is reported. Keep hooks independent and let each one catch and log its own errors if the others must finish before `stop` is emitted.
+A failing hook does not stop the others. Every hook runs and `stop()` waits for all of them before it emits `stop` and settles, because each hook releases a resource of its own and one failure says nothing about whether the rest can still succeed. A hook that depends on a failed hook runs once the failed one has finished. `stop()` then rejects with the failure itself when one hook failed, or with an `AggregateError` of all failures in registration order when several did (when the transport close failed as well, the `AggregateError` carries the close error and the hooks' error). A hook that never settles keeps `stop()` waiting, as it always has, so give hooks that talk to the network their own timeout.
 
 ### In-process calls
 
@@ -180,6 +180,12 @@ server.onShutdown('b', ['a'], () => {}); // Throws: dependency cycle detected
 ```
 :::
 
+::: warning Argument checks
+A call that matches none of the three forms -- `onShutdown(handler)`, `onShutdown(name, handler)`, `onShutdown(name, dependencies[], handler)` -- throws a `TypeError` that starts with `onShutdown(` at registration. That covers a missing hook function, a module name that is not a string, dependencies that are not an array of strings, and a single name passed where the array belongs (`onShutdown('x', 'db', fn)`).
+
+A dependency on a name that no hook registers is **not** an error: hooks may be registered in any order, so the name may be registered later, and the dependency is simply satisfied at once if it never is. Check module names for typos yourself.
+:::
+
 ### Multiple Handlers per Module
 
 You can register multiple handlers for the same named module. They run in parallel:
@@ -214,6 +220,8 @@ const server = createServer({
 await server.start();
 // Server stops cleanly on SIGTERM or SIGINT (Ctrl+C)
 ```
+
+The signal handlers are installed when `start()` begins and removed when the server stops or its start fails. All servers in a process share one process listener per signal, so a process (or a test suite) that hosts eleven or more servers with `autoShutdown` does not trigger Node.js's `MaxListenersExceededWarning`; each server still reacts to the signal on its own. See [Signals during startup](#stop-during-start) for what happens when the signal arrives before `start()` has finished.
 
 ### Manual Shutdown
 
@@ -253,9 +261,11 @@ from your own code:
   and settle with its outcome, also when it fails.
 - A call after the server has stopped resolves immediately. It does not run the
   shutdown hooks again and emits no events.
-- A call on a server that was never started, or is still starting, rejects: that is a
-  lifecycle mistake, not a repeat. A rejected `stop()` before `start()` leaves the
-  server in the `created` state.
+- A call on a server that was never started rejects: that is a lifecycle mistake, not
+  a repeat. A rejected `stop()` before `start()` leaves the server in the `created`
+  state.
+- A call while `start()` is still in progress is honoured, see
+  [Stop and signals during startup](#stop-during-start).
 - `server.onShutdown()` on a server that has already stopped throws, because the hook
   could never run.
 
@@ -268,6 +278,17 @@ await Promise.all([
 
 await server.stop(); // already stopped: resolves, does nothing
 ```
+
+### Stop and signals during startup {#stop-during-start}
+
+Starting is the slowest phase when an `eventBus` connects to a broker, and a termination request is the one request an operator cannot repeat: Kubernetes sends `SIGTERM` once and follows with `SIGKILL` after the grace period. A request that arrives while `start()` is still in progress is therefore honoured, not dropped:
+
+- `server.stop()` waits for the start to settle and then stops the server, so the sequence is `start`, `ready`, `stopping`, `stop`; the event bus and the shutdown hooks run as usual. `start()` resolves first, and the server is already `stopping` when the caller of `start()` resumes.
+- Several `stop()` calls made during startup all settle with the outcome of that one stop.
+- If the start fails, `start()` rejects as before and the pending `stop()` resolves, because the server is already stopped and there is nothing left to stop.
+- With `autoShutdown`, the signal handlers exist from the moment `start()` begins, so a `SIGTERM` or `SIGINT` during startup follows the same path. Before 1.3 the handlers appeared only after the port was bound, and a signal during a slow startup ended the process with the default signal action (exit code 143 for `SIGTERM`) without running hooks or stopping the event bus.
+
+The request waits for the start to settle. A `start()` that never settles (a broker connection without a timeout) keeps the stop pending as well, so give a startup step that can hang its own timeout. The process stays killable meanwhile: with `autoShutdown`, the first signal during the start releases the framework's signal handlers, so a second `SIGTERM` or `SIGINT` gets the default action and ends the process, the same as a repeated signal while a running server is stopping. A manual `stop()` has no such escape; end the process yourself if the start does not settle.
 
 ## Kubernetes Integration
 
