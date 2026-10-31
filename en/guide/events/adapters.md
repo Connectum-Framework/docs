@@ -133,6 +133,121 @@ only in part (`a.*.c` and `a.b.*`) need no special case.
   consumers of a named group in place for the next start; only the consumers of
   an auto-generated group are removed.
 
+### Consumer options {#nats-consumer-options}
+
+`NatsAdapter()` checks its options when it is created. A value it cannot honor throws
+a `TypeError` or `RangeError` that names the option; before 1.3.0 several of them were
+replaced silently (`ackWait: 0` became the default, an unknown `deliverPolicy` behaved like
+`"new"`, an empty `servers` list dialled the local address) or failed only at the first
+`subscribe()`. Valid values behave as before; see
+[NATS adapter options](/en/migration/events-nats-options) if an upgrade starts to throw.
+
+| Option | Default | Allowed |
+|---|---|---|
+| `servers` | required | a non-empty string, or a non-empty array of non-empty strings |
+| `consumerOptions.deliverPolicy` | `"new"` | `"new"`, `"all"`, `"last"` |
+| `consumerOptions.ackWait` | `30000` | a finite number of milliseconds greater than 0 |
+| `consumerOptions.maxDeliver` | `5` | `-1` (unlimited) or a positive integer |
+| `consumerOptions.prefetch` | the client's buffer of 100 | an integer from 1 to 2147483647 |
+| `consumerOptions.redeliveryDelay` | `0` | an integer number of milliseconds from 0 to 2147483647 |
+
+### Slow handlers and duplicates {#nats-prefetch}
+
+The server starts the `ackWait` timer of a message when it hands the message to the
+client, and the handler of a consumer runs one message at a time. The client buffers up to
+100 messages ahead of the handler, so a message at the back of a full buffer waits for
+every message in front of it. When that wait outgrows `ackWait` the server delivers the
+message again, and a single consumer sees duplicates. A full buffer of 100 with the
+default `ackWait` of 30 s reaches that point when handling takes more than 300 ms per
+message on average (the quotient of the two, not a measurement).
+
+Measured on JetStream 2.11 with `ackWait: 1500`: 8 messages of 400 ms each arrived 13
+times with the default buffer and 8 times with `prefetch: 1`. Set `consumerOptions.prefetch`
+to a small number for handlers that are slow compared with `ackWait / 100`, or raise
+`ackWait`. A smaller buffer makes the client ask the server for messages more often. The
+default is unchanged, and handlers must be idempotent either way.
+
+### Handler failures and `maxDeliver` {#nats-redelivery}
+
+A handler that throws gets its message back with a negative acknowledgement. With the
+default settings the server delivers it again at once, so the default `maxDeliver` of 5 is
+used up within milliseconds (five deliveries in 4 ms on JetStream 2.11 and 2.9.25) and a
+failure that a retry a second later would have cured is final. After the last delivery the server stops, the
+message stays in the stream until its retention removes it, and nothing consumes it again.
+
+- `consumerOptions.redeliveryDelay` is opt-in. With `redeliveryDelay: 1000` the server holds
+  the message for one second after each handler failure. The server keeps the pause, so it
+  does not block the handler or occupy buffer space; it applies to every failure of the
+  adapter's subscriptions, not to an explicit `nack()` of the handler, and `unsubscribe()`
+  cannot shorten it: the next consumer of the group receives the message after the pause.
+- A delay does not replace the [retry and dead-letter middleware](/en/guide/events/middleware)
+  for a message that can never succeed: each delivery still counts against `maxDeliver`.
+- When a handler failure or `nack()` gives a message back on the last delivery the consumer
+  allows, the adapter logs one error line that starts with `[EventBus/NATS]` and names the
+  topic, the delivery number, the consumer, the stream and the limit. A consumer with
+  `maxDeliver: -1` never reports it.
+
+### Metadata {#nats-metadata}
+
+The metadata passed to `publish()` reaches the handler (`ctx.metadata`) as it was given: keys
+keep their case, and keys that start with `x-` and values that are empty strings arrive too.
+One key belongs to the adapter: `x-event-id` carries the event id the adapter generates,
+and a value for it in the metadata is ignored. Before 1.3.0 the adapter dropped every
+`x-` key on publish and every empty value on receive, so a handler that read `x-request-id`
+saw it on Redis and in memory but not on NATS.
+
+### When the server loses the stream {#nats-stream-loss}
+
+Deleting a JetStream stream deletes its consumers. When the stream comes back, the adapter
+recreates the consumers of its subscriptions and the handlers receive events again:
+
+1. The adapter logs `[EventBus/NATS] The server lost consumer "..." ...` once.
+2. It polls for the stream (the pause grows from 250 ms to 5 s) and, when the stream exists,
+   creates the consumer again from the first message of the new stream: every message in a
+   stream created after the loss was published after it.
+3. It starts reading the new consumer and logs `... exists again; delivery resumes.`
+
+`unsubscribe()` and `disconnect()` end the wait, and so does a connection that the client closed
+for good (the adapter logs that the subscription receives nothing more). The adapter does not
+create a deleted stream itself, and `publish()` rejects while the stream does not exist. If the
+stream is lost again while the new consumer is being read, the consumer is created again first.
+
+How soon the adapter notices the loss depends on the server. When the server answers a waiting
+request for messages with `consumer deleted` or `no responders`, the adapter reacts at once. On
+nats-server 2.9 the server sometimes sends no answer at all to a request that was already
+waiting; the client then notices the loss only after it misses two idle heartbeats, which took
+30 to 45 s in the measurements (nats-server 2.9.25). On 2.10.29 and 2.15.0 this did not happen in
+60 deletions each. The adapter keeps the pull request cadence of every subscription as it is, so
+the delay on 2.9 is a known limit; use nats-server 2.10 or later when a subscription must resume
+sooner after its stream is recreated.
+
+A subscription that lists overlapping patterns (see above) recreates one consumer per pattern.
+Until a pattern's own consumer is back, a delivery of another pattern cannot know where the
+missing one starts and runs the handler itself, so an event can run the handler twice in that
+window and is never skipped; handlers must be idempotent, as everywhere on this adapter.
+
+A consumer deleted on its own, while its stream still exists, is a different case: an
+operator removed it, and the adapter does not create it again behind their back. It logs one
+line (`... was deleted while its stream still exists ...`), and the subscription receives
+nothing until the service subscribes again.
+
+### Timeout errors {#nats-timeouts}
+
+The client reports a request that got no answer as `TimeoutError: timeout`. The adapter puts
+what was being done in front of that text and keeps the error class and `name`:
+
+| Call | Message |
+|---|---|
+| `connect()` | `NatsAdapter: connect to <servers> did not complete in time: timeout` (20 s by default; `connectionOptions.timeout` changes it) |
+| `connect()`, creating the stream | `NatsAdapter: preparing stream "<stream>" on <servers> did not complete in time: timeout` |
+| `publish()` | `NatsAdapter: publish to topic "<topic>" on stream "<stream>" was not acknowledged in time: timeout` (5 s) |
+| `subscribe()` | `NatsAdapter: subscribe to topics ["<topic>", ...] on stream "<stream>" did not complete in time: timeout` |
+
+A topic longer than 100 characters is cut in the message and its length is given. A server
+URL with credentials (`nats://user:password@host:4222`) appears without them. When the broker
+is unreachable and the client has already given up reconnecting, the client's own
+`RequestError: connection closed` is raised instead and is not rewritten.
+
 ## Kafka or Redpanda {#kafka-adapter}
 
 Choose Kafka-compatible infrastructure for partitioned ordering, retained logs,
