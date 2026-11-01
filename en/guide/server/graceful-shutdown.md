@@ -91,9 +91,11 @@ When a hook fails, `stop()` rejects with the first failure. Hooks that do not de
 
 ### In-process calls
 
-The upcoming 1.3.0 release adds in-process cancellation to step 2. **This release is not yet published to npm.** In its current-main implementation, `context.signal` is aborted for calls made through `server.localClient()`, `server.client()` for a local service, `createLocalTransport()`, and `ctx.call` / `ctx.stream` to a local service; every hop of a local `ctx.call` chain sees it directly. A handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP.
+Since 1.3.0, step 2 also covers in-process calls: `context.signal` is aborted for calls made through `server.localClient()`, `server.client()` for a local service, `createLocalTransport()`, and `ctx.call` / `ctx.stream` to a local service; every hop of a local `ctx.call` chain sees it directly. A handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP.
 
-Steps 4 and 5 act on connections, and an in-process call has none: `stop()` neither waits for it nor destroys it, so a handler that ignores the signal keeps running and still completes its call. A local call made after `stop()` starts with an already-aborted signal. Upgrading from 1.2: see [In-process calls on shutdown](/en/migration/in-process-shutdown).
+Steps 4 and 5 act on connections, and an in-process call has none: `stop()` neither waits for it nor destroys it, so a handler that ignores the signal keeps running and still completes its call. A unary or client-streaming call made after `stop()` starts with an already-aborted signal and runs. A server-streaming or bidirectional call made after `stop()` has begun, from a shutdown hook for example, cannot be served: its first read fails with `unavailable` and the handler body does not start, so a hook never mistakes an empty list for a real answer.
+
+A client-streaming or bidirectional handler that is waiting for the next request message is released when its call is cancelled. When the caller aborts, its `for await` over the requests ends and its `finally` runs, as over HTTP/2. When `stop()` aborts the call, the loop fails with `unavailable` instead, so the handler does not take a truncated upload for a complete one. Upgrading from 1.2: see [In-process calls on shutdown](/en/migration/in-process-shutdown).
 
 ### EventBus
 
