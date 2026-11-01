@@ -95,7 +95,7 @@ Since 1.3.0, step 2 also covers in-process calls: `context.signal` is aborted fo
 
 Steps 4 and 5 act on connections, and an in-process call has none: `stop()` neither waits for it nor destroys it, so a handler that ignores the signal keeps running and still completes its call. A unary or client-streaming call made after `stop()` starts with an already-aborted signal and runs. A server-streaming or bidirectional call made after `stop()` has begun, from a shutdown hook for example, cannot be served: its first read fails with `unavailable` and the handler body does not start, so a hook never mistakes an empty list for a real answer.
 
-A client-streaming or bidirectional handler that is waiting for the next request message is released when its call is cancelled. When the caller aborts, its `for await` over the requests ends and its `finally` runs, as over HTTP/2. When `stop()` aborts the call, the loop fails with `unavailable` instead, so the handler does not take a truncated upload for a complete one. Upgrading from 1.2: see [In-process calls on shutdown](/en/migration/in-process-shutdown).
+A client-streaming or bidirectional handler that is waiting for the next request message is released when the caller cancels the call (its `AbortSignal` or a deadline): its `for await` over the requests ends and its `finally` runs, as over HTTP/2. `stop()` does not do that. It does not end an in-process call, so an upload that is still being sent keeps being read and the call completes, as it does over HTTP/2 within the shutdown timeout. Upgrading from 1.2: see [In-process calls on shutdown](/en/migration/in-process-shutdown).
 
 ### EventBus
 
