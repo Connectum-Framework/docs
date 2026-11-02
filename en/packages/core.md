@@ -51,7 +51,7 @@ await server.start();
 
 | Entry point | Use it to |
 |---|---|
-| `createServer` | Compose services, protocols, interceptors, and shutdown policy. |
+| `createServer` | Compose services, protocols, interceptors, shutdown policy, and the `logger` that receives the server's own lifecycle messages (`console` by default). |
 | `defineService` | Bind a generated service descriptor to typed handlers. |
 | `createCatalogClient` | Call catalog services outside a server handler. |
 

@@ -156,6 +156,10 @@ server.on('ready', () => {
 await server.start();
 ```
 
+### Server log messages
+
+The `LOG_*` variables above belong to the schema; `createServer()` does not read them to choose where its own messages go (the listening address, received signals, shutdown problems, transport warnings). Those go to `console` unless you pass a `logger` object with `info`, `warn` and `error` functions. See [Server log messages](/en/guide/server/lifecycle#server-log-messages) for the full list and the rules of the option.
+
 ## TLS Configuration
 
 TLS is configured via the `tls` option in `createServer()`. Certificates can be loaded from explicit paths or a directory:

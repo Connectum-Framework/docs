@@ -180,6 +180,27 @@ server.onShutdown('b', ['a'], () => {}); // Throws: dependency cycle detected
 ```
 :::
 
+### Dependency on an unregistered name {#unregistered-dependency}
+
+A dependency on a name that no hook registered is not an error. Hooks can be added in any order, so the names are checked once, when the server stops. The hook that names a missing dependency still runs, and it runs at once because there is nothing to wait for. A misspelled name silently loses the ordering you meant, so the server reports it:
+
+```typescript
+server.onShutdown('api', ['db'], async () => {
+  await api.drain();
+});
+// No hook named 'db' is ever registered.
+```
+
+When the server stops, the logger receives one warning:
+
+```text
+Shutdown hook "api" depends on "db", but no shutdown hook is registered under that name, so there is nothing to wait for. Check the name passed to onShutdown().
+```
+
+- **One warning per missing name.** If several hooks depend on the same missing name, a single warning lists them: `Shutdown hooks "a", "b" depend on "db", ...`. Each different missing name gets its own warning.
+- **A later registration is fine.** A dependency registered after the hook that names it gives no warning, as long as it is registered before the hooks run. The ordering then applies as usual.
+- **The warning goes to the server logger.** That is `console.warn` unless you pass [`logger`](/en/guide/server/lifecycle#server-log-messages) to `createServer()`.
+
 ### Multiple Handlers per Module
 
 You can register multiple handlers for the same named module. They run in parallel:

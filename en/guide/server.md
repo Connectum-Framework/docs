@@ -34,6 +34,7 @@ await server.start();
 | Need | Canonical destination |
 |---|---|
 | Understand states, events, and `shutdownSignal` | [Lifecycle](/en/guide/server/lifecycle) |
+| Send the server's own messages to your logger | [Server log messages](/en/guide/server/lifecycle#server-log-messages) |
 | Configure listen address, TLS, environment, or schema extension | [Configuration](/en/guide/server/configuration) |
 | Drain requests, coordinate hooks, and fit a deployment deadline | [Graceful shutdown](/en/guide/server/graceful-shutdown) |
 | Select HTTP/1.1, h2c, or TLS/ALPN behavior | [Transport matrix](/en/guide/production/transport-matrix) |
