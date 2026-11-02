@@ -267,6 +267,7 @@ For the full set of resolver factories (`singleTransportResolver`, `mapResolver`
 - **`createLocalClient(server, service)`** — concise client for unit and integration tests without binding ports.
 - **`transportParityTest(name, options)`** — driver that runs a single declarative scenario against both `createGrpcTransport({ baseUrl })` and `createLocalTransport(server)` and structurally diffs the observable outcome (response payload, headers, `ConnectError` fields, OTEL spans modulo `connectum.transport`, metrics modulo `transport` label). Any divergence fails the test.
 - **In-memory OTEL collectors** — `SpanExporter` and `MetricReader` helpers used by the parity driver for assertion on tracing and metrics output.
+- **`withTelemetry({ shutdownProvider }, body)`** — gives one test body fresh span and metric collectors registered as the OpenTelemetry providers and unregisters them afterwards, also when the body throws. `transportParityTest` does the same for every run when you pass `telemetry: { shutdownProvider }`.
 
 Use the parity driver to compare custom interceptors and proto-declared rules across
 transports for each scenario you test:
@@ -293,7 +294,25 @@ transportParityTest('greeter.sayHello rejects empty name', {
 });
 ```
 
-See [@connectum/testing](/en/packages/testing) for the full API.
+To compare the spans and metrics that `@connectum/otel` records, add `telemetry: { shutdownProvider }` (from `@connectum/otel`) and run with `OTEL_TRACES_EXPORTER=none` and `OTEL_METRICS_EXPORTER=none`. Without it, only the first scenario in a process records spans:
+
+```typescript
+import { createClient } from '@connectrpc/connect';
+import { createOtelInterceptor, shutdownProvider } from '@connectum/otel';
+import { transportParityTest } from '@connectum/testing/parity';
+
+transportParityTest('greeter.sayHello emits the same span on both transports', {
+  services: [greeterRoutes],
+  interceptors: [createOtelInterceptor()],
+  telemetry: { shutdownProvider },
+  scenario: async ({ transport, spans }) => {
+    await createClient(GreeterService, transport).sayHello({ name: 'world' });
+    return { spans: spans.flush() };
+  },
+});
+```
+
+See [Spans and metrics of `@connectum/otel` in a test](/en/packages/testing#isolated-telemetry) for the constraints, and [@connectum/testing](/en/packages/testing) for the full API.
 
 ## See Also
 

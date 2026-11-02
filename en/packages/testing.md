@@ -54,6 +54,63 @@ await withTestServer({ services: [greeterService] }, async (server) => {
 | `createTestServer` | Create an isolated Connectum server for a test. |
 | `withTestServer` | Manage test-server setup and teardown. |
 | `createLocalClient` | Exercise handlers through the in-process transport. |
+| `withTelemetry` | Give one test body its own span and metric collectors for `@connectum/otel` instrumentation. |
+
+## Spans and Metrics of `@connectum/otel` in a Test {#isolated-telemetry}
+
+`@connectum/otel` keeps the tracer it created for the provider that was registered
+when it first recorded something. A scenario that only registers its own collector
+therefore sees spans in the first test of a process and nothing in later ones, and a
+parity comparison of two empty results still passes.
+
+Set the opt-in `telemetry` option of `transportParityTest` and the driver does the
+whole sequence around every run: it resets the provider, registers that run's `spans`
+and `metrics` collectors as the OpenTelemetry providers, and unregisters them when the
+run ends, also when the scenario throws. Run with `OTEL_TRACES_EXPORTER=none` and
+`OTEL_METRICS_EXPORTER=none`.
+
+~~~typescript
+import { createClient } from '@connectrpc/connect';
+import { createOtelInterceptor, shutdownProvider } from '@connectum/otel';
+import { transportParityTest } from '@connectum/testing/parity';
+
+transportParityTest('Greeter.sayHello emits the same span on both transports', {
+  services: [greeterRoutes],
+  interceptors: [createOtelInterceptor()],
+  telemetry: { shutdownProvider },
+  scenario: async ({ transport, spans }) => {
+    await createClient(GreeterService, transport).sayHello({ name: 'world' });
+    return { spans: spans.flush() };
+  },
+});
+~~~
+
+Outside the parity driver, `withTelemetry({ shutdownProvider }, body)` does the same
+around any async body and returns what the body returns:
+
+~~~typescript
+import { shutdownProvider } from '@connectum/otel';
+import { withTelemetry } from '@connectum/testing';
+
+const names = await withTelemetry({ shutdownProvider }, async ({ spans, metrics }) => {
+  await client.sayHello({ name: 'world' });
+  return spans.flush().map((span) => span.name);
+});
+~~~
+
+What to know before you use either:
+
+- `shutdownProvider` is a parameter, not an import. `@connectum/testing` does not
+  depend on `@connectum/otel`, and the function that is reset must be the one your
+  code under test uses.
+- The registrations are process-wide, so scenarios that use telemetry run one after
+  another. An overlapping call is refused with an error.
+- Without `telemetry` the parity driver behaves as before.
+- Only the span and metric providers are registered. The helper does not set the
+  `OTEL_*_EXPORTER` variables, a context manager, or a propagator; set them yourself
+  when the scenario needs them, for example to link a client span and a server span.
+- Two empty results still compare as equal. Assert that `spans.flush()` is not empty
+  before the scenario returns it.
 
 ## Learn / Configure / API Reference {#api-reference}
 

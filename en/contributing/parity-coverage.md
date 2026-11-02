@@ -97,5 +97,27 @@ bulkhead failure behavior. The logger case does not compare sink output. Use the
      },
    });
    ```
+
+   A scenario in `packages/otel/tests/parity/` that asserts spans or metrics
+   from `@connectum/otel` interceptors adds `telemetry: { shutdownProvider }`
+   (`shutdownProvider` comes from `@connectum/otel`) and sets
+   `OTEL_TRACES_EXPORTER=none` and `OTEL_METRICS_EXPORTER=none`:
+
+   ```typescript
+   transportParityTest("group 7a: short title", {
+     services: [myRoutes],
+     interceptors: [createOtelInterceptor()],
+     telemetry: { shutdownProvider },
+     scenario: async ({ transport, spans }) => {
+       const client = createClient(MyService, transport);
+       await client.myMethod({ /* ... */ });
+       return { spans: spans.flush() };
+     },
+   });
+   ```
+
+   Without it, only the first scenario in a process records spans; the later
+   ones compare two empty lists and pass. See
+   [Spans and metrics of `@connectum/otel` in a test](/en/packages/testing#isolated-telemetry).
 3. From the framework repository root, run `bash ./scripts/parity-suite.sh` locally.
 4. Update the table above.

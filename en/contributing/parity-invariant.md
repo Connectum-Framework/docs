@@ -32,7 +32,13 @@ revised or accompanied by a documented carve-out in the spec.
 1. **`transportParityTest()` driver** (`@connectum/testing/parity`) runs every
    scenario twice — once over `createGrpcTransport({ baseUrl })` and once over
    `createLocalTransport(server)` — and performs a structural diff on the
-   normalized result (response, headers, error, OTEL spans, metrics).
+   normalized result (response, headers, error, OTEL spans, metrics). With the
+   opt-in `telemetry: { shutdownProvider }` option the driver also resets the
+   `@connectum/otel` provider before each run and registers that run's span and
+   metric collectors. The reset is what makes the second and later scenarios in a
+   process record spans at all: `@connectum/otel` keeps the tracer of the first
+   provider registered, so without it two empty results compare as equal and the
+   test passes (see [Spans and metrics of `@connectum/otel` in a test](/en/packages/testing#isolated-telemetry)).
 2. **Parity suite** — aggregated by `scripts/parity-suite.sh`, which runs the
    parity tests of `@connectum/testing` (interceptors, validation, streaming,
    error mapping, coexistence, request admission, reflection),
