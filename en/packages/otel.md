@@ -53,6 +53,7 @@ could create a second provider that competed for OpenTelemetry's global registra
 | `getProvider` / `OtelProvider` | Get the shared provider (`tracer`, `meter`, `logger`, `shutdown()`) and name its type; see [Provider management](/en/guide/observability/backends#provider-management). |
 | `createOtelInterceptor` | Instrument inbound RPCs. |
 | `createOtelClientInterceptor` | Instrument outbound RPCs and propagate context. |
+| `traced` / `traceAll` | Wrap functions or all methods of an object in spans; see [When the span ends](/en/guide/observability/tracing#when-the-span-ends) for promises, generators, and query builders. |
 
 ## Learn / Configure / API Reference {#api-reference}
 
