@@ -58,7 +58,7 @@ flowchart TD
 ```
 
 ::: warning One singleton serves one server
-Every `Healthcheck()` without `manager` uses this singleton, and each server's start re-initializes it with only that server's services. Start a second server in the same process and the first server's services leave the registry. The first server keeps running, but it answers `NOT_FOUND` for its own service and `NOT_SERVING` for the overall check (empty service name). Neither server logs a warning. Give each server its own manager, as shown in [Isolated Manager for Testing](#isolated-manager-for-testing).
+Every `Healthcheck()` without `manager` uses this singleton, and each server's start re-initializes it with only that server's services. Start a second server in the same process and every service the second server does not mount leaves the registry, including the first server's own. The first server keeps running, but it answers `NOT_FOUND` for those services. The overall check (empty service name) is computed over the one shared registry, so it also follows the other server's statuses: it reports `NOT_SERVING` while any entry is not `SERVING`. Neither server logs a warning. Give each server its own manager, as shown in [Isolated Manager for Testing](#isolated-manager-for-testing).
 :::
 
 ### ServingStatus Values
