@@ -26,18 +26,21 @@ interface ProtocolRegistration {
   /** Register protocol services on the router, once per router */
   register(router: ConnectRouter): void;
 
+  /** Optional. Called once, after the last protocol has registered, with the complete service set */
+  ready?(context: ProtocolContext): void;
+
   /** Optional HTTP handler for fallback routing (e.g. /healthz endpoint) */
   httpHandler?: HttpHandler;
 }
 ```
 
-The `ProtocolContext` passed to `setup` provides the services mounted before this protocol and their file descriptors:
+The `ProtocolContext` passed to `setup` provides the services mounted before this protocol and their file descriptors. The one passed to `ready` provides all of them:
 
 ```typescript
 interface ProtocolContext {
-  /** Service file descriptors registered before this protocol (frozen snapshot) */
+  /** Service file descriptors registered before this protocol; in `ready`, all of them (frozen snapshot) */
   readonly registry: ReadonlyArray<DescFile>;
-  /** Services mounted before this protocol, in registration order (frozen snapshot) */
+  /** Services mounted before this protocol, in registration order; in `ready`, all of them (frozen snapshot) */
   readonly services: ReadonlyArray<DescService>;
 }
 ```
@@ -59,6 +62,7 @@ Protocols are passed to `createServer()` via the `protocols` array. A server bui
 
 - **`setup(context)`** runs **once per server** when route materialization succeeds, immediately before the protocol's first `register()` — on `server.start()`, or earlier if an in-process client is created first. Routers built after that call `register()` again and reuse what `setup` prepared; they do not call `setup`. Put everything that reads the registry or has side effects here. If that initial materialization fails (a service or protocol throws), the next attempt calls `setup` once more and repeats its side effects, so keep them idempotent, or undo them when a later step of the same materialization fails. A failure on a router built later does not call `setup`.
 - **`register(router)`** runs **once per router** and must only add routes. It must not change state that other routers or the application can observe — otherwise the first in-process call would change what HTTP clients see.
+- **`ready(context)`** is optional and runs **once per server**, after the `register` of the last protocol, with every mounted service and file in the context, wherever the protocol stands in the `protocols` array. Use it when the protocol has to describe the whole server independently of protocol order, as `Reflection()` does. The routes of the first router are already registered by then, so `ready` cannot add routes: a handler registered in `register` reads what `ready` prepared when a request arrives. Routers built later do not call `ready` again, and a failed initial materialization runs it again together with `setup`. A protocol without `ready` works as before.
 
 A registration object belongs to **one server**. Whatever `setup` stores in it — the service list in the example below, the descriptor set of `Reflection()` — is that server's state. Passing the same object to a second server lets the second server's `setup` overwrite it, and the first server's later routers then serve the second server's data. Call the protocol factory once per server:
 
@@ -67,7 +71,7 @@ const serverA = createServer({ services: [routesA], protocols: [Reflection()] })
 const serverB = createServer({ services: [routesB], protocols: [Reflection()] });
 ```
 
-Protocols are processed in array order. The `context.services` (and `context.registry`, their files) a protocol receives in `setup` hold every mounted application service plus the services of the protocols listed **before** it, as frozen snapshots. That is why `Healthcheck()` does not track its own `grpc.health.v1.Health` service, while a `Reflection()` listed after it does list it:
+Protocols are set up and registered in array order. The `context.services` (and `context.registry`, their files) a protocol receives in `setup` hold every mounted application service plus the services of the protocols listed **before** it, as frozen snapshots. That is why `Healthcheck()` does not track its own `grpc.health.v1.Health` service, and why it tracks only the services of protocols listed before it. `Reflection()` is different: it reads the complete set in `ready`, so it lists every service whatever its position in the array:
 
 ```typescript
 import { createServer } from '@connectum/core';
@@ -234,7 +238,7 @@ const server = createServer({
 
 ## Using ProtocolContext
 
-`context.services` lists the `DescService` objects (from `@bufbuild/protobuf`) of the services mounted before your protocol: the application services, then the services of the protocols listed before yours. Use it whenever you need the services the server actually serves — this is how the built-in Healthcheck and Reflection protocols decide what to track and list:
+In `setup`, `context.services` lists the `DescService` objects (from `@bufbuild/protobuf`) of the services mounted before your protocol: the application services, then the services of the protocols listed before yours. In `ready` it lists all of them. Use it whenever you need the services the server actually serves — this is how the built-in Healthcheck (in `setup`) and Reflection (in `ready`) decide what to track and list:
 
 ```typescript
 setup(context): void {
@@ -257,11 +261,11 @@ setup(context): void {
 
 3. **One-time work in `setup()`, routes in `register()`** -- `register()` runs for every router the server builds, so anything with side effects there (initializing state, opening resources, reading the registry) would run again on the first in-process call. Compute once in `setup()`, capture the result in the closure, and let `register()` only call `router.service(...)`.
 
-4. **Keep setup() and register() synchronous** -- Both signatures are synchronous. If you need async setup, do it before creating the protocol or inside the service handlers.
+4. **Keep setup(), register() and ready() synchronous** -- All three signatures are synchronous. If you need async setup, do it before creating the protocol or inside the service handlers.
 
 5. **Return `false` from httpHandler for unmatched routes** -- This allows other protocols and the default fallback to process the request. When no handler claims it, a `POST` to `/<service>/<method>` with a Connect, gRPC or gRPC-Web content type is answered with `unimplemented` in the protocol of the request (see [Unknown procedures](#unknown-procedures)); every other request gets a plain `404 Not Found`.
 
-6. **Use ProtocolContext for service discovery** -- Do not hardcode service names. Use `context.services` in `setup()` to discover what services are mounted.
+6. **Use ProtocolContext for service discovery** -- Do not hardcode service names. Use `context.services` in `setup()` to discover the services mounted before your protocol, or in `ready()` to discover all of them.
 
 ::: warning Upgrading from `register(router, context)`
 Earlier releases passed `context` to `register()`. See [Custom protocols: setup/register split](/en/migration/protocol-setup) for the migration.
