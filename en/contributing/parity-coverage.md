@@ -27,10 +27,10 @@ suite on the revision you intend to validate.
 | 6 | HTTP / local coexistence (concurrent observation by one interceptor; `server.start()` not required for local invoke) | `packages/testing/tests/parity/coexistence.parity.test.ts` + `packages/core/tests/integration/localTransport.test.ts` | **2** |
 | 7a | OTEL tracing & metrics (unary spans, streaming events, error spans, metrics labels, trace-context propagation, instrument subset, `connectum.transport` attribute) | `packages/otel/tests/parity/otel.parity.test.ts` | **7** |
 | 8 | Request admission (rejecting `requestGate`, `requestGate` throwing a plain `Error`, admitting `requestGate`, `readMaxBytes` over the limit, `readMaxBytes` at the limit, `server.stop()` aborting an in-flight call) | `packages/testing/tests/parity/requestAdmission.parity.test.ts` | **6** |
-| 9 | gRPC Server Reflection (one bidi stream with every request kind: listing, import closure, per-stream "already sent" state, symbol and extension lookup, error answers) | `packages/testing/tests/parity/reflection.parity.test.ts` | **1** |
-| **Total** | | | **46** |
+| 9 | gRPC Server Reflection (one bidi stream with every request kind: listing, import closure, per-stream "already sent" state, symbol and extension lookup, error answers; the reflection service described by symbol; a bounded error message) | `packages/testing/tests/parity/reflection.parity.test.ts` | **3** |
+| **Total** | | | **48** |
 
-Of these, **35 scenarios** (groups 3, 3a, 3b, 3c, 4, 5, 8, 9, except the two
+Of these, **37 scenarios** (groups 3, 3a, 3b, 3c, 4, 5, 8, 9, except the two
 no-bypass checks of groups 3a and 3b, which are standalone tests) go through the unified
 `transportParityTest()` driver in `@connectum/testing/parity` and produce a
 structural diff between HTTP and local. The 7 OTEL scenarios and 2 coexistence
