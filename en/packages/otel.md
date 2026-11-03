@@ -17,7 +17,9 @@ npm install @connectum/otel
 ~~~
 == pnpm
 ~~~bash
-pnpm add @connectum/otel
+# pnpm 11 and later: decline the build script of protobufjs, a transitive dependency of the
+# OTLP gRPC exporters. Without the flag the install ends with ERR_PNPM_IGNORED_BUILDS (exit code 1).
+pnpm add --allow-build='!protobufjs' @connectum/otel
 ~~~
 == bun
 ~~~bash

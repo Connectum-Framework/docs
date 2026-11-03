@@ -106,8 +106,8 @@ An explicit per-service map. Use it when each remote service has its own transpo
 ```typescript
 import { createServer, mapResolver } from '@connectum/core';
 import { createGrpcTransport } from '@connectrpc/connect-node';
-import { OrdersService } from '#gen/orders/v1/orders_pb.js';
-import { InventoryService } from '#gen/inventory/v1/inventory_pb.js';
+import { OrdersService } from '#gen/orders/v1/orders_pb.ts';
+import { InventoryService } from '#gen/inventory/v1/inventory_pb.ts';
 
 const server = createServer({
   services: [myRoutes],
@@ -166,7 +166,7 @@ when the resolver is consulted, not on every RPC after a route has been cached.
 
 ```typescript
 import { createServer, perServiceEnvResolver } from '@connectum/core';
-import { OrdersService } from '#gen/orders/v1/orders_pb.js';
+import { OrdersService } from '#gen/orders/v1/orders_pb.ts';
 
 // Reads process.env.ORDERS_URL at resolve time.
 const server = createServer({
@@ -268,7 +268,7 @@ failover to the next resolver.
 import { create } from '@bufbuild/protobuf';
 import { createServer } from '@connectum/core';
 import { mockResolver, mockService, MOCK_RESPONSE_HEADER } from '@connectum/testing';
-import { InventoryService, GetStockRequestSchema, StockSchema } from '#gen/inventory/v1/inventory_pb.js';
+import { InventoryService, GetStockRequestSchema, StockSchema } from '#gen/inventory/v1/inventory_pb.ts';
 
 const server = createServer({
   services: [],
@@ -296,8 +296,8 @@ To unit-test a handler's `ctx.call` / `ctx.stream` logic in isolation, `createMo
 import { create } from '@bufbuild/protobuf';
 import { defineCatalog } from '@connectum/core';
 import { createMockContext, mockService } from '@connectum/testing';
-import { InventoryService, StockSchema } from '#gen/inventory/v1/inventory_pb.js';
-import { CreateOrderSchema } from '#gen/orders/v1/orders_pb.js';
+import { InventoryService, StockSchema } from '#gen/inventory/v1/inventory_pb.ts';
+import { CreateOrderSchema } from '#gen/orders/v1/orders_pb.ts';
 
 const ctx = createMockContext({
   catalog: defineCatalog({ [InventoryService.typeName]: InventoryService }),
