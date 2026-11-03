@@ -72,6 +72,7 @@ Each item applies only if your code or configuration matches it.
 - If your tests use the descriptor mocks of `@connectum/test-fixtures` or `@connectum/testing` (`createMockDescMessage`, `createMockDescField`, `createMockDescMethod`, `createFakeMethod`, `createMockNextSlow`), follow [Test fixture descriptors follow protobuf-es](/en/migration/test-fixtures-descriptors): `create(mock)` now returns zeroed fields, a snake_case name gives a camelCase `localName`, and a repeated field number throws.
 - If your code reads the request type of a regenerated service catalog (`ConnectumCallMap`, `ConnectumStreamMap`) as a full message, follow section 3 of [Migrating to the Service Catalog](/en/migration/service-catalog): the request slot is now `MessageInitShape<typeof RequestSchema>`, so take `MessageShape<typeof RequestSchema>` from the schema or normalize with `create(RequestSchema, request)`.
 - If you use `@connectum/events-redis` with a `brokerOptions.maxLen`, `blockMs` or `count` that is not a whole number in range (`maxLen: 0` included), or with a server that needs longer than `redisOptions.connectTimeout` to become ready, follow [Redis adapter options](/en/migration/redis-adapter-options): `RedisAdapter()` now throws for such an option and `connect()` rejects after the timeout.
+- If you pass `KafkaAdapter()` an empty or non-array `brokers`, an empty `clientId`, a `sessionTimeout` of 3000 ms or less, an invalid `retry` or an unknown `sasl.mechanism`, follow [Kafka adapter validation](/en/migration/kafka-option-validation): the constructor now throws.
 
 ## Focused Migrations
 
@@ -112,6 +113,10 @@ Each item applies only if your code or configuration matches it.
   top-level `ssl`, `sasl`, timeouts, `retry` and `logLevel` plus `clientOptions`, and
   `compression` is a name (**breaking** for services that pass `kafkaConfig` or a
   numeric `compression`).
+- [Kafka adapter validation](/en/migration/kafka-option-validation) — from 1.3,
+  `KafkaAdapter()` throws for an empty or non-array `brokers`, an empty `clientId`, a
+  `sessionTimeout` that is not above 3000 ms, an invalid `retry` and an unknown
+  `sasl.mechanism` (**breaking** for services that pass such options).
 - [In-process calls on shutdown](/en/migration/in-process-shutdown) — from 1.3,
   `server.stop()` aborts `context.signal` of in-flight in-process calls exactly
   like HTTP calls.
