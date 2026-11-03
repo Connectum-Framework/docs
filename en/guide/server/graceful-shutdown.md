@@ -234,8 +234,10 @@ Received SIGTERM again while the server is shutting down; the process is termina
 The hooks that have not finished are cut short, and the `stop` event is not emitted.
 Plan for this when a hook releases something that must not be left half-done.
 
-If your application registers its own `process.on('SIGTERM', ...)` listener, or another
-server in the same process is running, the process is not terminated: the listener
+If your application registers its own `process.on('SIGTERM', ...)` listener (a
+`process.once` listener is not counted once it has run, because Node.js removes it
+before calling it), or another server in the same process is running, the process is
+not terminated: the listener
 receives the signal, and the warning says that other listeners handle it. A signal
 that arrives after `stop()` has completed is not handled by the server at all.
 
