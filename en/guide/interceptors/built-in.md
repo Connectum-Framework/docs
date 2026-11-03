@@ -90,12 +90,6 @@ The same option exists on `createErrorHandlerInterceptor({ exposeErrorMessages: 
 
 ## Cancellation and Streaming Scope {#cancellation-and-streaming-scope}
 
-::: info Upcoming in 1.3.0
-This cancellation behavior is planned for the upcoming `@connectum/interceptors`
-1.3.0 release. The published 1.2.x package does not forward timeout cancellation
-to downstream handler work.
-:::
-
 An enabled timeout forwards its own deadline and caller cancellation to
 downstream work. Its own deadline rejects with `DeadlineExceeded`. Caller
 cancellation preserves an existing `ConnectError`, including its code, message,
@@ -480,7 +474,7 @@ createLoggerInterceptor({ includeBodies: true });
 ```
 
 ::: warning Bodies in logs
-Enable `includeBodies` only where the log is as protected as the traffic itself. The upcoming 1.3.0 release makes bodies opt-in; **that release is not yet published to npm**. See [Logger bodies are opt-in](/en/migration/logger-bodies).
+Enable `includeBodies` only where the log is as protected as the traffic itself. Since 1.3.0, bodies are opt-in. See [Logger bodies are opt-in](/en/migration/logger-bodies).
 :::
 
 ### The logger cannot break a call

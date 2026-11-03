@@ -32,7 +32,7 @@ are opt-in. They are described in
 ### Terminal `>` excludes the base routing key {#terminal-wildcard}
 
 In the published 1.2.0 adapter, `user.>` was bound as RabbitMQ's `user.#`, so
-the broker also routed the base key `user` to that subscription. The upcoming
+the broker also routed the base key `user` to that subscription. The
 1.3.0 adapter binds `user.*.#`: RabbitMQ's `*` requires one segment and `#`
 then accepts zero or more additional segments.
 

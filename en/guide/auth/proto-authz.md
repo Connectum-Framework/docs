@@ -7,9 +7,8 @@ outline: deep
 
 # Proto-Based Authorization
 
-This guide targets the documented `1.3.x` release line. Features marked `Since
-1.3.0` require `@connectum/auth` 1.3.0 or later; they are unavailable from the
-published `1.2.x` package until 1.3.0 is released.
+This guide targets the `1.3.x` release line. Features marked `Since 1.3.0`
+require `@connectum/auth` 1.3.0 or later.
 
 Define authorization rules directly in `.proto` files using custom options. The `createProtoAuthzInterceptor()` reads these options at runtime via protobuf reflection -- no code changes when access rules evolve.
 

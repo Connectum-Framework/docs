@@ -45,7 +45,7 @@ does not create a distributed transaction.
 - [Routing, EventContext and shutdown drain](/en/guide/events/concepts).
 - [Retry, dead letters and consuming middleware](/en/guide/events/middleware).
 
-Features marked **Since 1.3.0** in the detailed guides require that package
-release; they are not available from published **1.2.x** packages before it ships.
+Features marked **Since 1.3.0** in the detailed guides require that package at
+1.3.0 or later.
 
 <GuideSections route="/en/guide/events" />

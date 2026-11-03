@@ -15,8 +15,9 @@ Inventory runs, then observe what happens when its route is missing.
 ## Run the same example
 
 You need **Node.js ≥22.13**, npm, and a curl build with HTTP/2 support. The complete
-example uses the published **1.2.0** core and generator, with full protobuf request
-messages; it does not require the unpublished 1.3 CLI. No broker or telemetry
+example pins `@connectum/core` and the catalog generator at **1.2.0** and sends full
+protobuf request messages, which every release accepts; it does not require the 1.3
+CLI. No broker or telemetry
 backend is needed.
 
 Create an empty folder and add the six files below. Generate the contracts once,

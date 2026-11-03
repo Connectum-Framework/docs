@@ -64,7 +64,7 @@ const stock = await ctx.call(
 
 The method key uses the proto name `CheckStock`, not the handler name `checkStock`.
 TypeScript knows the request shape and that `stock.units` is a number. The full
-message created here also works with the published **1.2.0** catalog generator.
+message created here also works with catalog generators before 1.3.0.
 
 ## Knowing a contract is not finding a server
 

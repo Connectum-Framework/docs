@@ -311,9 +311,8 @@ image host all services locally or a selected role without changing its call sit
 
 Every entry of `enabledServices` must be the `typeName` of a service in `services` (and a key of the catalog, when one is set). `start()` rejects with `CatalogConfigError` naming the entries that match nothing, so a misspelled name cannot leave a running server with nothing mounted.
 
-::: info Upcoming in 1.3.0
-`enabledServicesFromEnv` is part of the 1.3 source contract; it is not available in
-the published 1.2.x packages. It preserves the server's mount-all default when the
+::: info Since 1.3.0
+`enabledServicesFromEnv` is available since 1.3.0. It preserves the server's mount-all default when the
 variable names no services. `parseServicesEnv` keeps its existing behavior and
 returns `[]` for the same input, which mounts no supplied services if passed directly.
 :::
@@ -381,8 +380,8 @@ const stock = await client.call('inventory.v1.InventoryService/CheckStock', { sk
 // ctx.stream mirrors: client.stream('...')(request) for server-streaming, etc.
 ```
 
-The plain-object request requires the upcoming `@connectum/protoc-gen-catalog`
-1.3.0 release and a regenerated `catalog.gen.ts`. With the published 1.2.x
+The plain-object request requires `@connectum/protoc-gen-catalog`
+1.3.0 or later and a regenerated `catalog.gen.ts`. With an earlier
 generator or an existing catalog, pass a full generated protobuf request
 message. See the [service-catalog migration guide](/en/migration/service-catalog)
 for the upgrade boundary.

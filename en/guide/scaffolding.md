@@ -17,7 +17,7 @@ not hidden framework configuration.
 
 <figure class="technical-diagram" data-guide-overview="scaffolding" aria-label="Scaffolding commands and owned files">
 <GuideOverview :source="overview" />
-<figcaption>The builder previews a pinned generator; documented 1.3 options and descriptor exports are not available in npm 1.2.x. Optional modules still need their broker, auth configuration and telemetry backend.</figcaption>
+<figcaption>The builder previews a pinned generator. Optional modules still need their broker, auth configuration and telemetry backend.</figcaption>
 </figure>
 
 ## Start with the files
@@ -32,8 +32,6 @@ Prefer to build everything yourself? Follow the
 
 The [command guide](/en/guide/scaffolding-commands) keeps the full `init`,
 `generate service` and `proto sync` instructions, naming rules and generated-file
-behavior. Its **1.3** CLI options are not available from published **1.2.x**
-packages until that release is published. The builder identifies its pinned
-generator source; do not treat its preview command as proof of npm availability.
+behavior. The builder identifies its pinned generator source.
 
 <GuideSections route="/en/guide/scaffolding" />

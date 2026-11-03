@@ -7,9 +7,8 @@ outline: deep
 
 # Backends & Configuration
 
-This guide targets the documented `1.3.x` release line. Features marked `Since
-1.3.0` are not available in the published `1.2.x` packages until the 1.3.0
-release; check the installed package version before using them.
+This guide targets the `1.3.x` release line. Features marked `Since 1.3.0`
+require `1.3.0` or later; check the installed package version before using them.
 
 Configure OpenTelemetry exporters, provider management, and integration with observability backends like Jaeger and Grafana.
 

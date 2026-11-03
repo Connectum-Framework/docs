@@ -18,7 +18,7 @@ server middleware. It is not a direct call to the handler function.
 
 <figure class="technical-diagram" data-guide-overview="in-process" aria-label="Local calls retain the application boundary">
 <GuideOverview :source="overview" />
-<figcaption>Local and HTTP clients can coexist. server.client() selects a local service or configured remoteResolver; local tests do not establish wire, TLS or proxy guarantees. The documented 1.3 stop-abort and parked-yield fixes are not yet published.</figcaption>
+<figcaption>Local and HTTP clients can coexist. server.client() selects a local service or configured remoteResolver; local tests do not establish wire, TLS or proxy guarantees.</figcaption>
 </figure>
 
 ## A local call

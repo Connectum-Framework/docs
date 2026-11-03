@@ -27,12 +27,6 @@ different one (`--ref main` for the latest example). Drift between the pinned ba
 the live example is caught by CI on the framework repository, not by your `init`.
 :::
 
-::: info Release availability
-The `@connectum/*` descriptor exports described below are planned for the upcoming
-1.3.0 release and are not yet published to npm. The published CLI cannot generate those
-imports until the corresponding package exports are released.
-:::
-
 ## `connectum init`
 
 Create a sample project with Node.js and pnpm. This first run needs no external
@@ -306,8 +300,7 @@ plugins:
       - map_imports=connectum/events/v1/:@connectum/events/gen
 ```
 
-Those package exports are planned for the upcoming 1.3.0 release, which is not yet
-published to npm. The current-main `init` implementation therefore sets every `@connectum/*`
+Those package exports ship with 1.3.0, so `init` sets every `@connectum/*`
 dependency of such a project to one range — the highest `@connectum/*` requirement of the
 fetched base, or `^1.3.0` if that is higher, so no base entry is lowered (also with
 `--ref`). One range for the whole set matters: mixed

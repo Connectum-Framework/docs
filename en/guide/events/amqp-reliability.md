@@ -7,9 +7,8 @@ outline: deep
 
 # Run the AMQP Adapter Reliably
 
-This guide targets the documented `1.3.x` release line. Features marked `Since
-1.3.0` require `@connectum/events-amqp` 1.3.0 or later; they are unavailable
-from the published `1.2.x` package until 1.3.0 is released.
+This guide targets the `1.3.x` release line. Features marked `Since 1.3.0`
+require `@connectum/events-amqp` 1.3.0 or later.
 
 `@connectum/events-amqp` publishes with per-message broker confirms and recovers
 lost connections automatically. This page shows how to tune that behavior for
@@ -31,10 +30,10 @@ reference.
 
 ## Routing and delivery {#routing-and-delivery}
 
-::: info Upcoming in 1.3.0
-The wildcard translation and validation described here are planned for the
-upcoming `@connectum/events-amqp` 1.3.0 release. Published 1.2.x packages keep
-their existing routing behavior.
+::: info Since 1.3.0
+The wildcard translation and validation described here ship with
+`@connectum/events-amqp` 1.3.0. Earlier versions keep their previous routing
+behavior.
 :::
 
 The EventBus topic becomes the AMQP routing key. By default a named `group`
