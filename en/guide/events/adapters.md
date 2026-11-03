@@ -404,6 +404,32 @@ seconds, while the other entries claimed in the same pass are still delivered.
 adapter continues each pass where the previous one stopped; entries behind a
 long run of recently delivered ones are therefore reached too.
 
+Redelivery has no upper bound of its own: the adapter has no equivalent of the
+NATS `maxDeliver`, and an entry that keeps failing without the `retry` and `dlq`
+[middleware](/en/guide/events/middleware) stays pending and is claimed again
+every 30 seconds. This is the standard Redis Streams behavior; the bound
+belongs to the middleware:
+
+- **Retry plus DLQ.** Configure `retry` and `dlq` on the bus. `retry` re-runs
+  the handler inside the same delivery, so those runs do not raise the group's
+  delivery count. When they are exhausted, `dlq` publishes a copy to the
+  dead-letter topic and acknowledges the original, which leaves the pending
+  list. A poison message with `maxRetries: 2` runs the handler three times,
+  produces one dead-letter entry (`dlq.handler-runs` = `3`), and is not
+  redelivered. If the dead-letter publish itself fails, the original is
+  acknowledged without requeue and the failure is reported to the bus
+  `observer` as `dlq-failed`.
+- **A cap on redeliveries.** For a bound on how often the broker hands the same
+  entry out again, for example after handler crashes where no retry state
+  survives, read `event.attempt` in a custom middleware. On a redelivered entry
+  it carries the group's delivery count (the first delivery is `1`). The
+  middleware can call `ctx.ack()` once the count passes your limit, instead of
+  calling `next()`.
+
+Only a delivery that ends in a rethrown error, a crash or `nack(true)` leaves
+the entry pending; with `retry` and `dlq` configured the common failing handler
+never reaches the 30-second reclaim at all.
+
 ### Wildcards are not supported {#redis-wildcards}
 
 Redis Streams has no pattern subscription. A topic containing `*` or `>` is
