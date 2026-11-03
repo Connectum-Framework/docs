@@ -214,8 +214,29 @@ server.onShutdown('b', ['a'], () => {}); // Throws: dependency cycle detected
 ::: warning Argument checks
 A call that matches none of the three forms -- `onShutdown(handler)`, `onShutdown(name, handler)`, `onShutdown(name, dependencies[], handler)` -- throws a `TypeError` that starts with `onShutdown(` at registration. That covers a missing hook function, a module name that is not a string, dependencies that are not an array of strings, and a single name passed where the array belongs (`onShutdown('x', 'db', fn)`).
 
-A dependency on a name that no hook registers is **not** an error: hooks may be registered in any order, so the name may be registered later, and the dependency is simply satisfied at once if it never is. Check module names for typos yourself.
+A dependency on a name that no hook registers is **not** an error: hooks may be registered in any order, so the name may be registered later. If it never is, the dependency is satisfied at once and the server logs a warning when it stops; see [Dependency on an unregistered name](#unregistered-dependency).
 :::
+
+### Dependency on an unregistered name {#unregistered-dependency}
+
+A dependency on a name that no hook registered is not an error. Hooks can be added in any order, so the names are checked once, when the server stops. The hook that names a missing dependency still runs, and it runs at once because there is nothing to wait for. A misspelled name silently loses the ordering you meant, so the server reports it:
+
+```typescript
+server.onShutdown('api', ['db'], async () => {
+  await api.drain();
+});
+// No hook named 'db' is ever registered.
+```
+
+When the server stops, the logger receives one warning:
+
+```text
+Shutdown hook "api" depends on "db", but no shutdown hook is registered under that name, so there is nothing to wait for. Check the name passed to onShutdown().
+```
+
+- **One warning per missing name.** If several hooks depend on the same missing name, a single warning lists them: `Shutdown hooks "a", "b" depend on "db", ...`. Each different missing name gets its own warning.
+- **A later registration is fine.** A dependency registered after the hook that names it gives no warning, as long as it is registered before the hooks run. The ordering then applies as usual.
+- **The warning goes to the server logger.** That is `console.warn` unless you pass [`logger`](/en/guide/server/lifecycle#server-log-messages) to `createServer()`.
 
 ### Multiple Handlers per Module
 

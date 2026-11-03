@@ -160,6 +160,10 @@ await server.start();
 
 Options passed to `createServer()` directly get the same fail-fast check as the variables. `port` must be an integer from `0` (a free port chosen by the system) to `65535`, and `host` a non-empty string; any other value, a numeric string such as `"5000"` included, throws a `TypeError` or `RangeError` that names the option. Before this check, a non-numeric string `port` was read as a Unix socket path and an empty `host` bound every interface.
 
+### Server log messages
+
+The `LOG_*` variables above belong to the schema; `createServer()` does not read them to choose where its own messages go (the listening address, received signals, shutdown problems, transport warnings). Those go to `console` unless you pass a `logger` object with `info`, `warn` and `error` functions. See [Server log messages](/en/guide/server/lifecycle#server-log-messages) for the full list and the rules of the option.
+
 ## TLS Configuration
 
 TLS is configured via the `tls` option in `createServer()`. Certificates can be loaded from explicit paths or a directory:

@@ -104,8 +104,8 @@ What happens when a listener throws depends on the phase:
 | `stopping`, `stop` | Is isolated. The remaining listeners of the event still run, the shutdown always reaches `stopped`, and the exception is reported through `error`. `stop()` does not reject because of it. |
 
 Register an `error` listener before `start()` to observe startup and shutdown
-failures. Without one, exceptions from `stopping` or `stop` listeners are printed
-with `console.error`, while failures of `start()` or `stop()` are carried by their
+failures. Without one, exceptions from `stopping` or `stop` listeners are written to the server logger's `error` method
+(`console.error` unless you pass [`logger`](#server-log-messages)), while failures of `start()` or `stop()` are carried by their
 rejected promises.
 
 For signal-triggered shutdown (`autoShutdown`), a failure is reported once through
@@ -114,6 +114,43 @@ rejection, so it does not become an unhandled rejection; without a listener, a
 shutdown-hook failure can go unreported.
 
 Only synchronous exceptions are covered. An `async` listener that rejects is not awaited by the emitter; handle its errors inside the listener.
+
+## Server Log Messages {#server-log-messages}
+
+Besides emitting events, the server writes a few messages about its own lifecycle. By default they go to `console`. Pass `logger` to `createServer()` to send them to your own logger instead:
+
+```typescript
+const server = createServer({
+  services: [greeterService],
+  port: 5000,
+  logger: {
+    info: (message) => appLog.write('info', message),
+    warn: (message, ...details) => appLog.write('warn', message, details),
+    error: (message, ...details) => appLog.write('error', message, details),
+  },
+});
+```
+
+`logger` is an object with `info`, `warn` and `error` functions, typed as `ServerLogger`. Each method receives a complete message string first. When the message reports a failure, the error object follows it. The global `console` already fits this shape, so leaving the option out keeps the output as it was.
+
+| Level | Message | When |
+|-------|---------|------|
+| `info` | `Server listening <host>:<port>` | The transport is bound. The wildcard IPv6 address is shown as `localhost`. |
+| `info` | `Received <signal>, initiating graceful shutdown...` | A signal arrived while `autoShutdown` is on. |
+| `warn` | `Shutdown timeout (<n>ms) exceeded` | Closing the transport did not finish within `shutdown.timeout`. |
+| `warn` | A transport warning | Bidirectional streaming over plain HTTP/1.1 with `transportValidation: "warn"`, or TLS that can negotiate HTTP/1.1; see [Transport matrix](/en/guide/production/transport-matrix). |
+| `warn` | `Shutdown hook "<name>" depends on "<missing>", ...` | A hook depends on a name no hook registered; see [Graceful Shutdown](/en/guide/server/graceful-shutdown#unregistered-dependency). |
+| `error` | `Error during graceful close:` | Closing the transport failed. The error object follows. |
+| `error` | `Unhandled error in a server lifecycle listener:` | A `stopping` or `stop` listener threw and nobody listens to `error`. The error object follows. |
+| `error` | `An 'error' listener threw:` | A listener of the `error` event itself threw. The error object follows. |
+
+Three rules apply to the option:
+
+- **It is checked when the server is created.** `createServer()` throws a `TypeError` for a value that is not an object, and for an object whose `info`, `warn` or `error` is not a function. The message names the method, for example `createServer: logger.warn must be a function, got undefined`.
+- **A failing logger cannot stop the server.** If a method throws, or returns a promise that rejects, the failure is dropped. It does not fail `start()` and does not skip a shutdown hook, because the server has nowhere else to report a message the logger could not take.
+- **It covers only the messages above.** Request logging is a separate concern, handled by the logger interceptor.
+
+A logger whose methods take their arguments in another order, for example an object first and the message second, needs a small wrapper that maps `(message, ...details)` onto its own signature.
 
 ## The shutdownSignal
 
