@@ -360,6 +360,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Redis adapter options', link: '/en/migration/redis-adapter-options' },
                         { text: 'events-amqp option validation', link: '/en/migration/events-amqp-options' },
                         { text: 'Auth identity handling', link: '/en/migration/auth-identity' },
+                        { text: 'Auth authorization and JWT validation', link: '/en/migration/auth-authorization-validation' },
                     ],
                 },
             ],

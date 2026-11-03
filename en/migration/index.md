@@ -76,6 +76,7 @@ Each item applies only if your code or configuration matches it.
 - If you pass a `topologyMode` other than the exact `assert`, `check` or `skip`, an `exchangeType` outside the four types, a `consumerOptions.prefetch` outside 0 to 65535, a `queueOptions.messageTtl` or `maxLength` that is negative or fractional, a `jitter` outside 0 to 1, or a `recovery` or `publishRetry` that is neither a boolean nor an object, follow [events-amqp option validation](/en/migration/events-amqp-options): each of these now throws when `AmqpAdapter()` is called, and a table header from an external publisher now arrives as JSON.
 - If you use `@connectum/auth` and your gateway clients send `x-auth-*` headers that a handler reads, a `verifyCredentials` or `mapSession` callback can return `null` or a partial object, a verifier grants a scope that contains a space while `propagateHeaders` is on, or identities near the header limits (subject 512, type 128, name 256, roles, scopes or claims 8192 characters) are propagated, or your `trustSource` lists a CIDR block, follow [Auth identity handling](/en/migration/auth-identity): the gateway interceptor now deletes every `x-auth-*` header and refuses CIDR blocks without `allowCallerControlledCidr`, such results are `Unauthenticated`, an identity that does not fit its headers is refused instead of cut, non-Latin text is encoded, and each request gets its own copy of the cached identity.
 - If you pass an empty `servers`, an `ackWait` of 0 or below, a `maxDeliver` of 0, below -1 or fractional, or an unknown `deliverPolicy` to `NatsAdapter()`, follow [NATS adapter options](/en/migration/events-nats-options): these now throw when the adapter is created.
+- If you use `@connectum/auth` with a `defaultPolicy` or rule `effect` that is not exactly `allow` or `deny`, an `authorize` callback that returns a truthy value other than `true`, an `internal` proto method reached without `createInternalAuthInterceptor`, JWTs with an empty or non-string `sub`, an empty `issuer` or `audience` or `maxTokenAge: 0`, method patterns such as `Service/Write*`, an unset gateway secret or client token, follow [Auth authorization and JWT validation](/en/migration/auth-authorization-validation): each of these now fails loudly when the interceptor is created or denies the call.
 
 ## Focused Migrations
 
@@ -154,6 +155,13 @@ Each item applies only if your code or configuration matches it.
   rejects an identity with NUL, CR, LF or a character above U+00FF when
   `propagateHeaders` is on; and `signedTokenTrust` identifies callers by their
   verified issuer (**breaking** for those configurations).
+- [Auth authorization and JWT validation](/en/migration/auth-authorization-validation) —
+  from 1.3, `@connectum/auth` throws on a `defaultPolicy` or rule `effect` that is not
+  `allow` or `deny`, on method patterns that cannot match, on an empty JWT `issuer` or
+  `audience` and on unusable gateway, internal, generic and client options; the
+  `authorize` callback allows only on exactly `true`; JWTs need a non-empty string
+  subject; and an `internal` proto method is open only to an identity from
+  `createInternalAuthInterceptor` (**breaking** for those configurations).
 - [HTTP health options are validated](/en/migration/healthcheck-http-options) — from
   1.3, `Healthcheck()` throws on an empty or malformed `httpPaths` instead of serving
   nothing, and `/healthz?service=<name>` no longer depends on the `Host` header
