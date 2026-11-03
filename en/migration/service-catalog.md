@@ -240,13 +240,15 @@ regenerate them.
 key type is `never`, so `ctx.call` is statically uncallable — the correct default for a
 service that makes no cross-service calls.
 
-## 4. Manual env→endpoint registry → `parseServicesEnv` + a resolver
+## 4. Manual env→endpoint registry → `enabledServicesFromEnv` + a resolver
 
 Two distinct env-driven concerns, previously hand-rolled in boot code, are now first
 class. Do not conflate them:
 
-- **Which services this process hosts locally** — `parseServicesEnv` turns a
+- **Which services this process hosts locally** — `enabledServicesFromEnv` turns a
   comma-separated env value into the `enabledServices` list (full proto `typeName`s).
+  An unset or blank variable gives `undefined`, which mounts every supplied service.
+  (`parseServicesEnv` returns `[]` there, and `enabledServices: []` mounts none.)
 - **Where to reach remote services** — `perServiceEnvResolver` maps each remote
   `typeName` to the env var holding its base URL.
 
@@ -263,14 +265,14 @@ const REGISTRY = {
 **After**
 
 ```typescript
-import { createServer, parseServicesEnv, perServiceEnvResolver } from '@connectum/core';
+import { createServer, enabledServicesFromEnv, perServiceEnvResolver } from '@connectum/core';
 import { serviceCatalog } from './gen/catalog.gen.ts';
 
 const server = createServer({
   services: [orders, inventory],
   catalog: serviceCatalog,
   // CONNECTUM_SERVICES="shop.v1.OrdersService,shop.v1.InventoryService"
-  enabledServices: parseServicesEnv(process.env.CONNECTUM_SERVICES),
+  enabledServices: enabledServicesFromEnv(process.env.CONNECTUM_SERVICES),
   remoteResolver: perServiceEnvResolver({
     'shop.v1.PaymentService': 'PAYMENT_URL',
   }),
@@ -388,7 +390,7 @@ the chain; call `server.localClient()` for a plain in-process client.
       cross-service calls or routes to remote services.
 - [ ] Replace in-handler `createClient(Svc, transport)` with
       `ctx.call("${typeName}/${Method}", req)` (and `ctx.stream(...)` for streaming).
-- [ ] Replace hand-rolled env registries with `parseServicesEnv` (local activation) and
+- [ ] Replace hand-rolled env registries with `enabledServicesFromEnv` (local activation) and
       a resolver (remote endpoints).
 - [ ] Handle the split error model: expect `CatalogConfigError` for misconfiguration and
       `ConnectError(Code.Unavailable)` for an unresolvable remote service.

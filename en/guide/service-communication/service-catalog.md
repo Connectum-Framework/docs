@@ -258,23 +258,32 @@ Keep only transport-specific middleware (TLS, compression, a per-upstream gatewa
 
 ## Single-image, multiple roles — `enabledServices`
 
-`enabledServices` is a list of full proto `typeName`s a process mounts **locally**. Any service in `services` whose `typeName` is not listed is treated as remote and reached via the `remoteResolver`. `undefined` mounts every provided service locally. This lets one image play different roles depending on configuration — a modular monolith in one deployment, split processes in another, with no code change.
+`enabledServices` is a list of full proto `typeName`s a process mounts **locally**. Any service in `services` whose `typeName` is not listed is treated as remote and reached via the `remoteResolver`. An omitted (`undefined`) `enabledServices` mounts every provided service locally, while an empty list `[]` mounts none of them. This lets one image play different roles depending on configuration — a modular monolith in one deployment, split processes in another, with no code change.
 
 ```typescript
-import { createServer, parseServicesEnv } from '@connectum/core';
+import { createServer, enabledServicesFromEnv } from '@connectum/core';
 
 const server = createServer({
   services: [orders, inventory, payments],
   catalog,
   // e.g. CONNECTUM_SERVICES="orders.v1.OrdersService,inventory.v1.InventoryService"
-  enabledServices: parseServicesEnv(process.env.CONNECTUM_SERVICES),
+  enabledServices: enabledServicesFromEnv(process.env.CONNECTUM_SERVICES),
   remoteResolver, // see the Resolvers guide
 });
 ```
 
-Full `typeName`s are mandatory — short names collide (`catalog.v1.UsersService` and `auth.v1.UsersService` both shorten to `users`). Three helpers support env-driven configuration:
+| `CONNECTUM_SERVICES` | `enabledServicesFromEnv` returns | `createServer` mounts |
+|---|---|---|
+| unset, `""`, whitespace or only commas | `undefined` | every supplied service |
+| `"orders.v1.OrdersService"` | `["orders.v1.OrdersService"]` | only the named service |
+| `" orders.v1.OrdersService , inventory.v1.InventoryService "` | both names, trimmed | only the two named services |
 
-- `parseServicesEnv(value)` — parses a comma-separated env string into a `string[]`, trimming whitespace and dropping empties. Returns `[]` for an empty/undefined value.
+Services in `protocols` (Healthcheck, Reflection) are registered separately and are not affected by `enabledServices`. To mount none of the supplied services, pass `enabledServices: []` directly; an env value cannot ask for that.
+
+Full `typeName`s are mandatory — short names collide (`catalog.v1.UsersService` and `auth.v1.UsersService` both shorten to `users`). Four helpers support env-driven configuration:
+
+- `enabledServicesFromEnv(value)` — reads a comma-separated env string and returns the named `typeName`s, or `undefined` when the value is unset or blank, so the server keeps its default of mounting every supplied service. Pass its result straight to `enabledServices`.
+- `parseServicesEnv(value)` — parses a comma-separated env string into a `string[]`, trimming whitespace and dropping empties. Returns `[]` for an empty/undefined value, and `enabledServices: []` mounts **none** of the supplied services. Use it when you merge the list with other sources (for example with `mergeEnabledServices`) or supply your own fallback, such as `parseServicesEnv(process.env.CONNECTUM_SERVICES ?? orders.descriptor.typeName)`.
 - `matchServicesPattern(pattern, names)` — returns the subset of `names` matching a glob `pattern`, where `*` matches any run of characters including dots (e.g. `"acme.*"` matches `"acme.v1.UsersService"`). This is a **glob, not a RegExp** — only `*` is special.
 - `mergeEnabledServices(...lists)` — merges several lists, de-duplicating while preserving first-seen order.
 
