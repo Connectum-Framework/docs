@@ -184,6 +184,18 @@ Each item applies only if your code or configuration matches it.
   on, CIDR blocks in `trustSource` need `allowCallerControlledCidr`, an identity that does
   not fit its headers is refused instead of cut, non-Latin text is encoded, and each request
   gets its own copy of the cached identity (**breaking** for code that relied on any of these).
+- [OpenTelemetry configuration](/en/migration/otel-configuration) — from 1.3,
+  `@connectum/otel` ignores a wrong `OTEL_*` exporter, protocol or endpoint value with a
+  `CONNECTUM_OTEL_INVALID_ENV` process warning instead of failing every RPC, decodes
+  `OTEL_RESOURCE_ATTRIBUTES` as percent-encoded, rejects a misspelled `initProvider`
+  `settings` value with `TypeError`, and makes a concurrent `shutdownProvider()` wait for
+  the flush (behaviour change for code that relied on the exception, on a literal `%`, or
+  on the second call returning at once).
+- [NATS adapter options](/en/migration/events-nats-options) — from 1.3,
+  `NatsAdapter()` throws at creation for an empty `servers`, `ackWait` of 0 or below,
+  `maxDeliver` of 0, below -1 or fractional, and an unknown `deliverPolicy`
+  (**breaking** for configurations that passed one of these), and publish metadata
+  with `x-*` keys and empty values reaches the handler.
 
 ## Release History
 
