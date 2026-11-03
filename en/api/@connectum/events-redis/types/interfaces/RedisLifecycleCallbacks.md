@@ -2,7 +2,7 @@
 
 # Interface: RedisLifecycleCallbacks
 
-Defined in: [types.ts:121](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-redis/src/types.ts#L121)
+Defined in: [types.ts:144](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-redis/src/types.ts#L144)
 
 Callbacks for the connection lifecycle of the Redis adapter.
 
@@ -12,7 +12,7 @@ Callbacks for the connection lifecycle of the Redis adapter.
 
 > `readonly` `optional` **onLifecycle?**: (`event`) => `void` \| `Promise`\<`void`\>
 
-Defined in: [types.ts:130](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-redis/src/types.ts#L130)
+Defined in: [types.ts:153](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-redis/src/types.ts#L153)
 
 Called for every [RedisLifecycleEvent](../type-aliases/RedisLifecycleEvent.md). It should not throw: a thrown exception or a
 rejected returned promise is isolated and reported as a `lifecycle-error` event, and a failure

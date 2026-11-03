@@ -2,9 +2,9 @@
 
 # Type Alias: EventBusObserverEvent
 
-> **EventBusObserverEvent** = \{ `handlers`: `number`; `publishes`: `number`; `type`: `"abandoned"`; \} \| \{ `topic`: `string`; `type`: `"admitted"`; \} \| \{ `reason`: `"aborted"` \| `"not-in-flight"`; `type`: `"rejected"`; \} \| \{ `topic`: `string`; `type`: `"dlq-republish"`; \}
+> **EventBusObserverEvent** = \{ `handlers`: `number`; `publishes`: `number`; `type`: `"abandoned"`; \} \| \{ `topic`: `string`; `type`: `"admitted"`; \} \| \{ `reason`: `"aborted"` \| `"not-in-flight"`; `type`: `"rejected"`; \} \| \{ `topic`: `string`; `type`: `"dlq-republish"`; \} \| \{ `error`: `unknown`; `eventId`: `string`; `eventType`: `string`; `topic`: `string`; `type`: `"dlq-failed"`; \}
 
-Defined in: [packages/events/src/types.ts:360](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L360)
+Defined in: [packages/events/src/types.ts:383](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L383)
 
 Work the shutdown of an [EventBus](../interfaces/EventBus.md) gave up on.
 
@@ -46,3 +46,15 @@ earlier start/stop cycle).
 \{ `topic`: `string`; `type`: `"dlq-republish"`; \}
 
 The built-in dead-letter middleware republished a failed event while the bus was stopping.
+
+***
+
+### Type Literal
+
+\{ `error`: `unknown`; `eventId`: `string`; `eventType`: `string`; `topic`: `string`; `type`: `"dlq-failed"`; \}
+
+The built-in dead-letter middleware could not publish a failed event to its topic, at any
+time, not only during a stop. The original is nacked without requeue and, unless the broker
+has its own dead-letter policy, lost. `topic` is the dead-letter topic, `eventType` and
+`eventId` identify the event, `error` is what the publish rejected with (it can carry broker
+details, so redact it before logging it outside your service).

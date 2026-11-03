@@ -2,7 +2,7 @@
 
 # Interface: CircuitBreakerOptions
 
-Defined in: [types.ts:187](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L187)
+Defined in: [types.ts:198](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L198)
 
 Circuit breaker interceptor options
 
@@ -12,7 +12,7 @@ Circuit breaker interceptor options
 
 > `optional` **failurePredicate?**: (`error`, `defaultPredicate`) => `boolean`
 
-Defined in: [types.ts:235](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L235)
+Defined in: [types.ts:246](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L246)
 
 Decides whether an error counts as a circuit failure.
 
@@ -65,7 +65,7 @@ non-ConnectError values count as failures)
 
 > `optional` **halfOpenAfter?**: `number`
 
-Defined in: [types.ts:199](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L199)
+Defined in: [types.ts:210](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L210)
 
 Time in milliseconds to wait before attempting to close circuit.
 Integer from 0 to 2147483647 (the platform timer ceiling).
@@ -82,7 +82,7 @@ Integer from 0 to 2147483647 (the platform timer ceiling).
 
 > `optional` **skipStreaming?**: `boolean`
 
-Defined in: [types.ts:205](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L205)
+Defined in: [types.ts:216](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L216)
 
 Skip circuit breaker for streaming calls
 
@@ -98,7 +98,7 @@ true
 
 > `optional` **threshold?**: `number`
 
-Defined in: [types.ts:192](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L192)
+Defined in: [types.ts:203](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L203)
 
 Number of consecutive failures before opening circuit. Integer of at least 1.
 

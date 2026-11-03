@@ -2,7 +2,7 @@
 
 # Interface: NatsLifecycleCallbacks
 
-Defined in: [types.ts:117](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L117)
+Defined in: [types.ts:169](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L169)
 
 Callbacks for the connection lifecycle of the NATS adapter.
 
@@ -12,7 +12,7 @@ Callbacks for the connection lifecycle of the NATS adapter.
 
 > `readonly` `optional` **onLifecycle?**: (`event`) => `void` \| `Promise`\<`void`\>
 
-Defined in: [types.ts:125](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L125)
+Defined in: [types.ts:177](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L177)
 
 Called for every [NatsLifecycleEvent](../type-aliases/NatsLifecycleEvent.md). It should not throw: a thrown exception or a rejected
 returned promise is isolated and reported as a `lifecycle-error` event, and a failure while handling

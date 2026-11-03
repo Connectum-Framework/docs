@@ -4,7 +4,7 @@
 
 > **resolveServiceName**(`inputs?`): `string`
 
-Defined in: [provider.ts:103](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L103)
+Defined in: [provider.ts:189](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L189)
 
 Resolve the `service.name` the provider reports.
 

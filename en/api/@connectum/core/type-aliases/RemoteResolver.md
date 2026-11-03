@@ -4,7 +4,7 @@
 
 > **RemoteResolver** = (`ctx`) => `Transport` \| `null`
 
-Defined in: [packages/core/src/remoteResolver.ts:40](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L40)
+Defined in: [packages/core/src/remoteResolver.ts:57](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L57)
 
 Resolve a remote service to a `Transport`, or `null` if there is no route.
 Synchronous by contract — see the module note.

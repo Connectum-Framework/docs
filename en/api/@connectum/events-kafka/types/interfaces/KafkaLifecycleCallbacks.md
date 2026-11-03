@@ -2,7 +2,7 @@
 
 # Interface: KafkaLifecycleCallbacks
 
-Defined in: [types.ts:255](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L255)
+Defined in: [types.ts:273](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L273)
 
 Callbacks for the lifecycle of the Kafka adapter.
 
@@ -12,7 +12,7 @@ Callbacks for the lifecycle of the Kafka adapter.
 
 > `readonly` `optional` **onLifecycle?**: (`event`) => `void` \| `Promise`\<`void`\>
 
-Defined in: [types.ts:261](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L261)
+Defined in: [types.ts:279](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L279)
 
 Called for every [KafkaLifecycleEvent](../type-aliases/KafkaLifecycleEvent.md). It should not throw: a thrown exception or a rejected
 returned promise is isolated and reported as a `lifecycle-error` event, and a failure while handling

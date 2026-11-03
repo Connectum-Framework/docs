@@ -4,7 +4,7 @@
 
 > **createMockDescMethod**(`name`, `options?`): [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: [mock-desc.ts:269](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-desc.ts#L269)
+Defined in: [mock-desc.ts:337](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-desc.ts#L337)
 
 Create a mock [DescMethod](https://protobufes.com/reference/reflection/descriptors/#types) descriptor.
 
@@ -37,6 +37,11 @@ Optional overrides for kind, input/output, and redaction
 [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 A mock `DescMethod` object.
+
+## Throws
+
+TypeError when `options.kind` is not `unary`, `server_streaming`,
+  `client_streaming` or `bidi_streaming`.
 
 ## Example
 

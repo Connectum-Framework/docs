@@ -4,7 +4,7 @@
 
 > **isValidReflectionTimeout**(`value`): `boolean`
 
-Defined in: [utils/reflection.ts:61](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/utils/reflection.ts#L61)
+Defined in: [utils/reflection.ts:62](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/utils/reflection.ts#L62)
 
 Whether `value` is a time limit the reflection client accepts.
 

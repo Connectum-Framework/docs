@@ -4,7 +4,7 @@
 
 > **createFakeMethod**(`service`, `name`, `options?`): [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: [fake-service.ts:73](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/fake-service.ts#L73)
+Defined in: [fake-service.ts:78](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/fake-service.ts#L78)
 
 Create a fake [DescMethod](https://protobufes.com/reference/reflection/descriptors/#types) descriptor attached to a service.
 
@@ -38,6 +38,16 @@ Optional configuration for method kind and registration.
 [`DescMethod`](https://protobufes.com/reference/reflection/descriptors/#types)
 
 A fake `DescMethod` suitable for unit/integration tests.
+
+## Throws
+
+TypeError when `options.methodKind` is not `unary`, `server_streaming`,
+  `client_streaming` or `bidi_streaming`.
+
+## Throws
+
+Error when `options.register` is `true` and the service already has a method
+  with this name (or the same `localName`); the service is left unchanged.
 
 ## Example
 

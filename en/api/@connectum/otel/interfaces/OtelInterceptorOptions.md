@@ -2,7 +2,7 @@
 
 # Interface: OtelInterceptorOptions
 
-Defined in: [types.ts:53](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L53)
+Defined in: [types.ts:60](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L60)
 
 Options for createOtelInterceptor() (server-side)
 
@@ -16,7 +16,7 @@ Options for createOtelInterceptor() (server-side)
 
 > `optional` **attributeFilter?**: [`OtelAttributeFilter`](../type-aliases/OtelAttributeFilter.md)
 
-Defined in: [types.ts:40](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L40)
+Defined in: [types.ts:47](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L47)
 
 Filter callback to exclude specific attributes
 
@@ -30,7 +30,7 @@ Filter callback to exclude specific attributes
 
 > `optional` **filter?**: [`OtelFilter`](../type-aliases/OtelFilter.md)
 
-Defined in: [types.ts:37](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L37)
+Defined in: [types.ts:44](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L44)
 
 Filter callback to skip specific requests
 
@@ -44,7 +44,7 @@ Filter callback to skip specific requests
 
 > `optional` **recordMessages?**: `boolean`
 
-Defined in: [types.ts:47](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L47)
+Defined in: [types.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L54)
 
 Record request/response message events with direction, sequence number,
 and estimated size. Message payloads are not included in these events.
@@ -65,7 +65,7 @@ false
 
 > `optional` **serverAddress?**: `string`
 
-Defined in: [types.ts:64](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L64)
+Defined in: [types.ts:71](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L71)
 
 Override server.address attribute (defaults to os.hostname())
 
@@ -75,7 +75,7 @@ Override server.address attribute (defaults to os.hostname())
 
 > `optional` **serverPort?**: `number`
 
-Defined in: [types.ts:69](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L69)
+Defined in: [types.ts:76](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L76)
 
 Opt-in server.port attribute
 
@@ -85,7 +85,7 @@ Opt-in server.port attribute
 
 > `optional` **trustRemote?**: `boolean`
 
-Defined in: [types.ts:59](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L59)
+Defined in: [types.ts:66](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L66)
 
 Use extracted remote context as parent span.
 When false, creates a new root span and adds a link to the remote span.
@@ -102,7 +102,7 @@ false
 
 > `optional` **withoutMetrics?**: `boolean`
 
-Defined in: [types.ts:34](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L34)
+Defined in: [types.ts:41](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L41)
 
 Disable metric recording (tracing only)
 
@@ -116,7 +116,7 @@ Disable metric recording (tracing only)
 
 > `optional` **withoutTracing?**: `boolean`
 
-Defined in: [types.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L31)
+Defined in: [types.ts:38](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L38)
 
 Disable span creation (metrics only)
 

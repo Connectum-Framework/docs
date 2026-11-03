@@ -34,6 +34,12 @@ continue to work unchanged.
 - [MockStreamOptions](interfaces/MockStreamOptions.md)
 - [NormalizedMetric](interfaces/NormalizedMetric.md)
 - [NormalizedSpan](interfaces/NormalizedSpan.md)
+- [Telemetry](interfaces/Telemetry.md)
+- [TelemetryOptions](interfaces/TelemetryOptions.md)
+
+## Type Aliases
+
+- [MockScalarType](type-aliases/MockScalarType.md)
 
 ## Variables
 
@@ -60,6 +66,7 @@ continue to work unchanged.
 - [createTestServer](functions/createTestServer.md)
 - [mockResolver](functions/mockResolver.md)
 - [mockService](functions/mockService.md)
+- [withTelemetry](functions/withTelemetry.md)
 - [withTestServer](functions/withTestServer.md)
 
 ## References

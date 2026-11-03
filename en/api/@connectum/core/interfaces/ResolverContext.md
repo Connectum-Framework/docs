@@ -2,7 +2,7 @@
 
 # Interface: ResolverContext
 
-Defined in: [packages/core/src/remoteResolver.ts:29](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L29)
+Defined in: [packages/core/src/remoteResolver.ts:46](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L46)
 
 Context handed to a [RemoteResolver](../type-aliases/RemoteResolver.md) for a single resolution.
 
@@ -12,7 +12,7 @@ Context handed to a [RemoteResolver](../type-aliases/RemoteResolver.md) for a si
 
 > `readonly` `optional` **endpoint?**: `string`
 
-Defined in: [packages/core/src/remoteResolver.ts:33](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L33)
+Defined in: [packages/core/src/remoteResolver.ts:50](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L50)
 
 Opaque endpoint hint from `CallOptions.endpoint` (polymorphic deployments).
 
@@ -22,6 +22,6 @@ Opaque endpoint hint from `CallOptions.endpoint` (polymorphic deployments).
 
 > `readonly` **typeName**: `string`
 
-Defined in: [packages/core/src/remoteResolver.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L31)
+Defined in: [packages/core/src/remoteResolver.ts:48](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L48)
 
 Proto service `typeName`, e.g. `"orders.v1.OrdersService"`.

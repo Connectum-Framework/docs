@@ -25,6 +25,7 @@
 - [GatewayAuthInterceptorOptions](interfaces/GatewayAuthInterceptorOptions.md)
 - [GatewayHeaderMapping](interfaces/GatewayHeaderMapping.md)
 - [InternalAuthInterceptorOptions](interfaces/InternalAuthInterceptorOptions.md)
+- [JwksOptions](interfaces/JwksOptions.md)
 - [JwtAuthInterceptorOptions](interfaces/JwtAuthInterceptorOptions.md)
 - [MeshIdentityEntry](interfaces/MeshIdentityEntry.md)
 - [MeshIdentityTrustOptions](interfaces/MeshIdentityTrustOptions.md)

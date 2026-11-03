@@ -2,7 +2,7 @@
 
 # Interface: AuthzRule
 
-Defined in: [packages/auth/src/types.ts:81](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L81)
+Defined in: [packages/auth/src/types.ts:86](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L86)
 
 Authorization rule definition.
 
@@ -16,9 +16,9 @@ When a rule has `requires`, the match semantics are:
 
 > `readonly` **effect**: [`AuthzEffect`](../type-aliases/AuthzEffect.md)
 
-Defined in: [packages/auth/src/types.ts:87](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L87)
+Defined in: [packages/auth/src/types.ts:92](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L92)
 
-Effect when rule matches
+Effect when rule matches. Exactly `"allow"` or `"deny"`; any other value makes the factory throw.
 
 ***
 
@@ -26,7 +26,7 @@ Effect when rule matches
 
 > `readonly` **methods**: readonly `string`[]
 
-Defined in: [packages/auth/src/types.ts:85](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L85)
+Defined in: [packages/auth/src/types.ts:90](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L90)
 
 Method patterns to match (e.g., "admin.v1.AdminService/*", "user.v1.UserService/DeleteUser")
 
@@ -36,7 +36,7 @@ Method patterns to match (e.g., "admin.v1.AdminService/*", "user.v1.UserService/
 
 > `readonly` **name**: `string`
 
-Defined in: [packages/auth/src/types.ts:83](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L83)
+Defined in: [packages/auth/src/types.ts:88](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L88)
 
 Rule name for logging/debugging
 
@@ -46,7 +46,7 @@ Rule name for logging/debugging
 
 > `readonly` `optional` **requires?**: `object`
 
-Defined in: [packages/auth/src/types.ts:96](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L96)
+Defined in: [packages/auth/src/types.ts:101](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L101)
 
 Required roles/scopes for this rule.
 

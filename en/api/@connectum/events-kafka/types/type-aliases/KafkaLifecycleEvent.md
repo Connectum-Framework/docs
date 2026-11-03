@@ -4,7 +4,7 @@
 
 > **KafkaLifecycleEvent** = \{ `reconnected`: `false`; `type`: `"connected"`; \} \| \{ `error`: `Error`; `groupId`: `string`; `type`: `"consumer-lost"`; `willRestore`: `boolean`; \} \| \{ `attempt`: `number`; `groupId`: `string`; `type`: `"consumer-restored"`; \} \| \{ `attempt`: `number`; `error`: `Error`; `groupId`: `string`; `type`: `"consumer-restore-failed"`; `willRetry`: `boolean`; \} \| \{ `callback`: `string`; `error`: `Error`; `event`: `string`; `type`: `"lifecycle-error"`; \}
 
-Defined in: [types.ts:218](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L218)
+Defined in: [types.ts:236](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-kafka/src/types.ts#L236)
 
 Lifecycle events of the Kafka adapter, delivered to [KafkaLifecycleCallbacks.onLifecycle](../interfaces/KafkaLifecycleCallbacks.md#onlifecycle).
 

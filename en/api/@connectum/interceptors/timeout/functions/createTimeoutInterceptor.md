@@ -4,7 +4,7 @@
 
 > **createTimeoutInterceptor**(`options?`): `Interceptor`
 
-Defined in: [timeout.ts:69](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/timeout.ts#L69)
+Defined in: [timeout.ts:72](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/timeout.ts#L72)
 
 Create timeout interceptor
 
@@ -17,7 +17,10 @@ roll back side effects or forcibly stop signal-unaware code.
 
 Streaming is skipped by default. With skipStreaming=false, the timeout covers
 opening the response, not subsequent iteration. Caller cancellation continues
-to reach an opened stream after the opening timer has been cleared.
+to reach an opened stream after the opening timer has been cleared, until the
+reader is done with the stream (read to the end, failed, or closed early); then
+the interceptor lets go of the caller's signal. A stream nobody iterates keeps
+following the caller's signal until that signal aborts.
 
 `duration` must be an integer from 1 to 2147483647 milliseconds (the ceiling of
 the platform timer, above which it would fire after 1 ms); anything else throws

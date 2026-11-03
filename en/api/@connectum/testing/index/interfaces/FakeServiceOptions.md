@@ -2,7 +2,7 @@
 
 # Interface: FakeServiceOptions
 
-Defined in: test-fixtures/dist/types.d.ts:87
+Defined in: test-fixtures/dist/types.d.ts:102
 
 Options for [createFakeService](../functions/createFakeService.md).
 
@@ -12,7 +12,7 @@ Options for [createFakeService](../functions/createFakeService.md).
 
 > `optional` **name?**: `string`
 
-Defined in: test-fixtures/dist/types.d.ts:91
+Defined in: test-fixtures/dist/types.d.ts:106
 
 Service name (short). Default: derived from typeName
 
@@ -22,6 +22,6 @@ Service name (short). Default: derived from typeName
 
 > `optional` **typeName?**: `string`
 
-Defined in: test-fixtures/dist/types.d.ts:89
+Defined in: test-fixtures/dist/types.d.ts:104
 
 Service type name. Default: `'test.v1.TestService'`

@@ -4,7 +4,7 @@
 
 > **createMockNextSlow**(`delay`, `options?`): `any`
 
-Defined in: [mock-next.ts:95](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-next.ts#L95)
+Defined in: [mock-next.ts:211](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-next.ts#L211)
 
 Create a mock `next` handler that resolves after a configurable delay.
 
@@ -16,7 +16,7 @@ Useful for testing timeout interceptors and other time-sensitive logic.
 
 `number`
 
-Time to wait in milliseconds before resolving.
+Time to wait in milliseconds before resolving: a finite number from 0 to 2147483647.
 
 ### options?
 
@@ -29,6 +29,15 @@ Optional overrides for the response payload and stream flag.
 `any`
 
 A spy-enabled async function that sleeps before returning a response.
+
+## Throws
+
+TypeError when `delay` is not a number.
+
+## Throws
+
+RangeError when `delay` is negative, `NaN`, infinite or larger than 2147483647:
+  the timer would turn it into 1 ms and the handler would not be slow.
 
 ## Example
 

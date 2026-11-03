@@ -2,7 +2,7 @@
 
 # Interface: DefaultInterceptorOptions
 
-Defined in: [defaults.ts:50](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L50)
+Defined in: [defaults.ts:56](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L56)
 
 Configuration options for the default interceptor chain.
 
@@ -17,7 +17,11 @@ Validation accepts only a boolean and is enabled unless `false`.
 
 Any other value for a key (`null`, a number, a string, an array, a function) is
 refused with a `TypeError` naming the key: a value that is not understood must
-not silently disable an interceptor. The numeric options inside an options
+not silently disable an interceptor. A key that is not listed here, such as the
+mistyped `timout`, is refused the same way, with the known keys in the message;
+the logger and the method filter are not part of this chain, so create them
+with their own factories. An argument that is not an object (`null`, for
+example) is refused too. The numeric options inside an options
 object are validated by their factories; see each options type for its range.
 
 Only structural interceptors (errorHandler, validation) are enabled by
@@ -33,7 +37,7 @@ errors). Enable each one explicitly where you need it.
 
 > `optional` **bulkhead?**: `boolean` \| [`BulkheadOptions`](../../interfaces/BulkheadOptions.md)
 
-Defined in: [defaults.ts:72](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L72)
+Defined in: [defaults.ts:78](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L78)
 
 Bulkhead interceptor.
 Limits concurrent requests to prevent resource exhaustion.
@@ -51,7 +55,7 @@ false
 
 > `optional` **circuitBreaker?**: `boolean` \| [`CircuitBreakerOptions`](../../interfaces/CircuitBreakerOptions.md)
 
-Defined in: [defaults.ts:81](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L81)
+Defined in: [defaults.ts:87](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L87)
 
 Circuit breaker interceptor.
 Prevents cascading failures by breaking circuit on consecutive errors.
@@ -70,7 +74,7 @@ false
 
 > `optional` **errorHandler?**: `boolean` \| [`ErrorHandlerOptions`](../../interfaces/ErrorHandlerOptions.md)
 
-Defined in: [defaults.ts:56](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L56)
+Defined in: [defaults.ts:62](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L62)
 
 Error handler interceptor (first in chain).
 Transforms errors into ConnectError with proper codes.
@@ -87,10 +91,12 @@ true
 
 > `optional` **fallback?**: `false` \| [`FallbackOptions`](../../interfaces/FallbackOptions.md)\<`unknown`\>
 
-Defined in: [defaults.ts:100](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L100)
+Defined in: [defaults.ts:108](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L108)
 
 Fallback interceptor.
 Provides graceful degradation when service fails.
+Stands outside `circuitBreaker` and `retry`, so the value is served after
+the retries are exhausted or the open breaker has refused the call.
 Disabled by default — requires a handler function.
 Pass an options object with a handler to enable it. `true` is refused
 with a `TypeError`: a fallback without an application-specific handler
@@ -108,7 +114,7 @@ false
 
 > `optional` **retry?**: `boolean` \| [`RetryOptions`](../../interfaces/RetryOptions.md)
 
-Defined in: [defaults.ts:89](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L89)
+Defined in: [defaults.ts:95](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L95)
 
 Retry interceptor.
 Retries transient failures with exponential backoff.
@@ -126,7 +132,7 @@ false
 
 > `optional` **serializer?**: `boolean` \| [`SerializerOptions`](../../interfaces/SerializerOptions.md)
 
-Defined in: [defaults.ts:115](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L115)
+Defined in: [defaults.ts:123](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L123)
 
 Serializer interceptor (last in chain).
 Auto JSON serialization for ConnectRPC responses.
@@ -144,7 +150,7 @@ false
 
 > `optional` **timeout?**: `boolean` \| [`TimeoutOptions`](../../interfaces/TimeoutOptions.md)
 
-Defined in: [defaults.ts:64](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L64)
+Defined in: [defaults.ts:70](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L70)
 
 Timeout interceptor.
 Enforces request deadline before any processing.
@@ -162,7 +168,7 @@ false
 
 > `optional` **validation?**: `boolean`
 
-Defined in: [defaults.ts:107](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L107)
+Defined in: [defaults.ts:115](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/defaults.ts#L115)
 
 Validation interceptor.
 Validates request messages using @connectrpc/validate.

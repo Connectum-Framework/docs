@@ -23,7 +23,14 @@ exposing only "Access denied" to the client via SanitizableError protocol.
 
 > **new AuthzDeniedError**(`details`): `AuthzDeniedError`
 
-Defined in: [packages/auth/src/errors.ts:38](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/errors.ts#L38)
+Defined in: [packages/auth/src/errors.ts:39](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/errors.ts#L39)
+
+Connect decides whether a thrown value is a `ConnectError` (and so keeps its code on the
+wire) by checking that its prototype is exactly `ConnectError.prototype` or that its
+`name` is "ConnectError". A subclass instance with another `name` fails both checks and
+reaches the client as `internal`. The constructor therefore builds a plain `ConnectError`
+and gives it the name and the fields of this class, so the denial keeps `PermissionDenied`
+with or without an error handler in front.
 
 #### Parameters
 
@@ -53,7 +60,7 @@ Defined in: [packages/auth/src/errors.ts:28](https://github.com/Connectum-Framew
 
 > **cause**: `unknown`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:46
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.3.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:46
 
 The underlying cause of this error, if any. In cases where the actual cause
 is elided with the error message, the cause is specified here so that we
@@ -67,7 +74,7 @@ don't leak the underlying error, but instead make it available for logging.
 
 ### clientMessage
 
-> `readonly` **clientMessage**: `"Access denied"` = `"Access denied"`
+> `readonly` **clientMessage**: `string`
 
 Defined in: [packages/auth/src/errors.ts:26](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/errors.ts#L26)
 
@@ -81,7 +88,7 @@ Defined in: [packages/auth/src/errors.ts:26](https://github.com/Connectum-Framew
 
 > `readonly` **code**: `Code`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:20
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.3.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:20
 
 The Code for this error.
 
@@ -95,7 +102,7 @@ The Code for this error.
 
 > **details**: (`OutgoingDetail` \| `IncomingDetail`)[]
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:32
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.3.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:32
 
 When an error is parsed from the wire, incoming error details are stored
 in this property. They can be retrieved using findDetails().
@@ -125,7 +132,7 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 
 > `readonly` **metadata**: `Headers`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:24
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.3.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:24
 
 A union of response headers and trailers associated with this error.
 
@@ -139,7 +146,7 @@ A union of response headers and trailers associated with this error.
 
 > **name**: `string`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:40
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.3.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:40
 
 #### Inherited from
 
@@ -151,7 +158,7 @@ Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.
 
 > `readonly` **rawMessage**: `string`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:39
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.3.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:39
 
 The error message, but without a status code in front.
 
@@ -169,6 +176,18 @@ the message `[not found] hello`, and the rawMessage `hello`.
 > `readonly` **ruleName**: `string`
 
 Defined in: [packages/auth/src/errors.ts:27](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/errors.ts#L27)
+
+***
+
+### serverDetails
+
+> `readonly` **serverDetails**: `Readonly`\<`Record`\<`string`, `unknown`\>\>
+
+Defined in: [packages/auth/src/errors.ts:29](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/errors.ts#L29)
+
+#### Implementation of
+
+`SanitizableError.serverDetails`
 
 ***
 
@@ -204,24 +223,6 @@ not capture any frames.
 
 `ConnectError.stackTraceLimit`
 
-## Accessors
-
-### serverDetails
-
-#### Get Signature
-
-> **get** **serverDetails**(): `Readonly`\<`Record`\<`string`, `unknown`\>\>
-
-Defined in: [packages/auth/src/errors.ts:30](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/errors.ts#L30)
-
-##### Returns
-
-`Readonly`\<`Record`\<`string`, `unknown`\>\>
-
-#### Implementation of
-
-`SanitizableError.serverDetails`
-
 ## Methods
 
 ### findDetails()
@@ -230,7 +231,7 @@ Defined in: [packages/auth/src/errors.ts:30](https://github.com/Connectum-Framew
 
 > **findDetails**\<`Desc`\>(`desc`): `MessageShape`\<`Desc`\>[]
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:84
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.3.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:84
 
 Retrieve error details from a ConnectError. On the wire, error details are
 wrapped with google.protobuf.Any, so that a server or middleware can attach
@@ -263,7 +264,7 @@ omitted from the list.
 
 > **findDetails**(`registry`): `Message`[]
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:85
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.3.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:85
 
 Retrieve error details from a ConnectError. On the wire, error details are
 wrapped with google.protobuf.Any, so that a server or middleware can attach
@@ -290,13 +291,16 @@ omitted from the list.
 
 ### \[hasInstance\]()
 
-> `static` **\[hasInstance\]**(`v`): `boolean`
+> `static` **\[hasInstance\]**(`value`): `boolean`
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:75
+Defined in: [packages/auth/src/errors.ts:66](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/errors.ts#L66)
+
+`ConnectError`'s own check ignores which class it is called on, so it would accept every
+`ConnectError` as an `AuthzDeniedError`. An instance is recognised by its name and fields.
 
 #### Parameters
 
-##### v
+##### value
 
 `unknown`
 
@@ -304,7 +308,7 @@ Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.
 
 `boolean`
 
-#### Inherited from
+#### Overrides
 
 `ConnectError.[hasInstance]`
 
@@ -384,7 +388,7 @@ a();
 
 > `static` **from**(`reason`, `code?`): [`ConnectError`](https://connectrpc.com/docs/web/errors)
 
-Defined in: node\_modules/.pnpm/@connectrpc+connect@2.2.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:74
+Defined in: node\_modules/.pnpm/@connectrpc+connect@2.3.0\_@bufbuild+protobuf@2.16.0/node\_modules/@connectrpc/connect/dist/esm/connect-error.d.ts:74
 
 Convert any value - typically a caught error into a ConnectError,
 following these rules:

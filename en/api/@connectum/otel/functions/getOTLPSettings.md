@@ -4,7 +4,7 @@
 
 > **getOTLPSettings**(): [`OTLPSettings`](../interfaces/OTLPSettings.md)
 
-Defined in: [config.ts:102](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L102)
+Defined in: [config.ts:164](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/config.ts#L164)
 
 Gets OTLP exporter settings from environment variables
 
@@ -16,6 +16,15 @@ Environment variables:
   transport for the bare `otlp` value (grpc|http/protobuf|http/json); `grpc` selects
   OTLP/gRPC, `http/protobuf` protobuf-encoded OTLP/HTTP, `http/json` JSON-encoded
   OTLP/HTTP; unset means `http/protobuf`
+
+An exporter variable that is unset, empty or not recognised yields the OpenTelemetry
+default, `otlp`, which resolves through the protocol variables like the explicit value:
+OTLP/HTTP with a protobuf body unless a protocol variable says otherwise, sent to
+`http://localhost:4318` unless an endpoint variable says otherwise. Set the variable to
+`console` to print telemetry to standard output, or to `none` to disable the signal.
+Values are matched case-insensitively. A value that is not recognised (a
+comma-separated list included) is ignored with a process warning (code
+`CONNECTUM_OTEL_INVALID_ENV`); this function never throws for the environment.
 
 ## Returns
 

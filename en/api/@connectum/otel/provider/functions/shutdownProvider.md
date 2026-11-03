@@ -2,9 +2,9 @@
 
 # Function: shutdownProvider()
 
-> **shutdownProvider**(): `Promise`\<`void`\>
+> **shutdownProvider**(`options?`): `Promise`\<`void`\>
 
-Defined in: [provider.ts:522](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L522)
+Defined in: [provider.ts:655](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L655)
 
 Gracefully shutdown the provider and release resources.
 
@@ -20,6 +20,22 @@ registrations this provider took are released; a registration that belonged
 to other code is left alone. Interceptors created earlier keep working: they
 record into whichever provider is current.
 
+A call made while another call is still stopping a provider waits for that stop
+too and settles with the same outcome, so two independent shutdown hooks cannot
+race ahead of the flush. Once the stop has settled, a further call is a no-op.
+
+The wait is bounded by the exporters (`OTEL_EXPORTER_OTLP_TIMEOUT`, 10 seconds
+by default, per export). Pass `timeout` to bound it to what the surrounding shutdown
+allows; see [ShutdownProviderOptions.timeout](../interfaces/ShutdownProviderOptions.md#timeout).
+
+## Parameters
+
+### options?
+
+[`ShutdownProviderOptions`](../interfaces/ShutdownProviderOptions.md)
+
+Optional deadline for this call
+
 ## Returns
 
 `Promise`\<`void`\>
@@ -28,3 +44,11 @@ record into whichever provider is current.
 
 The failure of the one signal that could not stop, or an
 `AggregateError` carrying the failures when several could not
+
+## Throws
+
+An error named `TimeoutError` when `options.timeout` passed first
+
+## Throws
+
+TypeError when `options.timeout` is not a number above 0 and at most 2147483647

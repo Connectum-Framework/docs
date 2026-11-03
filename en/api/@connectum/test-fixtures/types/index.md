@@ -14,3 +14,7 @@ Type definitions for @connectum/test-fixtures.
 - [MockNextOptions](interfaces/MockNextOptions.md)
 - [MockRequestOptions](interfaces/MockRequestOptions.md)
 - [MockStreamOptions](interfaces/MockStreamOptions.md)
+
+## Type Aliases
+
+- [MockScalarType](type-aliases/MockScalarType.md)

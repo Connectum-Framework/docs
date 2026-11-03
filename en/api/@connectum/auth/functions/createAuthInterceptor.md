@@ -4,7 +4,7 @@
 
 > **createAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/auth-interceptor.ts:87](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/auth-interceptor.ts#L87)
+Defined in: [packages/auth/src/auth-interceptor.ts:91](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/auth-interceptor.ts#L91)
 
 Create a generic authentication interceptor.
 
@@ -29,6 +29,10 @@ Authentication options
 `Interceptor`
 
 ConnectRPC interceptor
+
+## Throws
+
+When `verifyCredentials` is not a function, or `extractCredentials` is set and is not a function
 
 ## Throws
 

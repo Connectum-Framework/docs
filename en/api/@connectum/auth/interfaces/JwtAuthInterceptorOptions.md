@@ -2,7 +2,7 @@
 
 # Interface: JwtAuthInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:179](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L179)
+Defined in: [packages/auth/src/types.ts:226](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L226)
 
 JWT auth interceptor options
 
@@ -12,7 +12,7 @@ JWT auth interceptor options
 
 > `optional` **algorithms?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:225](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L225)
+Defined in: [packages/auth/src/types.ts:285](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L285)
 
 Allowed algorithms
 
@@ -22,9 +22,10 @@ Allowed algorithms
 
 > `optional` **audience?**: `string` \| `string`[]
 
-Defined in: [packages/auth/src/types.ts:223](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L223)
+Defined in: [packages/auth/src/types.ts:283](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L283)
 
-Expected audience(s)
+Expected audience(s). Omit the option to skip the check. A present value must be a non-empty
+string or an array of non-empty strings; an empty string throws when the interceptor is created.
 
 ***
 
@@ -32,7 +33,7 @@ Expected audience(s)
 
 > `optional` **claimsMapping?**: `object`
 
-Defined in: [packages/auth/src/types.ts:230](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L230)
+Defined in: [packages/auth/src/types.ts:290](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L290)
 
 Mapping from JWT claims to AuthContext fields.
 Supports dot-notation paths (e.g., "realm_access.roles").
@@ -59,9 +60,23 @@ Supports dot-notation paths (e.g., "realm_access.roles").
 
 > `optional` **issuer?**: `string` \| `string`[]
 
-Defined in: [packages/auth/src/types.ts:221](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L221)
+Defined in: [packages/auth/src/types.ts:278](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L278)
 
-Expected issuer(s)
+Expected issuer(s). Omit the option to skip the check. A present value must be a non-empty
+string or an array of non-empty strings; an empty string throws when the interceptor is created.
+
+***
+
+### jwks?
+
+> `optional` **jwks?**: [`JwksOptions`](JwksOptions.md)
+
+Defined in: [packages/auth/src/types.ts:235](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L235)
+
+Refresh and timeout settings of the remote key set. Only valid together with `jwksUri`
+(setting it without one throws when the interceptor is created); an unknown name or a value
+out of range throws too. Omit it to keep jose's defaults: 30 s cooldown, 10 min cache age,
+5 s request timeout.
 
 ***
 
@@ -69,7 +84,7 @@ Expected issuer(s)
 
 > `optional` **jwksUri?**: `string`
 
-Defined in: [packages/auth/src/types.ts:181](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L181)
+Defined in: [packages/auth/src/types.ts:228](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L228)
 
 JWKS endpoint URL for remote key set
 
@@ -79,11 +94,27 @@ JWKS endpoint URL for remote key set
 
 > `optional` **maxTokenAge?**: `string` \| `number`
 
-Defined in: [packages/auth/src/types.ts:243](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L243)
+Defined in: [packages/auth/src/types.ts:305](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L305)
 
 Maximum token age.
 Passed to jose jwtVerify options.
-Number (seconds) or string (e.g., "2h", "7d").
+Number (seconds) or string (e.g., "2h", "7d"). Omit the option to skip the check; `0`, a
+negative or non-finite number, a blank string, a text jose cannot read ("1month") and a text
+jose reads as zero or negative ("0s", "-1h", "1h ago") throw when the interceptor is created.
+
+***
+
+### propagatedClaims?
+
+> `optional` **propagatedClaims?**: `string`[]
+
+Defined in: [packages/auth/src/types.ts:336](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L336)
+
+Filter which claims are propagated in headers, as for `createAuthInterceptor`.
+When set, only the listed claim names are written to `x-auth-claims` (no header when none of
+them is in the token); when not set, every claim of the token is. Applies only with
+`propagateHeaders`. A value that is not an array of non-empty strings throws when the
+interceptor is created.
 
 ***
 
@@ -91,11 +122,14 @@ Number (seconds) or string (e.g., "2h", "7d").
 
 > `optional` **propagateHeaders?**: `boolean`
 
-Defined in: [packages/auth/src/types.ts:263](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L263)
+Defined in: [packages/auth/src/types.ts:328](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L328)
 
 Propagate auth context as headers for downstream services.
 A subject, type, name or scope containing NUL, CR or LF is rejected with
 `Unauthenticated` (and never cached) while this is on.
+Text above U+00FF is written as `utf-8''` plus percent-encoded UTF-8 (with `x-auth-encoding: percent-utf8`) and read back by the receiver.
+An identity that does not fit its header (subject over 512 characters, type over 128, name over
+256, serialized roles, scopes or claims over 8192) is rejected too, instead of being cut or left out.
 
 #### Default
 
@@ -109,7 +143,7 @@ false
 
 > `optional` **publicKey?**: `CryptoKey`
 
-Defined in: [packages/auth/src/types.ts:219](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L219)
+Defined in: [packages/auth/src/types.ts:273](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L273)
 
 Asymmetric public key for JWT signature verification.
 
@@ -157,7 +191,7 @@ const ecKey = await crypto.subtle.importKey(
 
 > `optional` **requireExpiration?**: `boolean`
 
-Defined in: [packages/auth/src/types.ts:251](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L251)
+Defined in: [packages/auth/src/types.ts:313](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L313)
 
 Reject a token that has no `exp` (expiration time) claim. A signed token
 without `exp` never expires, so a leaked one stays valid until the signing
@@ -176,7 +210,7 @@ true
 
 > `optional` **secret?**: `string`
 
-Defined in: [packages/auth/src/types.ts:183](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L183)
+Defined in: [packages/auth/src/types.ts:237](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L237)
 
 HMAC symmetric secret (for HS256/HS384/HS512)
 
@@ -186,7 +220,7 @@ HMAC symmetric secret (for HS256/HS384/HS512)
 
 > `optional` **skipMethods?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:256](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L256)
+Defined in: [packages/auth/src/types.ts:318](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L318)
 
 Methods to skip authentication for. The catch-all `"*"` is refused (creation throws).
 

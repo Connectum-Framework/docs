@@ -4,7 +4,7 @@
 
 > **InternalTrustSource** = (`req`) => [`AuthContext`](../interfaces/AuthContext.md) \| `null` \| `Promise`\<[`AuthContext`](../interfaces/AuthContext.md) \| `null`\>
 
-Defined in: [packages/auth/src/types.ts:373](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L373)
+Defined in: [packages/auth/src/types.ts:467](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L467)
 
 A pluggable internal trust source (ADR-029).
 
@@ -31,4 +31,5 @@ The request (read-only access to headers).
 
 [`AuthContext`](../interfaces/AuthContext.md) \| `null` \| `Promise`\<[`AuthContext`](../interfaces/AuthContext.md) \| `null`\>
 
-AuthContext for a trusted internal caller, or null to reject.
+AuthContext for a trusted internal caller, or null to reject. A result that is not an
+  `AuthContext` (a truthy `true`, `{}`, a sparse `roles` list) is rejected like `null`.

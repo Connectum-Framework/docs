@@ -2,7 +2,7 @@
 
 # Interface: ProtoSyncOptions
 
-Defined in: [commands/proto-sync.ts:25](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L25)
+Defined in: [commands/proto-sync.ts:28](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L28)
 
 Options for the proto sync pipeline.
 
@@ -12,7 +12,7 @@ Options for the proto sync pipeline.
 
 > `optional` **dryRun?**: `boolean`
 
-Defined in: [commands/proto-sync.ts:33](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L33)
+Defined in: [commands/proto-sync.ts:36](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L36)
 
 Show what would be synced without generating
 
@@ -22,7 +22,7 @@ Show what would be synced without generating
 
 > **from**: `string`
 
-Defined in: [commands/proto-sync.ts:27](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L27)
+Defined in: [commands/proto-sync.ts:30](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L30)
 
 Server URL (e.g., "http://localhost:5000")
 
@@ -32,7 +32,7 @@ Server URL (e.g., "http://localhost:5000")
 
 > **out**: `string`
 
-Defined in: [commands/proto-sync.ts:29](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L29)
+Defined in: [commands/proto-sync.ts:32](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L32)
 
 Output directory for generated types
 
@@ -42,7 +42,7 @@ Output directory for generated types
 
 > `optional` **template?**: `string`
 
-Defined in: [commands/proto-sync.ts:31](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L31)
+Defined in: [commands/proto-sync.ts:34](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L34)
 
 Path to custom buf.gen.yaml template
 
@@ -52,6 +52,6 @@ Path to custom buf.gen.yaml template
 
 > `optional` **timeoutMs?**: `number`
 
-Defined in: [commands/proto-sync.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L35)
+Defined in: [commands/proto-sync.ts:38](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/commands/proto-sync.ts#L38)
 
 Time limit of each reflection request in ms (positive integer; default 10 000).

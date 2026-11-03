@@ -147,6 +147,12 @@ Re-exports [ServerClientOptions](types/interfaces/ServerClientOptions.md)
 
 ***
 
+### ServerLogger
+
+Re-exports [ServerLogger](types/interfaces/ServerLogger.md)
+
+***
+
 ### ServerState
 
 Re-exports [ServerState](types/variables/ServerState.md)

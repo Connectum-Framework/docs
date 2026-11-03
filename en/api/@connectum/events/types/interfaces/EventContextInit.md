@@ -2,7 +2,7 @@
 
 # Interface: EventContextInit
 
-Defined in: [packages/events/src/types.ts:206](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L206)
+Defined in: [packages/events/src/types.ts:210](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L210)
 
 Initialization data for creating an EventContext
 
@@ -12,7 +12,7 @@ Initialization data for creating an EventContext
 
 > `readonly` **onAck**: () => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:209](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L209)
+Defined in: [packages/events/src/types.ts:213](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L213)
 
 #### Returns
 
@@ -24,7 +24,7 @@ Defined in: [packages/events/src/types.ts:209](https://github.com/Connectum-Fram
 
 > `readonly` **onNack**: (`requeue`) => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:210](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L210)
+Defined in: [packages/events/src/types.ts:214](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L214)
 
 #### Parameters
 
@@ -42,7 +42,7 @@ Defined in: [packages/events/src/types.ts:210](https://github.com/Connectum-Fram
 
 > `readonly` `optional` **publish?**: \<`Desc`\>(`schema`, `data`, `options?`) => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:212](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L212)
+Defined in: [packages/events/src/types.ts:216](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L216)
 
 Implementation of `ctx.publish`; a context built without one rejects every publish.
 
@@ -59,6 +59,10 @@ result inside the handler, so a failed publish fails the handler and the message
 Handlers that publish through an injected bus instead of `ctx` keep being refused during
 `stop()`; rewrite them to use `ctx.publish` to relay during shutdown.
 
+`data` is `MessageInitShape` of the schema: a plain object (nested messages and oneofs
+included) or an already built message, which is the same thing the runtime builds with
+`create(schema, data)` before serializing.
+
 #### Type Parameters
 
 ##### Desc
@@ -73,7 +77,7 @@ Handlers that publish through an injected bus instead of `ctx` keep being refuse
 
 ##### data
 
-`MessageShape`\<`Desc`\>
+`MessageInitShape`\<`Desc`\>
 
 ##### options?
 
@@ -89,7 +93,7 @@ Handlers that publish through an injected bus instead of `ctx` keep being refuse
 
 > `readonly` **raw**: [`RawEvent`](RawEvent.md)
 
-Defined in: [packages/events/src/types.ts:207](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L207)
+Defined in: [packages/events/src/types.ts:211](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L211)
 
 ***
 
@@ -97,4 +101,4 @@ Defined in: [packages/events/src/types.ts:207](https://github.com/Connectum-Fram
 
 > `readonly` **signal**: `AbortSignal`
 
-Defined in: [packages/events/src/types.ts:208](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L208)
+Defined in: [packages/events/src/types.ts:212](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L212)

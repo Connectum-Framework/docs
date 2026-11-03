@@ -2,7 +2,7 @@
 
 # Interface: ShutdownOptions
 
-Defined in: [packages/core/src/types.ts:240](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L240)
+Defined in: [packages/core/src/types.ts:278](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L278)
 
 Graceful shutdown options
 
@@ -12,9 +12,17 @@ Graceful shutdown options
 
 > `optional` **autoShutdown?**: `boolean`
 
-Defined in: [packages/core/src/types.ts:257](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L257)
+Defined in: [packages/core/src/types.ts:305](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L305)
 
-Enable automatic graceful shutdown on signals
+Enable automatic graceful shutdown on signals. Must be a boolean. The
+handlers are installed when `start()` begins, so a signal that arrives
+while the server is still starting stops it as soon as the start has
+finished.
+
+A signal received again while the server is stopping ends the process at
+once, in the middle of the shutdown hooks, after a warning in the log: it is
+the way out of a shutdown that hangs. If the application or another server
+has its own `process.on` listener for the signal, the process is not terminated (a `process.once` listener that has already run is not counted).
 
 #### Default
 
@@ -28,7 +36,7 @@ false
 
 > `optional` **forceCloseOnTimeout?**: `boolean`
 
-Defined in: [packages/core/src/types.ts:277](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L277)
+Defined in: [packages/core/src/types.ts:328](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L328)
 
 Force close every client connection when the shutdown timeout is exceeded.
 When true, all connections of every transport (HTTP/2 sessions, HTTP/1.1
@@ -42,7 +50,10 @@ and keep the process alive until their clients close them.
 
 With either value `stop()` does not wait for client connections beyond
 the timeout, but it does wait for the shutdown hooks, which the timeout
-does not bound. It rejects if a shutdown hook fails or the transport fails
+does not bound. A hook that never settles therefore keeps `stop()` pending
+for good; when the timeout has elapsed and hooks are still running, the
+server logs one warning through its `logger` naming them and the elapsed
+time, and keeps waiting. It rejects if a shutdown hook fails or the transport fails
 to close before the timeout; a close failure after the timeout is only
 logged.
 
@@ -58,9 +69,11 @@ true
 
 > `optional` **signals?**: `Signals`[]
 
-Defined in: [packages/core/src/types.ts:251](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L251)
+Defined in: [packages/core/src/types.ts:291](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L291)
 
-Signals to listen for graceful shutdown
+Signals to listen for graceful shutdown: a non-empty array of signal names the
+platform knows (`SIGKILL` and `SIGSTOP` cannot be handled). `createServer()`
+throws for anything else, also while `autoShutdown` is off.
 
 #### Default
 
@@ -74,7 +87,7 @@ Signals to listen for graceful shutdown
 
 > `optional` **timeout?**: `number`
 
-Defined in: [packages/core/src/types.ts:245](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L245)
+Defined in: [packages/core/src/types.ts:283](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L283)
 
 Timeout in milliseconds for graceful shutdown
 

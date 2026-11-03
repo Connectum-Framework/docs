@@ -4,13 +4,16 @@
 
 > **createLoggerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [logger.ts:216](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/logger.ts#L216)
+Defined in: [logger.ts:233](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/logger.ts#L233)
 
 Create logger interceptor
 
 Logs RPC requests and responses with timing information. By default,
-skips calls whose service type name contains `grpc.health`; set
-`skipHealthCheck: false` to include them.
+skips calls to the gRPC health service: a service type name that has
+`grpc.health` as whole package segments (`grpc.health.v1.Health`, or the same
+package under a prefix such as `acme.grpc.health.v1.Probe`). A name that only
+contains the text inside a longer segment, such as `acme.grpc.healthcare.v1.Svc`,
+is logged. Set `skipHealthCheck: false` to include health calls.
 Supports both unary and streaming RPCs.
 
 ## Parameters

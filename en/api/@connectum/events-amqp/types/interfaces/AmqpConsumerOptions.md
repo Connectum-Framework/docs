@@ -2,7 +2,7 @@
 
 # Interface: AmqpConsumerOptions
 
-Defined in: [packages/events-amqp/src/types.ts:880](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L880)
+Defined in: [packages/events-amqp/src/types.ts:895](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L895)
 
 Consumer options.
 
@@ -12,7 +12,7 @@ Consumer options.
 
 > `readonly` `optional` **exclusive?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:899](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L899)
+Defined in: [packages/events-amqp/src/types.ts:941](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L941)
 
 Whether the private queue of a subscription without `group` is exclusive
 to the subscriber's connection, so the broker removes it with that
@@ -33,13 +33,49 @@ true
 
 > `readonly` `optional` **prefetch?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:887](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L887)
+Defined in: [packages/events-amqp/src/types.ts:903](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L903)
 
 Prefetch count (QoS) — how many unacknowledged messages
-a consumer can have at a time.
+a consumer can have at a time. An integer from 0 (no limit) to 65535;
+any other value makes `AmqpAdapter()` throw a `RangeError`.
 
 #### Default
 
 ```ts
 10
+```
+
+***
+
+### redeliveryDelay?
+
+> `readonly` `optional` **redeliveryDelay?**: `number`
+
+Defined in: [packages/events-amqp/src/types.ts:929](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L929)
+
+Milliseconds to hold a message unacknowledged after its handler threw,
+before it is requeued. Opt-in: unset or `0` requeues at once, so a
+handler that always throws receives the same message as fast as the
+broker can deliver it (tens of thousands of times in a few seconds,
+measured against RabbitMQ 4.3), which keeps a CPU core busy and floods
+the logs.
+
+The held message occupies one `prefetch` slot for the whole delay, and
+the delay applies to every handler failure of this adapter's
+subscriptions, not only to a poison message. It does not apply to a
+message the handler already settled with `ack()` or `nack()`.
+`unsubscribe()` ends the wait and requeues a held message at once. When the
+channel closes during the wait (`disconnect()`, a lost connection) the wait
+ends and the broker returns the message itself.
+The attempt number stays 1 or 2: `redelivered` is a flag, not a counter,
+so a delay does not replace `retry` and `dlq` middleware for a message
+that can never succeed.
+
+A finite number of milliseconds from `0` to `2147483647` (the largest
+delay a timer honors); anything else makes `AmqpAdapter()` throw.
+
+#### Default
+
+```ts
+0
 ```

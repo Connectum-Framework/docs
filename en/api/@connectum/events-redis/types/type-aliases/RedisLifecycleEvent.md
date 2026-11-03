@@ -2,9 +2,9 @@
 
 # Type Alias: RedisLifecycleEvent
 
-> **RedisLifecycleEvent** = \{ `connection`: [`RedisLifecycleConnection`](RedisLifecycleConnection.md); `reconnected`: `boolean`; `type`: `"connected"`; \} \| \{ `connection`: [`RedisLifecycleConnection`](RedisLifecycleConnection.md); `error`: `Error`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `connection`: [`RedisLifecycleConnection`](RedisLifecycleConnection.md); `delay`: `number`; `error`: `Error`; `type`: `"reconnecting"`; \} \| \{ `connection`: [`RedisLifecycleConnection`](RedisLifecycleConnection.md); `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `callback`: `string`; `error`: `Error`; `event`: `string`; `type`: `"lifecycle-error"`; \}
+> **RedisLifecycleEvent** = \{ `connection`: [`RedisLifecycleConnection`](RedisLifecycleConnection.md); `reconnected`: `boolean`; `type`: `"connected"`; \} \| \{ `connection`: [`RedisLifecycleConnection`](RedisLifecycleConnection.md); `error`: `Error`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `connection`: [`RedisLifecycleConnection`](RedisLifecycleConnection.md); `delay`: `number`; `error`: `Error`; `type`: `"reconnecting"`; \} \| \{ `connection`: [`RedisLifecycleConnection`](RedisLifecycleConnection.md); `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `connection`: `Exclude`\<[`RedisLifecycleConnection`](RedisLifecycleConnection.md), `"publisher"`\>; `group`: `string`; `stream`: `string`; `type`: `"group-recreated"`; \} \| \{ `callback`: `string`; `error`: `Error`; `event`: `string`; `type`: `"lifecycle-error"`; \}
 
-Defined in: [types.ts:85](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-redis/src/types.ts#L85)
+Defined in: [types.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-redis/src/types.ts#L97)
 
 Connection lifecycle events of the Redis adapter, delivered to [RedisLifecycleCallbacks.onLifecycle](../interfaces/RedisLifecycleCallbacks.md#onlifecycle).
 
@@ -99,6 +99,33 @@ The client scheduled a reconnect attempt after `delay` milliseconds; `attempt` c
 > `readonly` **type**: `"reconnect-failed"`
 
 Terminal: the client ended without the adapter closing it (a retry strategy that returned no delay).
+
+***
+
+### Type Literal
+
+\{ `connection`: `Exclude`\<[`RedisLifecycleConnection`](RedisLifecycleConnection.md), `"publisher"`\>; `group`: `string`; `stream`: `string`; `type`: `"group-recreated"`; \}
+
+#### connection
+
+> `readonly` **connection**: `Exclude`\<[`RedisLifecycleConnection`](RedisLifecycleConnection.md), `"publisher"`\>
+
+#### group
+
+> `readonly` **group**: `string`
+
+#### stream
+
+> `readonly` **stream**: `string`
+
+The stream key, `events:<topic>`.
+
+#### type
+
+> `readonly` **type**: `"group-recreated"`
+
+Redis lost a consumer group (data loss, failover to a replica without the stream) and the subscription created it again.
+The group starts at the beginning of the stream, so entries it had already handled before the loss can be delivered a second time.
 
 ***
 

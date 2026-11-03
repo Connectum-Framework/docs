@@ -2,7 +2,7 @@
 
 # Interface: LoggerOptions
 
-Defined in: [types.ts:70](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L70)
+Defined in: [types.ts:79](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L79)
 
 Logger interceptor options
 
@@ -12,7 +12,7 @@ Logger interceptor options
 
 > `optional` **includeBodies?**: `boolean`
 
-Defined in: [types.ts:116](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L116)
+Defined in: [types.ts:127](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L127)
 
 Pass request and response bodies to the log sink.
 
@@ -35,7 +35,7 @@ false
 
 > `optional` **includeTransport?**: `boolean`
 
-Defined in: [types.ts:102](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L102)
+Defined in: [types.ts:113](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L113)
 
 Tag every log line with the transport that carried the call, right
 after the `RPC` / `STREAM` prefix: `[in-process]` for calls made through
@@ -57,9 +57,9 @@ false
 
 ### level?
 
-> `optional` **level?**: `"error"` \| `"warn"` \| `"debug"` \| `"info"`
+> `optional` **level?**: `"error"` \| `"warn"` \| `"info"` \| `"debug"`
 
-Defined in: [types.ts:75](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L75)
+Defined in: [types.ts:84](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L84)
 
 Log level
 
@@ -75,7 +75,7 @@ Log level
 
 > `optional` **logger?**: (`message`, ...`args`) => `void`
 
-Defined in: [types.ts:87](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L87)
+Defined in: [types.ts:98](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L98)
 
 Custom logger function
 
@@ -105,9 +105,11 @@ console[level]
 
 > `optional` **skipHealthCheck?**: `boolean`
 
-Defined in: [types.ts:81](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L81)
+Defined in: [types.ts:92](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L92)
 
-Skip logging for health check services
+Skip logging for the gRPC health service: a service type name with `grpc.health`
+as whole package segments (`grpc.health.v1.Health`). A name that only contains the
+text inside a longer segment, such as `acme.grpc.healthcare.v1.Svc`, is logged.
 
 #### Default
 

@@ -2,7 +2,7 @@
 
 # Interface: StreamingMethodInfo
 
-Defined in: [packages/core/src/TransportValidation.ts:76](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L76)
+Defined in: [packages/core/src/TransportValidation.ts:77](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L77)
 
 A streaming method that requires HTTP/2.
 
@@ -12,7 +12,7 @@ A streaming method that requires HTTP/2.
 
 > `readonly` **kind**: `string`
 
-Defined in: [packages/core/src/TransportValidation.ts:82](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L82)
+Defined in: [packages/core/src/TransportValidation.ts:83](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L83)
 
 Streaming kind: `bidi_streaming`.
 
@@ -22,7 +22,7 @@ Streaming kind: `bidi_streaming`.
 
 > `readonly` **method**: `string`
 
-Defined in: [packages/core/src/TransportValidation.ts:80](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L80)
+Defined in: [packages/core/src/TransportValidation.ts:81](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L81)
 
 Method name (e.g. `StreamCodes`).
 
@@ -32,6 +32,6 @@ Method name (e.g. `StreamCodes`).
 
 > `readonly` **service**: `string`
 
-Defined in: [packages/core/src/TransportValidation.ts:78](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L78)
+Defined in: [packages/core/src/TransportValidation.ts:79](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L79)
 
 Fully qualified service typeName (e.g. `acme.v1.ScannerService`).

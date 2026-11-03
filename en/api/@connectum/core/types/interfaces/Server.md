@@ -2,7 +2,7 @@
 
 # Interface: Server
 
-Defined in: [packages/core/src/types.ts:603](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L603)
+Defined in: [packages/core/src/types.ts:717](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L717)
 
 Server interface with explicit lifecycle control
 
@@ -35,7 +35,7 @@ await server.stop();
 
 > `readonly` **address**: `AddressInfo` \| `null`
 
-Defined in: [packages/core/src/types.ts:634](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L634)
+Defined in: [packages/core/src/types.ts:752](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L752)
 
 Current server address
 
@@ -47,7 +47,7 @@ Returns null until server is started
 
 > `readonly` **eventBus**: [`EventBusLike`](EventBusLike.md) \| `null`
 
-Defined in: [packages/core/src/types.ts:777](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L777)
+Defined in: [packages/core/src/types.ts:908](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L908)
 
 Event bus instance, if configured
 
@@ -59,7 +59,7 @@ Returns null if no event bus was provided to createServer().
 
 > `readonly` **interceptors**: readonly `Interceptor`[]
 
-Defined in: [packages/core/src/types.ts:765](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L765)
+Defined in: [packages/core/src/types.ts:896](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L896)
 
 Registered interceptors
 
@@ -69,7 +69,7 @@ Registered interceptors
 
 > `readonly` **isRunning**: `boolean`
 
-Defined in: [packages/core/src/types.ts:639](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L639)
+Defined in: [packages/core/src/types.ts:757](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L757)
 
 Whether server is currently running
 
@@ -79,7 +79,7 @@ Whether server is currently running
 
 > `readonly` **protocols**: readonly [`ProtocolRegistration`](ProtocolRegistration.md)[]
 
-Defined in: [packages/core/src/types.ts:770](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L770)
+Defined in: [packages/core/src/types.ts:901](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L901)
 
 Registered protocols
 
@@ -89,7 +89,7 @@ Registered protocols
 
 > `readonly` **routes**: readonly [`ServiceDefinition`](../../interfaces/ServiceDefinition.md)[]
 
-Defined in: [packages/core/src/types.ts:760](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L760)
+Defined in: [packages/core/src/types.ts:891](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L891)
 
 Registered service routes
 
@@ -99,12 +99,18 @@ Registered service routes
 
 > `readonly` **shutdownSignal**: `AbortSignal`
 
-Defined in: [packages/core/src/types.ts:744](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L744)
+Defined in: [packages/core/src/types.ts:875](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L875)
 
 Abort signal that is aborted when server begins shutdown.
 
 Use this to signal streaming RPCs and long-running operations
 that the server is shutting down.
+
+A server stream whose handler is still sending when the signal aborts is
+ended by the framework: the client receives the messages already sent and
+then an `unavailable` error, never a normal end of stream that would pass
+for a complete response. A handler that returns by itself after seeing the
+signal ends the call normally; that is its own decision.
 
 ***
 
@@ -112,7 +118,7 @@ that the server is shutting down.
 
 > `readonly` **state**: [`ServerState`](../type-aliases/ServerState.md)
 
-Defined in: [packages/core/src/types.ts:644](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L644)
+Defined in: [packages/core/src/types.ts:762](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L762)
 
 Current server state
 
@@ -122,7 +128,7 @@ Current server state
 
 > `readonly` **transport**: [`TransportServer`](../type-aliases/TransportServer.md) \| `null`
 
-Defined in: [packages/core/src/types.ts:755](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L755)
+Defined in: [packages/core/src/types.ts:886](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L886)
 
 Underlying transport server
 
@@ -193,7 +199,7 @@ v13.4.0, v12.16.0
 
 > **addInterceptor**(`interceptor`): `void`
 
-Defined in: [packages/core/src/types.ts:695](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L695)
+Defined in: [packages/core/src/types.ts:813](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L813)
 
 Add an interceptor before startup and before routes are materialized.
 Local client or transport access can materialize routes before start().
@@ -256,7 +262,7 @@ v0.1.26
 
 > **addProtocol**(`protocol`): `void`
 
-Defined in: [packages/core/src/types.ts:703](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L703)
+Defined in: [packages/core/src/types.ts:821](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L821)
 
 Add a protocol before startup and before routes are materialized.
 Local client or transport access can materialize routes before start().
@@ -281,7 +287,7 @@ Error if state is not CREATED or routes are already materialized
 
 > **addService**(`service`): `void`
 
-Defined in: [packages/core/src/types.ts:687](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L687)
+Defined in: [packages/core/src/types.ts:805](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L805)
 
 Add a service before startup and before routes are materialized.
 Local client or transport access can materialize routes before start().
@@ -306,7 +312,7 @@ Error if state is not CREATED or routes are already materialized
 
 > **client**\<`T`\>(`service`, `options?`): `Client`\<`T`\>
 
-Defined in: [packages/core/src/types.ts:851](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L851)
+Defined in: [packages/core/src/types.ts:990](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L990)
 
 Unified client factory: auto-routes to the in-process transport if the
 service is registered on this `Server`, otherwise to the transport
@@ -497,14 +503,19 @@ v1.0.0
 
 > **hasService**(`desc`): `boolean`
 
-Defined in: [packages/core/src/types.ts:822](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L822)
+Defined in: [packages/core/src/types.ts:961](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L961)
 
 Synchronous registry lookup: returns whether the given proto service
-descriptor is served locally by this `Server`. Triggers route
-materialization on first call.
+descriptor is served locally by this `Server`.
 
-Source of truth is the same `ConnectRouter.service(desc, impl)` chain
-used to build the HTTP handler — no separate registration step.
+A service the application defines (`services`, `addService()`, filtered
+by `enabledServices`) is answered from its definition without building
+routes: no lazy factory runs and `addService()`, `addInterceptor()` and
+`addProtocol()` stay available. A descriptor only a protocol could
+provide (when protocols are registered) is answered from the built
+routes, which this call then builds and freezes the configuration.
+The answer is the same either way: routes are the same
+`ConnectRouter.service(desc, impl)` chain used to build the HTTP handler.
 
 #### Parameters
 
@@ -616,7 +627,7 @@ v0.1.26
 
 > **localClient**\<`T`\>(`service`): `Client`\<`T`\>
 
-Defined in: [packages/core/src/types.ts:805](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L805)
+Defined in: [packages/core/src/types.ts:939](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L939)
 
 Create a fully-typed ConnectRPC client that dispatches calls directly
 to handlers registered on this server, without opening any TCP socket.
@@ -626,9 +637,12 @@ lazily on first access. Once materialized, `addService` / `addInterceptor`
 / `addProtocol` will throw.
 
 Cancellation: a streaming call is cancelled by the `AbortSignal` passed
-in the call options, by its deadline, or by `server.stop()`; the
-handler's `finally` then runs. Leaving a `for await` loop with `break`
-is not a cancellation.
+in the call options, by its deadline, by `server.stop()`, or by the
+caller leaving its `for await` loop early with `break` (the response
+iterator's `return()`; requires `@connectrpc/connect` 2.3.0 or later);
+the handler's `finally` then runs. A `break` ends the call for the
+client-side interceptors without an error, while the handler sees its
+`signal` aborted.
 
 #### Type Parameters
 
@@ -664,7 +678,7 @@ const response = await client.sayHello({ name: 'world' });
 
 > **off**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:671](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L671)
+Defined in: [packages/core/src/types.ts:789](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L789)
 
 Remove listener for lifecycle events
 
@@ -690,7 +704,7 @@ Remove listener for lifecycle events
 
 > **off**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:672](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L672)
+Defined in: [packages/core/src/types.ts:790](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L790)
 
 Alias for `emitter.removeListener()`.
 
@@ -720,7 +734,7 @@ v10.0.0
 
 > **off**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:673](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L673)
+Defined in: [packages/core/src/types.ts:791](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L791)
 
 Alias for `emitter.removeListener()`.
 
@@ -750,7 +764,7 @@ v10.0.0
 
 > **off**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:674](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L674)
+Defined in: [packages/core/src/types.ts:792](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L792)
 
 Alias for `emitter.removeListener()`.
 
@@ -780,7 +794,7 @@ v10.0.0
 
 > **off**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:675](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L675)
+Defined in: [packages/core/src/types.ts:793](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L793)
 
 Alias for `emitter.removeListener()`.
 
@@ -814,7 +828,7 @@ v10.0.0
 
 > **on**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:653](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L653)
+Defined in: [packages/core/src/types.ts:771](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L771)
 
 Register listener for lifecycle events
 
@@ -840,7 +854,7 @@ Register listener for lifecycle events
 
 > **on**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:654](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L654)
+Defined in: [packages/core/src/types.ts:772](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L772)
 
 Adds the `listener` function to the end of the listeners array for the
 event named `eventName`. No checks are made to see if the `listener` has
@@ -899,7 +913,7 @@ v0.1.101
 
 > **on**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:655](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L655)
+Defined in: [packages/core/src/types.ts:773](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L773)
 
 Adds the `listener` function to the end of the listeners array for the
 event named `eventName`. No checks are made to see if the `listener` has
@@ -958,7 +972,7 @@ v0.1.101
 
 > **on**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:656](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L656)
+Defined in: [packages/core/src/types.ts:774](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L774)
 
 Adds the `listener` function to the end of the listeners array for the
 event named `eventName`. No checks are made to see if the `listener` has
@@ -1017,7 +1031,7 @@ v0.1.101
 
 > **on**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:657](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L657)
+Defined in: [packages/core/src/types.ts:775](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L775)
 
 Adds the `listener` function to the end of the listeners array for the
 event named `eventName`. No checks are made to see if the `listener` has
@@ -1080,7 +1094,7 @@ v0.1.101
 
 > **once**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:662](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L662)
+Defined in: [packages/core/src/types.ts:780](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L780)
 
 Register one-time listener for lifecycle events
 
@@ -1106,7 +1120,7 @@ Register one-time listener for lifecycle events
 
 > **once**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:663](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L663)
+Defined in: [packages/core/src/types.ts:781](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L781)
 
 Adds a **one-time** `listener` function for the event named `eventName`. The
 next time `eventName` is triggered, this listener is removed and then invoked.
@@ -1162,7 +1176,7 @@ v0.3.0
 
 > **once**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:664](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L664)
+Defined in: [packages/core/src/types.ts:782](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L782)
 
 Adds a **one-time** `listener` function for the event named `eventName`. The
 next time `eventName` is triggered, this listener is removed and then invoked.
@@ -1218,7 +1232,7 @@ v0.3.0
 
 > **once**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:665](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L665)
+Defined in: [packages/core/src/types.ts:783](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L783)
 
 Adds a **one-time** `listener` function for the event named `eventName`. The
 next time `eventName` is triggered, this listener is removed and then invoked.
@@ -1274,7 +1288,7 @@ v0.3.0
 
 > **once**(`event`, `listener`): `this`
 
-Defined in: [packages/core/src/types.ts:666](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L666)
+Defined in: [packages/core/src/types.ts:784](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L784)
 
 Adds a **one-time** `listener` function for the event named `eventName`. The
 next time `eventName` is triggered, this listener is removed and then invoked.
@@ -1334,7 +1348,7 @@ v0.3.0
 
 > **onShutdown**(`handler`): `void`
 
-Defined in: [packages/core/src/types.ts:715](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L715)
+Defined in: [packages/core/src/types.ts:833](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L833)
 
 Register an anonymous shutdown hook
 
@@ -1358,7 +1372,7 @@ Error if server is already stopped
 
 > **onShutdown**(`name`, `handler`): `void`
 
-Defined in: [packages/core/src/types.ts:724](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L724)
+Defined in: [packages/core/src/types.ts:842](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L842)
 
 Register a named shutdown hook
 
@@ -1388,7 +1402,7 @@ Error if server is already stopped
 
 > **onShutdown**(`name`, `dependencies`, `handler`): `void`
 
-Defined in: [packages/core/src/types.ts:736](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L736)
+Defined in: [packages/core/src/types.ts:861](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L861)
 
 Register a named shutdown hook with dependencies
 
@@ -1421,6 +1435,16 @@ Shutdown hook function
 ##### Throws
 
 Error if server is already stopped
+
+##### Throws
+
+TypeError if the arguments match none of the three forms (for
+  example a string where the array of dependencies belongs, or a missing
+  hook function). A dependency on a name nobody registered is not an error:
+  hooks may be added in any order, so the name is checked when the server
+  stops. If no hook has registered it by then, the dependent hook runs
+  without waiting and one warning per missing name goes to the `logger`
+  option (`console` by default).
 
 ***
 
@@ -1788,7 +1812,7 @@ v0.3.5
 
 > **start**(): `Promise`\<`void`\>
 
-Defined in: [packages/core/src/types.ts:613](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L613)
+Defined in: [packages/core/src/types.ts:727](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L727)
 
 Start the server
 
@@ -1806,11 +1830,16 @@ Error if server is not in CREATED state
 
 > **stop**(): `Promise`\<`void`\>
 
-Defined in: [packages/core/src/types.ts:623](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L623)
+Defined in: [packages/core/src/types.ts:741](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L741)
 
 Stop the server gracefully. Concurrent calls during STOPPING join the
 in-progress shutdown and settle with its outcome; a call after the server
 has stopped resolves immediately without doing anything or emitting events.
+
+A call made while `start()` is still in progress is honoured: it waits for
+the start to settle and then stops the server (`start()` resolves first, and
+the server is already stopping when its caller resumes). If the start fails,
+the server is already stopped and the call resolves.
 
 #### Returns
 
@@ -1818,5 +1847,4 @@ has stopped resolves immediately without doing anything or emitting events.
 
 #### Throws
 
-Error if the server is not RUNNING, STOPPING or STOPPED (it was
-never started, or is still starting)
+Error if the server was never started (state CREATED)

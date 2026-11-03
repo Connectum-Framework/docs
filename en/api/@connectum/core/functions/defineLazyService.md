@@ -4,7 +4,7 @@
 
 > **defineLazyService**\<`S`\>(`descriptor`, `factory`, `options?`): [`ServiceDefinition`](../interfaces/ServiceDefinition.md)
 
-Defined in: [packages/core/src/defineService.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L97)
+Defined in: [packages/core/src/defineService.ts:108](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L108)
 
 Define a service whose handlers (and their dependencies) are created lazily.
 
@@ -12,6 +12,10 @@ Define a service whose handlers (and their dependencies) are created lazily.
 it is in `enabledServices` (or `enabledServices` is `undefined`). A service
 routed to a remote process never instantiates its local dependencies. Useful
 for DI-heavy monoliths where wiring a service is expensive.
+
+`factory` must be synchronous and return the handlers object (see
+[defineService](defineService.md)); an `async` factory, or a result that is not an object
+of functions, throws a `TypeError` naming the service when the factory runs.
 
 `factory` runs once per server: the HTTP adapter, `server.localClient` and
 `ctx.call` all reach the same instance. The same definition mounted on two

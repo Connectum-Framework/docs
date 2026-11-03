@@ -2,7 +2,7 @@
 
 # Class: HealthcheckManager
 
-Defined in: [HealthcheckManager.ts:79](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L79)
+Defined in: [HealthcheckManager.ts:81](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L81)
 
 Healthcheck manager
 
@@ -45,7 +45,7 @@ server.on('stopping', () => healthcheckManager.set('process', ServingStatus.NOT_
 
 > **areAllHealthy**(): `boolean`
 
-Defined in: [HealthcheckManager.ts:206](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L206)
+Defined in: [HealthcheckManager.ts:318](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L318)
 
 Check if all services and components are healthy (SERVING)
 
@@ -61,7 +61,7 @@ True if all entries are SERVING; false for an empty registry
 
 > **clear**(): `void`
 
-Defined in: [HealthcheckManager.ts:254](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L254)
+Defined in: [HealthcheckManager.ts:368](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L368)
 
 Clear all services and components
 
@@ -75,7 +75,7 @@ Clear all services and components
 
 > **getAllStatuses**(): `Map`\<`string`, [`ServiceStatus`](../types/interfaces/ServiceStatus.md)\>
 
-Defined in: [HealthcheckManager.ts:193](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L193)
+Defined in: [HealthcheckManager.ts:305](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L305)
 
 Get health status for all registered services and components.
 
@@ -91,7 +91,7 @@ Map of service/component name to health status
 
 > **getStatus**(`service`): [`ServiceStatus`](../types/interfaces/ServiceStatus.md) \| `undefined`
 
-Defined in: [HealthcheckManager.ts:183](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L183)
+Defined in: [HealthcheckManager.ts:295](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L295)
 
 Get service health status
 
@@ -115,7 +115,7 @@ Service status or undefined if not found
 
 > **initialize**(`serviceNames`): `void`
 
-Defined in: [HealthcheckManager.ts:229](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L229)
+Defined in: [HealthcheckManager.ts:341](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L341)
 
 Initialize the RPC service slice of the registry.
 
@@ -148,7 +148,7 @@ Array of RPC service typeNames to track
 
 > **register**(`component`, `initialStatus?`): `void`
 
-Defined in: [HealthcheckManager.ts:123](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L123)
+Defined in: [HealthcheckManager.ts:225](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L225)
 
 Register an application health component.
 
@@ -169,7 +169,7 @@ Component name (e.g. "process", "amqp")
 
 [`HealthCheckResponse_ServingStatus`](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto) = `ServingStatus.UNKNOWN`
 
-Initial status (default UNKNOWN)
+Initial status (default UNKNOWN when omitted)
 
 #### Returns
 
@@ -177,7 +177,15 @@ Initial status (default UNKNOWN)
 
 #### Throws
 
-Error on invalid name or when the name belongs to an RPC service
+when `component` is not a string, or `initialStatus` is given and is not a number
+
+#### Throws
+
+when `initialStatus` is a number other than 0, 1, 2 or 3
+
+#### Throws
+
+Error on an empty or dotted name, or when the name belongs to an RPC service
 
 ***
 
@@ -185,7 +193,7 @@ Error on invalid name or when the name belongs to an RPC service
 
 > **set**(`component`, `status`): `void`
 
-Defined in: [HealthcheckManager.ts:149](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L149)
+Defined in: [HealthcheckManager.ts:256](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L256)
 
 Set a component's status (upsert).
 
@@ -205,7 +213,7 @@ Component name
 
 [`HealthCheckResponse_ServingStatus`](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto)
 
-New serving status
+New serving status: one of the four `ServingStatus` values
 
 #### Returns
 
@@ -213,7 +221,61 @@ New serving status
 
 #### Throws
 
-Error on invalid name or when the name belongs to an RPC service
+when `component` is not a string or `status` is not a number
+
+#### Throws
+
+when `status` is a number other than 0, 1, 2 or 3
+
+#### Throws
+
+Error on an empty or dotted name, or when the name belongs to an RPC service
+
+***
+
+### subscribe()
+
+> **subscribe**(`listener`): () => `void`
+
+Defined in: [HealthcheckManager.ts:135](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L135)
+
+Be told about every change of the registry.
+
+The listener runs synchronously, after the new state is in place, once
+per `update`, `register` (of a new name), `set`, `unregister` (of a
+registered name), `initialize` and `clear`. It receives no payload:
+read the state you care about with `getStatus()` or `getAllStatuses()`.
+A mutation that is refused (invalid status, unknown service) does not
+notify. `Health.Watch` is built on this, which is why a status that
+changes and changes back between two polls still reaches watchers.
+
+A listener that throws does not stop the others: every listener runs,
+then the first error is rethrown to the caller of the mutation. The
+mutation itself is not undone.
+
+A listener must not change the registry: `update`, `register`, `set`,
+`unregister`, `initialize` and `clear` called from inside a listener
+throw. Each listener sees the state of the mutation that notified it,
+and a nested change would hide that transition from the listeners after
+it. Defer the change (for example with `queueMicrotask`) instead.
+
+#### Parameters
+
+##### listener
+
+() => `void`
+
+Function called after each change
+
+#### Returns
+
+Function that removes the listener; calling it again does nothing
+
+() => `void`
+
+#### Throws
+
+when `listener` is not a function
 
 ***
 
@@ -221,7 +283,7 @@ Error on invalid name or when the name belongs to an RPC service
 
 > **unregister**(`component`): `void`
 
-Defined in: [HealthcheckManager.ts:166](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L166)
+Defined in: [HealthcheckManager.ts:276](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L276)
 
 Remove a registered component.
 
@@ -247,7 +309,7 @@ Error when the name belongs to an RPC service
 
 > **update**(`status`, `service?`): `void`
 
-Defined in: [HealthcheckManager.ts:93](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L93)
+Defined in: [HealthcheckManager.ts:186](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/HealthcheckManager.ts#L186)
 
 Update service health status
 
@@ -261,7 +323,7 @@ When called with an unknown service name, throws an error.
 
 [`HealthCheckResponse_ServingStatus`](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto)
 
-New serving status
+New serving status: one of the four `ServingStatus` values
 
 ##### service?
 
@@ -272,6 +334,14 @@ Service name (if not provided, updates all entries)
 #### Returns
 
 `void`
+
+#### Throws
+
+if `status` is not a number, or `service` is given and is not a string
+
+#### Throws
+
+if `status` is a number other than 0, 1, 2 or 3
 
 #### Throws
 

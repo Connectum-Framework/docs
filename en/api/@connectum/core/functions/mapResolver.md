@@ -4,7 +4,7 @@
 
 > **mapResolver**(`map`): [`RemoteResolver`](../type-aliases/RemoteResolver.md)
 
-Defined in: [packages/core/src/remoteResolver.ts:59](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L59)
+Defined in: [packages/core/src/remoteResolver.ts:76](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L76)
 
 A resolver backed by an explicit `{ [typeName]: Transport }` map, an exact
 allow-list: only the keys the map owns resolve. Every other `typeName`

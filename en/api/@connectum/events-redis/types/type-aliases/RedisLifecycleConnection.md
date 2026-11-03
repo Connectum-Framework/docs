@@ -4,7 +4,7 @@
 
 > **RedisLifecycleConnection** = `"publisher"` \| \{ `group`: `string`; `patterns`: readonly `string`[]; \}
 
-Defined in: [types.ts:70](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-redis/src/types.ts#L70)
+Defined in: [types.ts:82](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-redis/src/types.ts#L82)
 
 Which client connection of the adapter an event concerns.
 

@@ -2,7 +2,7 @@
 
 # Interface: ResourceAttributeInputs
 
-Defined in: [provider.ts:119](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L119)
+Defined in: [provider.ts:206](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L206)
 
 Inputs for [buildResourceAttributes](../functions/buildResourceAttributes.md).
 
@@ -12,7 +12,7 @@ Inputs for [buildResourceAttributes](../functions/buildResourceAttributes.md).
 
 > `optional` **env?**: `object`
 
-Defined in: [provider.ts:126](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L126)
+Defined in: [provider.ts:213](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L213)
 
 Environment source (defaults to `process.env`).
 
@@ -30,7 +30,7 @@ Environment source (defaults to `process.env`).
 
 > `optional` **instanceId?**: `string`
 
-Defined in: [provider.ts:123](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L123)
+Defined in: [provider.ts:210](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L210)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [provider.ts:123](https://github.com/Connectum-Framework/connectum/b
 
 > `optional` **resourceAttributes?**: `Record`\<`string`, `string` \| `number` \| `boolean`\>
 
-Defined in: [provider.ts:124](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L124)
+Defined in: [provider.ts:211](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L211)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [provider.ts:124](https://github.com/Connectum-Framework/connectum/b
 
 > **serviceName**: `string`
 
-Defined in: [provider.ts:121](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L121)
+Defined in: [provider.ts:208](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L208)
 
 The final service name (see [resolveServiceName](../functions/resolveServiceName.md)); it is not overridden by `OTEL_RESOURCE_ATTRIBUTES`.
 
@@ -56,4 +56,4 @@ The final service name (see [resolveServiceName](../functions/resolveServiceName
 
 > **serviceVersion**: `string`
 
-Defined in: [provider.ts:122](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L122)
+Defined in: [provider.ts:209](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L209)

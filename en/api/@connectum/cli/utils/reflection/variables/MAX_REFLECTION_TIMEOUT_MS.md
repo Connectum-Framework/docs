@@ -4,7 +4,7 @@
 
 > `const` **MAX\_REFLECTION\_TIMEOUT\_MS**: `99999999` = `99_999_999`
 
-Defined in: [utils/reflection.ts:52](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/utils/reflection.ts#L52)
+Defined in: [utils/reflection.ts:53](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/utils/reflection.ts#L53)
 
 Largest time limit that can be sent: the Connect client puts the deadline into the
 `grpc-timeout` header in milliseconds only, and the header value is at most eight decimal

@@ -4,7 +4,7 @@
 
 > **createAuthzInterceptor**(`options?`): `Interceptor`
 
-Defined in: [packages/auth/src/authz-interceptor.ts:86](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/authz-interceptor.ts#L86)
+Defined in: [packages/auth/src/authz-interceptor.ts:89](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/authz-interceptor.ts#L89)
 
 Create an authorization interceptor.
 
@@ -31,6 +31,11 @@ ConnectRPC interceptor
 ## Throws
 
 When `skipMethods` contains `"*"` (the pattern `"*"` stays valid in rule `methods`)
+
+## Throws
+
+When `defaultPolicy` or the `effect` of a rule is not exactly `"allow"` or `"deny"`,
+  or when `skipMethods` or the `methods` of a rule hold a pattern other than `"*"`, `"Service/*"` or `"Service/Method"`
 
 ## Example
 

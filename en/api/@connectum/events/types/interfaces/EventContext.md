@@ -110,7 +110,7 @@ Negative acknowledge -- request redelivery or send to DLQ
 
 > **publish**\<`Desc`\>(`schema`, `data`, `options?`): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:200](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L200)
+Defined in: [packages/events/src/types.ts:204](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L204)
 
 Publish an event on behalf of this delivery: the way a relay handler (consume, transform,
 publish) hands its result on.
@@ -124,6 +124,10 @@ result inside the handler, so a failed publish fails the handler and the message
 
 Handlers that publish through an injected bus instead of `ctx` keep being refused during
 `stop()`; rewrite them to use `ctx.publish` to relay during shutdown.
+
+`data` is `MessageInitShape` of the schema: a plain object (nested messages and oneofs
+included) or an already built message, which is the same thing the runtime builds with
+`create(schema, data)` before serializing.
 
 #### Type Parameters
 
@@ -139,7 +143,7 @@ Handlers that publish through an injected bus instead of `ctx` keep being refuse
 
 ##### data
 
-`MessageShape`\<`Desc`\>
+`MessageInitShape`\<`Desc`\>
 
 ##### options?
 

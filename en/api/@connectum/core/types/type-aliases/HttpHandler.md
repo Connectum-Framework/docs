@@ -4,7 +4,7 @@
 
 > **HttpHandler** = (`req`, `res`) => `boolean`
 
-Defined in: [packages/core/src/types.ts:79](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L79)
+Defined in: [packages/core/src/types.ts:99](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L99)
 
 HTTP handler for protocol-specific endpoints
 

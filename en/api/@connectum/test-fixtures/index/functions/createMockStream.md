@@ -4,7 +4,7 @@
 
 > **createMockStream**\<`T`\>(`items`, `options?`): [`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols)\<`T`\>
 
-Defined in: [mock-stream.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-stream.ts#L35)
+Defined in: [mock-stream.ts:39](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-stream.ts#L39)
 
 Create an [AsyncIterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols) that yields `items` sequentially.
 
@@ -41,6 +41,15 @@ Optional stream behavior configuration.
 [`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols)\<`T`\>
 
 An async iterable that yields each item from `items`.
+
+## Throws
+
+TypeError when `options.delayMs` is not a number.
+
+## Throws
+
+RangeError when `options.delayMs` is negative, `NaN`, infinite or larger than
+  2147483647: the timer would turn it into 1 ms.
 
 ## Example
 

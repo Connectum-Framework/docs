@@ -2,7 +2,7 @@
 
 # Interface: SignedTokenIssuer
 
-Defined in: [packages/auth/src/types.ts:444](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L444)
+Defined in: [packages/auth/src/types.ts:539](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L539)
 
 Per-issuer JWKS configuration for [signedTokenTrust](../functions/signedTokenTrust.md).
 
@@ -17,7 +17,7 @@ contain compromise (jose resolves the key by `kid` independently of `iss`).
 
 > `readonly` `optional` **algorithms?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:450](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L450)
+Defined in: [packages/auth/src/types.ts:545](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L545)
 
 Allowed signing algorithms.
 
@@ -33,7 +33,7 @@ Allowed signing algorithms.
 
 > `readonly` `optional` **audience?**: `string` \| `string`[]
 
-Defined in: [packages/auth/src/types.ts:448](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L448)
+Defined in: [packages/auth/src/types.ts:543](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L543)
 
 Expected audience(s) for tokens from this issuer.
 
@@ -43,7 +43,7 @@ Expected audience(s) for tokens from this issuer.
 
 > `readonly` `optional` **claimsMapping?**: `object`
 
-Defined in: [packages/auth/src/types.ts:467](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L467)
+Defined in: [packages/auth/src/types.ts:562](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L562)
 
 Mapping from token claims to AuthContext fields (dot-notation paths).
 
@@ -74,7 +74,7 @@ rejects the call); `roles` and `scopes` are empty unless mapped, and the standar
 
 > `readonly` **jwksUri**: `string`
 
-Defined in: [packages/auth/src/types.ts:446](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L446)
+Defined in: [packages/auth/src/types.ts:541](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L541)
 
 The issuer's JWKS endpoint URL (its own keyset only).
 
@@ -84,7 +84,7 @@ The issuer's JWKS endpoint URL (its own keyset only).
 
 > `readonly` `optional` **maxTokenAge?**: `string` \| `number`
 
-Defined in: [packages/auth/src/types.ts:452](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L452)
+Defined in: [packages/auth/src/types.ts:547](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L547)
 
 Maximum token age (seconds or string like "2h").
 
@@ -94,7 +94,7 @@ Maximum token age (seconds or string like "2h").
 
 > `readonly` `optional` **requireExpiration?**: `boolean`
 
-Defined in: [packages/auth/src/types.ts:458](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L458)
+Defined in: [packages/auth/src/types.ts:553](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L553)
 
 Reject a token from this issuer that has no `exp` claim: a signed token
 without `exp` never expires. Set `false` only for an issuer that cannot add it.

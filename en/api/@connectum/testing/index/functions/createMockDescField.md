@@ -4,7 +4,7 @@
 
 > **createMockDescField**(`name`, `options?`): [`DescField`](https://protobufes.com/reference/reflection/descriptors/#field-descriptors)
 
-Defined in: test-fixtures/dist/index.d.ts:203
+Defined in: test-fixtures/dist/index.d.ts:232
 
 Create a mock [DescField](https://protobufes.com/reference/reflection/descriptors/#field-descriptors) descriptor.
 
@@ -49,6 +49,18 @@ Optional overrides for field number, scalar type, and sensitivity.
 [`DescField`](https://protobufes.com/reference/reflection/descriptors/#field-descriptors)
 
 A mock `DescField` object.
+
+## Throws
+
+TypeError when `options.type` is not one of the protobuf scalar type names
+  (`double`, `float`, `int64`, `uint64`, `int32`, `fixed64`, `fixed32`, `bool`,
+  `string`, `bytes`, `uint32`, `sfixed32`, `sfixed64`, `sint32`, `sint64`); `"message"`
+  and `"enum"` are field kinds, not scalar types. The message names the field and the value.
+
+## Throws
+
+RangeError when `options.fieldNumber` is not an integer from 1 to 536870911
+  outside the reserved range 19000 to 19999.
 
 ## Example
 

@@ -2,7 +2,7 @@
 
 # Interface: DnsResolverOptions
 
-Defined in: [packages/core/src/remoteResolver.ts:64](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L64)
+Defined in: [packages/core/src/remoteResolver.ts:82](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L82)
 
 Options for [dnsResolver](../functions/dnsResolver.md).
 
@@ -12,7 +12,7 @@ Options for [dnsResolver](../functions/dnsResolver.md).
 
 > `readonly` `optional` **createTransport?**: (`baseUrl`) => `Transport`
 
-Defined in: [packages/core/src/remoteResolver.ts:73](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L73)
+Defined in: [packages/core/src/remoteResolver.ts:91](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L91)
 
 Build a `Transport` from the resolved base URL. Defaults to a gRPC (HTTP/2) transport.
 
@@ -32,7 +32,7 @@ Build a `Transport` from the resolved base URL. Defaults to a gRPC (HTTP/2) tran
 
 > `readonly` **template**: `string`
 
-Defined in: [packages/core/src/remoteResolver.ts:71](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L71)
+Defined in: [packages/core/src/remoteResolver.ts:89](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/remoteResolver.ts#L89)
 
 URL template with `{shortName}` (alias `{name}`) placeholders. The short
 name is the last `typeName` segment, lower-cased, minus a trailing

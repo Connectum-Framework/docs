@@ -4,7 +4,7 @@
 
 > **TypedEventHandler**\<`I`\> = (`event`, `ctx`) => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:222](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L222)
+Defined in: [packages/events/src/types.ts:226](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L226)
 
 Typed event handler for a specific message type
 

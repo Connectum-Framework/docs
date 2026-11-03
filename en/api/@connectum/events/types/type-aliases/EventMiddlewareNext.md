@@ -4,7 +4,7 @@
 
 > **EventMiddlewareNext** = (`updatedEvent?`) => `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:290](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L290)
+Defined in: [packages/events/src/types.ts:294](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L294)
 
 Event middleware next function.
 

@@ -4,7 +4,7 @@
 
 > **meshIdentityTrust**(`options`): [`InternalTrustSource`](../type-aliases/InternalTrustSource.md)
 
-Defined in: [packages/auth/src/internal-auth-interceptor.ts:144](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/internal-auth-interceptor.ts#L144)
+Defined in: [packages/auth/src/internal-auth-interceptor.ts:158](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/internal-auth-interceptor.ts#L158)
 
 Trust source that verifies a mesh-forwarded peer identity against an
 allow-list (ADR-029 option (a) — production default, inherently per-service).

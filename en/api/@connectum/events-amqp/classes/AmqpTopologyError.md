@@ -2,7 +2,7 @@
 
 # Class: AmqpTopologyError
 
-Defined in: [packages/events-amqp/src/errors.ts:97](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L97)
+Defined in: [packages/events-amqp/src/errors.ts:103](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L103)
 
 Topology declaration or verification failed: a missing configured object in
 `check` mode, a missing queue when consuming in `skip` mode, or a conflicting
@@ -24,7 +24,7 @@ failure classification (WHY it failed) stays with the error class and
 
 > **new AmqpTopologyError**(`message`, `options?`): `AmqpTopologyError`
 
-Defined in: [packages/events-amqp/src/errors.ts:103](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L103)
+Defined in: [packages/events-amqp/src/errors.ts:109](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L109)
 
 #### Parameters
 
@@ -92,7 +92,7 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 
 > `readonly` `optional` **object?**: [`AmqpTopologyObject`](../type-aliases/AmqpTopologyObject.md)
 
-Defined in: [packages/events-amqp/src/errors.ts:101](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L101)
+Defined in: [packages/events-amqp/src/errors.ts:107](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L107)
 
 ***
 

@@ -4,6 +4,6 @@
 
 > `const` **NodeEnvSchema**: `ZodDefault`\<`ZodEnum`\<\{ `development`: `"development"`; `production`: `"production"`; `test`: `"test"`; \}\>\>
 
-Defined in: [packages/core/src/config/envSchema.ts:30](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/config/envSchema.ts#L30)
+Defined in: [packages/core/src/config/envSchema.ts:37](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/config/envSchema.ts#L37)
 
 Node environment schema

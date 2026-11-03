@@ -2,7 +2,7 @@
 
 # Interface: FakeAmqpControl
 
-Defined in: [packages/events-amqp/src/testing.ts:144](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L144)
+Defined in: [packages/events-amqp/src/testing.ts:145](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L145)
 
 Deterministic control surface of the fake.
 
@@ -12,7 +12,7 @@ Deterministic control surface of the fake.
 
 > `readonly` **published**: readonly [`FakePublishedRecord`](FakePublishedRecord.md)[]
 
-Defined in: [packages/events-amqp/src/testing.ts:217](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L217)
+Defined in: [packages/events-amqp/src/testing.ts:218](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L218)
 
 Successfully acked publishes, in order.
 
@@ -22,7 +22,7 @@ Successfully acked publishes, in order.
 
 > **block**(`reason?`): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:207](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L207)
+Defined in: [packages/events-amqp/src/testing.ts:208](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L208)
 
 Broker flow control: `blocked { reason }` / `unblocked` (union-only events).
 
@@ -42,7 +42,7 @@ Broker flow control: `blocked { reason }` / `unblocked` (union-only events).
 
 > **completeRecovery**(): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:167](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L167)
+Defined in: [packages/events-amqp/src/testing.ts:168](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L168)
 
 Advance a pending recovery: consumes a queued `failSetup` (reported per
 its gating, stays recovering) or, with nothing queued, completes with
@@ -58,7 +58,7 @@ its gating, stays recovering) or, with nothing queued, completes with
 
 > **deliver**(`eventType`, `payload`, `options?`): `Promise`\<[`FakeDeliveryResult`](FakeDeliveryResult.md)\>
 
-Defined in: [packages/events-amqp/src/testing.ts:229](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L229)
+Defined in: [packages/events-amqp/src/testing.ts:230](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L230)
 
 Deliver an event to the subscriptions the configured exchange type routes
 it to (see [FakeAmqpAdapterOptions.exchangeType](FakeAmqpAdapterOptions.md#exchangetype): topic and direct
@@ -100,7 +100,7 @@ settles; handler rejections are swallowed (counted in `failed`).
 
 > **dropConnection**(`error?`): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:161](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L161)
+Defined in: [packages/events-amqp/src/testing.ts:162](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L162)
 
 Sever the connection: dispatches `disconnected { error }` then
 `reconnecting { attempt: 1, delay: 0 }` and parks in the recovering
@@ -123,7 +123,7 @@ the real adapter's recovery window; new `subscribe()` calls PARK.
 
 > **exhaustRecovery**(`error?`): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:176](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L176)
+Defined in: [packages/events-amqp/src/testing.ts:177](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L177)
 
 Terminal outcome: `reconnect-failed { error }`. Like the real adapter,
 the dead cycle is forgotten BEFORE the event is dispatched: publishes and
@@ -148,7 +148,7 @@ subscribes reject with a typed `AmqpConnectionError`.
 
 > **failSetup**(`error?`, `object?`): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:154](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L154)
+Defined in: [packages/events-amqp/src/testing.ts:155](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L155)
 
 Queue a setup failure. An `AmqpTopologyError` (the default) follows the
 real gating: `setup-failed { initial: true, attempt: 0 }` at `connect()`
@@ -178,7 +178,7 @@ at `completeRecovery` it only schedules the next `reconnecting`.
 
 > **loseConsumer**(`options?`): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:195](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L195)
+Defined in: [packages/events-amqp/src/testing.ts:196](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L196)
 
 The broker ends consumers while the connection stays up (the queue was
 deleted, the consumer was cancelled, the consumer channel was closed by a
@@ -223,7 +223,7 @@ silently exercise nothing.
 
 > **nextPublish**(...`outcomes`): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:215](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L215)
+Defined in: [packages/events-amqp/src/testing.ts:216](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L216)
 
 Queue FIFO outcomes for upcoming `publish()` calls. An empty queue means
 `"ack"`. Use the real error classes (`AmqpPublishNackError`,
@@ -246,7 +246,7 @@ outcome only this fake reproduces deterministically, …).
 
 > **restoreConsumers**(): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:205](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L205)
+Defined in: [packages/events-amqp/src/testing.ts:206](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L206)
 
 Bring every lost subscription back: it receives [deliver](#deliver)ies again
 and `consumer-restored { queue, attempt: 1 }` is delivered once per
@@ -266,7 +266,7 @@ adapter.
 
 > **unblock**(): `void`
 
-Defined in: [packages/events-amqp/src/testing.ts:208](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L208)
+Defined in: [packages/events-amqp/src/testing.ts:209](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L209)
 
 #### Returns
 

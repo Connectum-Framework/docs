@@ -12,7 +12,7 @@ Error handler interceptor options
 
 > `optional` **exposeErrorMessages?**: `boolean`
 
-Defined in: [types.ts:64](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L64)
+Defined in: [types.ts:73](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L73)
 
 Send the text of a non-Connect failure to the client.
 
@@ -20,8 +20,10 @@ By default the text of an exception that is not a `ConnectError` or a
 `SanitizableError` (an `Error`, a thrown string, an object with a numeric
 `code`) never leaves the server: the client receives the fixed text
 `"internal error"` for code `Internal`, and an empty text when the exception
-carried its own numeric code. Such text routinely contains connection strings,
-queries, file paths or values from the request (CWE-209).
+carried its own numeric code from 1 to 16 other than `Internal`, or is an
+`AbortError` or `TimeoutError` (sent as `Canceled`). Such text
+routinely contains connection strings, queries, file paths or values from the
+request (CWE-209).
 
 The original is kept on the server in three places: as `cause` of the
 thrown `ConnectError` (it is never serialized onto the wire), as
@@ -46,9 +48,11 @@ false
 
 > `optional` **includeStackTrace?**: `boolean`
 
-Defined in: [types.ts:33](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L33)
+Defined in: [types.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L35)
 
-Include stack trace in logs
+Pass the stack of the failure to `onError` as `info.stack`. The console log is not
+affected: it prints the failure as an object, which already carries its stack and
+its `cause` chain, once per handled error.
 
 #### Default
 
@@ -82,10 +86,15 @@ Use onError callback instead
 
 > `optional` **onError?**: (`info`) => `void`
 
-Defined in: [types.ts:39](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L39)
+Defined in: [types.ts:46](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/types.ts#L46)
 
 Callback for error logging. Replaces console.error when provided.
 Receives rich error info including serverDetails from SanitizableError.
+
+The callback may be `async`. The interceptor does not wait for it. A failure
+of the callback, a throw or a rejected promise, never changes what the caller
+receives and never becomes an unhandled rejection: the first failure is
+written once to `console.error`, later ones are dropped.
 
 #### Parameters
 

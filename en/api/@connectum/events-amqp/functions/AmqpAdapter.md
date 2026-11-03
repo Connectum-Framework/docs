@@ -4,7 +4,7 @@
 
 > **AmqpAdapter**(`options`): `EventAdapter`
 
-Defined in: [packages/events-amqp/src/AmqpAdapter.ts:1404](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/AmqpAdapter.ts#L1404)
+Defined in: [packages/events-amqp/src/AmqpAdapter.ts:1634](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/AmqpAdapter.ts#L1634)
 
 Create an AMQP/RabbitMQ adapter for @connectum/events.
 
@@ -21,6 +21,18 @@ AMQP adapter configuration
 `EventAdapter`
 
 EventAdapter instance
+
+## Throws
+
+when an option has the wrong type or an unsupported value: `options` itself,
+  `exchangeType`, `topologyMode`, `recovery`, `publishRetry`, `consumerOptions`, `queueOptions`,
+  `serialization`, or `recovery.backoff` combined with a delay knob. The message names the option.
+
+## Throws
+
+when a number is out of range: `consumerOptions.prefetch` (integer 0 to 65535),
+  `queueOptions.messageTtl` and `maxLength` (non-negative integers), `recovery.jitter` and
+  `publishRetry.jitter` (0 to 1).
 
 ## Examples
 

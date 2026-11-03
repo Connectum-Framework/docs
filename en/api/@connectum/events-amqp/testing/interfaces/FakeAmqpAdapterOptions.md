@@ -2,7 +2,7 @@
 
 # Interface: FakeAmqpAdapterOptions
 
-Defined in: [packages/events-amqp/src/testing.ts:73](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L73)
+Defined in: [packages/events-amqp/src/testing.ts:74](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L74)
 
 Options for [FakeAmqpAdapter](../functions/FakeAmqpAdapter.md).
 
@@ -12,7 +12,7 @@ Options for [FakeAmqpAdapter](../functions/FakeAmqpAdapter.md).
 
 > `readonly` `optional` **exchangeType?**: `"headers"` \| `"topic"` \| `"direct"` \| `"fanout"`
 
-Defined in: [packages/events-amqp/src/testing.ts:89](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L89)
+Defined in: [packages/events-amqp/src/testing.ts:90](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L90)
 
 Mirror of the real option. `subscribe()` applies the real adapter's
 pattern validation for this exchange type and [topologyMode](#topologymode), and
@@ -38,7 +38,7 @@ the matching ones.
 
 > `readonly` `optional` **failFastOnInitialSetupError?**: `boolean`
 
-Defined in: [packages/events-amqp/src/testing.ts:106](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L106)
+Defined in: [packages/events-amqp/src/testing.ts:107](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L107)
 
 Mirror of the real option: a topology `failSetup(...)` queued before
 `connect()` rejects it with the typed error instead of report-and-proceed.
@@ -49,7 +49,7 @@ Mirror of the real option: a topology `failSetup(...)` queued before
 
 > `readonly` `optional` **lifecycle?**: [`AmqpLifecycleCallbacks`](../../types/interfaces/AmqpLifecycleCallbacks.md)
 
-Defined in: [packages/events-amqp/src/testing.ts:101](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L101)
+Defined in: [packages/events-amqp/src/testing.ts:102](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L102)
 
 The same lifecycle surface as the real adapter (union + flat shim).
 
@@ -59,7 +59,7 @@ The same lifecycle surface as the real adapter (union + flat shim).
 
 > `readonly` `optional` **recovery?**: `boolean`
 
-Defined in: [packages/events-amqp/src/testing.ts:116](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L116)
+Defined in: [packages/events-amqp/src/testing.ts:117](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L117)
 
 Mirror of the real option, reduced to what a consumer loss reports:
 `false` makes [FakeAmqpControl.loseConsumer](FakeAmqpControl.md#loseconsumer) deliver
@@ -79,7 +79,7 @@ true
 
 > `readonly` `optional` **topologyMode?**: [`AmqpTopologyMode`](../../types/type-aliases/AmqpTopologyMode.md)
 
-Defined in: [packages/events-amqp/src/testing.ts:99](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L99)
+Defined in: [packages/events-amqp/src/testing.ts:100](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L100)
 
 Mirror of the real option, used for pattern validation only: a wildcard
 subscription on a direct exchange is rejected in `"assert"` (the adapter

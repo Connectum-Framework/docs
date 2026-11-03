@@ -4,7 +4,7 @@
 
 > **EffectiveTransport** = *typeof* [`EffectiveTransport`](../variables/EffectiveTransport.md)\[keyof *typeof* [`EffectiveTransport`](../variables/EffectiveTransport.md)\]
 
-Defined in: [packages/core/src/TransportValidation.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L54)
+Defined in: [packages/core/src/TransportValidation.ts:55](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L55)
 
 Effective transport resolved from `tls` + `allowHTTP1`.
 

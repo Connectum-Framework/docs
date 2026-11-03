@@ -4,7 +4,7 @@
 
 > **parseServiceFromUrl**(`url`, `_host?`): `string` \| `undefined`
 
-Defined in: [httpHandler.ts:135](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/httpHandler.ts#L135)
+Defined in: [httpHandler.ts:146](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/httpHandler.ts#L146)
 
 Read the optional `service` query parameter from a request URL.
 

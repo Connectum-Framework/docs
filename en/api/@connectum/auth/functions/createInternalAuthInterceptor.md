@@ -4,7 +4,7 @@
 
 > **createInternalAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/internal-auth-interceptor.ts:89](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/internal-auth-interceptor.ts#L89)
+Defined in: [packages/auth/src/internal-auth-interceptor.ts:99](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/internal-auth-interceptor.ts#L99)
 
 Create an internal (service-to-service) authentication interceptor.
 
@@ -15,6 +15,10 @@ methods are a no-op pass-through.
 
 MUST run BEFORE `createProtoAuthzInterceptor`: the internal interceptor
 populates the `AuthContext` that proto-authz's `internal` rule consumes.
+An `internal` method without `requires` is open only to an identity established
+here: with this interceptor missing from the chain, or not covering the method in
+`internalMethods`, an identity from any other interceptor (an end-user JWT) is
+rejected as `Unauthenticated`.
 
 Each trust-source factory strips its own trust header after extraction on the
 internal path (accept and reject), to prevent a spoofed marker from being
@@ -38,6 +42,14 @@ Internal auth configuration.
 `Interceptor`
 
 ConnectRPC interceptor.
+
+## Throws
+
+When `trustSource` is not a function
+
+## Throws
+
+When `internalMethods` is not an array, or holds a pattern other than `"*"`, `"Service/*"` or `"Service/Method"`
 
 ## Examples
 

@@ -19,11 +19,13 @@ Connectum catalog `CallOptions`, intentionally distinct from
 
 > `optional` **endpoint?**: `string`
 
-Defined in: [packages/core/src/context.ts:65](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L65)
+Defined in: [packages/core/src/context.ts:77](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L77)
 
 Opaque endpoint hint forwarded to the configured `remoteResolver` for
 services reachable at several endpoints. Ignored for locally-mounted
-services.
+services. An empty string counts as no endpoint: the resolver receives
+the same context, and shares the same cached transport, as for a call
+without the option.
 
 ***
 
@@ -31,11 +33,16 @@ services.
 
 > `optional` **headers?**: `HeadersInit`
 
-Defined in: [packages/core/src/context.ts:59](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L59)
+Defined in: [packages/core/src/context.ts:69](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L69)
 
-Extra request headers. Only these explicit headers are sent; no inbound
-headers are auto-propagated (trace context flows implicitly via the OTel
-client interceptor in `outgoingInterceptors`).
+Extra request headers. By default no inbound header is forwarded: only
+the inbound headers named in `createServer({ propagateHeaders })` (empty
+by default) are copied onto an outgoing `ctx.call` / `ctx.stream`. The
+headers given here are sent on top of them and win on a name conflict.
+A standalone `createCatalogClient` has no inbound request and sends
+these headers verbatim. Trace context is not carried by this option: the
+`@connectum/otel` client interceptor injects it when it is mounted in
+`outgoingInterceptors`.
 
 ***
 
@@ -56,8 +63,13 @@ not linked with `ctx.signal`).
 
 > `optional` **timeoutMs?**: `number`
 
-Defined in: [packages/core/src/context.ts:53](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L53)
+Defined in: [packages/core/src/context.ts:58](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L58)
 
 Timeout in milliseconds. When omitted, the remaining inbound deadline
 (`ctx.timeoutMs()`) is injected. A caller may **shorten** the deadline,
 never extend it (the effective value is `min(timeoutMs, remaining)`).
+Must be a finite number greater than 0: any other value rejects the call
+with `Code.InvalidArgument` instead of lifting the inherited deadline. If
+the inbound deadline has already passed, the call fails with
+`Code.DeadlineExceeded`. A standalone `createCatalogClient` has no
+inbound deadline and passes a valid value on as is.
