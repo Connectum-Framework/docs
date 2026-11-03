@@ -26,7 +26,9 @@ From 1.3.0, `server.stop()` aborts `context.signal` of every in-flight call on b
 - a handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP;
 - every hop of a local `ctx.call` chain sees the abort directly;
 - a pending [`requestGate`](/en/guide/security/request-admission) that watches the signal is released;
-- a local call made after `stop()` starts with an already-aborted signal.
+- a unary or client-streaming call made after `stop()` starts with an already-aborted signal;
+- a server-streaming or bidirectional call made after `stop()` has begun (inside a shutdown hook, or once `stop()` returned) fails on its first read with `unavailable` and its handler does not start. Before, it ended with no messages and no error, which a caller reading through `localClient()` could not tell from an empty list;
+- a client-streaming or bidirectional handler waiting for the next request message is released when the caller cancels the call: the loop over the requests ends and the `finally` runs. `stop()` does not end such a call, so an upload still being sent keeps being read.
 
 What did not change: `stop()` still neither waits for in-process calls nor kills them — the shutdown timeout and `forceCloseOnTimeout` act on connections, and an in-process call has none.
 
