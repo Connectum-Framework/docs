@@ -1,6 +1,6 @@
 ---
 title: Auth Option Validation
-description: From 1.3.0, @connectum/auth rejects misspelled proto policies, public-and-internal methods, a catch-all skipMethods, unsafe propagated identities and unusable cache bounds, and signedTokenTrust identifies callers by their verified issuer.
+description: From 1.3.0, @connectum/auth rejects misspelled proto policies, public-and-internal methods, a catch-all skipMethods, unsafe propagated identities, unusable cache bounds and a malformed propagatedClaims, and signedTokenTrust identifies callers by their verified issuer.
 docType: migration
 ---
 
@@ -21,6 +21,7 @@ Check each row against your configuration. Only the rows that match need action;
 | 5 | `propagateHeaders: true` and an identity whose subject, type, name or a scope contains NUL, CR, LF or a character above U+00FF | `Unauthenticated`, and the identity is not cached |
 | 6 | A gateway `defaultType` containing NUL, CR, LF or a character above U+00FF | An `Error` when the interceptor is created |
 | 7 | A `cache` with `ttl: Infinity` or `NaN`, or `maxSize` below 1, fractional, `NaN` or `Infinity` | A `RangeError` when the interceptor is created |
+| 8 | A `propagatedClaims` that is not an array of non-empty strings (a bare string such as `"org_id"`, `null`, an entry that is not a string) on `createAuthInterceptor` or `createSessionAuthInterceptor` | A `TypeError` when the interceptor is created |
 
 Rows 1 and 2 are found at startup if you build the interceptor chain with `getPublicMethods(services)` and `getInternalMethods(services)`, because those resolve every method; otherwise the error appears on the first call to the affected method.
 
@@ -98,6 +99,16 @@ The credential type used when the gateway sends no type header is `defaultType`,
 ```typescript
 createAuthInterceptor({ verifyCredentials, cache: { ttl: 60_000, maxSize: 5_000 } });
 ```
+
+### 8. `propagatedClaims`
+
+`propagatedClaims` keeps a claim in `x-auth-claims` when its name is in the list. A value that is not an array of non-empty strings used to be accepted. A bare string was searched as text (`"org_id".includes("id")`), so a mistaken value could write more claims than intended, and an entry that is not a string matched nothing. Now `createAuthInterceptor` and `createSessionAuthInterceptor` throw a `TypeError` that names the factory when they are created with one:
+
+```typescript
+createSessionAuthInterceptor({ verifySession, mapSession, propagateHeaders: true, propagatedClaims: ['org_id'] });
+```
+
+`createJwtAuthInterceptor` accepts the same option and applies the same check; before, it ignored the option, so with `propagateHeaders` it wrote every claim of the token. If you passed `propagatedClaims` to it expecting a filter, you now get one: check that the list names every claim your downstream services read.
 
 ## Documented contracts (no action needed)
 
