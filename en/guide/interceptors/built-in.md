@@ -239,11 +239,15 @@ flowchart TD
     Retry --> Serializer[serializer]
 ```
 
-The order has three consequences:
+The order has these consequences:
 
 - The retries run first. With `retry: { maxRetries: 3 }` a handler that keeps failing with `Unavailable` is called four times, and only then does the `handler` of the fallback produce the response. A call that succeeds on a retry is served as it is, and the fallback is not asked.
 - The circuit breaker sees the failures behind the fallback and opens at its threshold. While it is open, the fallback answers the refused calls without calling the service handler, and its `handler` receives the `Unavailable` "Circuit breaker is open" error.
-- The `handler` of the fallback receives the final error, after the retries are exhausted.
+- The `handler` of the fallback receives the error that ended the call: the last failure after the retries, or the first one for a code that retry does not repeat (`Internal`, `NotFound`, ...).
+- The `handler` is also called with the `Canceled` or `DeadlineExceeded` error that retry raises after the caller cancelled or the deadline passed. The client still receives the cancellation from the layer that raised it, but side effects of the `handler` run for such calls.
+- An error thrown by the `handler` itself is not repeated by retry and not counted by the breaker.
+- With the breaker open, an invalid request gets `InvalidArgument`; without a fallback it gets `Unavailable` "Circuit breaker is open", because validation stands behind the breaker there.
+- With `skipStreaming: false` on both `retry` and `fallback`, opening a stream that fails with `Unavailable` is attempted `maxRetries + 1` times, then the fallback message is the only message of the stream.
 
 A fallback placed inside `circuitBreaker` or `retry` would answer the first failure with a value: no retry would run and the breaker would never record a failure. If you compose the interceptors yourself instead of using `createDefaultInterceptors()`, list `createFallbackInterceptor` before `createCircuitBreakerInterceptor` and `createRetryInterceptor`, and put the validation interceptor before the fallback. A chain without a `fallback` keeps validation after `retry`.
 

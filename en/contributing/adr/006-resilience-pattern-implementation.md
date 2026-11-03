@@ -38,10 +38,11 @@ flowchart TD
     Timeout --> Bulkhead[bulkhead]
     Bulkhead --> Breaker[circuitBreaker]
     Breaker --> Retry[retry]
-    Retry --> Fallback[fallback]
-    Fallback --> Validation[validation]
+    Retry --> Validation[validation]
     Validation --> Serializer[serializer]
 ```
+
+The diagram is the order without a `fallback`. When a fallback is enabled it moves out together with validation, to stand in front of the circuit breaker and retry (`errorHandler`, `timeout`, `bulkhead`, `validation`, `fallback`, `circuitBreaker`, `retry`, `serializer`), so retries run and the breaker opens before and behind the fallback value; see [Fallback position](/en/guide/interceptors/built-in#fallback-position).
 
 Only `errorHandler` and `validation` are enabled by default. Timeout, bulkhead, circuit breaker, retry, and serializer require an explicit option; fallback requires an options object with a handler. Disabled positions are omitted without changing the relative order of the remaining interceptors. `createServer()` itself supplies no interceptors when its `interceptors` option is omitted: applications attach the factory's result explicitly.
 
