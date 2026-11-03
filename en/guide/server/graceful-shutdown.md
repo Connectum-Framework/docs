@@ -57,7 +57,7 @@ interface ShutdownOptions {
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `timeout` | `30000` | Maximum time (ms) to wait for in-flight requests |
+| `timeout` | `30000` | Maximum time (ms) to wait for in-flight requests. Bounds the connection drain only, not the [shutdown hooks](#hooks-after-the-timeout) |
 | `signals` | `['SIGTERM', 'SIGINT']` | OS signals that trigger shutdown |
 | `autoShutdown` | `false` | Automatically install signal handlers |
 | `forceCloseOnTimeout` | `true` | Destroy every remaining client connection (HTTP/1.1, h2c, TLS) if the timeout is exceeded |
@@ -215,6 +215,30 @@ await server.start();
 // Server stops cleanly on SIGTERM or SIGINT (Ctrl+C)
 ```
 
+#### Repeated signals {#repeated-signals}
+
+The first `SIGTERM` or `SIGINT` starts the graceful shutdown. A second signal that
+arrives while the server is still stopping **ends the process at once**, in the middle
+of the shutdown hooks, with the same result as Node.js gives a process that has no
+handler for the signal (the process is terminated by that signal). This is deliberate:
+it is how an operator ends a shutdown that hangs, for example on a hook that never
+settles (see [Hooks run after the timeout](#hooks-after-the-timeout)) — a second
+Ctrl-C in a terminal, or `kill` again.
+
+The server logs a warning before it does so:
+
+```text
+Received SIGTERM again while the server is shutting down; the process is terminated now, without waiting for the remaining shutdown hooks
+```
+
+The hooks that have not finished are cut short, and the `stop` event is not emitted.
+Plan for this when a hook releases something that must not be left half-done.
+
+If your application registers its own `process.on('SIGTERM', ...)` listener, or another
+server in the same process is running, the process is not terminated: the listener
+receives the signal, and the warning says that other listeners handle it. A signal
+that arrives after `stop()` has completed is not handled by the server at all.
+
 ### Manual Shutdown
 
 Without `autoShutdown`, call `server.stop()` yourself:
@@ -340,6 +364,36 @@ the maximum time your hooks can take, and a safety margin:
 `shutdown.timeout` bounds the connection-drain phase; it does not bound shutdown hooks.
 Keep hooks bounded so Kubernetes does not SIGKILL the process before they finish.
 :::
+
+### Hooks run after the timeout {#hooks-after-the-timeout}
+
+`shutdown.timeout` limits the connection drain. It does not limit shutdown hooks:
+`stop()` waits for every hook, and a hook that never settles (a database client that
+does not close, a broker that does not answer) keeps `stop()` pending. Under
+Kubernetes the pod then runs until the grace period ends and the process is killed
+with `SIGKILL`.
+
+The server does not cut hooks off, so a hang is made visible instead. When the
+timeout has elapsed and hooks are still running, the server writes **one** warning to
+its `logger` (the `logger` option of `createServer()`, `console` by default) naming the hooks that have not finished
+and the time since shutdown began:
+
+```text
+Shutdown timeout (30000ms) has elapsed and shutdown hooks are still running after 30004ms: broker. The timeout does not bound shutdown hooks, so stop() keeps waiting for them. Make sure each hook settles, or the orchestrator will kill the process.
+```
+
+- Only hooks that are executing are named. A hook that waits for a dependency is not
+  listed, so the list points at the hook that is stuck rather than at the ones queued
+  behind it.
+- A hook registered without a name appears as `anonymous hook #N`, N being its
+  registration order starting from 0. Give hooks names to make this line readable.
+- If the connection drain itself used up the timeout, hooks get the same budget again
+  from their own start before the warning appears, so a quick hook after a drain
+  timeout produces no warning.
+- Nothing about the shutdown changes: the warning appears once and `stop()` keeps
+  waiting. To end a shutdown that hangs, send the signal again (see
+  [Repeated signals](#repeated-signals)) or bound the hook in your own code with a
+  deadline of your choice.
 
 ## Timeout and Force Close Behavior
 

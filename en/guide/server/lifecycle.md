@@ -46,7 +46,7 @@ A rejected `start()` or `stop()` carries the message `Cannot start server: curre
 - **Routes lock.** The `add*` methods also throw in the created state once the routes have been built. `start()` builds them, and so does the first use of the in-process client (`server.localClient()`), even on a server that is still in the created state.
 - **A failed `start()` ends in `stopped`.** The server cannot be started again.
 - **A hook registered while stopping.** `onShutdown()` accepts it without an error, but the shutdown collects its hooks once, after the transport has closed. A hook registered after that moment is not guaranteed to run.
-- **Signal handlers appear with `running`.** With `autoShutdown: true` the framework installs its signal handlers when the server enters `running`, just before `ready`, and removes them when `stop()` begins. In `created` and `starting` the framework has no handler for the signal. If you need to react to a signal during startup, install your own handler.
+- **Signal handlers appear with `running`.** With `autoShutdown: true` the framework installs its signal handlers when the server enters `running`, just before `ready`, and, when `stop()` begins, replaces them with handlers that end the process on a repeated signal (see [Repeated signals](/en/guide/server/graceful-shutdown#repeated-signals)) until `stop()` completes. In `created` and `starting` the framework has no handler for the signal. If you need to react to a signal during startup, install your own handler.
 
 ## Lifecycle Events
 
