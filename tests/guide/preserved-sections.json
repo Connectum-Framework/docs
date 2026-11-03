@@ -2,7 +2,7 @@
   {
     "route": "/en/guide/quickstart",
     "detail": "/en/guide/quickstart-manual",
-    "sha256": "ee724488f624dd6473b64e940def8c072d2585355a5684710bd7245e7f2264fc",
+    "sha256": "e3cc30869e632e60bf9fe68f42352b6eff6aa15e18a1e26c570612f575bf9a24",
     "anchors": [
       {
         "id": "build-your-first-connectum-service",
@@ -65,7 +65,7 @@
   {
     "route": "/en/guide/scaffolding",
     "detail": "/en/guide/scaffolding-commands",
-    "sha256": "9f96561d9df49847a4d28558d1912a72255a63963ede89bc203df94832d154a3",
+    "sha256": "2f01f389cc3a276f4b02302bdefb854de84c6b84e9704289f332b0aad14dcd04",
     "anchors": [
       {
         "id": "scaffolding-a-new-service",

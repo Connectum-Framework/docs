@@ -95,6 +95,10 @@ bun-installed project runs on Node.js and an npm-installed one runs on Bun. Both
 crossings are exercised in CI.
 :::
 
+npm 11 and later may print `npm warn install-scripts ... @bufbuild/buf (postinstall) blocked`
+during `npm install`. It is a warning: the command exits with code 0 and `buf` works
+(checked with npm 11.18 and 12.2.1).
+
 `buf generate` runs before `start`, `test`, and `typecheck`, so those scripts use
 freshly generated code when generation succeeds. The `dev` script does not
 generate code first; run `build:proto` before the first watch session and after
@@ -373,6 +377,21 @@ platform binary the project needs. `protobufjs` arrives with the OpenTelemetry m
 OTLP gRPC exporters; its script only prints a warning and has no effect at runtime, so it
 is denied. A project scaffolded with `--otel` before this was added fails its first
 `pnpm install`; add `protobufjs: false` under `allowBuilds` in its `pnpm-workspace.yaml`.
+
+### The `readMaxBytes` warning {#the-readmaxbytes-warning}
+
+A generated project prints this warning when the server starts and again in its tests:
+
+```text
+createServer: readMaxBytes is not set, so incoming messages are not limited (the default is the transport's cap of 4294967295 bytes, about 4 GiB). An authentication interceptor runs only after a message has been received, so one oversized request can exhaust memory. Set readMaxBytes to the largest message your services accept. See https://connectum.dev/en/guide/security/request-admission
+```
+
+`createServer()` writes it once through the server logger whenever the `readMaxBytes`
+option is unset. The scaffold leaves the limit unset because the right size depends on
+the messages your services accept. To remove the warning, pass `readMaxBytes` to the
+`createServer()` call in `src/server.ts`, set to the largest message you expect, for
+example `readMaxBytes: 1024 * 1024`. [Request admission](/en/guide/security/request-admission)
+explains how the limit is counted.
 
 ## `connectum generate service`
 

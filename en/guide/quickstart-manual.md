@@ -137,6 +137,10 @@ bun add -d typescript @types/node @bufbuild/buf @bufbuild/protoc-gen-es
 ```
 :::
 
+npm 11 and later may print `npm warn install-scripts ... @bufbuild/buf (postinstall) blocked`
+during the install. It is a warning: the command exits with code 0 and `buf` works
+(checked with npm 11.18 and 12.2.1).
+
 pnpm 11 and later stop on dependencies whose build scripts the project has not approved. Without
 `--allow-build=@bufbuild/buf`, the last pnpm command installs the packages but ends with
 `ERR_PNPM_IGNORED_BUILDS` and exit code 1. The flag records the approval in `pnpm-workspace.yaml`

@@ -22,7 +22,8 @@
         "openapi:typecheck": "vue-tsc --noEmit -p tsconfig.openapi.json",
         "docs:inventory": "node scripts/docs-inventory.mjs",
         "docs:validate": "node scripts/docs-validate.mjs",
-        "docs:validate:built": "node scripts/docs-validate.mjs --built",
+        "docs:validate:built": "node scripts/docs-validate.mjs --built && node scripts/validate-anchors.mjs",
+        "docs:validate:anchors": "node scripts/validate-anchors.mjs",
         "docs:dev": "vitepress dev",
         "docs:build": "vitepress build",
         "docs:preview": "vitepress preview"
