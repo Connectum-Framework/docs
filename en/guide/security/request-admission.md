@@ -12,7 +12,7 @@ Authentication interceptors run after the request message is available: for unar
 - `requestGate` runs once the request headers arrive, **before any request message is received, decompressed, or parsed**. Throw a `ConnectError` and the call ends without its body ever being read.
 - `readMaxBytes` caps the size of each request message. A larger message ends the call with `resource_exhausted` before the handler runs.
 
-Both are unset by default; a server that does not set them behaves exactly as before.
+Both are unset by default; a server that does not set them accepts every request, up to the transport's own cap of 4294967295 bytes (about 4 GiB) per message. Because that bounds nothing in practice, `createServer()` writes one warning through the server logger when `readMaxBytes` is unset; see [When no limit is set](#when-no-limit-is-set).
 
 The checks run in this order for a call to an RPC on the router:
 
@@ -120,6 +120,23 @@ const server = createServer({
 
 A message exactly at the limit is accepted. The limit applies per message, so on a client-streaming or bidi call each message is checked separately. The value must be an integer from 1 to 4294967295 (Connect's maximum). `createServer()` throws a `RangeError` naming `readMaxBytes` for anything else — `0`, negatives, fractions, `NaN`, `Infinity` — and a `TypeError` for a non-number, so a misconfigured limit cannot silently turn into no limit.
 
+Choose the largest message your services legitimately accept. For comparison, the default receive limit of a grpc-go server is 4 MiB.
+
+### When no limit is set
+
+Without `readMaxBytes`, Connect applies its own cap of 4294967295 bytes. An authentication interceptor runs only after the message has been received, so one oversized request from a caller that has not authenticated can exhaust the memory of the process. The default is not changed, because a lower one would break services that accept large messages. Instead `createServer()` writes this warning once, when the server is created:
+
+```text
+createServer: readMaxBytes is not set, so incoming messages are not limited (the default is the transport's cap of 4294967295 bytes, about 4 GiB). An authentication interceptor runs only after a message has been received, so one oversized request can exhaust memory. Set readMaxBytes to the largest message your services accept. See https://connectum.dev/en/guide/security/request-admission
+```
+
+The warning goes to the server's `logger` (`console` when none is set) and is written once per server, not on each start or stop. To remove it:
+
+- set `readMaxBytes` on `createServer()`. Any valid value counts, including the largest, `4294967295`, if you decide that no tighter bound is right;
+- or pass a `logger` whose `warn` method drops it. The `logger` receives every other message of the server's own too, so filter by text rather than silencing `warn` as a whole.
+
+A `readMaxBytes` set only in a service's own options does not remove the warning: the server-wide value is what protects protocols and services that set none.
+
 ## What the gate and the limit cover
 
 ### Both transports, no exemption
@@ -183,6 +200,7 @@ In-process calls carry an internal transport marker header that the logger and O
 |---|---|---|
 | Internal `ctx.call` fails with `unauthenticated` | The gate applies to in-process calls, and the credential was not forwarded | Add the header to `propagateHeaders` or set it in an outgoing interceptor |
 | One service ignores the server gate | Its service options set `requestGate` (possibly to `undefined`) | Remove the key, or have the service gate call the server gate |
+| `readMaxBytes is not set` warning at startup | The server has no per-message read limit | Set `readMaxBytes` on `createServer()`, see [When no limit is set](#when-no-limit-is-set) |
 | Rejections missing from traces and logs | Gate rejections run no server interceptor | Wrap the gate with an audit wrapper |
 | gRPC health probe fails after enabling a gate | gRPC Health is a router RPC and is gated | Use the HTTP health endpoints for probes, or let the gate admit the health service |
 

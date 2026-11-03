@@ -182,6 +182,8 @@ handle.send(create(ItemSchema, { value: 'b', sequence: 1 }));
 const count = await handle.close(); // Promise<Res>
 ```
 
+`send()` after `close()` throws a `ConnectError` with `Code.FailedPrecondition` (`ctx.stream: send() after close() on client-streaming "Client": the send half is already closed, so the message would be lost.`). The request stream is already over, so the message cannot reach the target; the call refuses it instead of dropping it silently. Send everything before `close()`, or open a new handle for further messages. Calling `close()` a second time is harmless and returns the same promise. Versions before 1.3.0 discarded such a message without any signal.
+
 `close()` settles when the call has finished, not when the response arrives: it resolves with the response only after the server's final status, and rejects if the call ends without a response, carries more than one, or fails after the response (the failure is what the call reports). A server that delays its final status therefore holds `close()` until that status arrives, the call is canceled through `CallOptions.signal` or its deadline passes. Versions before 1.3.0 resolved at the first response and silently dropped a later failure; the catalog now follows the same client-streaming contract as a standard Connect client, except for one code: a call that ends without a response or with more than one is reported as `Internal` (a standard Connect client reports `Unimplemented`), because it is a protocol violation by the server, not an unimplemented method. A deadline is enforced by the call's transport, as with a standard Connect client. An OpenTelemetry client interceptor on the call finishes its span once the call has finished.
 
 **Bidi-streaming** → factory returns a `BidiStreamHandle`: `send()` requests while iterating `responses`; `close()` ends **only** the request (send) half — the response half keeps yielding until the server completes:
@@ -195,6 +197,10 @@ for await (const item of handle.responses) {
   // consume server responses
 }
 ```
+
+As on a client-streaming handle, `send()` after `close()` throws a `ConnectError` with `Code.FailedPrecondition` (the message names the call, for example `bidi-streaming "Bidi"`), and a second `close()` has no effect.
+
+`responses` is **single-use**. Every iteration reads the same underlying stream, so two loops over `handle.responses` that run at the same time split the messages between them: each message reaches exactly one loop. After a loop has finished, or has left early with `break`, the stream is over and a loop started afterwards receives nothing. Iterate `responses` in one place and fan the messages out yourself when several consumers need them.
 
 On a **mid-stream transport failure** the iterator follows a **deliver-then-error** policy: it delivers the messages received so far, then throws the terminal `ConnectError`. Consumers that `break` early do not hang.
 
