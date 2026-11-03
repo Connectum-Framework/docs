@@ -109,6 +109,13 @@ that are already running finish, may publish through `ctx.publish`, and are drai
 the hook as before. Since 1.3.0; see
 [Event bus stops receiving at the shutdown signal](/en/migration/events-reception-on-shutdown).
 
+With the Kafka adapter, stopping an idle consumer took about 2 seconds, and the
+first stop shortly after `start()` about 5 seconds (one broker, one consumer, no
+running handler; Node.js 22.13.0, Node.js 26.12.1 and Bun 1.4.4). `shutdown.timeout`
+and the bus's `drainTimeout` do not apply to this time, so include it when you
+compare the total stop time with your orchestrator's grace period. The measurements
+are in [Stopping a consumer](/en/guide/events/adapters#kafka-stop-time).
+
 ## Shutdown Hooks
 
 Shutdown hooks allow you to run cleanup logic during shutdown with dependency ordering. Register them via `server.onShutdown()`.

@@ -354,6 +354,27 @@ messages sent to the new topic arrived, the last one 15.3 s after the topic was
 created (15.1 s on Redpanda; the exact delay depends on where the 20 s check
 falls). Give the members of a group the same interval.
 
+### Stopping a consumer {#kafka-stop-time}
+
+`eventBus.stop()` on a bus with Kafka consumers took about 2 seconds per consumer
+in the measurements below, and the first stop shortly after `start()` took about 5
+seconds. Each run used a single-node broker and one idle consumer (no handler
+running). It started a bus, waited, and timed `stop()`: the first run stopped
+0.3 s after `start()`, the three others waited 3 s.
+
+| Runtime | `stop()` durations in ms |
+|---|---|
+| Node.js 26.12.1 | 4803, 2022, 2010, 2007 |
+| Node.js 22.13.0 | 4780, 2008, 2009, 2009 |
+| Bun 1.4.4 | 4772, 2020, 2019, 2014 |
+
+`drainTimeout` and `shutdown.timeout` do not apply to this time: they limit the wait
+for running handlers and for client connections, and an idle consumer has neither.
+Count it when you compare the total stop time with your orchestrator's grace
+period (see [Shutdown drain](/en/guide/events#shutdown-drain)). The figures come
+from one broker and one idle consumer. Several consumers and running handlers were
+not measured, and where in the stop path the time is spent has not been investigated.
+
 ### Related
 
 - [Module hub](/en/packages/events-kafka)
