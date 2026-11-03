@@ -353,6 +353,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'NATS adapter options', link: '/en/migration/events-nats-options' },
                         { text: 'In-process calls on shutdown', link: '/en/migration/in-process-shutdown' },
                         { text: 'Streams cut by stop()', link: '/en/migration/shutdown-stream-cut' },
+                        { text: 'Service catalog checks', link: '/en/migration/catalog-checks' },
                         { text: 'Event bus reception on shutdown', link: '/en/migration/events-reception-on-shutdown' },
                         { text: 'Logger bodies are opt-in', link: '/en/migration/logger-bodies' },
                         { text: 'Error handler and client messages', link: '/en/migration/error-handler-messages' },

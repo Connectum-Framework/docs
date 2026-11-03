@@ -80,6 +80,7 @@ Each item applies only if your code or configuration matches it.
 - If a client treats the end of a server stream as complete, follow [Streams cut by stop()](/en/migration/shutdown-stream-cut): a stream cut by `stop()` now ends with `unavailable`.
 - If you enable `fallback` together with `retry` or `circuitBreaker` in `createDefaultInterceptors()`, follow [Fallback stands outside retry and circuit breaker](/en/migration/fallback-order): retries now run before the fallback value is served and the breaker now opens.
 - If you enable `fallback` in `createDefaultInterceptors()` or its `handler` returns a plain object or any value that is not the response message, follow [Fallback: validation order and handler result](/en/migration/interceptor-options#fallback-order-and-result): a request that fails validation is no longer answered by the fallback value, and a `handler` result that is not a response message now fails with a `TypeError`.
+- If code matches `Unavailable` on a `ctx.call` to a service that is not mounted on a server without a `remoteResolver`, or your catalog configuration holds mistakes that used to be accepted (a non-positive `timeoutMs`, an invalid `propagateHeaders` name, an `enabledServices` entry with no matching service, a catalog key that differs from its `typeName`, the same service defined twice), follow [Service catalog checks](/en/migration/catalog-checks).
 
 ## Focused Migrations
 
@@ -129,6 +130,11 @@ Each item applies only if your code or configuration matches it.
   like HTTP calls.
 - [Streams cut by stop()](/en/migration/shutdown-stream-cut) — from 1.3, a server
   stream cut by `server.stop()` ends with `unavailable` instead of a normal end.
+- [Service catalog checks](/en/migration/catalog-checks) — from 1.3, `ctx.call` to an
+  unmounted service on a server with no `remoteResolver` fails with
+  `FailedPrecondition` instead of `Unavailable` (**breaking** for code that matched
+  `Unavailable`), and catalog calls and catalog configuration refuse mistakes that
+  used to be accepted.
 - [Event bus stops receiving at the shutdown signal](/en/migration/events-reception-on-shutdown) —
   from 1.3, the bus ends its subscriptions when the shutdown signal aborts, and a
   message that arrives before the bus hook runs is redelivered instead of handled
