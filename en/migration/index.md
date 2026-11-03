@@ -73,6 +73,7 @@ Each item applies only if your code or configuration matches it.
 - If your code reads the request type of a regenerated service catalog (`ConnectumCallMap`, `ConnectumStreamMap`) as a full message, follow section 3 of [Migrating to the Service Catalog](/en/migration/service-catalog): the request slot is now `MessageInitShape<typeof RequestSchema>`, so take `MessageShape<typeof RequestSchema>` from the schema or normalize with `create(RequestSchema, request)`.
 - If you use `@connectum/events-redis` with a `brokerOptions.maxLen`, `blockMs` or `count` that is not a whole number in range (`maxLen: 0` included), or with a server that needs longer than `redisOptions.connectTimeout` to become ready, follow [Redis adapter options](/en/migration/redis-adapter-options): `RedisAdapter()` now throws for such an option and `connect()` rejects after the timeout.
 - If you pass `KafkaAdapter()` an empty or non-array `brokers`, an empty `clientId`, a `sessionTimeout` of 3000 ms or less, an invalid `retry` or an unknown `sasl.mechanism`, follow [Kafka adapter validation](/en/migration/kafka-option-validation): the constructor now throws.
+- If you pass a `topologyMode` other than the exact `assert`, `check` or `skip`, an `exchangeType` outside the four types, a `consumerOptions.prefetch` outside 0 to 65535, a `queueOptions.messageTtl` or `maxLength` that is negative or fractional, a `jitter` outside 0 to 1, or a `recovery` or `publishRetry` that is neither a boolean nor an object, follow [events-amqp option validation](/en/migration/events-amqp-options): each of these now throws when `AmqpAdapter()` is called, and a table header from an external publisher now arrives as JSON.
 
 ## Focused Migrations
 
@@ -140,6 +141,11 @@ Each item applies only if your code or configuration matches it.
   `disconnected` per drop, re-subscribing after recovery gives up, typed initial-connect
   failure, `recovery: false` close reporting, isolated lifecycle callbacks, and the
   `amqplib` 2.2.0 minimum (1.3; for `@connectum/events-amqp` users).
+- [events-amqp option validation](/en/migration/events-amqp-options) — from 1.3,
+  `AmqpAdapter()` rejects an unknown `topologyMode` or `exchangeType`, an out-of-range
+  `prefetch`, `messageTtl`, `maxLength` or `jitter` and other unusable options at
+  creation; table headers arrive as JSON; an invalid publish argument is no longer
+  retried (for `@connectum/events-amqp` users).
 - [Auth option validation](/en/migration/auth-proto-options) — from 1.3,
   `@connectum/auth` throws on a misspelled proto policy, on a method that is both
   `public` and `internal`, on `skipMethods: ['*']` and on unusable cache bounds;
