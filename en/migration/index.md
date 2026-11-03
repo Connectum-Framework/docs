@@ -78,6 +78,7 @@ Each item applies only if your code or configuration matches it.
 - If you pass an empty `servers`, an `ackWait` of 0 or below, a `maxDeliver` of 0, below -1 or fractional, or an unknown `deliverPolicy` to `NatsAdapter()`, follow [NATS adapter options](/en/migration/events-nats-options): these now throw when the adapter is created.
 - If you use `@connectum/auth` with a `defaultPolicy` or rule `effect` that is not exactly `allow` or `deny`, an `authorize` callback that returns a truthy value other than `true`, an `internal` proto method reached without `createInternalAuthInterceptor`, JWTs with an empty or non-string `sub`, an empty `issuer` or `audience` or `maxTokenAge: 0`, method patterns such as `Service/Write*`, an unset gateway secret or client token, follow [Auth authorization and JWT validation](/en/migration/auth-authorization-validation): each of these now fails loudly when the interceptor is created or denies the call.
 - If a client treats the end of a server stream as complete, follow [Streams cut by stop()](/en/migration/shutdown-stream-cut): a stream cut by `stop()` now ends with `unavailable`.
+- If you enable `fallback` together with `retry` or `circuitBreaker` in `createDefaultInterceptors()`, follow [Fallback stands outside retry and circuit breaker](/en/migration/fallback-order): retries now run before the fallback value is served and the breaker now opens.
 
 ## Focused Migrations
 
@@ -181,6 +182,11 @@ Each item applies only if your code or configuration matches it.
   refuses `fallback: true`, `null` and other non-object values with a `TypeError`, and
   `connectum init --resilience` no longer offers `fallback` (**breaking** for
   configurations that passed such values).
+- [Fallback stands outside retry and circuit breaker](/en/migration/fallback-order) —
+  from 1.3, `createDefaultInterceptors()` places the fallback in front of retry and the
+  circuit breaker: retries run, the breaker opens, and the fallback value is served
+  after both (**breaking** result for chains that combined `fallback` with `retry` or
+  `circuitBreaker`).
 - [Test fixture descriptors follow protobuf-es](/en/migration/test-fixtures-descriptors) —
   from 1.3, the descriptor mocks of `@connectum/test-fixtures` and `@connectum/testing`
   zero-initialise fields in `create()`, derive `localName` from the proto name, number

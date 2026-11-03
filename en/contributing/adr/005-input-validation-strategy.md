@@ -215,12 +215,13 @@ flowchart LR
     Timeout --> Bulkhead["3 · bulkhead"]
     Bulkhead --> Breaker["4 · circuitBreaker"]
     Breaker --> Retry["5 · retry"]
-    Retry --> Fallback["6 · fallback"]
-    Fallback --> Validation["7 · validation"]
-    Validation --> Serializer["8 · serializer"]
+    Retry --> Validation["6 · validation"]
+    Validation --> Serializer["7 · serializer"]
 ```
 
-**Rationale for validation position (7th, not 1st):**
+The diagram is the order without a `fallback`. With a fallback enabled, validation moves out with it and stands directly outside the fallback, in front of the circuit breaker and retry, so a rejected request is never answered by the fallback value; see [Fallback position](/en/guide/interceptors/built-in#fallback-position).
+
+**Rationale for validation position (6th without a fallback, not 1st):**
 
 The original ADR proposed validation as the first interceptor ("reject invalid data immediately"). The current implementation places it after resilience interceptors because:
 
