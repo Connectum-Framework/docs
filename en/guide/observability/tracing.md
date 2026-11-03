@@ -181,6 +181,63 @@ values need redaction before they become span attributes.
 `traceAll()` uses ES6 Proxy and creates method wrappers lazily on first access. It prevents double-wrapping automatically.
 :::
 
+## When the span ends {#when-the-span-ends}
+
+`traced()` and `traceAll()` end the span of a call when its result is final. What that means depends on what the function returns:
+
+| Result | The span ends |
+|---|---|
+| A native `Promise` (a promise from another realm, such as a `vm` context, counts) | When the promise settles. A rejection marks the span `ERROR`. |
+| A sync or async generator object | When the generator is exhausted, throws, or is closed. A generator that is never iterated never ends its span. |
+| A thenable that is not a native promise, such as a lazy query builder (a Knex builder, a Mongoose `Query`, a superagent request) | When the caller reads it with `await` or `then()` and it settles. |
+| Anything else (a plain value, an array, a `Map`) | When the function returns. |
+
+For a generator and for a thenable the caller receives the same object the function returned. A thenable keeps its prototype and its chain methods (`where()`, `limit()`), and it stays lazy: tracing does not start it before the caller reads it. While the span follows a thenable, `then` is replaced on the object itself; when the thenable settles, the original `then` is put back. The work that a lazy thenable starts inside its `then` runs with the span as the active span, so spans it starts are children of the traced span.
+
+```typescript
+import { traceAll } from '@connectum/otel';
+
+const orders = traceAll({
+  // Returns a lazy query builder: nothing runs until the caller awaits it.
+  findOpen: () => knex('orders').where({ status: 'open' }),
+}, { prefix: 'Orders' });
+
+const query = orders.findOpen(); // the span "Orders.findOpen" starts here
+const rows = await query;        // the query runs and the span ends when it settles
+```
+
+### Thenable details {#thenable-details}
+
+- **Idle time.** The span of a thenable covers the time between the call and the first read. The event `connectum.result.read` is added on the first `then` and marks where that idle time ends.
+- **Rejections.** A rejection of the thenable marks the span `ERROR`, and the caller receives the original error. A handler the caller leaves out (`then(onSuccess)`, or `catch(onFailure)`, which goes through `then(undefined, onFailure)`) reaches the thenable as missing, as it would without tracing. The span then follows the outcome through the native promise that `then` returns, which real libraries return. A callback-style thenable that returns no native promise tells the span nothing about an outcome the caller did not ask for; `await` passes both handlers.
+- **Nested layers.** Traced functions that return the same thenable one from another (a `traceAll` service over a `traceAll` repository) all end when it settles, up to eight layers. The spans past the eighth end at once.
+- **Ends at once.** The span ends when the function returns, as for any other value, if the thenable is frozen or sealed, if its `then` is a getter (tracing does not read the getter), or if eight layers already follow it.
+
+### A thenable that is never read {#unread-thenable}
+
+A thenable is followed through its `then`. A builder that the caller consumes another way never calls the replaced `then`. The same holds for an immutable builder whose chain methods return new objects, because the caller then holds a different object than the one that was traced. Calls of this kind:
+
+- Mongoose: `exec()`, `cursor()`, `clone()`
+- Knex: `stream()`, `toSQL()`, `clone()`
+- superagent: `end(callback)`
+
+The span of such a call ends when the garbage collector collects the builder. It is closed at the moment the traced function returned, so it covers only the call and not the work, and it carries the event `connectum.result.unread`. The moment is up to the collector: the span is exported late, and a process that exits before the collection exports nothing.
+
+To get a span that covers the work, wrap the call in an async function and await the builder inside it:
+
+```typescript
+import { traced } from '@connectum/otel';
+
+const findOpen = traced(
+  async () => await Order.find({ status: 'open' }).exec(),
+  { name: 'Orders.findOpen' },
+);
+```
+
+::: info Since 1.3.0
+Before 1.3.0 the span of a generator or of a thenable that is not a native promise ended the moment the function returned and had zero duration. It now covers the work. A builder consumed without `then` still has a span that covers only the call, but the span is exported when the garbage collector runs, or not at all, instead of immediately. Dashboards and alerts that relied on the old zero-length spans can see the difference.
+:::
+
 ## Distributed Tracing Across Services
 
 The client interceptor starts a `CLIENT` span under whatever span is active in the calling handler and injects the trace context into the request headers. The receiving server interceptor extracts it:
