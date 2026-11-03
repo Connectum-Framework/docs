@@ -347,6 +347,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Erasable proto enums', link: '/en/migration/erasable-enums' },
                         { text: 'Signed tokens must carry exp', link: '/en/migration/token-expiration' },
                         { text: 'RPC telemetry attribute names', link: '/en/migration/otel-rpc-attributes' },
+                        { text: 'OpenTelemetry configuration', link: '/en/migration/otel-configuration' },
                         { text: 'Kafka adapter options', link: '/en/migration/kafka-adapter-options' },
                         { text: 'Kafka adapter validation', link: '/en/migration/kafka-option-validation' },
                         { text: 'In-process calls on shutdown', link: '/en/migration/in-process-shutdown' },
