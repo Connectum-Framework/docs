@@ -80,10 +80,27 @@ The OTel interceptors automatically record standard RPC metrics.
 - `rpc.client.request.size` -- request message size
 - `rpc.client.response.size` -- response message size
 
-Request and response size histograms contain estimates for unary RPC messages.
-For streaming RPCs, those aggregate size measurements are recorded as zero. The
-size histograms and the `rpc.message` span events are **Connectum-specific**: the
-OpenTelemetry RPC conventions define no replacement for them.
+The request and response size histograms of a unary RPC hold the size of the
+message in bytes: the length of its Protobuf wire encoding
+(`toBinary(schema, message).byteLength` with the schema of the method's input or
+output), before any compression. For streaming RPCs, those aggregate size
+measurements are recorded as zero; the size of each message of a stream is
+available in the `rpc.message` span events (see
+[Message events are opt-in](#message-events-are-opt-in)). A message that cannot be
+serialized counts as zero bytes and never fails the call. Sizes are computed only
+when the size histograms or `recordMessages` are on. The size histograms and the
+`rpc.message` span events are **Connectum-specific**: the OpenTelemetry RPC
+conventions define no replacement for them.
+
+### Duration of streaming RPCs
+
+A call lasts until its response ends. For a server-streaming, client-streaming or
+bidirectional call, `rpc.server.call.duration` and `rpc.client.call.duration` are
+recorded once, when the response stream ends: after the last message, when the
+stream fails, or when the consumer stops reading it. The value equals the duration
+of the span of the same call, as the OpenTelemetry RPC metrics conventions ask. A
+response stream that nobody iterates never ends, so it records neither a duration
+nor ends its span.
 
 ### Duration bucket boundaries
 
@@ -130,8 +147,8 @@ those that appear only on some calls:
 |-----------|-------|
 | `rpc.system.name` | `connectrpc` |
 | `rpc.method` | The fully qualified method, `<package>.<Service>/<Method>` (for example `acme.greeter.v1.GreeterService/SayHello`); it equals the span name |
-| `rpc.response.status_code` | A string: `OK` on a successful unary call, otherwise the Connect error code name (for example `FAILED_PRECONDITION`). A canceled call reports `CANCELED` (one L, as Connect spells it; `CANCELLED` is the gRPC spelling and is never produced), so a query over data from both stacks can match `CANCEL+ED`. A streaming call that started successfully carries none, because its final status is not known when the response head returns |
-| `error.type` | Only for failed calls, equal to `rpc.response.status_code` for a Connect error; the error class name for another `Error`, otherwise `UNKNOWN` |
+| `rpc.response.status_code` | A string: `OK` on a successful unary call, otherwise the Connect error code name (for example `FAILED_PRECONDITION`). A canceled call reports `CANCELED` (one L, as Connect spells it; `CANCELLED` is the gRPC spelling and is never produced), so a query over data from both stacks can match `CANCEL+ED`. A streaming call that ends normally, or whose consumer stops reading it, carries none; a stream that fails after it started carries the code of the failure |
+| `error.type` | Only for failed calls, equal to `rpc.response.status_code` for a Connect error; the error class name for another `Error` (the error's `name` for an anonymous class, `_OTHER` if that is empty too), otherwise `UNKNOWN`. A stream that fails after it started carries it as a unary call does. The server records it for every non-OK code, including the codes that do not mark the server span as an error (see [Span status](/en/guide/observability/tracing#span-status)) |
 | `server.address`, `server.port` | The server address and port |
 | `network.protocol.name`, `network.transport` | `connect_rpc` and `tcp` |
 | `transport` | `http` or `in-process`: which transport carried the call. This is a Connectum attribute, not part of the semantic conventions |
@@ -146,8 +163,8 @@ listed in [RPC telemetry attribute names](/en/migration/otel-rpc-attributes).
 
 ### Message events are opt-in
 
-`rpc.message` span events (direction `SENT` or `RECEIVED`, a sequence number and an
-estimated serialized size, never the payload) are **optional and off by default**. They
+`rpc.message` span events (direction `SENT` or `RECEIVED`, a sequence number and the
+serialized size in bytes as `rpc.message.uncompressed_size`, never the payload) are **optional and off by default**. They
 are recorded only when you set `recordMessages: true` on `createOtelInterceptor()` or
 `createOtelClientInterceptor()`:
 
