@@ -204,6 +204,7 @@ Create `tsconfig.json` (type checking only -- no compilation):
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
     "strict": true,
+    "types": ["node"],
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
@@ -212,6 +213,10 @@ Create `tsconfig.json` (type checking only -- no compilation):
   "exclude": ["node_modules"]
 }
 ```
+
+`"types": ["node"]` makes Node.js globals such as `process` resolve under newer
+TypeScript releases, which later guides use; it relies on the `@types/node` package
+installed above.
 
 Create project structure:
 
@@ -387,8 +392,12 @@ await server.start();
 # Node.js 25+ (native TypeScript)
 node --watch src/index.ts
 
-# tsx (Node.js 22+)
+# tsx (Node.js 22+), npm project
 npx tsx src/index.ts
+
+# tsx (Node.js 22+), pnpm project: `pnpm init` pins pnpm in `devEngines`,
+# so `npx` stops with EBADDEVENGINES
+pnpm dlx tsx src/index.ts
 ```
 == bun
 ```bash

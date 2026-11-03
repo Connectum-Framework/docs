@@ -128,7 +128,8 @@ const jwtAuth = createJwtAuthInterceptor({
 To filter which claims are written into `x-auth-claims`, use `propagatedClaims` on
 `createJwtAuthInterceptor`, `createAuthInterceptor` (generic) or
 `createSessionAuthInterceptor`. Only the listed claim names are written, and the
-header is left out when none of them is in the identity. Without the option every
+header is left out when none of them is in the identity, so an empty array
+(`propagatedClaims: []`) propagates no claims at all. Without the option every
 claim that fits the header limit is written. The value must be an array of
 non-empty strings; anything else, a bare string included, throws when the
 interceptor is created. It is not an option of `createGatewayAuthInterceptor`:

@@ -203,11 +203,12 @@ flowchart LR
 ```
 
 ::: warning Cycle detection
-The shutdown manager detects dependency cycles at registration time and throws an error:
+The shutdown manager detects dependency cycles at registration time. The call that closes the cycle throws and is not registered:
 
 ```typescript
-server.onShutdown('a', ['b'], () => {});
-server.onShutdown('b', ['a'], () => {}); // Throws: dependency cycle detected
+server.onShutdown('a', ['b'], () => {}); // Accepted: 'b' is not registered yet
+server.onShutdown('b', ['a'], () => {});
+// Throws: Adding shutdown handler "b" would create a dependency cycle
 ```
 :::
 
