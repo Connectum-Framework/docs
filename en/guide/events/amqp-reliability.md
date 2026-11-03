@@ -357,7 +357,11 @@ value applies to the initial connect and to every recovery series, and the count
 resets after each successful connect. Two consequences:
 
 - With the default `Infinity`, `connect()` (and therefore `bus.start()`) waits until
-  the broker is reachable instead of failing.
+  the broker is reachable instead of failing. `disconnect()` ends that wait: the
+  pending `connect()` closes the connection it opened and rejects with
+  `AmqpConnectionError("Adapter closed during the initial connect phase")`, and no
+  retry timer is left. A startup that fails to reach the broker still waits without
+  reporting each failed attempt; set `initialConnectMaxRetries` to see them.
 - A finite `maxRetries` chosen to bound startup also stops steady-state recovery
   after that many consecutive failures in one outage.
 
@@ -901,7 +905,8 @@ behavior, run integration tests against a broker.
 
 - **`connect()` never returns.** Either the broker is unreachable and `maxRetries` is
   `Infinity`, or the broker answers but the topology setup fails the same way every time
-  (see the next entry). Set `initialConnectMaxRetries` to bound startup.
+  (see the next entry). Set `initialConnectMaxRetries` to bound startup, and call
+  `disconnect()` to cancel a `connect()` that is still waiting.
 - **`connect()` hangs although the broker is reachable.** The topology setup runs inside
   the retry loop, so a failure that cannot heal on its own is retried under the default
   unlimited budget without an error or an event: an `exchangeType` that the broker does
