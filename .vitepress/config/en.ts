@@ -352,6 +352,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Kafka adapter validation', link: '/en/migration/kafka-option-validation' },
                         { text: 'NATS adapter options', link: '/en/migration/events-nats-options' },
                         { text: 'In-process calls on shutdown', link: '/en/migration/in-process-shutdown' },
+                        { text: 'Streams cut by stop()', link: '/en/migration/shutdown-stream-cut' },
                         { text: 'Event bus reception on shutdown', link: '/en/migration/events-reception-on-shutdown' },
                         { text: 'Logger bodies are opt-in', link: '/en/migration/logger-bodies' },
                         { text: 'Error handler and client messages', link: '/en/migration/error-handler-messages' },

@@ -77,6 +77,7 @@ Each item applies only if your code or configuration matches it.
 - If you use `@connectum/auth` and your gateway clients send `x-auth-*` headers that a handler reads, a `verifyCredentials` or `mapSession` callback can return `null` or a partial object, a verifier grants a scope that contains a space while `propagateHeaders` is on, or identities near the header limits (subject 512, type 128, name 256, roles, scopes or claims 8192 characters) are propagated, or your `trustSource` lists a CIDR block, follow [Auth identity handling](/en/migration/auth-identity): the gateway interceptor now deletes every `x-auth-*` header and refuses CIDR blocks without `allowCallerControlledCidr`, such results are `Unauthenticated`, an identity that does not fit its headers is refused instead of cut, non-Latin text is encoded, and each request gets its own copy of the cached identity.
 - If you pass an empty `servers`, an `ackWait` of 0 or below, a `maxDeliver` of 0, below -1 or fractional, or an unknown `deliverPolicy` to `NatsAdapter()`, follow [NATS adapter options](/en/migration/events-nats-options): these now throw when the adapter is created.
 - If you use `@connectum/auth` with a `defaultPolicy` or rule `effect` that is not exactly `allow` or `deny`, an `authorize` callback that returns a truthy value other than `true`, an `internal` proto method reached without `createInternalAuthInterceptor`, JWTs with an empty or non-string `sub`, an empty `issuer` or `audience` or `maxTokenAge: 0`, method patterns such as `Service/Write*`, an unset gateway secret or client token, follow [Auth authorization and JWT validation](/en/migration/auth-authorization-validation): each of these now fails loudly when the interceptor is created or denies the call.
+- If a client treats the end of a server stream as complete, follow [Streams cut by stop()](/en/migration/shutdown-stream-cut): a stream cut by `stop()` now ends with `unavailable`.
 
 ## Focused Migrations
 
@@ -124,6 +125,8 @@ Each item applies only if your code or configuration matches it.
 - [In-process calls on shutdown](/en/migration/in-process-shutdown) — from 1.3,
   `server.stop()` aborts `context.signal` of in-flight in-process calls exactly
   like HTTP calls.
+- [Streams cut by stop()](/en/migration/shutdown-stream-cut) — from 1.3, a server
+  stream cut by `server.stop()` ends with `unavailable` instead of a normal end.
 - [Event bus stops receiving at the shutdown signal](/en/migration/events-reception-on-shutdown) —
   from 1.3, the bus ends its subscriptions when the shutdown signal aborts, and a
   message that arrives before the bus hook runs is redelivered instead of handled
