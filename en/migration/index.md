@@ -81,6 +81,7 @@ Each item applies only if your code or configuration matches it.
 - If you enable `fallback` together with `retry` or `circuitBreaker` in `createDefaultInterceptors()`, follow [Fallback stands outside retry and circuit breaker](/en/migration/fallback-order): retries now run before the fallback value is served and the breaker now opens.
 - If you enable `fallback` in `createDefaultInterceptors()` or its `handler` returns a plain object or any value that is not the response message, follow [Fallback: validation order and handler result](/en/migration/interceptor-options#fallback-order-and-result): a request that fails validation is no longer answered by the fallback value, and a `handler` result that is not a response message now fails with a `TypeError`.
 - If code matches `Unavailable` on a `ctx.call` to a service that is not mounted on a server without a `remoteResolver`, or your catalog configuration holds mistakes that used to be accepted (a non-positive `timeoutMs`, an invalid `propagateHeaders` name, an `enabledServices` entry with no matching service, a catalog key that differs from its `typeName`, the same service defined twice), follow [Service catalog checks](/en/migration/catalog-checks).
+- If you pass `handlerTimeout` of `0` or a fraction, a `drainTimeout` that is `NaN`, negative or above 2147483647 ms, a `retry` delay or `multiplier` outside the documented range, an unknown `retry.backoff`, or a `dlq` without a non-empty `topic`, or if you count `dlq.error=AbortError` events on shutdown, follow [Event bus option checks](/en/migration/events-option-checks): these now throw when the bus or the middleware is created, a stop returns an event that waits between retries to the broker instead of dead-lettering it, and a failed dead-letter publish reaches the `observer`.
 
 ## Focused Migrations
 
@@ -139,6 +140,12 @@ Each item applies only if your code or configuration matches it.
   from 1.3, the bus ends its subscriptions when the shutdown signal aborts, and a
   message that arrives before the bus hook runs is redelivered instead of handled
   with a cancelled `ctx.signal`.
+- [Event bus option checks](/en/migration/events-option-checks) — from 1.3,
+  `createEventBus`, `retryMiddleware` and `dlqMiddleware` throw for timeout, retry
+  delay and dead-letter topic values that used to be accepted and break deliveries
+  (**breaking** for those values only), a failed dead-letter publish reaches the
+  `observer`, and a stop returns an event that waits between retries to the broker
+  instead of dead-lettering it.
 - [Logger bodies are opt-in](/en/migration/logger-bodies) — from 1.3,
   `createLoggerInterceptor` passes request and response bodies to the log sink only
   with `includeBodies: true` (**breaking** for anything that reads bodies from the log).

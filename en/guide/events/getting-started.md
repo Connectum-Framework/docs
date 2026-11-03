@@ -213,6 +213,13 @@ export const eventBus = createEventBus({
 [Shutdown drain](/en/guide/events#shutdown-drain) for what each budget waits for
 and how they combine.
 
+`createEventBus` checks the timeouts when the bus is created. `handlerTimeout`
+must be an integer from `1` to `4294967295` ms, and `drainTimeout` a finite number
+from `0` to `2147483647` ms. Anything else (`NaN`, a negative number, `Infinity`,
+a fraction for `handlerTimeout`, `0` for `handlerTimeout`, a non-number) throws a
+`RangeError` or `TypeError` that names the option. Leave an option out to use its
+default.
+
 ## Step 6: Integrate with Connectum Server
 
 Pass the EventBus to `createServer()` for automatic lifecycle management:

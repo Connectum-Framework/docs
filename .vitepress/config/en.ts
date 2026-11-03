@@ -355,6 +355,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'Streams cut by stop()', link: '/en/migration/shutdown-stream-cut' },
                         { text: 'Service catalog checks', link: '/en/migration/catalog-checks' },
                         { text: 'Event bus reception on shutdown', link: '/en/migration/events-reception-on-shutdown' },
+                        { text: 'Event bus option checks', link: '/en/migration/events-option-checks' },
                         { text: 'Logger bodies are opt-in', link: '/en/migration/logger-bodies' },
                         { text: 'Error handler and client messages', link: '/en/migration/error-handler-messages' },
                         { text: 'Option descriptors from the packages', link: '/en/migration/option-descriptor-imports' },
