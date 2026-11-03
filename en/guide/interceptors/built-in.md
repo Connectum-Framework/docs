@@ -30,7 +30,7 @@ This is the order without a `fallback`. When you enable a `fallback`, it moves o
 | 3 | **bulkhead** | Limits concurrent requests | **Opt-in** (capacity 10, queue 10 when enabled) |
 | 4 | **circuitBreaker** | Prevents cascading failures (outbound pattern, see below) | **Opt-in** (threshold 5 when enabled) |
 | 5 | **retry** | Retries transient failures with exponential backoff and jitter (see [Retry delay](#retry-delay)) | **Opt-in** (3 retries when enabled) |
-| 6 | **validation** | Validates via `@connectrpc/validate` | Enabled |
+| 6 | **validation** | Validates via `@connectrpc/validate`; stands outside the fallback, so a rejected request is never answered by the fallback value | Enabled |
 | 7 | **serializer** | JSON serialization for protobuf | **Opt-in** |
 | n/a | **fallback** | Graceful degradation; stands outside `circuitBreaker` and `retry` (see [Fallback position](#fallback-position)) | **Opt-in** (requires an options object with a handler; `true` is refused) |
 
@@ -54,15 +54,17 @@ interceptor chain; the rules below do not cover those failures.
 | Thrown by the handler | Client receives |
 |---|---|
 | `ConnectError` | Unchanged: code, text, details, metadata |
-| `SanitizableError` | Its `clientMessage` and code; `serverDetails` stay on the server |
-| Another `Error` named `AbortError` or `TimeoutError` | `Canceled` with an empty text, through Connect-ES normalization |
-| Any other `Error` without a numeric `code`, or a thrown string | `Internal` with the text `internal error` |
-| Any other error with a numeric `code` that is an integer from 1 to 16 | That code; `Internal` (`13`) carries `internal error`, all other codes carry an empty text |
-| Any other error with an invalid numeric `code` (`0`, `17`, `1.5`, `NaN`, an HTTP status, an errno) | `Internal` with the text `internal error` |
+| `SanitizableError` | Its `clientMessage` and code (`Internal` when the code is not an integer from 1 to 16); `serverDetails` stay on the server |
+| An `Error` named `AbortError` or `TimeoutError` (a `DOMException` from an aborted `fetch` or `AbortSignal.timeout()` too), whatever its `code` | `Canceled` with an empty text |
+| Any other value with an integer `code` from 1 to 16 | That code; the text is empty, except for `Internal` (13), which carries `internal error` |
+| Anything else: an `Error` without a `code`, a thrown string, a `code` that is not an integer from 1 to 16 (`0`, `17`, `1.5`, `NaN`, an HTTP status, an errno, `"ECONNRESET"`) | `Internal` with the text `internal error` |
 
-For the numeric-code rows, only integers from 1 to 16 (`Canceled` to
-`Unauthenticated`) are accepted. Other numeric values become `Internal`;
-`0` means success in gRPC, not a failure code.
+The rows are checked in this order, and the first match decides. A `SanitizableError` is
+recognised before the name check, so one that happens to be named `AbortError` still sends
+its `clientMessage` and code. With `exposeErrorMessages: true` the rows from the third on
+keep their codes and carry the original text instead; the first two rows do not change.
+
+Only the codes 1 to 16 (`Canceled` to `Unauthenticated`) are failure codes; `0` means success in gRPC, so another number is not sent to the client as a code. This holds for a `SanitizableError` too: its `clientMessage` is kept and its code becomes `Internal`. `onError` receives the code the client receives, and the original error keeps its own `code`.
 
 With the default `exposeErrorMessages: false`, a non-Connect, non-Sanitizable
 failure is retained as `cause` of the normalized `ConnectError`; transports do
@@ -74,7 +76,11 @@ If supplied, `onError` receives the original `SanitizableError`, including
 failures. Console logging runs only when `onError` is absent and `logErrors` is
 enabled; `logErrors` defaults to `process.env.NODE_ENV !== "production"`.
 
-To send a message on purpose, throw a `ConnectError` or a `SanitizableError`. To expose the text of other failures, set `exposeErrorMessages: true`. The option is server-side, defaults to `false` and does not depend on `NODE_ENV`; use it only for trusted internal callers or while debugging:
+When console logging runs, it has one entry per handled error: the failure itself, with its stack and `cause`. A second line, `Transformed ConnectError:`, appears only when the client receives something other than what was thrown, and shows it as a short text such as `[internal] internal error`. A `ConnectError` that leaves unchanged, such as a validation failure, is one entry. `includeStackTrace` controls the `stack` field that `onError` receives.
+
+`onError` is a reporting hook and cannot change the outcome of a call. It may be `async`; the interceptor does not wait for it. If it throws, or the promise it returns rejects, the client still receives the error from the table above and the process sees no unhandled rejection. The first failure of the callback is written once to `console.error`; later ones are dropped, because a sink that is down fails on every call.
+
+To send a message on purpose, throw a `ConnectError` or a `SanitizableError`. To send the original text of every failure (for a thrown value that is not an `Error`, its string form), set `exposeErrorMessages: true`. The option is server-side, defaults to `false` and does not depend on `NODE_ENV`; use it only for trusted internal callers or while debugging:
 
 ```typescript
 createDefaultInterceptors({ errorHandler: { exposeErrorMessages: true } });
@@ -294,6 +300,25 @@ A fallback placed inside `circuitBreaker` or `retry` would answer the first fail
 A fallback value stands in for a failed dependency, a timeout or a bug, never for a caller who is not allowed. A failure with the code `Unauthenticated` or `PermissionDenied` is rethrown as it is and the `handler` is not called for it. This holds wherever the authentication or authorization interceptor stands relative to the fallback interceptor, and also for a refusal raised by the service handler itself. Failures with any other code, and errors that are not a `ConnectError`, still receive the fallback value.
 
 Place authentication and authorization immediately after `errorHandler`, before timeout and other resilience interceptors: `errorHandler → AUTH → AUTHZ → resilience`. See the [manual chain example](/en/guide/interceptors/custom#composing-with-built-in-interceptors). This keeps auth failures inside error handling while rejecting unauthorized calls before downstream policies run.
+
+### Rejected requests are not replaced {#fallback-validation}
+
+A request that breaks a validation rule is a client error, not a failed dependency. `createDefaultInterceptors` places `validation` before `fallback`, so the caller receives `INVALID_ARGUMENT`, and neither the service handler nor the `handler` of the fallback runs. When you build the chain yourself, put the validation interceptor before the fallback interceptor: with the order reversed, an invalid request is answered with the fallback value as if it had been served.
+
+### What the handler returns {#fallback-handler-result}
+
+The `handler` returns the response message of the method that failed: a message made with `create(OutputSchema, { ... })`, or a plain object with that message's fields, which the interceptor turns into one. The `{ items: [] }` above works for a method whose response has an `items` field. A field of a oneof is set as `pick: { case: "a", value }`, under the name of the oneof.
+
+A plain object is checked field by field before the message is built, because `create()` alone drops unknown keys and coerces wrong values (a number in a string field becomes `"5"`). The first problem fails the call with a `TypeError` that names `createFallbackInterceptor`, the expected type and the path of the problem. Refused are:
+
+- `undefined`, `null`, a string, or an array instead of the object;
+- a key that is not a field of the type, in a nested object too, and the bare name of a oneof member;
+- a value of another kind than its field takes: a number in a string field, a non-boolean in a bool field, a string in an int32 field, a non-array in a repeated field, an enum name instead of its number, a wrong item in a list or map;
+- a number the encoder cannot write: a fraction or a value beyond the range in an int32, `NaN`;
+- a map key that is not the canonical form of its key type: for an integer key a decimal number inside the range without a leading zero, a sign `+`, a space, an exponent, a hexadecimal prefix, `-0` or an empty string; for a bool key only `"true"` or `"false"`. The encoder would read `"01"` as 1 and `"yes"` as `true`, so the response would name a different key. A 64-bit integer given as a string follows the same rule;
+- a string with a lone surrogate in any position, keys of a `Struct` at every depth included (it would be written as U+FFFD), `NaN` or `Infinity` inside a `Struct` (JSON cannot carry them), bytes given as an `ArrayBuffer`, a `DataView` or an array with holes or values outside 0 to 255, and a oneof object with keys other than `case` and `value`.
+
+An enum number that the enum does not name is accepted. The forms are those of protobuf-es: a wrapper (`StringValue`, `Int64Value`, ...) in a singular field outside a oneof is its bare value (`name: "cached"`, not `{ value: "cached" }`), and a `Struct` is a plain JSON object; a ready message is refused in both places, while a plain object that only carries another `$typeName` is just a JSON object in a `Struct` field. `Timestamp`, `Duration`, `Value`, `ListValue`, `Any`, `FieldMask` and `Empty` are objects with their own fields (`{ seconds: 1n }`), and a wrapper in a list or a oneof is an object with `value`. Behind the error handler the client receives `Internal` with the text `internal error`, and `onError` and the console log show the full text.
 
 ### Fallback response {#fallback-response}
 
