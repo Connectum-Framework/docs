@@ -52,7 +52,10 @@ const sessionAuth = createSessionAuthInterceptor({
 The two application-owned callbacks are `verifySession`, which talks to the session
 backend, and `mapSession`, which creates the stable `AuthContext`. The default
 extractor reads only `Authorization: Bearer <token>` and rejects a missing token
-before calling `verifySession`. Cookie-only requests need a custom extractor. The full cache
+before calling `verifySession`. Cookie-only requests need a custom extractor. `verifySession` and
+`mapSession` must be functions, and `extractToken`, when set, must be a function: the factory throws
+a `TypeError` that names the option when it is created, instead of answering every request with
+`Session verification failed` or `Session mapping failed`. The full cache
 and callback contract lives in
 [`SessionAuthInterceptorOptions`](/en/api/@connectum/auth/interfaces/SessionAuthInterceptorOptions).
 
