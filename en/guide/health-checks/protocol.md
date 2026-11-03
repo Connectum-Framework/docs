@@ -57,6 +57,10 @@ flowchart TD
     class Mgr accent
 ```
 
+::: warning One singleton serves one server
+Every `Healthcheck()` without `manager` uses this singleton, and each server's start re-initializes it with only that server's services. Start a second server in the same process and the first server's services leave the registry. The first server keeps running, but it answers `NOT_FOUND` for its own service and `NOT_SERVING` for the overall check (empty service name). Neither server logs a warning. Give each server its own manager, as shown in [Isolated Manager for Testing](#isolated-manager-for-testing).
+:::
+
 ### ServingStatus Values
 
 | Status | Value | Description |
@@ -272,7 +276,7 @@ curl http://localhost:5000/healthz
 
 ## Isolated Manager for Testing
 
-Use `createHealthcheckManager()` to create isolated instances for tests or multi-server setups:
+Use `createHealthcheckManager()` to create isolated instances for tests or multi-server setups. A process that runs two servers must pass a separate manager to each `Healthcheck()`, or the second start removes the first server's services from the shared singleton (see [The healthcheckManager Singleton](#the-healthcheckmanager-singleton)):
 
 ::: runtime bun
 Import the runner from `bun:test` instead of `node:test` and run the file with `bun test`.
