@@ -5,12 +5,27 @@ docType: concept
 outline: deep
 ---
 
+<script setup>
+import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
+import overview from '../../.vitepress/theme/assets/diagrams/guide/auth.html?raw';
+</script>
+
 # Auth and Authz
 
 Authentication establishes an `AuthContext`; authorization decides whether that identity may invoke a method. Keep those decisions separate in the interceptor chain even when they are configured together.
 
+<figure class="technical-diagram" data-guide-overview="auth" aria-label="Authentication and authorization">
+<GuideOverview :source="overview" />
+<figcaption>Choose authentication for the trust boundary and authorization for the method policy. Context, propagation and testing share the verified identity; attaching client credentials does not verify them.</figcaption>
+</figure>
+
 ## Choose the trust boundary
 
+Start with [JWTs](/en/guide/auth/jwt), a
+[trusted gateway](/en/guide/auth/gateway) or an
+[application session](/en/guide/auth/session).
+
+::: details Internal identity, propagation and transport boundaries
 | Boundary | Start here |
 |---|---|
 | Clients send bearer JWTs directly | [JWT authentication](/en/guide/auth/jwt) |
@@ -26,6 +41,7 @@ trusted gateway or mesh supply a verified identity header and enforce that
 boundary as described in the [gateway guide](/en/guide/auth/gateway). Direct
 application-level peer-certificate/SAN reading is deferred; see
 [ADR-029](/en/contributing/adr/029-internal-service-to-service-auth).
+:::
 
 ## Choose authorization ownership
 
@@ -39,6 +55,9 @@ interceptors: [
   ...createDefaultInterceptors({ errorHandler: false }),
 ]
 ```
+
+This is an interceptor-list excerpt. The JWT and proto-authz guides supply
+imports, credentials, public-method exclusions and the full server setup.
 
 To turn away requests that carry no credential at all before their body is even read, add a server-wide [request gate](/en/guide/security/request-admission) in front of this chain; it runs before every interceptor, so its errors must already be client-safe.
 

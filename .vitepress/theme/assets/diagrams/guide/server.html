@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Configure, run and stop a server</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Configure, run and stop a server</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Configure, run and stop a server; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 416" role="img" aria-labelledby="server-title server-desc" data-overview="server" data-visual-type="state">
+<title id="server-title">Configure, run and stop a server</title>
+<desc id="server-desc">Validated configuration feeds the server lifecycle, while shutdown signals cancellation, drains network connections and executes dependency-ordered hooks before the server stops.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="server-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<path class="go-edge" data-from="configuration" data-to="created" data-points="100,88 100,160" d="M100 88 L100 160" marker-end="url(#server-arrow)"/>
+<path class="go-edge" data-from="created" data-to="starting" data-points="160,192 204,192" d="M160 192 L204 192" marker-end="url(#server-arrow)"/>
+<path class="go-edge" data-from="starting" data-to="running" data-points="324,192 368,192" d="M324 192 L368 192" marker-end="url(#server-arrow)"/>
+<path class="go-edge" data-from="running" data-to="stopping" data-points="488,192 532,192" d="M488 192 L532 192" marker-end="url(#server-arrow)"/>
+<path class="go-edge" data-from="stopping" data-to="drain" data-points="588,224 588,248 140,248 140,296" d="M588 224 L588 240 Q588 248 580 248 L148 248 Q140 248 140 256 L140 296" marker-end="url(#server-arrow)"/>
+<path class="go-edge" data-from="drain" data-to="hooks" data-points="240,328 288,328" d="M240 328 L288 328" marker-end="url(#server-arrow)"/>
+<path class="go-edge" data-from="hooks" data-to="stopped" data-points="456,328 504,328" d="M456 328 L504 328" marker-end="url(#server-arrow)"/>
+<g data-node="configuration" data-box="40 24 608 64" data-topics="/en/guide/server/configuration"><rect class="go-surface" x="40" y="24" width="608" height="64" rx="6"/><text class="go-name" x="56" y="52" text-anchor="start">Configuration</text><text class="go-detail" x="56" y="72" text-anchor="start">Validate and wire options · environment · TLS · shutdown policy</text></g>
+<text class="go-heading" x="204" y="132" text-anchor="start">Lifecycle and application-owned readiness</text>
+<g data-node="created" data-box="40 160 120 64" data-topics="/en/guide/server/lifecycle"><rect class="go-surface" x="40" y="160" width="120" height="64" rx="20"/><text class="go-name" x="56" y="198" text-anchor="start">created</text></g>
+<g data-node="starting" data-box="204 160 120 64" data-topics="/en/guide/server/lifecycle"><rect class="go-surface" x="204" y="160" width="120" height="64" rx="20"/><text class="go-name" x="220" y="188" text-anchor="start">starting</text><text class="go-detail" x="220" y="208" text-anchor="start">start()</text></g>
+<g data-node="running" data-box="368 160 120 64" data-topics="/en/guide/server/lifecycle" data-focal=""><rect class="go-surface" x="368" y="160" width="120" height="64" rx="20"/><text class="go-name" x="384" y="188" text-anchor="start">running</text><text class="go-detail" x="384" y="208" text-anchor="start">ready event</text></g>
+<g data-node="stopping" data-box="532 160 116 64" data-topics="/en/guide/server/graceful-shutdown"><rect class="go-surface" x="532" y="160" width="116" height="64" rx="20"/><text class="go-name" x="548" y="188" text-anchor="start">stopping</text><text class="go-detail" x="548" y="208" text-anchor="start">stop() · abort</text></g>
+<g data-node="drain" data-box="40 296 200 64" data-topics="/en/guide/server/graceful-shutdown"><rect class="go-surface" x="40" y="296" width="200" height="64" rx="6"/><text class="go-name" x="56" y="324" text-anchor="start">Connection drain</text><text class="go-detail" x="56" y="344" text-anchor="start">Network · timeout</text></g>
+<g data-node="hooks" data-box="288 296 168 64" data-topics="/en/guide/server/graceful-shutdown"><rect class="go-surface" x="288" y="296" width="168" height="64" rx="6"/><text class="go-name" x="304" y="324" text-anchor="start">Shutdown hooks</text><text class="go-detail" x="304" y="344" text-anchor="start">Dependency order</text></g>
+<g data-node="stopped" data-box="504 296 144 64" data-topics="/en/guide/server/lifecycle"><rect class="go-surface" x="504" y="296" width="144" height="64" rx="20"/><text class="go-name" x="520" y="324" text-anchor="start">stopped</text><text class="go-detail" x="520" y="344" text-anchor="start">No restart</text></g>
+<text class="go-detail" x="40" y="396" text-anchor="start">Use the ready / stopping events to update application health explicitly.</text>
+</svg></section>
+<figcaption>Configuration, lifecycle and graceful shutdown own different tasks. The drain timeout does not bound shutdown hooks; in-process cancellation remains cooperative.</figcaption></figure></main></body></html>

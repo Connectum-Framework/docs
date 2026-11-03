@@ -32,8 +32,15 @@ server.on('stopping', () => {
   healthcheckManager.update(ServingStatus.NOT_SERVING);
 });
 
+server.on('error', (err) => {
+  console.error('Server error:', err);
+});
+
 await server.start();
 ```
+
+The error listener makes signal-triggered shutdown failures visible; exit-code
+policy belongs to your application.
 
 ## Shutdown Options
 
@@ -209,6 +216,10 @@ const server = createServer({
     signals: ['SIGTERM', 'SIGINT'],  // default
     timeout: 30000,
   },
+});
+
+server.on('error', (err) => {
+  console.error('Server error:', err);
 });
 
 await server.start();

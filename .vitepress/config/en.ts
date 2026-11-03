@@ -6,8 +6,19 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
         text: 'Get started',
         items: [
             { text: 'What is Connectum?', link: '/en/guide/about' },
-            { text: 'Build your first service', link: '/en/guide/quickstart' },
-            { text: 'Scaffold a service', link: '/en/guide/scaffolding' },
+            {
+                text: 'Build your first service',
+                link: '/en/guide/quickstart',
+                collapsed: true,
+                items: [{ text: 'Step-by-step tutorial', link: '/en/guide/quickstart-manual' }],
+            },
+            {
+                text: 'Scaffold a service',
+                link: '/en/guide/scaffolding',
+                collapsed: true,
+                items: [{ text: 'Commands and generated files', link: '/en/guide/scaffolding-commands' }],
+            },
+            { text: 'Service builder', link: '/en/builder' },
         ],
     },
     {
@@ -33,8 +44,18 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
                     { text: 'Method filtering', link: '/en/guide/interceptors/method-filtering' },
                 ],
             },
-            { text: 'Validation', link: '/en/guide/validation' },
-            { text: 'OpenAPI', link: '/en/guide/openapi' },
+            {
+                text: 'Validation',
+                link: '/en/guide/validation',
+                collapsed: true,
+                items: [{ text: 'Setup, constraints and errors', link: '/en/guide/validation-setup' }],
+            },
+            {
+                text: 'OpenAPI',
+                link: '/en/guide/openapi',
+                collapsed: true,
+                items: [{ text: 'Generation and authz overlay', link: '/en/guide/openapi-generation' }],
+            },
             {
                 text: 'Testing',
                 link: '/en/guide/testing',
@@ -49,15 +70,33 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
     {
         text: 'Connect services',
         items: [
-            { text: 'Choose a mechanism', link: '/en/guide/service-communication/choosing-a-mechanism' },
+            {
+                text: 'Choose a mechanism',
+                link: '/en/guide/service-communication/choosing-a-mechanism',
+                collapsed: true,
+                items: [{ text: 'Examples and failure trade-offs', link: '/en/guide/service-communication/mechanisms' }],
+            },
             {
                 text: 'Service calls',
                 link: '/en/guide/service-communication',
                 collapsed: true,
                 items: [
                     { text: 'Communication patterns', link: '/en/guide/service-communication/patterns' },
-                    { text: 'Service catalog', link: '/en/guide/service-communication/service-catalog' },
-                    { text: 'Remote resolvers', link: '/en/guide/service-communication/resolvers' },
+                    {
+                        text: 'Service catalog',
+                        link: '/en/guide/service-communication/service-catalog',
+                        collapsed: true,
+                        items: [{ text: 'Configuration and behavior', link: '/en/reference/service-catalog' }],
+                    },
+                    {
+                        text: 'Remote resolvers',
+                        link: '/en/guide/service-communication/resolvers',
+                        collapsed: true,
+                        items: [
+                            { text: 'Run the routing example', link: '/en/guide/service-communication/routing-example' },
+                            { text: 'Configuration, cache and mocks', link: '/en/guide/service-communication/resolver-configuration' },
+                        ],
+                    },
                     { text: 'Client interceptors', link: '/en/guide/service-communication/client-interceptors' },
                 ],
             },
@@ -66,6 +105,7 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
                 link: '/en/guide/events',
                 collapsed: true,
                 items: [
+                    { text: 'Concepts and shutdown behavior', link: '/en/guide/events/concepts' },
                     { text: 'Publish and subscribe', link: '/en/guide/events/getting-started' },
                     { text: 'Choose an adapter', link: '/en/guide/events/adapters' },
                     { text: 'AMQP reliability', link: '/en/guide/events/amqp-reliability' },
@@ -128,24 +168,59 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
                     { text: 'Kubernetes integration', link: '/en/guide/health-checks/kubernetes' },
                 ],
             },
-            { text: 'Server reflection', link: '/en/guide/protocols/reflection' },
+            {
+                text: 'Server reflection',
+                link: '/en/guide/protocols/reflection',
+                collapsed: true,
+                items: [{ text: 'Setup, client tools and exposure', link: '/en/guide/protocols/reflection-tools' }],
+            },
         ],
     },
     {
         text: 'Deploy',
         items: [
-            { text: 'Docker', link: '/en/guide/production/docker' },
-            { text: 'Kubernetes', link: '/en/guide/production/kubernetes' },
-            { text: 'Envoy Gateway', link: '/en/guide/production/envoy-gateway' },
-            { text: 'Service mesh', link: '/en/guide/production/service-mesh' },
+            {
+                text: 'Docker',
+                link: '/en/guide/production/docker',
+                collapsed: true,
+                items: [{ text: 'Image, probes and runtime recipe', link: '/en/guide/production/docker-configuration' }],
+            },
+            {
+                text: 'Kubernetes',
+                link: '/en/guide/production/kubernetes',
+                collapsed: true,
+                items: [{ text: 'Resources and deployment recipe', link: '/en/guide/production/kubernetes-configuration' }],
+            },
+            {
+                text: 'Envoy Gateway',
+                link: '/en/guide/production/envoy-gateway',
+                collapsed: true,
+                items: [{ text: 'Routes and transcoding setup', link: '/en/guide/production/envoy-gateway-setup' }],
+            },
+            {
+                text: 'Service mesh',
+                link: '/en/guide/production/service-mesh',
+                collapsed: true,
+                items: [{ text: 'Istio configuration and policy', link: '/en/guide/production/service-mesh-setup' }],
+            },
         ],
     },
     {
         text: 'Advanced',
         collapsed: true,
         items: [
-            { text: 'Architecture', link: '/en/guide/production/architecture' },
-            { text: 'Runtime compatibility', link: '/en/guide/runtime-compatibility' },
+            {
+                text: 'Architecture',
+                link: '/en/guide/production/architecture',
+                collapsed: true,
+                items: [{ text: 'Runtime composition and diagrams', link: '/en/guide/production/architecture-details' }],
+            },
+            {
+                text: 'Runtime compatibility',
+                link: '/en/guide/runtime-compatibility',
+                collapsed: true,
+                items: [{ text: 'Requirements, coverage and limits', link: '/en/guide/runtime-compatibility-details' }],
+            },
             {
                 text: 'TypeScript execution',
                 link: '/en/guide/typescript',
@@ -157,9 +232,24 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
                     { text: 'Patterns and workflow', link: '/en/guide/typescript/patterns' },
                 ],
             },
-            { text: 'In-process transport', link: '/en/guide/production/in-process-transport' },
-            { text: 'Transport matrix', link: '/en/guide/production/transport-matrix' },
-            { text: 'Custom protocols', link: '/en/guide/protocols/custom' },
+            {
+                text: 'In-process transport',
+                link: '/en/guide/production/in-process-transport',
+                collapsed: true,
+                items: [{ text: 'API, guarantees and limitations', link: '/en/guide/production/in-process-transport-details' }],
+            },
+            {
+                text: 'Transport matrix',
+                link: '/en/guide/production/transport-matrix',
+                collapsed: true,
+                items: [{ text: 'Full matrix and measurements', link: '/en/guide/production/transport-matrix-details' }],
+            },
+            {
+                text: 'Custom protocols',
+                link: '/en/guide/protocols/custom',
+                collapsed: true,
+                items: [{ text: 'Implement a protocol plugin', link: '/en/guide/protocols/custom-implementation' }],
+            },
         ],
     },
 ];
@@ -208,7 +298,7 @@ const packagesSidebar: DefaultTheme.SidebarItem[] = [
 
 export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
     title: 'Connectum',
-    description: 'gRPC and ConnectRPC framework for TypeScript services on Node.js',
+    description: 'gRPC and ConnectRPC framework for TypeScript',
     themeConfig: {
         nav: [
             { text: 'Get started', link: '/en/guide/quickstart' },
@@ -234,6 +324,11 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                     text: 'API and reference',
                     items: [
                         { text: 'Find a reference', link: '/en/reference/' },
+                        { text: 'Guarantees and limits', link: '/en/reference/guarantees' },
+                        { text: 'Service catalog behavior', link: '/en/reference/service-catalog' },
+                        { text: 'Resolver configuration', link: '/en/guide/service-communication/resolver-configuration' },
+                        { text: 'Runtime requirements and coverage', link: '/en/guide/runtime-compatibility-details' },
+                        { text: 'Transport support and measurements', link: '/en/guide/production/transport-matrix-details' },
                         { text: 'Generated API', link: '/en/api/' },
                         { text: 'Runtime compatibility', link: '/en/guide/runtime-compatibility' },
                         { text: 'Migration', link: '/en/migration/' },

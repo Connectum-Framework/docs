@@ -33,7 +33,7 @@ flowchart TD
 | 7 | **validation** | Validates via `@connectrpc/validate` | Enabled |
 | 8 | **serializer** | JSON serialization for protobuf | **Opt-in** |
 
-The order is deliberate: `errorHandler` is outermost (catches everything), `serializer` is innermost (closest to the handler). The order applies to whichever interceptors you enable. In particular, `circuitBreaker` wraps `retry`, so one logical request increments the failure counter at most once regardless of retry attempts.
+The order is deliberate: `errorHandler` is outermost (wraps `next(req)`), `serializer` is innermost (closest to the handler). The order applies to whichever interceptors you enable. In particular, `circuitBreaker` wraps `retry`, so one logical request increments the failure counter at most once regardless of retry attempts.
 
 ::: warning No hidden behavioral logic
 Only structural interceptors (errorHandler, validation) are enabled by default. Resilience interceptors (timeout, bulkhead, circuitBreaker, retry) alter request behavior and must be enabled explicitly with `true` or an options object.
@@ -46,19 +46,34 @@ and Reflection. It does not skip every request using the gRPC wire protocol.
 
 The text of a failure often carries a connection string, a query or a value from the request, so `errorHandler` sends it to the client only when the author chose to. The behavior is the same over gRPC, Connect and `server.localClient()`.
 
+This interceptor catches failures thrown or rejected by `next(req)`. It does not
+wrap later response-stream iteration or request gates that run before the
+interceptor chain; the rules below do not cover those failures.
+
 | Thrown by the handler | Client receives |
 |---|---|
 | `ConnectError` | Unchanged: code, text, details, metadata |
 | `SanitizableError` | Its `clientMessage` and code; `serverDetails` stay on the server |
-| `Error` or a thrown string | `Internal` with the text `internal error` |
-| An error with a numeric `code` that is an integer from 1 to 16 | That code with an empty text |
-| An error with any other numeric `code` (`0`, `17`, `1.5`, `NaN`, an HTTP status, an errno) | `Internal` with the text `internal error` |
+| Another `Error` named `AbortError` or `TimeoutError` | `Canceled` with an empty text, through Connect-ES normalization |
+| Any other `Error` without a numeric `code`, or a thrown string | `Internal` with the text `internal error` |
+| Any other error with a numeric `code` that is an integer from 1 to 16 | That code; `Internal` (`13`) carries `internal error`, all other codes carry an empty text |
+| Any other error with an invalid numeric `code` (`0`, `17`, `1.5`, `NaN`, an HTTP status, an errno) | `Internal` with the text `internal error` |
 
-Only the codes 1 to 16 (`Canceled` to `Unauthenticated`) are failure codes; `0` means success in gRPC, so another number is not sent to the client as a code. `onError` receives `Internal` for it, and the original error keeps its own `code`.
+For the numeric-code rows, only integers from 1 to 16 (`Canceled` to
+`Unauthenticated`) are accepted. Other numeric values become `Internal`;
+`0` means success in gRPC, not a failure code.
 
-The original failure stays on the server: as `cause` of the thrown `ConnectError` (no transport serializes `cause`), as `info.error` of `onError` with its original text, and in the console log.
+With the default `exposeErrorMessages: false`, a non-Connect, non-Sanitizable
+failure is retained as `cause` of the normalized `ConnectError`; transports do
+not serialize `cause`. An existing `ConnectError` is unchanged. Converting a
+`SanitizableError` does not attach the original error as `cause`.
 
-To send a message on purpose, throw a `ConnectError` or a `SanitizableError`. To send the original text of every failure, set `exposeErrorMessages: true`. The option is server-side, defaults to `false` and does not depend on `NODE_ENV`; use it only for trusted internal callers or while debugging:
+If supplied, `onError` receives the original `SanitizableError`, including
+`serverDetails`, or the server-side `ConnectError.from()` result for other
+failures. Console logging runs only when `onError` is absent and `logErrors` is
+enabled; `logErrors` defaults to `process.env.NODE_ENV !== "production"`.
+
+To send a message on purpose, throw a `ConnectError` or a `SanitizableError`. To expose the text of other failures, set `exposeErrorMessages: true`. The option is server-side, defaults to `false` and does not depend on `NODE_ENV`; use it only for trusted internal callers or while debugging:
 
 ```typescript
 createDefaultInterceptors({ errorHandler: { exposeErrorMessages: true } });
@@ -227,11 +242,19 @@ createDefaultInterceptors({ timeout: null });   // TypeError: timeout must be tr
 
 A fallback value stands in for a failed dependency, a timeout or a bug, never for a caller who is not allowed. A failure with the code `Unauthenticated` or `PermissionDenied` is rethrown as it is and the `handler` is not called for it. This holds wherever the authentication or authorization interceptor stands relative to the fallback interceptor, and also for a refusal raised by the service handler itself. Failures with any other code, and errors that are not a `ConnectError`, still receive the fallback value.
 
-Keep the authentication and authorization interceptors in front of the default interceptors, as the [authentication guide](/en/guide/auth) shows: the order still decides what the rest of the chain, such as a rate limit or a cache, does for an unauthenticated caller.
+Place authentication and authorization immediately after `errorHandler`, before timeout and other resilience interceptors: `errorHandler → AUTH → AUTHZ → resilience`. See the [manual chain example](/en/guide/interceptors/custom#composing-with-built-in-interceptors). This keeps auth failures inside error handling while rejecting unauthorized calls before downstream policies run.
 
 ### Fallback response {#fallback-response}
 
-The response the fallback interceptor synthesises carries only the protocol headers it needs, on a server chain and on a client transport alike:
+::: warning Streaming fallback limitation
+Keep the default `skipStreaming: true` for fallback. With `false`, a server-streaming
+opening failure calls the provider but produces an invalid response: real gRPC and
+Connect clients receive no fallback messages and `Internal(13)`. This is a known
+defect, tracked in [#465](https://github.com/Connectum-Framework/connectum/issues/465),
+not the opening-only scope of timeout and retry.
+:::
+
+For unary RPCs, the response the fallback interceptor synthesises carries only the protocol headers it needs, on a server chain and on a client transport alike:
 
 - `content-type` equal to the `content-type` of the request. A Connect GET request has none, so it is derived from the `encoding` query parameter (`json` gives `application/json`, `proto` gives `application/proto`); with no type to derive, the header stays empty.
 - the trailer `grpc-status: 0` when the request `content-type` starts with `application/grpc` (gRPC and gRPC-web). For any other protocol the trailer is empty.
@@ -402,7 +425,7 @@ This is why the default chain places `errorHandler` first and `serializer` last.
 
 ## Best Practices
 
-1. **Error handler first** -- place the error handler first in the chain so it catches errors from all subsequent interceptors.
+1. **Error handler first** -- place it first to normalize failures thrown or rejected by downstream `next(req)`, within the [error-handler boundary](#what-a-client-sees-when-a-handler-fails).
 
 2. **Do not mutate `req.message`** -- create a new request object via spread: `{ ...req, message: newMessage }`.
 
@@ -414,7 +437,7 @@ This is why the default chain places `errorHandler` first and `serializer` last.
 
 6. **Use factories** -- wrap interceptors in `create*Interceptor(options)` for configurability.
 
-7. **`skip*` options for technical limitations** -- options like `skipStreaming` and `skipGrpcServices` are meant for technical limitations of the interceptor, not for business routing.
+7. **`skip*` options for call scope** -- options like `skipStreaming` and `skipGrpcServices` control call-kind or operational-service exclusions. Their scope depends on the interceptor; use method filtering for business routing.
 
 8. **`createMethodFilterInterceptor` for routing** -- use it for declarative interceptor routing by service and method.
 

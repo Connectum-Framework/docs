@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Authentication and authorization</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Authentication and authorization</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Authentication and authorization; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 592" role="img" aria-labelledby="auth-title auth-desc" data-overview="auth" data-visual-type="architecture">
+<title id="auth-title">Authentication and authorization</title>
+<desc id="auth-desc">Client credentials are verified by a chosen authentication strategy, which establishes the shared identity used by code or proto-based authorization and by context-aware application code and tests.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="auth-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<g class="go-zone"><rect x="40" y="120" width="608" height="128" rx="8"/></g>
+<text class="go-heading" x="176" y="144" text-anchor="start">Choose a verifier</text>
+<path class="go-edge" data-from="client" data-to="jwt" data-points="264,88 264,104 144,104 144,160" d="M264 88 L264 96 Q264 104 256 104 L152 104 Q144 104 144 112 L144 160" marker-end="url(#auth-arrow)"/>
+<path class="go-edge" data-from="client" data-to="gateway" data-points="344,88 344,160" d="M344 88 L344 160" marker-end="url(#auth-arrow)"/>
+<path class="go-edge" data-from="client" data-to="session" data-points="424,88 424,104 536,104 536,160" d="M424 88 L424 96 Q424 104 432 104 L528 104 Q536 104 536 112 L536 160" marker-end="url(#auth-arrow)"/>
+<path class="go-edge" data-from="jwt" data-to="context" data-points="144,224 144,280 264,280 264,320" d="M144 224 L144 272 Q144 280 152 280 L256 280 Q264 280 264 288 L264 320" marker-end="url(#auth-arrow)"/>
+<path class="go-edge" data-from="gateway" data-to="context" data-points="344,224 344,320" d="M344 224 L344 320" marker-end="url(#auth-arrow)"/>
+<path class="go-edge" data-from="session" data-to="context" data-points="536,224 536,280 424,280 424,320" d="M536 224 L536 272 Q536 280 528 280 L432 280 Q424 280 424 288 L424 320" marker-end="url(#auth-arrow)"/>
+<path class="go-edge" data-from="context" data-to="code" data-points="264,400 264,432 180,432 180,464" d="M264 400 L264 424 Q264 432 256 432 L188 432 Q180 432 180 440 L180 464" marker-end="url(#auth-arrow)"/>
+<path class="go-edge" data-from="context" data-to="proto" data-points="424,400 424,432 508,432 508,464" d="M424 400 L424 424 Q424 432 432 432 L500 432 Q508 432 508 440 L508 464" marker-end="url(#auth-arrow)"/>
+<g data-node="client" data-box="184 24 320 64" data-topics="/en/guide/auth/client-interceptors"><rect class="go-surface" x="184" y="24" width="320" height="64" rx="6"/><text class="go-name" x="200" y="52" text-anchor="start">Client credentials</text><text class="go-detail" x="200" y="72" text-anchor="start">Bearer token or trusted gateway headers</text></g>
+<g data-node="jwt" data-box="56 160 176 64" data-topics="/en/guide/auth/jwt"><rect class="go-surface" x="56" y="160" width="176" height="64" rx="6"/><text class="go-name" x="72" y="188" text-anchor="start">JWT</text><text class="go-detail" x="72" y="208" text-anchor="start">Signature · claims</text></g>
+<g data-node="gateway" data-box="248 160 176 64" data-topics="/en/guide/auth/gateway"><rect class="go-surface" x="248" y="160" width="176" height="64" rx="6"/><text class="go-name" x="264" y="188" text-anchor="start">Gateway</text><text class="go-detail" x="264" y="208" text-anchor="start">Trust source · headers</text></g>
+<g data-node="session" data-box="440 160 192 64" data-topics="/en/guide/auth/session"><rect class="go-surface" x="440" y="160" width="192" height="64" rx="6"/><text class="go-name" x="456" y="188" text-anchor="start">Session</text><text class="go-detail" x="456" y="208" text-anchor="start">Verify · map identity</text></g>
+<g data-node="context" data-box="184 320 320 80" data-topics="/en/guide/auth/context" data-focal=""><rect class="go-surface" x="184" y="320" width="320" height="80" rx="6"/><text class="go-name" x="200" y="346" text-anchor="start">Auth context and testing</text><text class="go-detail" x="200" y="366" text-anchor="start">Request / stream identity · propagation</text><text class="go-detail" x="200" y="386" text-anchor="start">Mock context · signed test JWTs</text></g>
+<g data-node="code" data-box="40 464 280 80" data-topics="/en/guide/auth/authorization"><rect class="go-surface" x="40" y="464" width="280" height="80" rx="6"/><text class="go-name" x="56" y="500" text-anchor="start">Code authorization</text><text class="go-detail" x="56" y="520" text-anchor="start">Rules · callback · default policy</text></g>
+<g data-node="proto" data-box="368 464 280 80" data-topics="/en/guide/auth/proto-authz"><rect class="go-surface" x="368" y="464" width="280" height="80" rx="6"/><text class="go-name" x="384" y="500" text-anchor="start">Proto-based authorization</text><text class="go-detail" x="384" y="520" text-anchor="start">Public / internal · roles / scopes</text></g>
+<text class="go-detail" x="40" y="576" text-anchor="start">A valid credential is not permission to invoke every method.</text>
+</svg></section>
+<figcaption>Choose authentication for the trust boundary and authorization for the method policy. Context, propagation and testing share the verified identity; attaching client credentials does not verify them.</figcaption></figure></main></body></html>

@@ -4,7 +4,7 @@
 
 > **createErrorHandlerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [errorHandler.ts:87](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/errorHandler.ts#L87)
+Defined in: [errorHandler.ts:90](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/errorHandler.ts#L90)
 
 Create error handler interceptor
 
@@ -16,16 +16,19 @@ What a client receives for each kind of thrown value:
 - `ConnectError`: passes through unchanged, text and details included. Its author
   chose to send them.
 - `SanitizableError`: its `clientMessage` and code only; `serverDetails` stay on the server.
-- Anything else (`Error`, a thrown string, an object with a numeric `code`): the code is
-  the numeric `code` when it is an integer from 1 to 16 (a Connect failure code) and
-  `Internal` otherwise (no code, a non-number, or a number outside 1..16). The text of the failure
-  is NOT sent: `Internal` carries the fixed text `"internal error"`, any other code carries
-  an empty text. A message such as a connection string or a query would otherwise leak
-  to every caller (CWE-209). Set `exposeErrorMessages: true` to send the original text.
+- Other `Error` instances named `AbortError` or `TimeoutError`: Connect-ES maps them
+  to `Canceled`. Remaining failures use a numeric `code` when it is an integer from
+  1 to 16 (a Connect failure code), or `Internal` otherwise. With message hiding,
+  `Internal` carries `"internal error"` (including numeric `13`); other codes carry
+  an empty text. A connection string or query would otherwise leak to every caller
+  (CWE-209). Set `exposeErrorMessages: true` to expose the text of these other failures.
 
-The original failure always stays on the server: as `cause` of the thrown ConnectError
-(no transport serializes `cause`), in `onError` as `info.error` with its original text,
-and in the console log.
+With the default message hiding, a non-Connect, non-Sanitizable failure is retained
+as `cause` of the normalized error; transports do not serialize it. A ConnectError
+is unchanged. Converting a SanitizableError does not attach the original as cause.
+If supplied, `onError` receives the original SanitizableError or the server-side
+ConnectError.from() result for other failures. Console logging runs only without
+`onError` and with `logErrors` enabled (by default, outside production).
 
 Place this interceptor first to normalize rejections from downstream interceptors.
 It does not wrap response-stream iteration after next(req) returns, or errors

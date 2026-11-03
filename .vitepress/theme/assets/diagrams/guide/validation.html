@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Validate structure before business work</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Validate structure before business work</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Validate structure before business work; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 600" role="img" aria-labelledby="validation-title validation-desc" data-overview="validation" data-visual-type="flowchart">
+<title id="validation-title">Validate structure before business work</title>
+<desc id="validation-desc">Installed validation middleware checks regenerated protobuf constraints before serialization and the handler, returning structured input errors while business decisions remain in application code.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="validation-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<path class="go-edge" data-from="setup" data-to="interceptor" data-points="312,76 328,76 328,160 288,160 288,192" d="M312 76 L320 76 Q328 76 328 84 L328 152 Q328 160 320 160 L296 160 Q288 160 288 168 L288 192" marker-end="url(#validation-arrow)"/>
+<path class="go-edge" data-from="constraints" data-to="interceptor" data-points="504,128 504,160 408,160 408,192" d="M504 128 L504 152 Q504 160 496 160 L416 160 Q408 160 408 168 L408 192" marker-end="url(#validation-arrow)"/>
+<path class="go-edge" data-from="request" data-to="interceptor" data-points="168,248 216,248" d="M168 248 L216 248" marker-end="url(#validation-arrow)"/>
+<path class="go-edge" data-from="interceptor" data-to="decision" data-points="344,304 344,352" d="M344 304 L344 352" marker-end="url(#validation-arrow)"/>
+<path class="go-edge" data-from="decision" data-to="business" data-points="472,392 548,392 548,496" d="M472 392 L540 392 Q548 392 548 400 L548 496" marker-end="url(#validation-arrow)"/>
+<path class="go-edge" data-from="decision" data-to="error" data-points="216,392 160,392 160,496" d="M216 392 L168 392 Q160 392 160 400 L160 496" marker-end="url(#validation-arrow)"/>
+<g class="go-label" data-label-box="556 436 52 20"><rect x="556" y="436" width="52" height="20"/><text class="go-tag" x="582" y="450" text-anchor="middle">VALID</text></g>
+<g class="go-label" data-label-box="168 436 68 20"><rect x="168" y="436" width="68" height="20"/><text class="go-tag" x="202" y="450" text-anchor="middle">INVALID</text></g>
+<g data-node="setup" data-box="24 24 288 104" data-topics="/en/guide/validation-setup"><rect class="go-surface" x="24" y="24" width="288" height="104" rx="6"/><text class="go-name" x="40" y="52" text-anchor="start">Install + fetch rules</text><text class="go-detail" x="40" y="72" text-anchor="start">@connectrpc/validate</text><text class="go-detail" x="40" y="92" text-anchor="start">@bufbuild/protovalidate</text><text class="go-detail" x="40" y="112" text-anchor="start">buf.yaml; buf dep update</text></g>
+<g data-node="constraints" data-box="344 24 320 104" data-topics="/en/guide/validation-setup"><path class="go-surface" d="M344 24H648L664 40V128H344Z"/><path class="go-fold" d="M648 24V40H664"/><text class="go-name" x="360" y="62" text-anchor="start">Proto constraints</text><text class="go-detail" x="360" y="82" text-anchor="start">Field and message constraints</text><text class="go-detail" x="360" y="102" text-anchor="start">Regenerate descriptors after edits</text></g>
+<g data-node="request" data-box="24 208 144 80" data-topics="/en/guide/validation-setup"><rect class="go-surface" x="24" y="208" width="144" height="80" rx="20"/><text class="go-name" x="40" y="244" text-anchor="start">Request</text><text class="go-detail" x="40" y="264" text-anchor="start">Untrusted input</text></g>
+<g data-node="interceptor" data-box="216 192 256 112" data-topics="/en/guide/validation-setup" data-focal=""><rect class="go-surface" x="216" y="192" width="256" height="112" rx="6"/><text class="go-name" x="232" y="234" text-anchor="start">Validation interceptor</text><text class="go-detail" x="232" y="254" text-anchor="start">Default / standalone; can disable</text><text class="go-detail" x="232" y="274" text-anchor="start">Before serializer and handler</text></g>
+<g data-node="decision" data-box="216 352 256 80" data-topics="/en/guide/validation-setup"><path class="go-surface" d="M344 352L472 392L344 432L216 392Z"/><text class="go-name" x="344" y="398" text-anchor="middle">Schema valid?</text></g>
+<g data-node="error" data-box="24 496 272 80" data-topics="/en/guide/validation-setup"><rect class="go-surface" x="24" y="496" width="272" height="80" rx="20"/><text class="go-name" x="40" y="522" text-anchor="start">INVALID_ARGUMENT</text><text class="go-detail" x="40" y="542" text-anchor="start">Field path + violated rule</text><text class="go-detail" x="40" y="562" text-anchor="start">Constraint identifier</text></g>
+<g data-node="business" data-box="432 496 232 80" data-topics="/en/guide/validation-setup"><rect class="go-surface" x="432" y="496" width="232" height="80" rx="6"/><text class="go-name" x="448" y="522" text-anchor="start">Business validation</text><text class="go-detail" x="448" y="542" text-anchor="start">Handler checks business state</text><text class="go-detail" x="448" y="562" text-anchor="start">Stock · uniqueness · credit</text></g>
+</svg></section>
+<figcaption>Annotations require installed dependencies, regenerated descriptors and an active interceptor. Structural checks do not establish uniqueness, stock availability or a customer’s credit limit.</figcaption></figure></main></body></html>

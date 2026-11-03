@@ -7,23 +7,61 @@ outline: deep
 
 # Per-Method Interceptor Routing
 
-By default, interceptors in the `interceptors` array apply to every request. In practice, you often need different interceptors for different services or methods -- authentication for admin endpoints, aggressive timeouts for fast reads, circuit breakers for external-facing APIs.
+Server-level interceptors apply unless a service overrides that chain. In practice, you often need different interceptors for different services or methods -- authentication for admin endpoints, aggressive timeouts for fast reads, circuit breakers for external-facing APIs.
 
 Connectum provides three approaches for per-method interceptor routing.
 
-## Approach 1: ConnectRPC Native Per-Service/Per-Method
+## Approach 1: ConnectRPC Native Per-Service/Per-Method {#approach-1-connectrpc-native-per-service-per-method}
 
 Connectum's `defineService()` forwards its third argument to ConnectRPC's
 `router.service()` options. Use that argument to scope interceptors to a service:
 
+::: warning Replacement, not addition
+Per-service `interceptors` replace the server-level array. They do not inherit its
+error handler, validation or other middleware. Supply the complete required chain.
+:::
+
+This example explicitly retains the global timeout and validation policy.
+`greeterImpl`, `requireAuth`, `requireAuthz` and `auditLog` are application-provided
+values; the auth interceptors authenticate and authorize the caller, respectively.
+
 ```typescript
-import { defineService } from '@connectum/core';
+import { createServer, defineService } from '@connectum/core';
+import {
+  createErrorHandlerInterceptor,
+  createTimeoutInterceptor,
+} from '@connectum/interceptors';
+import { createValidateInterceptor } from '@connectrpc/validate';
 import { GreeterService } from '#gen/greeter_pb.ts';
 
+const processingInterceptors = [
+  createTimeoutInterceptor({ duration: 10_000 }),
+  createValidateInterceptor(),
+];
+
 export const greeterService = defineService(GreeterService, greeterImpl, {
-  interceptors: [requireAuth, auditLog],
+  interceptors: [
+    createErrorHandlerInterceptor(),
+    requireAuth,
+    requireAuthz,
+    ...processingInterceptors,
+    auditLog,
+  ],
+});
+
+const server = createServer({
+  services: [greeterService],
+  // Default for services without their own interceptors array.
+  interceptors: [
+    createErrorHandlerInterceptor(),
+    ...processingInterceptors,
+  ],
 });
 ```
+
+Greeter runs only its replacement chain:
+`errorHandler → AUTH → AUTHZ → timeout → validation → auditLog`.
+The server-level chain is not also executed for that service.
 
 Use this approach when interceptors belong to one service. For one method within
 that service, use the filtering helper below. Raw router callbacks are not
@@ -159,15 +197,28 @@ Use this approach for filtering based on request content, runtime state, or cond
 
 ## skip* Options on Built-in Interceptors
 
-The built-in resilience interceptors have `skip*` options that serve a different purpose from method filtering. These are **technical constraints**, not routing concerns:
+Built-in interceptors have `skip*` options for call-kind and operational-service policies. These serve a different purpose from business routing:
 
 | Option | Used by | Why |
 |--------|---------|-----|
-| `skipStreaming` | timeout, bulkhead, circuitBreaker, retry, fallback | Resilience patterns wrap the full call. You cannot retry a stream, timeout a long-lived connection, or replace a stream with a fallback value. |
+| `skipStreaming` | timeout, bulkhead, circuitBreaker, retry, fallback | Skips streaming calls by default; opting in does not imply coverage of the full stream lifetime. |
 | `skipGrpcServices` | serializer | Skips operational services whose names start with `grpc.`; it does not select by wire protocol. |
 | `skipHealthCheck` | logger | Convenience shortcut to reduce log noise from frequent health checks. |
 
-These options complement `createMethodFilterInterceptor`. Method filtering handles business routing ("which interceptors for which methods"), while `skip*` handles technical limitations ("this interceptor cannot operate on this call type").
+::: warning Streaming fallback
+Keep fallback's default `skipStreaming: true` until
+[#465](https://github.com/Connectum-Framework/connectum/issues/465) is resolved.
+Its streaming response has a known defect, separate from the opening-only timeout
+and retry behavior below; see [Fallback response](/en/guide/interceptors/built-in#fallback-response).
+:::
+
+For timeout and retry, `skipStreaming: false` covers opening the response, not
+subsequent iteration: retry can repeat opening failures, and timeout limits the
+opening wait. Neither restarts or times out consumption of an opened response.
+See [Cancellation and Streaming Scope](/en/guide/interceptors/built-in#cancellation-and-streaming-scope).
+
+These options complement `createMethodFilterInterceptor`: method filtering selects
+methods, while each matched interceptor applies its own call-scope policy.
 
 ## Choosing the Right Approach
 
@@ -176,10 +227,10 @@ These options complement `createMethodFilterInterceptor`. Method filtering handl
 | Interceptor tied to a specific service | `defineService(..., { interceptors })` |
 | Declarative routing by pattern across multiple services | `createMethodFilterInterceptor` |
 | Dynamic logic based on request content or runtime state | Custom interceptor with manual filtering |
-| Technical limitation (streaming, binary protocol) | `skip*` options on built-in interceptors |
+| Call-kind bypass or operational-service exclusion | `skip*` options on built-in interceptors |
 
 ::: warning
-Do not confuse `skip*` options with method filtering. Setting `skipStreaming: true` on the retry interceptor means "retry cannot handle streams" -- it is not a routing decision. Use `createMethodFilterInterceptor` or router-level interceptors for business routing.
+Setting `skipStreaming: true` bypasses retry for streaming calls; it does not mean retry can never handle response opening. Use `createMethodFilterInterceptor` or router-level interceptors to select services and methods.
 :::
 
 ## Related

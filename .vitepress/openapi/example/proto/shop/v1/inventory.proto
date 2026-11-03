@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package shop.v1;
+
+import "connectum/auth/v1/options.proto";
+
+service InventoryService {
+  rpc CheckStock(CheckStockRequest) returns (CheckStockResponse) {
+    option (connectum.auth.v1.method_auth) = { public: true };
+  }
+
+  rpc WatchStock(CheckStockRequest) returns (stream CheckStockResponse) {
+    option (connectum.auth.v1.method_auth) = { public: true };
+  }
+}
+
+message CheckStockRequest {
+  string sku = 1;
+}
+
+message CheckStockResponse {
+  int32 units = 1;
+}

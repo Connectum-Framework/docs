@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.validation.json",
+    "compilerOptions": { "resolveJsonModule": true, "allowJs": true, "checkJs": false },
+    "include": [
+        ".vitepress/theme/components/HomePage.vue",
+        ".vitepress/theme/components/HomeCodeWalkthrough.vue",
+        ".vitepress/theme/components/HomeDeployments.vue",
+        ".vitepress/homepage/*.ts",
+        ".vitepress/homepage/*.js",
+        ".vitepress/homepage/*.mjs"
+    ]
+}

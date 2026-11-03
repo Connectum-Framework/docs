@@ -4,7 +4,7 @@
 
 > **createFallbackInterceptor**\<`T`\>(`options`): `Interceptor`
 
-Defined in: [fallback.ts:119](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/fallback.ts#L119)
+Defined in: [fallback.ts:120](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/fallback.ts#L120)
 
 Create fallback interceptor
 
@@ -15,8 +15,9 @@ In the server example, getCachedData is application code that returns that messa
 A refusal of access is never replaced: a failure with the code `Unauthenticated` or
 `PermissionDenied` is rethrown as it is, and the `handler` is not called for it. The
 fallback value is for failed dependencies, timeouts and bugs, not for callers who are
-not allowed. Even so, put the authentication and authorization interceptors in front of
-the default interceptors, as the authentication guide shows.
+not allowed. Even so, place authentication and authorization immediately after
+`errorHandler`, before timeout and the other resilience interceptors, so auth failures
+pass through error handling without entering downstream resilience policies.
 
 The response synthesised by the fallback interceptor carries only the protocol
 headers it needs, on a server chain and on a client transport alike:

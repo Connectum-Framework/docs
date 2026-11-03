@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Scaffolding commands and owned files</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Scaffolding commands and owned files</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Scaffolding commands and owned files; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 600" role="img" aria-labelledby="scaffolding-title scaffolding-desc" data-overview="scaffolding" data-visual-type="tree">
+<title id="scaffolding-title">Scaffolding commands and owned files</title>
+<desc id="scaffolding-desc">The builder and three CLI workflows create an editable project, add service files or fetch reflected client contracts, with distinct setup and registration requirements.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="scaffolding-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<path class="go-edge" data-from="workflows" data-to="init" data-points="208,248 232,248 232,96 256,96" d="M208 248 L224 248 Q232 248 232 240 L232 104 Q232 96 240 96 L256 96"/>
+<path class="go-edge" data-from="workflows" data-to="generate" data-points="208,280 256,280" d="M208 280 L256 280"/>
+<path class="go-edge" data-from="workflows" data-to="sync" data-points="208,312 232,312 232,464 256,464" d="M208 312 L224 312 Q232 312 232 320 L232 456 Q232 464 240 464 L256 464"/>
+<path class="go-edge" data-from="init" data-to="project" data-points="440,96 480,96" d="M440 96 L480 96" marker-end="url(#scaffolding-arrow)"/>
+<path class="go-edge" data-from="generate" data-to="service-files" data-points="440,280 480,280" d="M440 280 L480 280" marker-end="url(#scaffolding-arrow)"/>
+<path class="go-edge" data-from="sync" data-to="client-contracts" data-points="440,464 480,464" d="M440 464 L480 464" marker-end="url(#scaffolding-arrow)"/>
+<g data-node="workflows" data-box="24 208 184 144" data-topics="/en/guide/scaffolding-commands" data-focal=""><rect class="go-surface" x="24" y="208" width="184" height="144" rx="6"/><text class="go-name" x="40" y="246" text-anchor="start">Scaffold</text><text class="go-name" x="40" y="266" text-anchor="start">workflows</text><text class="go-detail" x="40" y="286" text-anchor="start">Builder: inspect files</text><text class="go-detail" x="40" y="306" text-anchor="start">CLI runs on Node</text><text class="go-detail" x="40" y="326" text-anchor="start">Target: Node or Bun</text></g>
+<g data-node="init" data-box="256 24 184 144" data-topics="/en/guide/scaffolding-commands"><rect class="go-surface" x="256" y="24" width="184" height="144" rx="6"/><text class="go-name" x="272" y="62" text-anchor="start">init</text><text class="go-detail" x="272" y="82" text-anchor="start">Pinned base + modules</text><text class="go-detail" x="272" y="102" text-anchor="start">Names + paths checked</text><text class="go-detail" x="272" y="122" text-anchor="start">--force / --ref</text><text class="go-detail" x="272" y="142" text-anchor="start">Runtime ≠ package tool</text></g>
+<g data-node="project" data-box="480 24 184 144" data-topics="/en/guide/scaffolding-commands"><path class="go-surface" d="M480 24H648L664 40V168H480Z"/><path class="go-fold" d="M648 24V40H664"/><text class="go-name" x="496" y="62" text-anchor="start">Editable project</text><text class="go-detail" x="496" y="82" text-anchor="start">proto · server · tests</text><text class="go-detail" x="496" y="102" text-anchor="start">Shared option imports</text><text class="go-detail" x="496" y="122" text-anchor="start">Erasable proto enums</text><text class="go-detail" x="496" y="142" text-anchor="start">pnpm allowBuilds</text></g>
+<g data-node="generate" data-box="256 208 184 144" data-topics="/en/guide/scaffolding-commands"><rect class="go-surface" x="256" y="208" width="184" height="144" rx="6"/><text class="go-name" x="272" y="246" text-anchor="start">generate</text><text class="go-name" x="272" y="266" text-anchor="start">service</text><text class="go-detail" x="272" y="286" text-anchor="start">Validate service names</text><text class="go-detail" x="272" y="306" text-anchor="start">--with-events optional</text><text class="go-detail" x="272" y="326" text-anchor="start">No server.ts edits</text></g>
+<g data-node="service-files" data-box="480 208 184 144" data-topics="/en/guide/scaffolding-commands"><path class="go-surface" d="M480 208H648L664 224V352H480Z"/><path class="go-fold" d="M648 208V224H664"/><text class="go-name" x="496" y="246" text-anchor="start">Service files</text><text class="go-detail" x="496" y="266" text-anchor="start">proto + defineService</text><text class="go-detail" x="496" y="286" text-anchor="start">Generated handler stubs</text><text class="go-detail" x="496" y="306" text-anchor="start">Implement and test them</text><text class="go-detail" x="496" y="326" text-anchor="start">Register in server.ts</text></g>
+<g data-node="sync" data-box="256 392 184 144" data-topics="/en/guide/scaffolding-commands"><rect class="go-surface" x="256" y="392" width="184" height="144" rx="6"/><text class="go-name" x="272" y="430" text-anchor="start">proto sync</text><text class="go-detail" x="272" y="450" text-anchor="start">Reflection over HTTP/2</text><text class="go-detail" x="272" y="470" text-anchor="start">buf + plugins + template</text><text class="go-detail" x="272" y="490" text-anchor="start">--dry-run / --timeout</text><text class="go-detail" x="272" y="510" text-anchor="start">All descriptors or fail</text></g>
+<g data-node="client-contracts" data-box="480 392 184 144" data-topics="/en/guide/scaffolding-commands"><path class="go-surface" d="M480 392H648L664 408V536H480Z"/><path class="go-fold" d="M648 392V408H664"/><text class="go-name" x="496" y="430" text-anchor="start">Client contracts</text><text class="go-detail" x="496" y="450" text-anchor="start">Generated by buf</text><text class="go-detail" x="496" y="470" text-anchor="start">Path printed on success</text><text class="go-detail" x="496" y="490" text-anchor="start">No partial service set</text><text class="go-detail" x="496" y="510" text-anchor="start">Inspect generated output</text></g>
+<text class="go-detail" x="24" y="556" text-anchor="start">Inspect module order and generated scripts; implement and register new services.</text><text class="go-detail" x="24" y="576" text-anchor="start">--no-sample needs a first proto; check the CLI release before choosing options.</text>
+</svg></section>
+<figcaption>The builder previews a pinned generator; documented 1.3 options and descriptor exports are not available in npm 1.2.x. Optional modules still need their broker, auth configuration and telemetry backend.</figcaption></figure></main></body></html>

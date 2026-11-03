@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Custom protocol initialization and routing</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Custom protocol initialization and routing</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Custom protocol initialization and routing; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 600" role="img" aria-labelledby="custom-protocols-title custom-protocols-desc" data-overview="custom-protocols" data-visual-type="architecture">
+<title id="custom-protocols-title">Custom protocol initialization and routing</title>
+<desc id="custom-protocols-desc">A per-server factory separates snapshot-based setup from repeatable router registration, while unmatched HTTP requests pass through explicit handlers to protocol-aware fallback errors.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="custom-protocols-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<path class="go-edge" data-from="factory" data-to="setup" data-points="168,152 168,216" d="M168 152 L168 216" marker-end="url(#custom-protocols-arrow)"/>
+<path class="go-edge" data-from="context" data-to="setup" data-points="520,152 520,184 256,184 256,216" d="M520 152 L520 176 Q520 184 512 184 L264 184 Q256 184 256 192 L256 216" marker-end="url(#custom-protocols-arrow)"/>
+<path class="go-edge" data-from="setup" data-to="register" data-points="312,272 376,272" d="M312 272 L376 272" marker-end="url(#custom-protocols-arrow)"/>
+<path class="go-edge go-dashed" data-from="register" data-to="register" data-points="568,216 568,188 616,188 616,216" d="M568 216 L568 196 Q568 188 576 188 L608 188 Q616 188 616 196 L616 216" marker-end="url(#custom-protocols-arrow)"/>
+<path class="go-edge" data-from="register" data-to="rpc" data-points="616,328 616,360" d="M616 328 L616 360" marker-end="url(#custom-protocols-arrow)"/>
+<path class="go-edge" data-from="request" data-to="rpc" data-points="116,360 116,344 520,344 520,360" d="M116 360 L116 352 Q116 344 124 344 L512 344 Q520 344 520 352 L520 360" marker-end="url(#custom-protocols-arrow)"/>
+<path class="go-edge" data-from="request" data-to="http-handler" data-points="208,408 248,408" d="M208 408 L248 408" marker-end="url(#custom-protocols-arrow)"/>
+<path class="go-edge" data-from="http-handler" data-to="fallback" data-points="340,456 340,500" d="M340 456 L340 500" marker-end="url(#custom-protocols-arrow)"/>
+<g class="go-label" data-label-box="548 160 88 20"><rect x="548" y="160" width="88" height="20"/><text class="go-tag" x="592" y="174" text-anchor="middle">NEW ROUTER</text></g>
+<g class="go-label" data-label-box="348 466 52 20"><rect x="348" y="466" width="52" height="20"/><text class="go-tag" x="374" y="480" text-anchor="middle">FALSE</text></g>
+<g data-node="factory" data-box="24 24 288 128" data-topics="/en/guide/protocols/custom-implementation"><rect class="go-surface" x="24" y="24" width="288" height="128" rx="6"/><text class="go-name" x="40" y="54" text-anchor="start">One factory instance</text><text class="go-name" x="40" y="74" text-anchor="start">per server</text><text class="go-detail" x="40" y="94" text-anchor="start">name; synchronous setup / register</text><text class="go-detail" x="40" y="114" text-anchor="start">Add before start or the first local client</text><text class="go-detail" x="40" y="134" text-anchor="start">Keep server state in a fresh closure</text></g>
+<g data-node="context" data-box="376 24 288 128" data-topics="/en/guide/protocols/custom-implementation"><path class="go-surface" d="M376 24H648L664 40V152H376Z"/><path class="go-fold" d="M648 24V40H664"/><text class="go-name" x="392" y="64" text-anchor="start">ProtocolContext snapshot</text><text class="go-detail" x="392" y="84" text-anchor="start">services: mounted service descriptors</text><text class="go-detail" x="392" y="104" text-anchor="start">registry: their files + imports</text><text class="go-detail" x="392" y="124" text-anchor="start">Application + preceding protocols</text></g>
+<g data-node="setup" data-box="24 216 288 112" data-topics="/en/guide/protocols/custom-implementation" data-focal=""><rect class="go-surface" x="24" y="216" width="288" height="112" rx="6"/><text class="go-name" x="40" y="248" text-anchor="start">setup(context)</text><text class="go-detail" x="40" y="268" text-anchor="start">Read snapshot; prepare shared state</text><text class="go-detail" x="40" y="288" text-anchor="start">Once after successful materialization</text><text class="go-detail" x="40" y="308" text-anchor="start">Initial failure can rerun setup</text></g>
+<g data-node="register" data-box="376 216 288 112" data-topics="/en/guide/protocols/custom-implementation"><rect class="go-surface" x="376" y="216" width="288" height="112" rx="6"/><text class="go-name" x="392" y="248" text-anchor="start">register(router)</text><text class="go-detail" x="392" y="268" text-anchor="start">Only add RPC routes</text><text class="go-detail" x="392" y="288" text-anchor="start">Repeats per HTTP / local router</text><text class="go-detail" x="392" y="308" text-anchor="start">No observable side effects</text></g>
+<g data-node="request" data-box="24 360 184 96" data-topics="/en/guide/protocols/custom-implementation"><rect class="go-surface" x="24" y="360" width="184" height="96" rx="20"/><text class="go-name" x="40" y="394" text-anchor="start">HTTP request</text><text class="go-detail" x="40" y="414" text-anchor="start">RPC routes checked first</text><text class="go-detail" x="40" y="434" text-anchor="start">Then HTTP fallbacks</text></g>
+<g data-node="http-handler" data-box="248 360 184 96" data-topics="/en/guide/protocols/custom-implementation"><rect class="go-surface" x="248" y="360" width="184" height="96" rx="6"/><text class="go-name" x="264" y="394" text-anchor="start">Unmatched HTTP</text><text class="go-detail" x="264" y="414" text-anchor="start">httpHandler: /metrics</text><text class="go-detail" x="264" y="434" text-anchor="start">true handles; false passes</text></g>
+<g data-node="rpc" data-box="472 360 192 96" data-topics="/en/guide/protocols/custom-implementation"><rect class="go-surface" x="472" y="360" width="192" height="96" rx="6"/><text class="go-name" x="488" y="394" text-anchor="start">Matched RPC route</text><text class="go-detail" x="488" y="414" text-anchor="start">ServerInfo endpoint</text><text class="go-detail" x="488" y="434" text-anchor="start">HTTP + local routers</text></g>
+<g data-node="fallback" data-box="248 500 416 76" data-topics="/en/guide/protocols/custom-implementation"><rect class="go-surface" x="248" y="500" width="416" height="76" rx="20"/><text class="go-name" x="264" y="524" text-anchor="start">Default fallback</text><text class="go-detail" x="264" y="544" text-anchor="start">Unknown Connect / gRPC / gRPC-Web: unimplemented</text><text class="go-detail" x="264" y="564" text-anchor="start">Other requests: 404 Not Found</text></g>
+</svg></section>
+<figcaption>Keep setup idempotent because failed initial materialization can retry it. Create a fresh protocol instance per server. Supported RPC content types receive protocol-aware unimplemented errors; other unmatched requests retain 404.</figcaption></figure></main></body></html>

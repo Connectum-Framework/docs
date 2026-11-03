@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Choose the testing boundary</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Choose the testing boundary</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Choose the testing boundary; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 600" role="img" aria-labelledby="testing-title testing-desc" data-overview="testing" data-visual-type="nested">
+<title id="testing-title">Choose the testing boundary</title>
+<desc id="testing-desc">runn and scenarigo cross the deployed transport boundary, in-process clients exercise routing and middleware, and handler checks isolate business decisions.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="testing-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<g class="go-zone"><rect x="24" y="200" width="640" height="376" rx="8"/><text class="go-heading" x="40" y="224" text-anchor="start">Service: transport, routing and handler</text></g>
+<g class="go-zone"><rect x="48" y="320" width="592" height="232" rx="8"/><text class="go-heading" x="64" y="344" text-anchor="start">In-process: routes + middleware</text></g>
+<g class="go-zone"><rect x="72" y="416" width="544" height="112" rx="8"/><text class="go-heading" x="88" y="440" text-anchor="start">Unit: handler decisions</text></g>
+<path class="go-edge" data-from="runn" data-to="transport" data-points="176,160 176,184 360,184 360,244" d="M176 160 L176 176 Q176 184 184 184 L352 184 Q360 184 360 192 L360 244" marker-end="url(#testing-arrow)"/>
+<path class="go-edge" data-from="scenarigo" data-to="transport" data-points="512,160 512,244" d="M512 160 L512 244" marker-end="url(#testing-arrow)"/>
+<path class="go-edge" data-from="transport" data-to="router" data-points="488,308 488,356" d="M488 308 L488 356" marker-end="url(#testing-arrow)"/>
+<path class="go-edge" data-from="local-client" data-to="router" data-points="312,384 360,384" d="M312 384 L360 384" marker-end="url(#testing-arrow)"/>
+<path class="go-edge" data-from="router" data-to="handler" data-points="488,412 488,452" d="M488 412 L488 452" marker-end="url(#testing-arrow)"/>
+<path class="go-edge" data-from="handler-checks" data-to="handler" data-points="312,480 360,480" d="M312 480 L360 480" marker-end="url(#testing-arrow)"/>
+<g data-node="runn" data-box="24 24 304 136" data-topics="/en/guide/testing/runn"><rect class="go-surface" x="24" y="24" width="304" height="136" rx="6"/><text class="go-name" x="40" y="58" text-anchor="start">runn</text><text class="go-detail" x="40" y="78" text-anchor="start">Install binary; YAML runbooks</text><text class="go-detail" x="40" y="98" text-anchor="start">gRPC reflection or local protos; HTTP</text><text class="go-detail" x="40" y="118" text-anchor="start">Health, auth, validation, TLS, streams</text><text class="go-detail" x="40" y="138" text-anchor="start">Variables + CI / Compose runners</text></g>
+<g data-node="scenarigo" data-box="360 24 304 136" data-topics="/en/guide/testing/scenarigo"><rect class="go-surface" x="360" y="24" width="304" height="136" rx="6"/><text class="go-name" x="376" y="58" text-anchor="start">scenarigo</text><text class="go-detail" x="376" y="78" text-anchor="start">Go install; config init; run</text><text class="go-detail" x="376" y="98" text-anchor="start">gRPC reflection + HTTP scenarios</text><text class="go-detail" x="376" y="118" text-anchor="start">Templates + Go plugins; JUnit / JSON</text><text class="go-detail" x="376" y="138" text-anchor="start">Streaming support is limited</text></g>
+<g data-node="transport" data-box="240 244 400 64" data-topics="/en/guide/testing/runn /en/guide/testing/scenarigo"><rect class="go-surface" x="240" y="244" width="400" height="64" rx="6"/><text class="go-name" x="256" y="272" text-anchor="start">Network / TLS / proxy</text><text class="go-detail" x="256" y="292" text-anchor="start">Exercise the deployed listener configuration</text></g>
+<g data-node="local-client" data-box="72 356 240 56" data-topics=""><rect class="go-surface" x="72" y="356" width="240" height="56" rx="6"/><text class="go-name" x="88" y="390" text-anchor="start">createLocalClient</text></g>
+<g data-node="router" data-box="360 356 256 56" data-topics=""><rect class="go-surface" x="360" y="356" width="256" height="56" rx="6"/><text class="go-name" x="376" y="390" text-anchor="start">Router + middleware</text></g>
+<g data-node="handler-checks" data-box="96 452 216 52" data-topics=""><rect class="go-surface" x="96" y="452" width="216" height="52" rx="6"/><text class="go-name" x="112" y="484" text-anchor="start">Handler checks</text></g>
+<g data-node="handler" data-box="360 452 232 52" data-topics="" data-focal=""><rect class="go-surface" x="360" y="452" width="232" height="52" rx="6"/><text class="go-name" x="376" y="484" text-anchor="start">Handler under test</text></g>
+<text class="go-detail" x="72" y="548" text-anchor="start">Assert success and errors; avoid repeating every unit case through the network.</text>
+</svg></section>
+<figcaption>Local tests bypass network, certificate and proxy configuration. Run success and failure scenarios against the real listener; plaintext gRPC and HTTP/1.1 require separate listener modes.</figcaption></figure></main></body></html>

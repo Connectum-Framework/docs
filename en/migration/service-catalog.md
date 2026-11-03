@@ -270,7 +270,10 @@ const server = createServer({
   services: [orders, inventory],
   catalog: serviceCatalog,
   // CONNECTUM_SERVICES="shop.v1.OrdersService,shop.v1.InventoryService"
-  enabledServices: parseServicesEnv(process.env.CONNECTUM_SERVICES),
+  enabledServices: parseServicesEnv(
+    process.env.CONNECTUM_SERVICES
+      ?? [orders.descriptor.typeName, inventory.descriptor.typeName].join(','),
+  ),
   remoteResolver: perServiceEnvResolver({
     'shop.v1.PaymentService': 'PAYMENT_URL',
   }),
@@ -281,6 +284,11 @@ A service listed in `enabledServices` is mounted locally; anything else in the c
 is treated as remote and resolved by the `remoteResolver`. A `perServiceEnvResolver`
 mapping with no entry, or whose env var is unset, resolves to `null`
 (→ `Code.Unavailable`).
+
+The explicit fallback above keeps both supplied services local when the variable
+is unset. An empty variable still becomes `[]` and mounts neither. This uses the
+parser available in 1.0–1.2; for a one-line configuration that also treats blank
+values as the server default, see section 7 below.
 
 ## 5. Error handling: configuration vs operational failures
 
@@ -374,6 +382,35 @@ wire-level policy (request signing over headers, an audience derived from the ho
 on the resolver's transport. And a `server.client()` call to a local service now runs
 the chain; call `server.localClient()` for a plain in-process client.
 
+## 7. 1.3.0 — preserve local defaults with `enabledServicesFromEnv`
+
+::: info Upcoming in 1.3.0
+The new helper is not available in published 1.2.x packages. `parseServicesEnv` is
+unchanged: passing its empty result directly to `enabledServices` still mounts no
+supplied application services.
+:::
+
+If an unset or blank variable should leave every supplied service local, replace
+the direct parser call after upgrading:
+
+```typescript
+import { createServer, enabledServicesFromEnv } from '@connectum/core';
+
+const server = createServer({
+  services: [orders, inventory],
+  catalog: serviceCatalog,
+  enabledServices: enabledServicesFromEnv(process.env.CONNECTUM_SERVICES),
+  remoteResolver,
+});
+```
+
+Verify with the variable unset, blank and set to one full proto `typeName`: the
+first two cases should expose both supplied services locally; the last should
+expose only the named one. To mount none deliberately, pass `enabledServices: []`
+directly. The helper cannot express that choice through an env value. See the
+[local activation table](/en/guide/service-communication/service-catalog)
+for the configuration boundary.
+
 ## Migration checklist
 
 - [ ] Replace every `(router) => { router.service(...) }` callback with
@@ -389,7 +426,9 @@ the chain; call `server.localClient()` for a plain in-process client.
 - [ ] Replace in-handler `createClient(Svc, transport)` with
       `ctx.call("${typeName}/${Method}", req)` (and `ctx.stream(...)` for streaming).
 - [ ] Replace hand-rolled env registries with `parseServicesEnv` (local activation) and
-      a resolver (remote endpoints).
+      a resolver (remote endpoints), with an explicit default for an unset variable.
+- [ ] On 1.3.0, use `enabledServicesFromEnv` if unset and blank values should preserve
+      the server's mount-all default (see section 7).
 - [ ] Handle the split error model: expect `CatalogConfigError` for misconfiguration and
       `ConnectError(Code.Unavailable)` for an unresolvable remote service.
 - [ ] During rolling upgrades, add methods compatibly; do not remove or rename a

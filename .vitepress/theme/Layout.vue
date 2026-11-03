@@ -71,7 +71,13 @@ const openOverlay = (container: HTMLElement) => {
     }
 
     const onKey = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') close()
+        if (e.key === 'Escape') {
+            e.preventDefault()
+            close()
+        } else if (e.key === 'Tab') {
+            e.preventDefault()
+            closeButton.focus()
+        }
     }
 
     closeButton.addEventListener('click', close)
@@ -81,22 +87,22 @@ const openOverlay = (container: HTMLElement) => {
     document.addEventListener('keydown', onKey)
     overlay.append(clone, closeButton)
     document.body.appendChild(overlay)
-    overlay.focus()
+    closeButton.focus()
 }
 
 const setupDiagramZoom = () => {
     const enhanceDiagrams = () => {
-        document.querySelectorAll('.mermaid:not([data-zoom]), .technical-diagram__art:not([data-zoom])').forEach((el) => {
+        document.querySelectorAll<HTMLElement>('.mermaid:not([data-zoom]), .technical-diagram__art:not([data-zoom])').forEach((el) => {
             if (!el.querySelector('svg')) return
             el.setAttribute('data-zoom', '')
             el.setAttribute('role', 'button')
             el.setAttribute('aria-label', 'Open diagram in fullscreen')
-            ;(el as HTMLElement).tabIndex = 0
-            el.addEventListener('click', () => openOverlay(el as HTMLElement))
+            el.tabIndex = 0
+            el.addEventListener('click', () => openOverlay(el))
             el.addEventListener('keydown', (event) => {
                 if (event.key !== 'Enter' && event.key !== ' ') return
                 event.preventDefault()
-                openOverlay(el as HTMLElement)
+                openOverlay(el)
             })
         })
     }

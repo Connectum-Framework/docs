@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Compose and select RPC interceptors</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Compose and select RPC interceptors</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Compose and select RPC interceptors; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 536" role="img" aria-labelledby="interceptors-title interceptors-desc" data-overview="interceptors" data-visual-type="architecture">
+<title id="interceptors-title">Compose and select RPC interceptors</title>
+<desc id="interceptors-desc">Built-in and custom wrappers are selected by service scope and method filters, then wrap the handler through next with result and error handling on the return path.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="interceptors-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<text class="go-heading" x="40" y="40" text-anchor="start">Compose the behavior</text>
+<path class="go-edge" data-from="built-in" data-to="applied" data-points="136,184 136,220 256,220 256,264" d="M136 184 L136 212 Q136 220 144 220 L248 220 Q256 220 256 228 L256 264" marker-end="url(#interceptors-arrow)"/>
+<path class="go-edge" data-from="custom" data-to="applied" data-points="344,184 344,264" d="M344 184 L344 264" marker-end="url(#interceptors-arrow)"/>
+<path class="go-edge" data-from="filter" data-to="applied" data-points="552,184 552,220 432,220 432,264" d="M552 184 L552 212 Q552 220 544 220 L440 220 Q432 220 432 228 L432 264" marker-end="url(#interceptors-arrow)"/>
+<path class="go-edge" data-from="applied" data-to="handler" data-points="280,360 280,432" d="M280 360 L280 432" marker-end="url(#interceptors-arrow)"/>
+<path class="go-edge go-dashed" data-from="handler" data-to="applied" data-points="408,432 408,360" d="M408 432 L408 360" marker-end="url(#interceptors-arrow)"/>
+<g class="go-label" data-label-box="228 384 44 20"><rect x="228" y="384" width="44" height="20"/><text class="go-tag" x="250" y="398" text-anchor="middle">NEXT</text></g>
+<g class="go-label" data-label-box="416 384 60 20"><rect x="416" y="384" width="60" height="20"/><text class="go-tag" x="446" y="398" text-anchor="middle">RESULT</text></g>
+<g data-node="built-in" data-box="40 80 192 104" data-topics="/en/guide/interceptors/built-in"><rect class="go-surface" x="40" y="80" width="192" height="104" rx="6"/><text class="go-name" x="56" y="118" text-anchor="start">Built-in chain</text><text class="go-detail" x="56" y="138" text-anchor="start">Error handling · validation</text><text class="go-detail" x="56" y="158" text-anchor="start">Resilience: opt in</text></g>
+<g data-node="custom" data-box="248 80 192 104" data-topics="/en/guide/interceptors/custom"><rect class="go-surface" x="248" y="80" width="192" height="104" rx="6"/><text class="go-name" x="264" y="118" text-anchor="start">Custom wrappers</text><text class="go-detail" x="264" y="138" text-anchor="start">Before · after · catch</text><text class="go-detail" x="264" y="158" text-anchor="start">Test behavior</text></g>
+<g data-node="filter" data-box="456 80 192 104" data-topics="/en/guide/interceptors/method-filtering"><rect class="go-surface" x="456" y="80" width="192" height="104" rx="6"/><text class="go-name" x="472" y="118" text-anchor="start">Method filtering</text><text class="go-detail" x="472" y="138" text-anchor="start">Patterns · call kinds</text><text class="go-detail" x="472" y="158" text-anchor="start">Dynamic: custom wrapper</text></g>
+<g data-node="applied" data-box="168 264 352 96" data-topics="/en/guide/interceptors/built-in /en/guide/interceptors/custom /en/guide/interceptors/method-filtering" data-focal=""><rect class="go-surface" x="168" y="264" width="352" height="96" rx="6"/><text class="go-name" x="184" y="298" text-anchor="start">Applied chain</text><text class="go-detail" x="184" y="318" text-anchor="start">Global defaults OR service replacement</text><text class="go-detail" x="184" y="338" text-anchor="start">Error handler first · explicit policy order</text></g>
+<g data-node="handler" data-box="168 432 352 64" data-topics="/en/guide/interceptors/custom"><rect class="go-surface" x="168" y="432" width="352" height="64" rx="6"/><text class="go-name" x="184" y="460" text-anchor="start">RPC handler</text><text class="go-detail" x="184" y="480" text-anchor="start">Business behavior</text></g>
+</svg></section>
+<figcaption>Composition and selection are separate: service options replace the global chain, while method filtering selects applicable wrappers. Each wrapper can act before next and on its result or error.</figcaption></figure></main></body></html>

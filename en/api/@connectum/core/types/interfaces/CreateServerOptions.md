@@ -45,12 +45,14 @@ makes no cross-service calls needs no catalog.
 
 > `optional` **enabledServices?**: readonly `string`[]
 
-Defined in: [packages/core/src/types.ts:536](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L536)
+Defined in: [packages/core/src/types.ts:538](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L538)
 
 Proto `typeName`s to mount **locally** from `services`. A service in
 `services` whose `typeName` is not listed is treated as remote (resolved
 via [CreateServerOptions.remoteResolver](#remoteresolver)). `undefined` mounts every
-provided service locally.
+provided service locally, whether the property is omitted or set to
+`undefined`, so `enabledServicesFromEnv(process.env.X)` can be passed as is.
+An empty list mounts none of them.
 
 ***
 
@@ -174,7 +176,7 @@ const server = createServer({
 
 > `optional` **outgoingInterceptors?**: readonly `Interceptor`[]
 
-Defined in: [packages/core/src/types.ts:567](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L567)
+Defined in: [packages/core/src/types.ts:569](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L569)
 
 Client-side interceptors for every catalog-routed call this server makes:
 `ctx.call` / `ctx.stream` and `server.client()`, whichever route the target
@@ -219,7 +221,7 @@ Server port
 
 > `optional` **propagateHeaders?**: readonly `string`[]
 
-Defined in: [packages/core/src/types.ts:577](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L577)
+Defined in: [packages/core/src/types.ts:579](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L579)
 
 Inbound header names to copy onto every outgoing `ctx.call` / `ctx.stream`.
 Empty by default — no header is propagated implicitly. Explicit
@@ -292,7 +294,7 @@ const server = createServer({
 
 > `optional` **remoteResolver?**: [`RemoteResolver`](../../type-aliases/RemoteResolver.md)
 
-Defined in: [packages/core/src/types.ts:543](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L543)
+Defined in: [packages/core/src/types.ts:545](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L545)
 
 Resolves a service that is not mounted locally to a `Transport`. Consulted
 by `server.client()` (and `ctx.call`) for remote services. Synchronous and

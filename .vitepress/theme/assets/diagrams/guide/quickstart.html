@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Build and verify the first RPC</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Build and verify the first RPC</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Build and verify the first RPC; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 600" role="img" aria-labelledby="quickstart-title quickstart-desc" data-overview="quickstart" data-visual-type="architecture">
+<title id="quickstart-title">Build and verify the first RPC</title>
+<desc id="quickstart-desc">Project setup and protobuf generation feed a typed handler and server, then real clients verify both a greeting and rejection of an invalid request.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="quickstart-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<path class="go-edge" data-from="project" data-to="contract" data-points="312,88 344,88" d="M312 88 L344 88" marker-end="url(#quickstart-arrow)"/>
+<path class="go-edge" data-from="contract" data-to="generated" data-points="504,152 504,196" d="M504 152 L504 196" marker-end="url(#quickstart-arrow)"/>
+<path class="go-edge" data-from="generated" data-to="handler" data-points="344,244 312,244" d="M344 244 L312 244" marker-end="url(#quickstart-arrow)"/>
+<path class="go-edge" data-from="handler" data-to="server" data-points="168,292 168,336" d="M168 292 L168 336" marker-end="url(#quickstart-arrow)"/>
+<path class="go-edge" data-from="client" data-to="server" data-points="376,372 312,372" d="M376 372 L312 372" marker-end="url(#quickstart-arrow)"/>
+<path class="go-edge go-dashed" data-from="server" data-to="client" data-points="312,420 376,420" d="M312 420 L376 420" marker-end="url(#quickstart-arrow)"/>
+<path class="go-edge" data-from="client" data-to="assertions" data-points="520,456 520,500" d="M520 456 L520 500" marker-end="url(#quickstart-arrow)"/>
+<g class="go-label" data-label-box="322 344 44 20"><rect x="322" y="344" width="44" height="20"/><text class="go-tag" x="344" y="358" text-anchor="middle">CALL</text></g>
+<g class="go-label" data-label-box="318 392 52 20"><rect x="318" y="392" width="52" height="20"/><text class="go-tag" x="344" y="406" text-anchor="middle">REPLY</text></g>
+<g data-node="project" data-box="24 24 288 128" data-topics="/en/guide/quickstart-manual"><rect class="go-surface" x="24" y="24" width="288" height="128" rx="6"/><text class="go-name" x="40" y="64" text-anchor="start">Prepare the project</text><text class="go-detail" x="40" y="84" text-anchor="start">Native .ts: Node ≥25.2; tsx path ≥22.13</text><text class="go-detail" x="40" y="104" text-anchor="start">Bun tutorial: ≥1.3.6 · install dependencies</text><text class="go-detail" x="40" y="124" text-anchor="start">ESM · tsconfig · validator · build permissions</text></g>
+<g data-node="contract" data-box="344 24 320 128" data-topics="/en/guide/quickstart-manual"><path class="go-surface" d="M344 24H648L664 40V152H344Z"/><path class="go-fold" d="M648 24V40H664"/><text class="go-name" x="360" y="64" text-anchor="start">Define contract + generation</text><text class="go-detail" x="360" y="84" text-anchor="start">GreeterService.SayHello; name min_len = 1</text><text class="go-detail" x="360" y="104" text-anchor="start">buf.yaml + buf.gen.yaml; fetch dependencies</text><text class="go-detail" x="360" y="124" text-anchor="start">Generate .ts imports and erasable enums</text></g>
+<g data-node="generated" data-box="344 196 320 96" data-topics="/en/guide/quickstart-manual"><path class="go-surface" d="M344 196H648L664 212V292H344Z"/><path class="go-fold" d="M648 196V212H664"/><text class="go-name" x="360" y="230" text-anchor="start">Types + descriptors</text><text class="go-detail" x="360" y="250" text-anchor="start">build:proto produces gen/greeter_pb.ts</text><text class="go-detail" x="360" y="270" text-anchor="start">include_imports includes validation rules</text></g>
+<g data-node="handler" data-box="24 196 288 96" data-topics="/en/guide/quickstart-manual"><rect class="go-surface" x="24" y="196" width="288" height="96" rx="6"/><text class="go-name" x="40" y="230" text-anchor="start">Implement SayHello</text><text class="go-detail" x="40" y="250" text-anchor="start">defineService + response schema</text><text class="go-detail" x="40" y="270" text-anchor="start">Return a greeting</text></g>
+<g data-node="server" data-box="24 336 288 120" data-topics="/en/guide/quickstart-manual" data-focal=""><rect class="go-surface" x="24" y="336" width="288" height="120" rx="6"/><text class="go-name" x="40" y="372" text-anchor="start">Start the server</text><text class="go-detail" x="40" y="392" text-anchor="start">createServer + default validation</text><text class="go-detail" x="40" y="412" text-anchor="start">Healthcheck + Reflection; h2c listener</text><text class="go-detail" x="40" y="432" text-anchor="start">Ready / stopping; automatic shutdown</text></g>
+<g data-node="client" data-box="376 336 288 120" data-topics="/en/guide/quickstart-manual"><rect class="go-surface" x="376" y="336" width="288" height="120" rx="6"/><text class="go-name" x="392" y="372" text-anchor="start">Make a real call</text><text class="go-detail" x="392" y="392" text-anchor="start">grpcurl: list, call and health check</text><text class="go-detail" x="392" y="412" text-anchor="start">curl: restart in HTTP/1.1 mode</text><text class="go-detail" x="392" y="432" text-anchor="start">Use the fully qualified service name</text></g>
+<g data-node="assertions" data-box="376 500 288 76" data-topics="/en/guide/quickstart-manual"><rect class="go-surface" x="376" y="500" width="288" height="76" rx="20"/><text class="go-name" x="392" y="534" text-anchor="start">Verify both outcomes</text><text class="go-detail" x="392" y="554" text-anchor="start">Greeting; empty name: INVALID_ARGUMENT</text></g>
+<text class="go-detail" x="24" y="508" text-anchor="start">Generation: check buf and .ts imports.</text><text class="go-detail" x="24" y="528" text-anchor="start">Calls: check port, service name and TLS.</text><text class="go-detail" x="24" y="548" text-anchor="start">Add TLS, auth and resilience after first call.</text>
+</svg></section>
+<figcaption>grpcurl uses h2c; curl over plaintext HTTP/1.1 requires changing the listener mode and restarting. Verify a greeting and a rejected invalid request before adding TLS, authentication and resilience.</figcaption></figure></main></body></html>

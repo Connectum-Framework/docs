@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Known contracts, selected routes and outgoing policy</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Known contracts, selected routes and outgoing policy</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Known contracts, selected routes and outgoing policy; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 600" role="img" aria-labelledby="service-calls-title service-calls-desc" data-overview="service-calls" data-visual-type="architecture">
+<title id="service-calls-title">Known contracts, selected routes and outgoing policy</title>
+<desc id="service-calls-desc">Generated contract knowledge supports catalog calls whose outgoing policy wraps either a local transport or a remote resolver transport across communication patterns and deployment roles.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="service-calls-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<path class="go-edge" data-from="catalog" data-to="caller" data-points="296,76 336,76" d="M296 76 L336 76" marker-end="url(#service-calls-arrow)"/>
+<path class="go-edge" data-from="caller" data-to="policy" data-points="500,128 500,164 424,164 424,196" d="M500 128 L500 156 Q500 164 492 164 L432 164 Q424 164 424 172 L424 196" marker-end="url(#service-calls-arrow)"/>
+<path class="go-edge go-dashed" data-from="patterns" data-to="policy" data-points="192,236 216,236" d="M192 236 L216 236" marker-end="url(#service-calls-arrow)"/>
+<path class="go-edge go-dashed" data-from="example" data-to="dispatch" data-points="580,304 580,396 472,396" d="M580 304 L580 388 Q580 396 572 396 L472 396" marker-end="url(#service-calls-arrow)"/>
+<path class="go-edge" data-from="policy" data-to="dispatch" data-points="344,284 344,344" d="M344 284 L344 344" marker-end="url(#service-calls-arrow)"/>
+<path class="go-edge" data-from="dispatch" data-to="local" data-points="280,424 280,456 140,456 140,488" d="M280 424 L280 448 Q280 456 272 456 L148 456 Q140 456 140 464 L140 488" marker-end="url(#service-calls-arrow)"/>
+<path class="go-edge" data-from="dispatch" data-to="remote" data-points="408,424 408,456 528,456 528,488" d="M408 424 L408 448 Q408 456 416 456 L520 456 Q528 456 528 464 L528 488" marker-end="url(#service-calls-arrow)"/>
+<g data-node="catalog" data-box="24 24 272 104" data-topics="/en/guide/service-communication/service-catalog /en/reference/service-catalog"><path class="go-surface" d="M24 24H280L296 40V128H24Z"/><path class="go-fold" d="M280 24V40H296"/><text class="go-name" x="40" y="62" text-anchor="start">Generated service catalog</text><text class="go-detail" x="40" y="82" text-anchor="start">Compile-time contract knowledge</text><text class="go-detail" x="40" y="102" text-anchor="start">Runtime descriptors; no endpoints</text></g>
+<g data-node="caller" data-box="336 24 328 104" data-topics=""><rect class="go-surface" x="336" y="24" width="328" height="104" rx="6"/><text class="go-name" x="352" y="62" text-anchor="start">Catalog call</text><text class="go-detail" x="352" y="82" text-anchor="start">ctx.call / ctx.stream</text><text class="go-detail" x="352" y="102" text-anchor="start">Inherit handler deadline and signal</text></g>
+<g data-node="patterns" data-box="24 176 168 128" data-topics="/en/guide/service-communication/patterns"><rect class="go-surface" x="24" y="176" width="168" height="128" rx="6"/><text class="go-name" x="40" y="216" text-anchor="start">Call patterns</text><text class="go-detail" x="40" y="236" text-anchor="start">Chains and fan-out</text><text class="go-detail" x="40" y="256" text-anchor="start">Streams + cancellation</text><text class="go-detail" x="40" y="276" text-anchor="start">Translate partial errors</text></g>
+<g data-node="policy" data-box="216 196 256 88" data-topics="/en/guide/service-communication/client-interceptors" data-focal=""><rect class="go-surface" x="216" y="196" width="256" height="88" rx="6"/><text class="go-name" x="232" y="226" text-anchor="start">Outgoing client policy</text><text class="go-detail" x="232" y="246" text-anchor="start">Auth, traces and client-safe retry</text><text class="go-detail" x="232" y="266" text-anchor="start">Once on local + remote routes</text></g>
+<g data-node="example" data-box="496 176 168 128" data-topics="/en/guide/service-communication/routing-example"><rect class="go-surface" x="496" y="176" width="168" height="128" rx="6"/><text class="go-name" x="512" y="216" text-anchor="start">Runnable routing</text><text class="go-name" x="512" y="236" text-anchor="start">example</text><text class="go-detail" x="512" y="256" text-anchor="start">Together / split roles</text><text class="go-detail" x="512" y="276" text-anchor="start">No route: Unavailable</text></g>
+<g data-node="dispatch" data-box="216 344 256 80" data-topics="/en/guide/service-communication/resolvers" data-focal=""><rect class="go-surface" x="216" y="344" width="256" height="80" rx="6"/><text class="go-name" x="232" y="380" text-anchor="start">Choose a route</text><text class="go-detail" x="232" y="400" text-anchor="start">Mounted local target wins</text></g>
+<g data-node="local" data-box="24 488 232 88" data-topics=""><rect class="go-surface" x="24" y="488" width="232" height="88" rx="6"/><text class="go-name" x="40" y="518" text-anchor="start">Local transport</text><text class="go-detail" x="40" y="538" text-anchor="start">Dispatches in-process</text><text class="go-detail" x="40" y="558" text-anchor="start">Remote resolver is bypassed</text></g>
+<g data-node="remote" data-box="392 488 272 88" data-topics="/en/guide/service-communication/resolvers /en/guide/service-communication/resolver-configuration"><rect class="go-surface" x="392" y="488" width="272" height="88" rx="6"/><text class="go-name" x="408" y="518" text-anchor="start">Remote resolver</text><text class="go-detail" x="408" y="538" text-anchor="start">Map / DNS / env → transport</text><text class="go-detail" x="408" y="558" text-anchor="start">Cache, endpoint hints and mocks</text></g>
+</svg></section>
+<figcaption>The catalog supplies types and descriptors, without deployment addresses. Outgoing policy wraps each catalog call once, on local and remote routes. Locally mounted targets bypass the remote resolver.</figcaption></figure></main></body></html>
