@@ -69,6 +69,12 @@ revised or accompanied by a documented carve-out in the spec.
    telemetry you compare is not empty. A second `ctx.metrics.flush()` returns
    only what was recorded since the previous one, and `flush()` after the run
    was disposed throws.
+
+   The opt-in `telemetry: { shutdownProvider }` option makes the driver do that
+   sequence around every run: it resets the `@connectum/otel` provider and
+   registers that run's span and metric collectors, so the second and later
+   scenarios in a process record spans too (see
+   [Spans and metrics of `@connectum/otel` in a test](/en/packages/testing#isolated-telemetry)).
 2. **Parity suite** — aggregated by `scripts/parity-suite.sh`, which runs the
    parity tests of `@connectum/testing` (interceptors, validation, streaming,
    error mapping, coexistence, request admission, reflection),
