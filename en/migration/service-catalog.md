@@ -410,6 +410,15 @@ expose only the named one. To mount none deliberately, pass `enabledServices: []
 directly. The helper cannot express that choice through an env value. See the
 [local activation table](/en/guide/service-communication/service-catalog)
 for the configuration boundary.
+## 8. 1.3.0 — `send()` after `close()` on a stream handle fails
+
+> Applies to 1.3.0.
+
+A `send()` on a `ctx.stream()` handle for a client-streaming or bidi call (and on the same handle from `createCatalogClient`) after `close()` used to be discarded without any signal. From 1.3.0 it throws a `ConnectError` with `Code.FailedPrecondition`; the message names the call and says the send half is already closed.
+
+**Action — only if a handler sent after closing.** Move every `send()` before `close()`, or open a new handle for the later messages. Code that never sends after `close()` is unaffected, and a second `close()` stays harmless.
+
+Not changed: the `responses` iterable of a bidi handle is single-use. Two loops over it at the same time split the messages between them, and a loop started after another has ended or left with `break` receives nothing. See [Streaming calls](/en/reference/service-catalog#streaming-calls).
 
 ## Migration checklist
 
@@ -437,3 +446,5 @@ for the configuration boundary.
 - [ ] On 1.3.0, remove any signer, OpenTelemetry client or retry interceptor you
       copied onto the resolver's transports; keep that policy only in
       `outgoingInterceptors` (see section 6).
+- [ ] On 1.3.0, check that no handler calls `send()` on a client-streaming or bidi
+      stream handle after `close()`; it now throws `FailedPrecondition` (see section 7).

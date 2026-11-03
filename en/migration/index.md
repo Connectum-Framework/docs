@@ -85,6 +85,8 @@ Each item applies only if your code or configuration matches it.
 - If a script passes the `connectum` CLI a flag it does not define, runs `init --runtime bun --node-exec ...`, runs `generate service` outside a project (or `--with-events` without `@connectum/events`), or generates the service catalog without `target=ts` or with `output_file` twice, follow [CLI and catalog plugin input is checked](/en/migration/cli-input-checks): each of these now fails with a message instead of being accepted silently.
 - If a test reaches a `createTestServer()` server from another container or host, passes it services, interceptors or protocols of the wrong type, or reads earlier exports from a later `InMemoryMetricCollector.flush()`, follow [Testing helper changes](/en/migration/testing-helpers): the test server listens on `127.0.0.1` (pass `host: '0.0.0.0'`), wrong types no longer compile and are rejected at runtime, and `flush()` returns only new data.
 - If you set `GRACEFUL_SHUTDOWN_TIMEOUT_MS` empty or fractional, you depend on a failed shutdown hook skipping its dependents, or you call `stop()` or send a signal while `start()` is running, follow [Shutdown behavior changes](/en/migration/shutdown-behavior): every shutdown hook now runs and `stop()` waits for all of them.
+- If a handler calls `send()` on a `ctx.stream()` handle after `close()`, follow section 8 of [Migrating to the Service Catalog](/en/migration/service-catalog): it now throws `FailedPrecondition` instead of dropping the message.
+- If your server is created without `readMaxBytes`, expect one warning at startup and set the option as described in [When no limit is set](/en/guide/security/request-admission#when-no-limit-is-set): the default limit is unchanged.
 
 ## Focused Migrations
 

@@ -355,6 +355,9 @@ const server = createServer({
   port: 5000,
   // grpcurl uses HTTP/2; plaintext HTTP/1.1 is the default transport.
   allowHTTP1: false,
+  // Largest request message a service accepts. Without it the server logs a
+  // warning at startup, because the default is the transport's 4 GiB cap.
+  readMaxBytes: 1024 * 1024,
   protocols: [Healthcheck({ httpEnabled: true }), Reflection()],
   interceptors: createDefaultInterceptors(),
   shutdown: { autoShutdown: true },
@@ -373,6 +376,8 @@ server.on('error', (err) => console.error(err));
 
 await server.start();
 ```
+
+`readMaxBytes` caps each request message. A server created without it accepts messages up to 4294967295 bytes and writes one warning at startup; see [When no limit is set](/en/guide/security/request-admission#when-no-limit-is-set).
 
 ## 6. Run & Test
 
