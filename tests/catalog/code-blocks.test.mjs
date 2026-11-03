@@ -21,12 +21,9 @@ test('every catalog import example uses a native highlighted TypeScript block', 
         assert.equal((html.match(/class="line-number"/g) ?? []).length, layout.code.split('\n').length);
         const code = html
             .match(/<code>([\s\S]*?)<\/code>/)[1]
-            .replace(/<[^>]+>/g, '')
-            .replace(/&#39;/g, "'")
-            .replace(/&quot;/g, '"')
-            .replace(/&gt;/g, '>')
-            .replace(/&lt;/g, '<')
-            .replace(/&amp;/g, '&');
+            .split(/<[^>]*>/)
+            .join('')
+            .replace(/&(#39|quot|gt|lt|amp);/g, (_, entity) => ({ '#39': "'", quot: '"', gt: '>', lt: '<', amp: '&' })[entity]);
         assert.equal(code, layout.code, `${layout.id}: highlighting changed the executable source`);
     }
 });

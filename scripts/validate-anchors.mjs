@@ -39,12 +39,14 @@ function decode(value) {
 }
 
 function decodeEntities(value) {
-    return value
-        .replaceAll('&amp;', '&')
-        .replaceAll('&quot;', '"')
-        .replaceAll('&#39;', "'")
-        .replaceAll('&lt;', '<')
-        .replaceAll('&gt;', '>');
+    // One pass over the input: an entity produced by decoding (`&amp;lt;`
+    // becomes the text `&lt;`) is never decoded a second time.
+    const named = { amp: '&', quot: '"', apos: "'", lt: '<', gt: '>' };
+    return value.replace(/&(#\d+|#x[\da-f]+|amp|lt|gt|quot|apos);/gi, (match, entity) => {
+        if (entity[0] !== '#') return named[entity.toLowerCase()];
+        const code = entity[1].toLowerCase() === 'x' ? Number.parseInt(entity.slice(2), 16) : Number.parseInt(entity.slice(1), 10);
+        return code <= 0x10ffff ? String.fromCodePoint(code) : match;
+    });
 }
 
 const pages = new Map();

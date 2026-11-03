@@ -10,15 +10,15 @@ import loader from '../../.vitepress/interceptors/showcase.data.ts';
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 const data = await loader.load();
 const recording = JSON.parse(read('.vitepress/interceptors/recording.json'));
+// Tags are removed first, then entities are decoded in a single pass, so a
+// decoded `<` or `&` is never reinterpreted as markup or as another entity.
+const entities = { '#39': "'", quot: '"', gt: '>', lt: '<', amp: '&' };
 const decoded = (html) =>
     html
         .match(/<code>([\s\S]*?)<\/code>/)[1]
-        .replace(/<[^>]+>/g, '')
-        .replace(/&#39;/g, "'")
-        .replace(/&quot;/g, '"')
-        .replace(/&gt;/g, '>')
-        .replace(/&lt;/g, '<')
-        .replace(/&amp;/g, '&');
+        .split(/<[^>]*>/)
+        .join('')
+        .replace(/&(#39|quot|gt|lt|amp);/g, (_, entity) => entities[entity]);
 
 test('Interceptors starts with a successful executable composition and static run', async () => {
     assert.equal(handlerOutcomes[0].id, 'success');

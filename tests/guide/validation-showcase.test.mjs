@@ -13,15 +13,15 @@ const root = new URL('../../', import.meta.url);
 const read = (path) => readFileSync(new URL(path, root), 'utf8');
 const recording = JSON.parse(read('.vitepress/validation/recording.json'));
 const data = await loader.load();
+// Tags are removed first, then entities are decoded in a single pass, so a
+// decoded `<` or `&` is never reinterpreted as markup or as another entity.
+const entities = { '#39': "'", quot: '"', gt: '>', lt: '<', amp: '&' };
 const decoded = (html) =>
     html
         .match(/<code>([\s\S]*?)<\/code>/)[1]
-        .replace(/<[^>]+>/g, '')
-        .replace(/&#39;/g, "'")
-        .replace(/&quot;/g, '"')
-        .replace(/&gt;/g, '>')
-        .replace(/&lt;/g, '<')
-        .replace(/&amp;/g, '&');
+        .split(/<[^>]*>/)
+        .join('')
+        .replace(/&(#39|quot|gt|lt|amp);/g, (_, entity) => entities[entity]);
 
 test('the initial form and static examples begin with an actual successful check', () => {
     assert.deepEqual(data.initialInput, { sku: 'A-1', quantity: '2' });
