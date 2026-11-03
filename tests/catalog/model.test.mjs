@@ -73,7 +73,7 @@ test('the complete reference retains all technical topics and the version bounda
     ]) {
         assert.ok(reference.includes(topic), `missing full reference topic: ${topic}`);
     }
-    for (const boundary of ['Upcoming in 1.3.0', 'client-streaming', 'cause']) assert.ok(reference.includes(boundary), `missing boundary: ${boundary}`);
+    for (const boundary of ['Since 1.3.0', 'client-streaming', 'cause']) assert.ok(reference.includes(boundary), `missing boundary: ${boundary}`);
     assert.ok(reference.includes('is **not** AND-linked'));
     const resolver = readFileSync(new URL('../../en/guide/service-communication/resolvers.md', import.meta.url), 'utf8');
     const example = readFileSync(new URL('../../en/guide/service-communication/routing-example.md', import.meta.url), 'utf8');

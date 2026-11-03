@@ -130,7 +130,7 @@ export const diagrams = [
         title: 'Scaffolding commands and owned files',
         desc: 'The builder and three CLI workflows create an editable project, add service files or fetch reflected client contracts, with distinct setup and registration requirements.',
         caption:
-            'The builder previews a pinned generator; documented 1.3 options and descriptor exports are not available in npm 1.2.x. Optional modules still need their broker, auth configuration and telemetry backend.',
+            'The builder previews a pinned generator. Optional modules still need their broker, auth configuration and telemetry backend.',
         body: [
             edge(
                 [
@@ -466,7 +466,7 @@ export const diagrams = [
         title: 'Reflection setup, queries and exposure',
         desc: 'Reflection indexes mounted services and their imported descriptors once per successful materialization, shares the index across routers, and answers external tool queries at a known server address.',
         caption:
-            'Reflection exposes schemas at one known address; it does not locate servers or replace the generated catalog. Protocol order controls which mounted services appear. Disable or restrict production exposure.',
+            'Reflection exposes schemas at one known address; it does not locate servers or replace the generated catalog. It lists every mounted service, wherever it stands in the protocols list. Disable or restrict production exposure.',
         body: [
             edge(
                 [

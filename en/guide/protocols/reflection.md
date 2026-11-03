@@ -17,7 +17,7 @@ lets tools such as grpcurl ask that server for its service and message schemas.
 
 <figure class="technical-diagram" data-guide-overview="reflection" aria-label="Reflection setup, queries and exposure">
 <GuideOverview :source="overview" />
-<figcaption>Reflection exposes schemas at one known address; it does not locate servers or replace the generated catalog. It lists every mounted service, wherever it stands in `protocols`. Disable or restrict production exposure.</figcaption>
+<figcaption>Reflection exposes schemas at one known address; it does not locate servers or replace the generated catalog. It lists every mounted service, wherever it stands in the protocols list. Disable or restrict production exposure.</figcaption>
 </figure>
 
 ## Add it explicitly

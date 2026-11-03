@@ -513,7 +513,7 @@ export const diagrams = [
         title: 'Local calls retain the application boundary',
         desc: 'Local client APIs exchange copied protobuf messages through shared admission and server middleware for all four RPC kinds, with cooperative cancellation and explicit transport, security and telemetry limits.',
         caption:
-            'Local and HTTP clients can coexist. server.client() selects a local service or configured remoteResolver; local tests do not establish wire, TLS or proxy guarantees. The documented 1.3 stop-abort and parked-yield fixes are not yet published.',
+            'Local and HTTP clients can coexist. server.client() selects a local service or configured remoteResolver; local tests do not establish wire, TLS or proxy guarantees.',
         body: [
             zone(24, 24, 640, 320, 'One Server / monolith, BFF or tests'),
             edge(
