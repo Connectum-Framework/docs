@@ -17,10 +17,11 @@ flowchart TD
     Timeout --> Bulkhead[bulkhead]
     Bulkhead --> Breaker[circuitBreaker]
     Breaker --> Retry[retry]
-    Retry --> Fallback[fallback]
-    Fallback --> Validation[validation]
+    Retry --> Validation[validation]
     Validation --> Serializer[serializer]
 ```
+
+This is the order without a `fallback`. When you enable a `fallback`, it moves out together with validation, in front of the circuit breaker and retry (see [Fallback position](#fallback-position)).
 
 | # | Interceptor | Purpose | Default |
 |---|-------------|---------|---------|
@@ -29,11 +30,11 @@ flowchart TD
 | 3 | **bulkhead** | Limits concurrent requests | **Opt-in** (capacity 10, queue 10 when enabled) |
 | 4 | **circuitBreaker** | Prevents cascading failures (outbound pattern, see below) | **Opt-in** (threshold 5 when enabled) |
 | 5 | **retry** | Retries transient failures with exponential backoff and jitter (see [Retry delay](#retry-delay)) | **Opt-in** (3 retries when enabled) |
-| 6 | **fallback** | Graceful degradation | **Opt-in** (requires an options object with a handler; `true` is refused) |
-| 7 | **validation** | Validates via `@connectrpc/validate` | Enabled |
-| 8 | **serializer** | JSON serialization for protobuf | **Opt-in** |
+| 6 | **validation** | Validates via `@connectrpc/validate` | Enabled |
+| 7 | **serializer** | JSON serialization for protobuf | **Opt-in** |
+| n/a | **fallback** | Graceful degradation; stands outside `circuitBreaker` and `retry` (see [Fallback position](#fallback-position)) | **Opt-in** (requires an options object with a handler; `true` is refused) |
 
-The order is deliberate: `errorHandler` is outermost (catches everything), `serializer` is innermost (closest to the handler). The order applies to whichever interceptors you enable. In particular, `circuitBreaker` wraps `retry`, so one logical request increments the failure counter at most once regardless of retry attempts.
+The order is deliberate: `errorHandler` is outermost (catches everything), `serializer` is innermost (closest to the handler). The order applies to whichever interceptors you enable. In particular, `circuitBreaker` wraps `retry`, so one logical request increments the failure counter at most once regardless of retry attempts. The fallback is the one interceptor whose place depends on the others: it stands in front of both, see [Fallback position](#fallback-position).
 
 ::: warning No hidden behavioral logic
 Only structural interceptors (errorHandler, validation) are enabled by default. Resilience interceptors (timeout, bulkhead, circuitBreaker, retry) alter request behavior and must be enabled explicitly with `true` or an options object.
@@ -222,6 +223,29 @@ createDefaultInterceptors({ fallback: { handler: () => ({ items: [] }) } }); // 
 createDefaultInterceptors({ fallback: true });  // TypeError: fallback must be false or an options object with a handler, got true
 createDefaultInterceptors({ timeout: null });   // TypeError: timeout must be true, false or an options object, got null
 ```
+
+### Fallback position {#fallback-position}
+
+The fallback stands outside `circuitBreaker` and `retry`, and inside `timeout` and `bulkhead`. Validation stands directly outside the fallback, so a request that breaks a validation rule is rejected with `InvalidArgument` and never answered by the fallback value. With a `fallback` the chain is:
+
+```mermaid
+flowchart TD
+    Error[errorHandler] --> Timeout[timeout]
+    Timeout --> Bulkhead[bulkhead]
+    Bulkhead --> Validation[validation]
+    Validation --> Fallback[fallback]
+    Fallback --> Breaker[circuitBreaker]
+    Breaker --> Retry[retry]
+    Retry --> Serializer[serializer]
+```
+
+The order has three consequences:
+
+- The retries run first. With `retry: { maxRetries: 3 }` a handler that keeps failing with `Unavailable` is called four times, and only then does the `handler` of the fallback produce the response. A call that succeeds on a retry is served as it is, and the fallback is not asked.
+- The circuit breaker sees the failures behind the fallback and opens at its threshold. While it is open, the fallback answers the refused calls without calling the service handler, and its `handler` receives the `Unavailable` "Circuit breaker is open" error.
+- The `handler` of the fallback receives the final error, after the retries are exhausted.
+
+A fallback placed inside `circuitBreaker` or `retry` would answer the first failure with a value: no retry would run and the breaker would never record a failure. If you compose the interceptors yourself instead of using `createDefaultInterceptors()`, list `createFallbackInterceptor` before `createCircuitBreakerInterceptor` and `createRetryInterceptor`, and put the validation interceptor before the fallback. A chain without a `fallback` keeps validation after `retry`.
 
 ### Refusals of access are not replaced {#fallback-access-refusals}
 
