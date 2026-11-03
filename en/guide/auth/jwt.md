@@ -46,10 +46,10 @@ when upgrading.
 With `jwksUri`, the interceptor keeps the fetched key set in memory and refetches it by these rules (the defaults are those of the `jose` library):
 
 - A token signed with a key that is **not** in the cached key set triggers a refetch only when the cooldown has passed since the last successful fetch (30 seconds by default). Inside the cooldown that token is rejected as `Unauthenticated`.
-- The cached key set expires after 10 minutes by default. Until then a key that the identity provider has already retired keeps verifying.
+- The cached key set also expires after 10 minutes by default (`cacheMaxAge`), whatever the cooldown says: the next call after that fetches it again. Until a refetch happens, by expiry or by an unknown key, a key that the identity provider has already retired keeps verifying.
 - A request for the key set is aborted after 5 seconds by default.
 
-After a rotation this means a window of up to 30 seconds in which tokens signed with the **new** key are rejected, while tokens signed with the **retired** key are still accepted from the cache. Once the cooldown has passed, the first token with the new key refetches the key set and the situation reverses.
+After a rotation, tokens signed with the **new** key are rejected for up to 30 seconds, while tokens signed with the **retired** key are still accepted from the cache. Neither window is fixed: the first token with the new key after the cooldown, or the first call after the cache expired, refetches the key set, and from then on the retired key is rejected. The 30 seconds and the 10 minutes are upper bounds, not guarantees.
 
 A key set that cannot be fetched (the identity provider is down, answers with an error status, with a body that is not JSON, or does not answer within the timeout) ends the call with `Unauthenticated` and the text `Authentication failed`, exactly like a bad token. The interceptor does not tell the two apart for the client and writes no log line for it. A failed fetch is not cached: the next request that needs the key set tries again. An empty key set (`{"keys":[]}`) is different: it is a successful fetch, so it is cached, and a key published afterwards is accepted only after the cooldown has passed.
 
@@ -69,7 +69,7 @@ const jwtAuth = createJwtAuthInterceptor({
 | Option | Default | Effect | Range |
 |---|---|---|---|
 | `cooldownDuration` | `30000` | Length of the window after a rotation in which a token with an unknown key is rejected without a refetch. `0` refetches for every unknown key. | finite number, 0 or more |
-| `cacheMaxAge` | `600000` | How long a retired key keeps verifying. `0` fetches the key set on every call; `Infinity` never expires the cache. | number, 0 or more |
+| `cacheMaxAge` | `600000` | Upper bound on how long a retired key keeps verifying (an earlier refetch ends it). `0` fetches the key set on every call; `Infinity` never expires the cache. | number, 0 or more |
 | `timeoutDuration` | `5000` | How long one request waits for the key set before it ends as `Unauthenticated`. | whole number, 1 to 2147483647 |
 
 ::: warning
