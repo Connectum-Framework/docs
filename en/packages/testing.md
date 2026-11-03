@@ -54,6 +54,11 @@ await withTestServer({ services: [greeterService] }, async (server) => {
 | `createTestServer` | Create an isolated Connectum server for a test. |
 | `withTestServer` | Manage test-server setup and teardown. |
 | `createLocalClient` | Exercise handlers through the in-process transport. |
+| `createMockContext`, `mockService`, `mockResolver` | Unit-test a handler's `ctx.call` / `ctx.stream` against canned services. |
+| `transportParityTest` (`@connectum/testing/parity`) | Run one scenario over HTTP/2 and in-process and compare the outcomes. |
+| `InMemorySpanCollector`, `InMemoryMetricCollector` | Collect spans and metrics in memory for assertions. |
+
+Test server options, mock context behavior and the parity comparison are described in the [testing guide](/en/guide/testing#test-server).
 
 ## Learn / Configure / API Reference {#api-reference}
 

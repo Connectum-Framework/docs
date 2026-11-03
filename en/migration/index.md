@@ -83,6 +83,7 @@ Each item applies only if your code or configuration matches it.
 - If code matches `Unavailable` on a `ctx.call` to a service that is not mounted on a server without a `remoteResolver`, or your catalog configuration holds mistakes that used to be accepted (a non-positive `timeoutMs`, an invalid `propagateHeaders` name, an `enabledServices` entry with no matching service, a catalog key that differs from its `typeName`, the same service defined twice), follow [Service catalog checks](/en/migration/catalog-checks).
 - If you pass `handlerTimeout` of `0` or a fraction, a `drainTimeout` that is `NaN`, negative or above 2147483647 ms, a `retry` delay or `multiplier` outside the documented range, an unknown `retry.backoff`, or a `dlq` without a non-empty `topic`, or if you count `dlq.error=AbortError` events on shutdown, follow [Event bus option checks](/en/migration/events-option-checks): these now throw when the bus or the middleware is created, a stop returns an event that waits between retries to the broker instead of dead-lettering it, and a failed dead-letter publish reaches the `observer`.
 - If a script passes the `connectum` CLI a flag it does not define, runs `init --runtime bun --node-exec ...`, runs `generate service` outside a project (or `--with-events` without `@connectum/events`), or generates the service catalog without `target=ts` or with `output_file` twice, follow [CLI and catalog plugin input is checked](/en/migration/cli-input-checks): each of these now fails with a message instead of being accepted silently.
+- If a test reaches a `createTestServer()` server from another container or host, passes it services, interceptors or protocols of the wrong type, or reads earlier exports from a later `InMemoryMetricCollector.flush()`, follow [Testing helper changes](/en/migration/testing-helpers): the test server listens on `127.0.0.1` (pass `host: '0.0.0.0'`), wrong types no longer compile and are rejected at runtime, and `flush()` returns only new data.
 
 ## Focused Migrations
 
@@ -127,6 +128,13 @@ Each item applies only if your code or configuration matches it.
   `KafkaAdapter()` throws for an empty or non-array `brokers`, an empty `clientId`, a
   `sessionTimeout` that is not above 3000 ms, an invalid `retry` and an unknown
   `sasl.mechanism` (**breaking** for services that pass such options).
+- [Testing helper changes](/en/migration/testing-helpers) — from 1.3,
+  `createTestServer()` listens on `127.0.0.1` (pass `host: '0.0.0.0'` to reach it from
+  another container or host) and rejects services, interceptors and protocols of the
+  wrong type, `InMemoryMetricCollector.flush()` returns only what was recorded since the
+  previous flush, and the default parity comparison ignores protocol headers and the
+  measured time of duration histograms (**breaking** for tests that rely on the old
+  listening address or on a cumulative `flush()`).
 - [In-process calls on shutdown](/en/migration/in-process-shutdown) — from 1.3,
   `server.stop()` aborts `context.signal` of in-flight in-process calls exactly
   like HTTP calls.
