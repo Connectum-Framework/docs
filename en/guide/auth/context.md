@@ -126,10 +126,23 @@ const jwtAuth = createJwtAuthInterceptor({
 ```
 
 To filter which claims are written into `x-auth-claims`, use `propagatedClaims` on
-`createAuthInterceptor` (generic) or `createSessionAuthInterceptor`. It is not an
-option of `createJwtAuthInterceptor` or `createGatewayAuthInterceptor`; enabling
-their propagation writes all claims that fit the header limit. The session
-snippet uses the validated `mapSession` helper from the [session guide](/en/guide/auth/session):
+`createJwtAuthInterceptor`, `createAuthInterceptor` (generic) or
+`createSessionAuthInterceptor`. Only the listed claim names are written, and the
+header is left out when none of them is in the identity. Without the option every
+claim that fits the header limit is written. The value must be an array of
+non-empty strings; anything else, a bare string included, throws when the
+interceptor is created. It is not an option of `createGatewayAuthInterceptor`:
+enabling its propagation writes all claims that fit the header limit.
+
+```typescript
+const jwtAuth = createJwtAuthInterceptor({
+  jwksUri: '...',
+  propagateHeaders: true,
+  propagatedClaims: ['org_id'], // email, phone and other claims stay out of x-auth-claims
+});
+```
+
+The session snippet uses the validated `mapSession` helper from the [session guide](/en/guide/auth/session):
 
 ```typescript
 const sessionAuth = createSessionAuthInterceptor({
