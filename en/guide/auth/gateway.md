@@ -20,7 +20,7 @@ flowchart TD
     Trust -->|"yes"| Subject{"Subject header present?"}
     Subject -->|"no"| E2["Unauthenticated:<br/>Missing subject header"]
     Subject -->|"yes"| Build["Build AuthContext from headerMapping"]
-    Build --> Strip2["Strip the mapped and trust headers"]
+    Build --> Strip2["Strip the mapped, trust and<br/>x-auth-* headers"]
     Strip2 --> Run["Run the handler with<br/>the AuthContext"]
 
     class E1 critical
@@ -48,9 +48,14 @@ const gatewayAuth = createGatewayAuthInterceptor({
 
 `headerMapping` describes how trusted gateway headers become an `AuthContext`.
 `trustSource` checks a header value before accepting the identity fields. The
-example uses a shared secret; the matcher also supports IPv4 CIDR values, which
-still rely on a trusted upstream setting the header rather than a socket peer
-check. An address in the header is read strictly: exactly four decimal octets from
+example uses a shared secret. The matcher can also read IPv4 CIDR values, but a block is
+matched against a header that a caller reaching the service directly chooses itself, so
+`10.0.0.0/8` admits anyone who sends `10.9.9.9`. Creating the interceptor with a CIDR
+block therefore throws unless you set `trustSource.allowCallerControlledCidr: true`; set it only
+when a trusted upstream overwrites that header on every request and no client can reach
+the service without passing through it. Trust based on the address of the connection
+belongs in the mTLS and mesh-identity helpers. Shared secrets are compared through
+fixed-size digests with `timingSafeEqual`. With the option set, an address in the header is read strictly: exactly four decimal octets from
 0 to 255 without leading zeros (`10.0.0.1`), and a CIDR value is such an address, a
 `/` and a prefix of 0 to 32 (`10.0.0.0/8`). A header value that is not an address, or an
 `expectedValues` entry that is not a well-formed block, matches only if it is
@@ -82,7 +87,7 @@ A `roles` value that is a JSON array is used as sent (items that are not strings
 |--------|------|---------|-------------|
 | `defaultType` | `string` | `'gateway'` | Credential type used when the gateway sends no type header |
 
-`defaultType` becomes `AuthContext.type` and, with `propagateHeaders`, the `x-auth-type` header, so a value containing NUL, CR, LF or a character above U+00FF throws when the interceptor is created.
+`defaultType` becomes `AuthContext.type` and, with `propagateHeaders`, the `x-auth-type` header, so a value containing NUL, CR or LF throws when the interceptor is created. With `propagateHeaders` on, an empty value, a value longer than 128 characters and a value with a lone surrogate throw too, naming `defaultType`, instead of failing each request that falls back to it; with it off they are accepted. Every header name you configure (`headerMapping` values, `trustSource.header`, `stripHeaders`) must be a valid HTTP header name, or creating the interceptor throws and names the option.
 
 ### trustSource Check
 
@@ -99,17 +104,27 @@ If the header is missing or the value does not match any of the `expectedValues`
 
 ## Header Stripping
 
-On an admitted request, the interceptor deletes the mapped headers, the trust
-header, and any additional `stripHeaders`. It also deletes them on methods listed
-in `skipMethods`, even though authentication is skipped there. Failed trust or
+On an admitted request, the interceptor reads the identity from the mapped headers,
+then deletes the mapped headers, the trust header, any additional `stripHeaders`,
+and every standard `x-auth-*` identity header (`x-auth-subject`, `x-auth-type`,
+`x-auth-name`, `x-auth-roles`, `x-auth-scopes`, `x-auth-claims`, `x-auth-encoding`), as the JWT,
+generic and session interceptors do. It also deletes them on methods listed in
+`skipMethods`, even though authentication is skipped there. Failed trust or
 subject checks stop the call before downstream interceptors run.
+
+A client-supplied standard `x-auth-*` identity header therefore does not reach the next hop, whether
+or not it is one of the mapped headers. This matters with `propagateHeaders`: it
+writes only the identity fields that have a value, so a forged `x-auth-roles`
+would otherwise survive for a user without roles. A gateway that maps the
+`x-auth-*` names itself (for example a service behind another Connectum service)
+still reads them, because the identity is read before the headers are deleted.
 
 With the default `propagateHeaders: false`, the deleted headers remain absent.
 Enabling `propagateHeaders` writes the verified identity back using the standard
 `x-auth-*` names, including all non-empty claims that fit the header limit. This
 option does not restore the gateway trust secret. Choose it only when the next
 hop needs those fields; gateway authentication has no `propagatedClaims` filter.
-An identity that cannot be written into headers (NUL, CR, LF or a character above U+00FF in the subject, type, name or a scope) is rejected with `Unauthenticated`; see [Auth Context](/en/guide/auth/context#propagated-headers).
+An identity that cannot be written into headers (NUL, CR or LF in the subject, type, name or a scope, an empty scope or a scope with a space, or a value that does not fit its header) is rejected with `Unauthenticated`. When the gateway reads the standard `x-auth-*` names it also decodes text that another service wrote as `utf-8''` plus percent-encoded UTF-8 (only when the sender set `x-auth-encoding: percent-utf8`). For the standard names it also refuses NUL, CR and LF in a text and removes other C0 controls and DEL from the subject, type and name, as `parseAuthHeaders` does; a header you map under a custom name is taken as the gateway sent it. For the standard names it also refuses a subject over 512 characters, a type over 128, a name over 256, and a roles or scopes header over 8192 characters, whether or not `propagateHeaders` is on; a header mapped under a custom name is taken as sent and is refused only when the identity is propagated. The interceptor rejects a claims header over 8192 characters, whatever its name, instead of reading it as empty; see [Auth Context](/en/guide/auth/context#propagated-headers).
 
 `skipMethods` lists methods and `Service/*` patterns; the catch-all `'*'` is refused when the interceptor is created (see [Method Patterns](/en/guide/auth/authorization#method-patterns)).
 
@@ -158,7 +173,10 @@ Use a local test secret and call the protected method with both that marker and
 the mapped subject. Repeat with no marker, a wrong marker, and no subject; each
 must return `Code.Unauthenticated`. Supplying identity headers alone must not
 authenticate the caller. Inspect the headers seen by the handler to confirm the
-mapped and trust headers are absent with default propagation settings.
+mapped and trust headers are absent with default propagation settings. Send the
+same request with forged `x-auth-roles`, `x-auth-scopes`, `x-auth-name` and
+`x-auth-claims` headers for a user without those fields: the handler, and any
+service the headers are forwarded to, must not see them.
 
 If a client gateway interceptor is rejected, compare its fixed `x-auth-subject`
 and `x-auth-roles` names with the server's mapping. A trust header match does

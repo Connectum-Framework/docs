@@ -357,6 +357,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'events-amqp 1.3 behavior changes', link: '/en/migration/events-amqp-1.3' },
                         { text: 'Redis adapter options', link: '/en/migration/redis-adapter-options' },
                         { text: 'events-amqp option validation', link: '/en/migration/events-amqp-options' },
+                        { text: 'Auth identity handling', link: '/en/migration/auth-identity' },
                     ],
                 },
             ],
