@@ -84,6 +84,7 @@ Each item applies only if your code or configuration matches it.
 - If you pass `handlerTimeout` of `0` or a fraction, a `drainTimeout` that is `NaN`, negative or above 2147483647 ms, a `retry` delay or `multiplier` outside the documented range, an unknown `retry.backoff`, or a `dlq` without a non-empty `topic`, or if you count `dlq.error=AbortError` events on shutdown, follow [Event bus option checks](/en/migration/events-option-checks): these now throw when the bus or the middleware is created, a stop returns an event that waits between retries to the broker instead of dead-lettering it, and a failed dead-letter publish reaches the `observer`.
 - If a script passes the `connectum` CLI a flag it does not define, runs `init --runtime bun --node-exec ...`, runs `generate service` outside a project (or `--with-events` without `@connectum/events`), or generates the service catalog without `target=ts` or with `output_file` twice, follow [CLI and catalog plugin input is checked](/en/migration/cli-input-checks): each of these now fails with a message instead of being accepted silently.
 - If a test reaches a `createTestServer()` server from another container or host, passes it services, interceptors or protocols of the wrong type, or reads earlier exports from a later `InMemoryMetricCollector.flush()`, follow [Testing helper changes](/en/migration/testing-helpers): the test server listens on `127.0.0.1` (pass `host: '0.0.0.0'`), wrong types no longer compile and are rejected at runtime, and `flush()` returns only new data.
+- If you set `GRACEFUL_SHUTDOWN_TIMEOUT_MS` empty or fractional, you depend on a failed shutdown hook skipping its dependents, or you call `stop()` or send a signal while `start()` is running, follow [Shutdown behavior changes](/en/migration/shutdown-behavior): every shutdown hook now runs and `stop()` waits for all of them.
 
 ## Focused Migrations
 
@@ -145,6 +146,10 @@ Each item applies only if your code or configuration matches it.
   `FailedPrecondition` instead of `Unavailable` (**breaking** for code that matched
   `Unavailable`), and catalog calls and catalog configuration refuse mistakes that
   used to be accepted.
+- [Shutdown behavior changes](/en/migration/shutdown-behavior) — from 1.3,
+  shutdown hooks run to completion when one fails, `GRACEFUL_SHUTDOWN_TIMEOUT_MS`
+  rejects empty and fractional values, and `stop()` and signals during `start()` are
+  honoured.
 - [Event bus stops receiving at the shutdown signal](/en/migration/events-reception-on-shutdown) —
   from 1.3, the bus ends its subscriptions when the shutdown signal aborts, and a
   message that arrives before the bus hook runs is redelivered instead of handled

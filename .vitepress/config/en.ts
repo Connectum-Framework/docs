@@ -355,6 +355,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
                         { text: 'In-process calls on shutdown', link: '/en/migration/in-process-shutdown' },
                         { text: 'Streams cut by stop()', link: '/en/migration/shutdown-stream-cut' },
                         { text: 'Service catalog checks', link: '/en/migration/catalog-checks' },
+                        { text: 'Shutdown behavior changes', link: '/en/migration/shutdown-behavior' },
                         { text: 'Event bus reception on shutdown', link: '/en/migration/events-reception-on-shutdown' },
                         { text: 'Event bus option checks', link: '/en/migration/events-option-checks' },
                         { text: 'Logger bodies are opt-in', link: '/en/migration/logger-bodies' },
