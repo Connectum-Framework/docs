@@ -53,6 +53,8 @@ Use [testing helpers](/en/packages/testing) for fast TypeScript feedback, then
 
 Scenario tests catch serialization, validation, interceptor-order, reflection, and health-endpoint integration that isolated unit tests cannot. They should not repeat every business-rule case already covered in TypeScript.
 
+::: details Test server options, mock context and parity comparison rules
+
 ## Test server {#test-server}
 
 `createTestServer` and `withTestServer` take `services`, `interceptors` and `protocols` typed as `ServiceDefinition[]`, `Interceptor[]` and `ProtocolRegistration[]`. A value of another type is a compile error; in untyped code the call rejects before a server starts, with a `TypeError` that names the option and the element, for example `createTestServer: services[0] must be a service definition returned by defineService() or defineLazyService(), got the string "not-a-service".`
@@ -76,3 +78,5 @@ A `mockService` implementation that throws a `ConnectError` answers with exactly
 To collect the telemetry of `@connectum/otel` interceptors in `ctx.spans` and `ctx.metrics`, run with `OTEL_TRACES_EXPORTER=none` and `OTEL_METRICS_EXPORTER=none` and call `shutdownProvider()` at the start of every scenario. Without it, every scenario after the first records nothing, and two empty lists compare as equal. `InMemoryMetricCollector.flush()` returns what was recorded since the previous flush and throws after `dispose()`. See [Cross-Transport Parity Invariant](/en/contributing/parity-invariant).
 
 For executable end-to-end suites, see the examples' tests: [hris](https://github.com/Connectum-Framework/examples/tree/main/hris/tests) runs its whole flow in one process (the monolith topology, with an in-memory EventBus and a PGlite database), and every `with-events-*` example runs its saga against a real broker and separate services through `docker compose`. Exact testing helpers remain in the [`@connectum/testing` API](/en/api/@connectum/testing/); shared low-level fixtures are separated in [`@connectum/test-fixtures`](/en/packages/test-fixtures).
+
+:::
