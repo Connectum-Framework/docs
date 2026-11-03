@@ -70,12 +70,12 @@ That is all you need for plaintext h2c. The `Reflection()` factory creates a `Pr
 
 When you pass `Reflection()` to the `protocols` array, Connectum:
 
-1. Collects all registered service file descriptors from your services
+1. Collects the file descriptors of all registered services, yours and those of the other protocols, once every protocol has registered
 2. Indexes those descriptors and their transitive imports by file name, by fully-qualified symbol and by extension
 3. Registers the v1 and v1alpha `ServerReflection` services on the ConnectRouter
 4. Clients can then query the reflection service to discover available services
 
-Reflection is set up **after** your application services, so it has access to all of their descriptors. It also lists the services of protocols placed before it in the `protocols` array — with `[Healthcheck(), Reflection()]`, `grpc.health.v1.Health` is listed.
+Reflection collects its descriptors **after** every service and every protocol has registered, so it has access to all of them. The position of `Reflection()` in the `protocols` array does not matter: `[Healthcheck(), Reflection()]` and `[Reflection(), Healthcheck()]` both list `grpc.health.v1.Health`, and so does a custom protocol placed after `Reflection()`.
 
 ### Protocol Behavior
 
@@ -83,7 +83,7 @@ The answers follow the [reflection protocol](https://github.com/grpc/grpc-proto/
 
 | Request | Answer |
 |---------|--------|
-| `list_services` | The mounted services: application services and the protocols listed before `Reflection()`. Services that are declared but not mounted (in an imported file, or next to a mounted service in the same file) are not listed. |
+| `list_services` | The mounted services: application services and the services of every other protocol, whatever its position in `protocols`. Services that are declared but not mounted (in an imported file, or next to a mounted service in the same file) are not listed. |
 | `file_by_filename`, `file_containing_symbol`, `file_containing_extension` | The requested file first, then each transitive import (well-known types included) not yet sent on the same stream. |
 | `file_containing_symbol` | Resolves services, methods (`pkg.Service.Method`), messages, fields, oneofs, enums, enum values and extensions. Enum values are named in the scope that contains their enum (`pkg.LEVEL_HIGH`, not `pkg.Level.LEVEL_HIGH`). |
 | `all_extension_numbers_of_type` | `base_type_name` set to the requested type, numbers in ascending order. |
@@ -124,7 +124,7 @@ Output:
 greeter.v1.GreeterService
 ```
 
-The reflection service does not list itself: the listing is taken before reflection registers. Clients still reach it, which is how `list` works, and can [describe it](#describing-the-reflection-service). If you register `Healthcheck()` before `Reflection()`, the health service is also listed.
+The reflection service does not list itself: it is infrastructure, not part of your API. Clients still reach it, which is how `list` works, and can [describe it](#describing-the-reflection-service). The health service is listed when `Healthcheck()` is in `protocols`, before or after `Reflection()`.
 
 ### Describe a Service
 
@@ -335,17 +335,21 @@ Under the hood, `Reflection()` returns a `ProtocolRegistration` object:
 {
   name: 'reflection',
   setup(context) {
-    // Before the first register: context.services and context.registry hold the
-    // mounted application services and the protocols listed before
-    // Reflection; indexes their descriptors
+    // Before the first register: keeps the snapshot of what was registered before Reflection
   },
   register(router) {
-    // Once per router: mounts the v1 and v1alpha reflection services on that same index
+    // Once per router: mounts the v1 and v1alpha reflection services; they read the index per request
+  },
+  ready(context) {
+    // Once, after the last protocol has registered: context.services and
+    // context.registry hold every mounted service and file; indexes their descriptors
   },
 }
 ```
 
-The context is a snapshot taken by `@connectum/core` when the server first builds its routes. Because the index is built in `setup` and shared by every router built after it, HTTP clients and in-process clients (`server.localClient()`, `ctx.call`) see the same listing. If that first route materialization fails, the retry runs `setup` again and rebuilds the index.
+The context passed to `ready` is a snapshot taken by `@connectum/core` after the last protocol has registered, so the listing does not depend on the order of `protocols`. Because the index is built once in `ready` and shared by every router, HTTP clients and in-process clients (`server.localClient()`, `ctx.call`) see the same listing. If the first route materialization fails, the retry runs `setup` and `ready` again and rebuilds the index.
+
+A protocol that wraps `Reflection()` and delegates to it must forward `ready` as well as `setup` and `register`. A wrapper that forwards only `setup` and `register` gets the listing older versions produced: the services registered before the wrapper.
 
 ## Related
 
