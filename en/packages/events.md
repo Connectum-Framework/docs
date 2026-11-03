@@ -50,6 +50,7 @@ await eventBus.start();
 |---|---|
 | [`createEventBus`](/en/api/@connectum/events/functions/createEventBus) | Create the lifecycle-managed event bus. |
 | [`MemoryAdapter`](/en/api/@connectum/events/functions/MemoryAdapter) | Run deterministic in-memory event tests. |
+| [`EventBus.publish`](/en/api/@connectum/events/types/interfaces/EventBus) | Publish an event. `data` is `MessageInitShape` of the schema from `@bufbuild/protobuf`: a plain object, with nested messages, repeated fields and oneofs written inline, or a message built with `create(Schema, ...)`. `ctx.publish` takes the same. |
 | [`createBroadcastSubscribers`](/en/api/@connectum/events/functions/createBroadcastSubscribers) | Create explicit one-to-many reactor subscribers. |
 | [`EventAdapterFactory`](/en/api/@connectum/events/types/type-aliases/EventAdapterFactory) | Give each broadcast reactor its own broker connection; see [Adapter instances and factories](/en/guide/events/adapters#adapter-factory). |
 

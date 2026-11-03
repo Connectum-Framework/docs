@@ -269,6 +269,9 @@ await eventBus.publish(UserCreatedSchema, {
 await eventBus.stop();
 ```
 
+`data` is `MessageInitShape` of the schema, so a plain object type-checks as shown.
+A message built with `create(UserCreatedSchema, { ... })` is accepted as well.
+
 The publisher and subscriber must use the same broker and stream. This publisher
 matches the NATS bus in Step 5; if you chose another adapter, configure both sides
 for that broker. The topic defaults to the message's `typeName` (e.g.,
