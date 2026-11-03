@@ -404,6 +404,42 @@ seconds, while the other entries claimed in the same pass are still delivered.
 adapter continues each pass where the previous one stopped; entries behind a
 long run of recently delivered ones are therefore reached too.
 
+### Recovery after Redis loses a consumer group {#redis-group-recovery}
+
+A Redis that restarts without persistence, runs `FLUSHALL`, or fails over to a
+replica that never had the stream no longer knows your consumer group. Redis
+answers the consume loop with `NOGROUP`. The adapter then creates the group
+again (`XGROUP CREATE ... MKSTREAM`) on every stream of the subscription and
+keeps consuming; no restart of the service is needed. `publish()` keeps working
+throughout, because `XADD` re-creates the stream.
+
+The re-created group starts at the beginning of the stream (`0`), not at `$`.
+After a loss the stream holds what was published since, and `$` would drop the
+entries published before the recovery ran. The price is at-least-once delivery
+at its widest: when only the group was lost and the stream kept its history,
+entries the group had already handled are delivered again, so handlers must
+tolerate duplicates. Each re-created group writes one
+`[RedisAdapter] re-created consumer group ...` warning and, when you set
+`lifecycle.onLifecycle`, produces a [`group-recreated`](#redis-lifecycle) event.
+With an AOF (`appendonly yes`) the group survives a restart and none of this
+happens.
+
+### Connection and option checks {#redis-options}
+
+`brokerOptions.maxLen` and `count` must be positive safe integers and `blockMs`
+a non-negative safe integer. `RedisAdapter()` throws a `RangeError` naming the
+option when a value is outside that range; `maxLen: 0` is rejected because it
+would trim every published entry. `blockMs: 0` is valid and blocks without a
+deadline.
+
+`connect()` and `subscribe()` wait for the server to become ready for at most
+`redisOptions.connectTimeout` (ioredis default: 10000 ms). A server that accepts
+the TCP connection and never answers makes them reject with
+`RedisAdapter: connection not ready within N ms (redisOptions.connectTimeout)`
+instead of leaving `bus.start()` pending. Set `connectTimeout: 0` to remove the
+deadline. See [Redis adapter options](/en/migration/redis-adapter-options) if an
+existing service is affected.
+
 ### Wildcards are not supported {#redis-wildcards}
 
 Redis Streams has no pattern subscription. A topic containing `*` or `>` is
@@ -426,9 +462,11 @@ and restored as `ctx.metadata` when consumed.
 
 `brokerOptions.maxLen` adds approximate `XADD MAXLEN ~` trimming. It bounds
 retention, not the number of pending deliveries: trimming can remove entries
-that a consumer has not processed, so choose it from your retention needs. A new
-consumer group is created at `$` and starts with events published after its
-creation. Use the same explicit group across restarts to retain its consumption
+that a consumer has not processed, so choose it from your retention needs. It
+must be a positive integer (see [Connection and option checks](#redis-options)).
+A new consumer group is created at `$` and starts with events published after its
+creation; a group that Redis lost and the adapter
+[re-created](#redis-group-recovery) starts at the beginning of the stream. Use the same explicit group across restarts to retain its consumption
 state; omitting `group` creates a new random group.
 
 ### Entries written by other producers {#redis-foreign-entries}
@@ -501,6 +539,7 @@ The table below lists the NATS, Redis and Kafka events; the AMQP events are in
 | `disconnected` | `error` (NATS: `server`) | Once per loss | Once per loss of a connection that had been ready, however many reconnect attempts fail | Not emitted |
 | `reconnecting` | `attempt` (NATS), `attempt`, `delay`, `error` (Redis) | One per dial; the client gives no delay or error | One per scheduled attempt; the count restarts on ready | Not emitted |
 | `reconnect-failed` | `error` | Terminal: the client closed itself without your `disconnect()`, usually after its reconnect budget ran out | Terminal: the client ended without your close, which needs a `retryStrategy` that returns no delay | Not emitted |
+| `group-recreated` | `group`, `stream`, `connection` | — | Redis lost a consumer group and the subscription created it again; once per group | — |
 | `consumer-lost`, `consumer-restore-failed`, `consumer-restored` | `groupId`, `error`, `willRestore` / `attempt`, `willRetry` | — | — | A subscription's consumer crashed, crashed again before it came back, and joined its group again |
 
 ### NATS {#nats-lifecycle}
@@ -521,6 +560,11 @@ says which: `"publisher"` or `{ group, patterns }`. With N subscriptions that is
 rejects with the error itself). Setting `onLifecycle` attaches an `error` listener to every
 connection, which replaces the client's own `[ioredis] Unhandled error event` line on
 stderr: the cause is in the `error` field of the events instead.
+
+`group-recreated` is specific to Redis. It reports a consumer group that Redis lost and the
+subscription created again (see [Recovery after Redis loses a consumer group](#redis-group-recovery)).
+`stream` is the stream key (`events:<topic>`) and `connection` is the `{ group, patterns }` of the
+subscription. Without `onLifecycle` the adapter still writes one warning line per re-created group.
 
 ### Kafka {#kafka-lifecycle}
 
