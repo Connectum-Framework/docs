@@ -344,7 +344,7 @@ Use [`enabledServicesFromEnv`](/en/api/@connectum/core/functions/enabledServices
 for the one-line configuration above. The lower-level helpers remain useful when
 composing lists or retaining an application's own empty-value policy:
 
-- [`parseServicesEnv(value)`](/en/api/@connectum/core/functions/parseServicesEnv) — parses a comma-separated env string into a `string[]`, trimming whitespace and dropping empties. Returns `[]` for an empty/undefined value; it does not preserve the mount-all default.
+- [`parseServicesEnv(value)`](/en/api/@connectum/core/functions/parseServicesEnv) — parses a comma-separated env string into a `string[]`, trimming whitespace and dropping empties. Returns `[]` for an empty/undefined value, and `enabledServices: []` mounts **none** of the supplied services. Use it when you merge the list with other sources (for example with `mergeEnabledServices`) or supply your own fallback, such as `parseServicesEnv(process.env.CONNECTUM_SERVICES ?? orders.descriptor.typeName)`.
 - `matchServicesPattern(pattern, names)` — returns the subset of `names` matching a glob `pattern`, where `*` matches any run of characters including dots (e.g. `"acme.*"` matches `"acme.v1.UsersService"`). This is a **glob, not a RegExp** — only `*` is special.
 - `mergeEnabledServices(...lists)` — merges several lists, de-duplicating while preserving first-seen order.
 
