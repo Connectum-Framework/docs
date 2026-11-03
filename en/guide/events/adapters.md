@@ -422,7 +422,7 @@ belongs to the middleware:
 - **A cap on redeliveries.** For a bound on how often the broker hands the same
   entry out again, for example after handler crashes where no retry state
   survives, read `event.attempt` in a custom middleware. On a redelivered entry
-  it carries the group's delivery count (the first delivery is `1`). The
+  it carries the group's delivery count (`1` on the first delivery, `2` on the first reclaim). The
   middleware can call `ctx.ack()` once the count passes your limit, instead of
   calling `next()`.
 
