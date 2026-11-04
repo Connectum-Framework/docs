@@ -16,6 +16,8 @@ import {
 } from '../../scripts/lib/package-readme-links.mjs';
 
 const markdown = await createMarkdownRenderer(process.cwd());
+const temporaryRoot = resolve(import.meta.dirname, '../../.tmp');
+await mkdir(temporaryRoot, { recursive: true });
 
 test('README extraction includes reference links, linked badges, autolinks and HTML without treating code as links', () => {
     const source =
@@ -30,7 +32,7 @@ test('README extraction includes reference links, linked badges, autolinks and H
 });
 
 test('built routes and local README anchors are checked instead of accepting a page solely because it exists', async () => {
-    const root = await mkdtemp('/tmp/opencode/connectum-readme-links-');
+    const root = await mkdtemp(resolve(temporaryRoot, 'connectum-readme-links-'));
     try {
         const readme = resolve(root, 'README.md');
         await writeFile(readme, '# Package\n\n## Usage\n\n## Usage\n\n## [Linked usage](guide.md)\n');
@@ -52,7 +54,7 @@ test('built routes and local README anchors are checked instead of accepting a p
 });
 
 test('HTTP verification observes real status and fragment content, including a broken anchor on an otherwise successful page', async () => {
-    const root = await mkdtemp('/tmp/opencode/connectum-readme-http-');
+    const root = await mkdtemp(resolve(temporaryRoot, 'connectum-readme-http-'));
     const server = createServer((req, res) => {
         res.writeHead(req.url === '/missing' || req.url.startsWith('/en/guide/scaffolding-commands') ? 404 : 200, { 'content-type': 'text/html' });
         res.end('<h2 id="supported">Supported</h2>');
