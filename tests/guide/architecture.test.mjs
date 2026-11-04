@@ -10,6 +10,9 @@ const source = read('en/guide/production/architecture.md');
 
 test('the homepage primary CTA starts learning and its secondary CTA opens the complete architecture', () => {
     const home = read('.vitepress/theme/components/HomePage.vue');
+    assert.match(home, /class="home-eyebrow">Microservices framework<\/p>/);
+    assert.match(home, /id="home-title">Proto is the single source of truth<\/h1>/);
+    assert.match(home, /Connectum provides a TypeScript service runtime for proto contracts, request middleware, security, observability, and operations\./);
     assert.match(home, /class="home-button home-button--primary" href="\/en\/guide\/about">Get started<\/a>/);
     assert.match(home, /class="home-button home-button--secondary" href="\/en\/guide\/production\/architecture">Explore architecture<\/a>/);
 });

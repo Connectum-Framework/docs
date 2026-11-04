@@ -15,7 +15,7 @@ const story = JSON.parse(await readFile(new URL('../.vitepress/homepage/native.j
 const output = resolve(values.output);
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true, channel: 'chrome' });
-const report = { completed: false, validation: [], interceptors: [], openapi: [], homepage: [], builder: [], layouts: [], errors: [] };
+const report = { completed: false, validation: [], interceptors: [], openapi: [], hero: [], homepage: [], builder: [], layouts: [], errors: [] };
 const deadline = setTimeout(() => void browser.close(), 240_000);
 
 async function visit(page, route) {
@@ -126,6 +126,23 @@ try {
             await capture(page, theme, 'openapi', '.openapi-showcase');
 
             await visit(page, '/en/');
+            const hero = page.locator('.home-hero');
+            for (const width of [1440, 768, 643, 390, 320]) {
+                await page.setViewportSize({ width, height: 1000 });
+                assert.equal(await hero.locator('.home-eyebrow').innerText(), 'MICROSERVICES FRAMEWORK');
+                assert.equal(await hero.getByRole('heading', { level: 1 }).innerText(), 'Proto is the single source of truth');
+                assert.equal(
+                    await hero.locator('.home-hero__lead').innerText(),
+                    'Connectum provides a TypeScript service runtime for proto contracts, request middleware, security, observability, and operations.',
+                );
+                assert.ok(await hero.getByRole('link', { name: 'Get started', exact: true }).isVisible());
+                assert.ok(await hero.getByRole('link', { name: 'Explore architecture', exact: true }).isVisible());
+                const dimensions = await page.evaluate(() => ({ width: innerWidth, document: document.documentElement.scrollWidth }));
+                assert.ok(dimensions.document <= width + 1, JSON.stringify(dimensions));
+                await hero.screenshot({ path: resolve(output, `${theme}-${width}-hero.png`) });
+                report.hero.push({ theme, ...dimensions });
+            }
+            await page.setViewportSize({ width: 1440, height: 1000 });
             const code = page.locator('.home-code');
             const deployment = page.locator('.deployment-panel');
             await attribute(code, 'data-phase', 'ready');
