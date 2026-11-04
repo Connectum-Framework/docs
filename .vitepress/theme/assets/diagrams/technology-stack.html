@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Connectum technology stack</title>
+        <style>
+        body {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 24px;
+            background: #fff;
+        }
+        @media (prefers-color-scheme: dark) {
+            body {
+                --vp-c-bg: #1b1b1f;
+                --vp-c-text-1: #dfdfd6;
+                --vp-c-text-2: #a6a6ad;
+                background: #1b1b1f;
+            }
+        }
+        </style>
+    </head>
+    <body class="isometric-standalone">
+        <figure class="connectum-stack connectum-isometric" aria-label="Connectum technology stack">
+            <style>
+
+            .connectum-isometric {
+              --sc-paper: var(--connectum-diagram-node, #fff);
+              --sc-ink: var(--connectum-diagram-text, #3c3c43);
+              --sc-muted: var(--connectum-diagram-muted, #67676c);
+              --sc-accent: #3153a0;
+              --sc-blue-surface: #eaf0ff;
+              --sc-blue-border: #6078aa;
+              --sc-blue-left: #9aaee2;
+              --sc-blue-right: #345bc4;
+            }
+            .connectum-isometric .sc-base, .connectum-isometric .sc-top { fill: var(--sc-paper); }
+            .connectum-isometric .sc-left { fill: color-mix(in srgb, var(--sc-ink) 7%, var(--sc-paper)); }
+            .connectum-isometric .sc-right { fill: color-mix(in srgb, var(--sc-ink) 15%, var(--sc-paper)); }
+            .connectum-isometric .sc-outline { fill: none; stroke: var(--sc-ink); stroke-width: 1.2; stroke-linejoin: round; }
+            .connectum-isometric .sc-rim { fill: none; stroke: var(--sc-ink); stroke-opacity: .55; stroke-width: .8; }
+            .connectum-isometric .sc-trace { stroke: var(--sc-ink); stroke-opacity: .3; stroke-width: .8; stroke-dasharray: 4 3; }
+            .connectum-isometric .sc-leader { stroke: var(--sc-ink); stroke-opacity: .4; stroke-width: .8; }
+            .connectum-isometric .sc-dot { fill: var(--sc-ink); }
+            .connectum-isometric .sc-name { fill: var(--sc-ink); font: 600 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+            .connectum-isometric .sc-detail { fill: var(--sc-muted); font: 400 10px ui-monospace, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; letter-spacing: .08em; }
+            :where(.dark, body:has(#server-theme-dark:checked)) .connectum-isometric {
+              --sc-paper: #1b1b1f;
+              --sc-ink: #dfdfd6;
+              --sc-muted: #a4a4ab;
+              --sc-accent: #b9cdff;
+              --sc-blue-surface: #202b43;
+              --sc-blue-border: #7f9cd4;
+              --sc-blue-left: #18223a;
+              --sc-blue-right: #111a2d;
+            }
+            :where(.dark, body:has(#server-theme-dark:checked)) .connectum-isometric .sc-base { fill: #202127; }
+            :where(.dark, body:has(#server-theme-dark:checked)) .connectum-isometric .sc-top { fill: color-mix(in srgb, var(--sc-ink) 10%, #202127); }
+            :where(.dark, body:has(#server-theme-dark:checked)) .connectum-isometric .sc-left { fill: #202127; }
+            :where(.dark, body:has(#server-theme-dark:checked)) .connectum-isometric .sc-right { fill: color-mix(in srgb, var(--sc-paper) 45%, #202127); }
+            @media (prefers-color-scheme: dark) {
+              :where(body.isometric-standalone) .connectum-isometric {
+              --sc-paper: #1b1b1f;
+              --sc-ink: #dfdfd6;
+              --sc-muted: #a4a4ab;
+              --sc-accent: #b9cdff;
+              --sc-blue-surface: #202b43;
+              --sc-blue-border: #7f9cd4;
+              --sc-blue-left: #18223a;
+              --sc-blue-right: #111a2d;
+            }
+            :where(body.isometric-standalone) .connectum-isometric .sc-base { fill: #202127; }
+            :where(body.isometric-standalone) .connectum-isometric .sc-top { fill: color-mix(in srgb, var(--sc-ink) 10%, #202127); }
+            :where(body.isometric-standalone) .connectum-isometric .sc-left { fill: #202127; }
+            :where(body.isometric-standalone) .connectum-isometric .sc-right { fill: color-mix(in srgb, var(--sc-paper) 45%, #202127); }
+            }
+            .connectum-isometric [data-focal] .sc-top { fill: var(--sc-blue-surface); }
+            .connectum-isometric [data-focal] .sc-left { fill: var(--sc-blue-left); }
+            .connectum-isometric [data-focal] .sc-right { fill: var(--sc-blue-right); }
+            .connectum-isometric [data-focal] .sc-outline, .connectum-isometric [data-focal] .sc-rim { stroke: var(--sc-blue-border); }
+            .connectum-isometric [data-focal] .sc-leader { stroke: var(--sc-accent); }
+            .connectum-isometric [data-focal] .sc-dot, .connectum-isometric [data-focal] .sc-detail { fill: var(--sc-accent); }
+
+            .connectum-stack {
+                --stack-paper: var(--vp-c-bg, #fff);
+                --stack-ink: var(--vp-c-text-1, #3c3c43);
+                --stack-muted: var(--vp-c-text-2, #67676c);
+                margin: 24px 0 40px;
+                color: var(--stack-ink);
+                font-family: var(--vp-font-family-base, "Inter", ui-sans-serif, system-ui, sans-serif);
+            }
+            .connectum-stack .stack-layers {
+                display: grid;
+                gap: 4px;
+            }
+            .connectum-stack .stack-layer {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+                align-items: center;
+                gap: 28px;
+                break-inside: avoid;
+            }
+            .connectum-stack .stack-block {
+                min-width: 0;
+            }
+            .connectum-stack .stack-block svg {
+                display: block;
+                width: 100%;
+                height: auto;
+            }
+            .connectum-stack .stack-details {
+                min-width: 0;
+            }
+            .connectum-stack .stack-details h3 {
+                margin: 0 0 8px;
+                border: 0;
+                padding: 0;
+                color: var(--stack-ink);
+                font-size: 23px;
+                font-weight: 650;
+                line-height: 1.3;
+                letter-spacing: -0.4px;
+            }
+            .connectum-stack .stack-layer--connectum h3 {
+                color: var(--sc-accent);
+            }
+            .connectum-stack .stack-details ul {
+                margin: 0;
+                padding-left: 18px;
+                font-size: 15px;
+                line-height: 1.65;
+            }
+            .connectum-stack .stack-details li {
+                margin: 3px 0;
+            }
+            .connectum-stack .stack-details code {
+                border-radius: 4px;
+                padding: 1px 4px;
+                background: color-mix(in srgb, var(--sc-accent) 8%, var(--stack-paper));
+                color: inherit;
+                font-family: var(--vp-font-family-mono, ui-monospace, monospace);
+                font-size: 0.9em;
+            }
+            .connectum-stack .stack-note {
+                margin: 8px 0 0;
+                color: var(--stack-muted);
+                font-size: 14px;
+                line-height: 1.6;
+            }
+            .connectum-stack figcaption {
+                margin: 24px 0 0;
+                color: var(--stack-muted);
+                font-size: 14px;
+                line-height: 1.65;
+            }
+            @media (max-width: 640px) {
+                .connectum-stack .stack-layers {
+                    gap: 16px;
+                }
+                .connectum-stack .stack-layer {
+                    grid-template-columns: minmax(0, 1fr);
+                    gap: 0;
+                }
+                .connectum-stack .stack-block {
+                    width: min(100%, 300px);
+                    margin: 0 auto;
+                }
+                .connectum-stack .stack-details {
+                    padding: 0 8px;
+                }
+                .connectum-stack .stack-details h3 {
+                    font-size: 22px;
+                }
+            }
+            @media print {
+                .connectum-stack .stack-layer {
+                    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+                    gap: 28px;
+                }
+            }
+            </style>
+            <div class="stack-layers">
+                <section class="stack-layer stack-layer--connectum" aria-labelledby="technology-stack-connectum-title">
+                    <div class="stack-block" aria-hidden="true">
+                        <svg viewBox="0 0 416 204" aria-hidden="true" focusable="false">
+                            <g data-part="connectum" data-focal>
+                                <path data-role="silhouette" class="sc-base" d="M 31.029 92 A 16.971 8.485 0 0 1 36 86 L 196 6 A 16.971 8.485 0 0 1 220 6 L 380 86 A 16.971 8.485 0 0 1 384.971 92 L 384.971 112 A 16.971 8.485 0 0 1 380 118 L 220 198 A 16.971 8.485 0 0 1 196 198 L 36 118 A 16.971 8.485 0 0 1 31.029 112 Z"/>
+            <path class="sc-top" d="M 31.029 92 A 16.971 8.485 0 0 1 36 86 L 196 6 A 16.971 8.485 0 0 1 220 6 L 380 86 A 16.971 8.485 0 0 1 384.971 92 A 16.971 8.485 0 0 1 380 98 L 220 178 A 16.971 8.485 0 0 1 196 178 L 36 98 A 16.971 8.485 0 0 1 31.029 92 Z"/>
+            <path class="sc-left" d="M 31.029 92 A 16.971 8.485 0 0 0 36 98 L 196 178 A 16.971 8.485 0 0 0 208 180.485 L 208 200.485 A 16.971 8.485 0 0 1 196 198 L 36 118 A 16.971 8.485 0 0 1 31.029 112 Z"/>
+            <path class="sc-right" d="M 208 180.485 A 16.971 8.485 0 0 0 220 178 L 380 98 A 16.971 8.485 0 0 0 384.971 92 L 384.971 112 A 16.971 8.485 0 0 1 380 118 L 220 198 A 16.971 8.485 0 0 1 208 200.485 Z"/>
+            <path class="sc-rim" d="M 31.029 92 A 16.971 8.485 0 0 0 36 98 L 196 178 A 16.971 8.485 0 0 0 220 178 L 380 98 A 16.971 8.485 0 0 0 384.971 92"/>
+            <path class="sc-outline" d="M 31.029 92 A 16.971 8.485 0 0 1 36 86 L 196 6 A 16.971 8.485 0 0 1 220 6 L 380 86 A 16.971 8.485 0 0 1 384.971 92 L 384.971 112 A 16.971 8.485 0 0 1 380 118 L 220 198 A 16.971 8.485 0 0 1 196 198 L 36 118 A 16.971 8.485 0 0 1 31.029 112 Z"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="stack-details">
+                        <h3 id="technology-stack-connectum-title">Connectum</h3>
+                        <ul>
+                            <li><code>defineService()</code> binds your handlers.</li>
+                            <li><code>createServer()</code> registers and runs services.</li>
+                            <li>Server lifecycle and interceptor composition.</li>
+                        </ul>
+                        <p class="stack-note">Your handlers contain the business logic.</p>
+                    </div>
+                </section>
+                <section class="stack-layer stack-layer--connectrpc" aria-labelledby="technology-stack-connectrpc-title">
+                    <div class="stack-block" aria-hidden="true">
+                        <svg viewBox="0 0 416 204" aria-hidden="true" focusable="false">
+                            <g data-part="connectrpc">
+                                <path data-role="silhouette" class="sc-base" d="M 31.029 92 A 16.971 8.485 0 0 1 36 86 L 196 6 A 16.971 8.485 0 0 1 220 6 L 380 86 A 16.971 8.485 0 0 1 384.971 92 L 384.971 112 A 16.971 8.485 0 0 1 380 118 L 220 198 A 16.971 8.485 0 0 1 196 198 L 36 118 A 16.971 8.485 0 0 1 31.029 112 Z"/>
+            <path class="sc-top" d="M 31.029 92 A 16.971 8.485 0 0 1 36 86 L 196 6 A 16.971 8.485 0 0 1 220 6 L 380 86 A 16.971 8.485 0 0 1 384.971 92 A 16.971 8.485 0 0 1 380 98 L 220 178 A 16.971 8.485 0 0 1 196 178 L 36 98 A 16.971 8.485 0 0 1 31.029 92 Z"/>
+            <path class="sc-left" d="M 31.029 92 A 16.971 8.485 0 0 0 36 98 L 196 178 A 16.971 8.485 0 0 0 208 180.485 L 208 200.485 A 16.971 8.485 0 0 1 196 198 L 36 118 A 16.971 8.485 0 0 1 31.029 112 Z"/>
+            <path class="sc-right" d="M 208 180.485 A 16.971 8.485 0 0 0 220 178 L 380 98 A 16.971 8.485 0 0 0 384.971 92 L 384.971 112 A 16.971 8.485 0 0 1 380 118 L 220 198 A 16.971 8.485 0 0 1 208 200.485 Z"/>
+            <path class="sc-rim" d="M 31.029 92 A 16.971 8.485 0 0 0 36 98 L 196 178 A 16.971 8.485 0 0 0 220 178 L 380 98 A 16.971 8.485 0 0 0 384.971 92"/>
+            <path class="sc-outline" d="M 31.029 92 A 16.971 8.485 0 0 1 36 86 L 196 6 A 16.971 8.485 0 0 1 220 6 L 380 86 A 16.971 8.485 0 0 1 384.971 92 L 384.971 112 A 16.971 8.485 0 0 1 380 118 L 220 198 A 16.971 8.485 0 0 1 196 198 L 36 118 A 16.971 8.485 0 0 1 31.029 112 Z"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="stack-details">
+                        <h3 id="technology-stack-connectrpc-title">ConnectRPC</h3>
+                        <ul>
+                            <li>gRPC, Connect and gRPC-Web protocols.</li>
+                            <li>Unary and streaming RPC calls.</li>
+                            <li>HTTP/1.1 and HTTP/2 transports.</li>
+                        </ul>
+                        <p class="stack-note">Native gRPC and bidirectional streams require HTTP/2.</p>
+                    </div>
+                </section>
+                <section class="stack-layer stack-layer--protobuf" aria-labelledby="technology-stack-protobuf-title">
+                    <div class="stack-block" aria-hidden="true">
+                        <svg viewBox="0 0 416 204" aria-hidden="true" focusable="false">
+                            <g data-part="protobuf">
+                                <path data-role="silhouette" class="sc-base" d="M 31.029 92 A 16.971 8.485 0 0 1 36 86 L 196 6 A 16.971 8.485 0 0 1 220 6 L 380 86 A 16.971 8.485 0 0 1 384.971 92 L 384.971 112 A 16.971 8.485 0 0 1 380 118 L 220 198 A 16.971 8.485 0 0 1 196 198 L 36 118 A 16.971 8.485 0 0 1 31.029 112 Z"/>
+            <path class="sc-top" d="M 31.029 92 A 16.971 8.485 0 0 1 36 86 L 196 6 A 16.971 8.485 0 0 1 220 6 L 380 86 A 16.971 8.485 0 0 1 384.971 92 A 16.971 8.485 0 0 1 380 98 L 220 178 A 16.971 8.485 0 0 1 196 178 L 36 98 A 16.971 8.485 0 0 1 31.029 92 Z"/>
+            <path class="sc-left" d="M 31.029 92 A 16.971 8.485 0 0 0 36 98 L 196 178 A 16.971 8.485 0 0 0 208 180.485 L 208 200.485 A 16.971 8.485 0 0 1 196 198 L 36 118 A 16.971 8.485 0 0 1 31.029 112 Z"/>
+            <path class="sc-right" d="M 208 180.485 A 16.971 8.485 0 0 0 220 178 L 380 98 A 16.971 8.485 0 0 0 384.971 92 L 384.971 112 A 16.971 8.485 0 0 1 380 118 L 220 198 A 16.971 8.485 0 0 1 208 200.485 Z"/>
+            <path class="sc-rim" d="M 31.029 92 A 16.971 8.485 0 0 0 36 98 L 196 178 A 16.971 8.485 0 0 0 220 178 L 380 98 A 16.971 8.485 0 0 0 384.971 92"/>
+            <path class="sc-outline" d="M 31.029 92 A 16.971 8.485 0 0 1 36 86 L 196 6 A 16.971 8.485 0 0 1 220 6 L 380 86 A 16.971 8.485 0 0 1 384.971 92 L 384.971 112 A 16.971 8.485 0 0 1 380 118 L 220 198 A 16.971 8.485 0 0 1 196 198 L 36 118 A 16.971 8.485 0 0 1 31.029 112 Z"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="stack-details">
+                        <h3 id="technology-stack-protobuf-title">Protobuf</h3>
+                        <ul>
+                            <li><code>.proto</code> services, RPC methods and messages.</li>
+                            <li>One contract for clients and servers.</li>
+                            <li><code>protobuf-es</code> generates TypeScript descriptors and message types.</li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+            <figcaption>Connectum composes your service on ConnectRPC. Protobuf supplies the shared contract and generated types.</figcaption>
+        </figure>
+    </body>
+</html>

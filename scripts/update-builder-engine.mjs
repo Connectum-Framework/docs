@@ -74,8 +74,6 @@ await writeFile(
             baseCommit: git(examples, 'rev-parse', `${DEFAULT_BASE_REF}^{commit}`),
             engineHash: createHash('sha256').update(engine).digest('hex'),
             cliVersion: '1.3.0',
-            releaseStatus: 'preview',
-            registryVersion: '1.2.0',
             reservedProjectNames: [...new Set(['node_modules', 'favicon.ico', ...builtinModules.filter((name) => !name.startsWith('_') && !name.startsWith('node:'))])].sort(),
         },
         null,

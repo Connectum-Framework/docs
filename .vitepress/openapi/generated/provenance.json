@@ -1,7 +1,7 @@
 {
-  "authVersion": "1.2.0",
+  "authVersion": "1.3.0",
   "esbuildVersion": "0.25.0",
-  "sourceSha256": "ea65527a870f397b74184e1dab388ea74d28a52a5e6f25d566917c6ac8b8d2db",
+  "sourceSha256": "432d856e242bb4fcd573a3b515477b3004edae19af1d31a52d916360ed0b1d5b",
   "schemaSha256": "a15ec86a897ff30b84aec0e94d6171af6e8da8df95d0fbd2099c3ec6f95b2a74",
-  "bundleSha256": "81bca92fd5190dc04415da730ed0b155a84450bcde779cc6b8913417d565328a"
+  "bundleSha256": "fe4fede7302663619054972cbcf9162ea14dcace5b9c64aae209c99de539fbc8"
 }

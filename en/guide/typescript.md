@@ -61,4 +61,4 @@ TypeScript type-stripping requirement.
 - [Erasable Syntax](/en/guide/typescript/erasable-syntax) -- constraints, import rules, tsconfig.json
 - [Proto Enums](/en/guide/typescript/proto-enums) -- generating proto enums as `as const` objects
 - [Patterns & Workflow](/en/guide/typescript/patterns) -- named parameters, branded types, development workflow
-- [@connectum/core](/en/packages/core) -- Package Guide
+- [@connectum/core](/en/guide/server) -- Package Guide

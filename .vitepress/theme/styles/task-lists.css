@@ -1,0 +1,13 @@
+.vp-doc .task-list-item {
+    list-style-type: none;
+}
+
+/* negative start margin puts the native checkbox in the list-marker gutter, including wrapped items. */
+.vp-doc .task-list-item-checkbox {
+    appearance: auto;
+    inline-size: 1rem;
+    block-size: 1rem;
+    margin-inline: -1.4rem 0.4rem;
+    vertical-align: -0.125rem;
+    accent-color: var(--vp-c-brand-1);
+}

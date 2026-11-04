@@ -1,0 +1,18 @@
+{
+    "extends": "./tsconfig.validation.json",
+    "compilerOptions": { "resolveJsonModule": true, "allowJs": true, "checkJs": false },
+    "include": [
+        ".vitepress/config/*.ts",
+        ".vitepress/data/*.ts",
+        ".vitepress/guide/*.ts",
+        ".vitepress/theme/useNavigationKeyboard.ts",
+        ".vitepress/theme/Layout.vue",
+        ".vitepress/theme/components/GuideSection.vue",
+        ".vitepress/theme/components/CompatibilityRedirect.vue",
+        ".vitepress/theme/components/MovedInterceptorSections.vue",
+        ".vitepress/theme/components/MovedGuideSections.vue",
+        ".vitepress/theme/components/ModuleGrid.vue",
+        ".vitepress/theme/components/PageContext.vue",
+        ".vitepress/theme/components/TechnologyStack.vue"
+    ]
+}

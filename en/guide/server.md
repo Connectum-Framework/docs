@@ -95,6 +95,27 @@ Start with [lifecycle](/en/guide/server/lifecycle),
 
 The stable state progression is `created → starting → running → stopping → stopped`. React to lifecycle events for application coordination; pass `server.shutdownSignal` to long-running work so cancellation follows the same shutdown boundary.
 
-## Module route
+## Installation {#installation}
 
-Use the [`@connectum/core` module hub](/en/packages/core) for installation, the smallest package example, related guides, source, and API entry points.
+:::: details Add the server foundation to an existing project
+::: pm
+== npm
+```bash
+npm install @connectum/core
+```
+== pnpm
+```bash
+pnpm add @connectum/core
+```
+== bun
+```bash
+bun add @connectum/core
+```
+:::
+
+The package shares protobuf and Connect peers with your application. Package
+managers install missing peers automatically; keep explicit pins in range.
+`createServer()` throws `PeerDependencyVersionError` for an unsupported loaded
+copy or out-of-lockstep Connect/Connect-node versions; bundling skips that check.
+See [peer requirements](/en/migration/peer-dependencies) for exact ranges.
+::::

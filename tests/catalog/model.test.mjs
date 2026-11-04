@@ -57,7 +57,7 @@ test('the compact lesson keeps code before the diagram and details behind a disc
 });
 
 test('the complete reference retains all technical topics and the version boundaries', () => {
-    const reference = readFileSync(new URL('../../en/reference/service-catalog.md', import.meta.url), 'utf8');
+    const reference = readFileSync(new URL('../../en/guide/service-communication/catalog-configuration.md', import.meta.url), 'utf8');
     for (const topic of [
         'Defining services',
         'Configuring the catalog',

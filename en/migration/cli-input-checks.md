@@ -25,7 +25,7 @@ If none of these applies, nothing changes for you except the wording of errors (
 - **Unknown flag.** Remove it, or correct the spelling. The error lists every flag the command has.
 - **`--node-exec` with Bun.** Leave `--node-exec` out when scaffolding for Bun.
 - **`generate service` outside a project.** Run it from the project root. To use `--with-events`, add `@connectum/events` and an adapter first (`npm install @connectum/events @connectum/events-nats`), or scaffold the project with `connectum init --events <adapter>`.
-- **Catalog `target`.** Put `target=ts` in the plugin's `opt`, as the [Quick Start of the package](/en/packages/protoc-gen-catalog) does. Without a `target`, buf reads `js+dts`; the plugin wrote `catalog.gen.js` and `catalog.gen.d.ts`, which carry no `declare module "@connectum/core"` augmentation, so every `ctx.call` key was untyped. If you imported `catalog.gen.js` or `catalog.gen.d.ts`, import the generated `catalog.gen.ts` instead.
+- **Catalog `target`.** Put `target=ts` in the plugin's `opt`, as the [catalog generation guide](/en/guide/service-communication/catalog-configuration#generating-the-catalog) does. Without a `target`, buf reads `js+dts`; the plugin wrote `catalog.gen.js` and `catalog.gen.d.ts`, which carry no `declare module "@connectum/core"` augmentation, so every `ctx.call` key was untyped. If you imported `catalog.gen.js` or `catalog.gen.d.ts`, import the generated `catalog.gen.ts` instead.
 - **Repeated `output_file`.** Keep one. The last one used to win.
 
 ```yaml
@@ -55,4 +55,4 @@ Run each command you use once and read the output. A flag the command does not d
 ## Related
 
 - [Scaffolding a New Service](/en/guide/scaffolding)
-- [`@connectum/protoc-gen-catalog`](/en/packages/protoc-gen-catalog)
+- [Catalog generation](/en/guide/service-communication/catalog-configuration#generating-the-catalog)

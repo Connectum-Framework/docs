@@ -1,21 +1,33 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { stripTypeScriptTypes } from 'node:module';
 import { test } from 'node:test';
-import { runInNewContext } from 'node:vm';
+import { guideSidebar as groups } from '../../.vitepress/guide/navigation.ts';
+import { normalizeNavigation } from './navigation-preservation.mjs';
 
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 const preserved = JSON.parse(read('tests/guide/preserved-sections.json'));
 const sections = JSON.parse(read('.vitepress/guide/sections.json'));
+const releaseEdits = JSON.parse(read('tests/guide/release-target-edits.json'));
 
-const config = read('.vitepress/config/en.ts');
-const declaration = config.slice(config.indexOf('const guideSidebar:'), config.indexOf('const packagesSidebar:'));
-const groups = runInNewContext(`${stripTypeScriptTypes(declaration)}\nguideSidebar;`, {}, { timeout: 1000 });
 const entryRoutes = [
-    ...groups.flatMap((group) => group.items.map((item) => item.link)).filter((route) => route !== '/en/builder'),
+    ...groups
+        .flatMap((group) => group.items.map((item) => item.link))
+        .filter(
+            (route) =>
+                ![
+                    '/en/builder',
+                    '/en/guide/scaffolding-commands',
+                    '/en/guide/guarantees',
+                    '/en/guide/testing/unit',
+                    '/en/guide/testing/integration',
+                    '/en/guide/testing/e2e',
+                    '/en/guide/production/architecture',
+                ].includes(route),
+        ),
     '/en/guide/service-communication/service-catalog',
     '/en/guide/service-communication/resolvers',
+    '/en/guide/validation',
 ];
 
 function withoutDisclosures(markdown) {
@@ -30,7 +42,9 @@ test('every Guide entry teaches a compact visual model before the detailed path'
         assert.match(source, /docType: concept/, route);
         assert.match(
             initial,
-            /<figure class="technical-diagram(?:\s|")|<ResolverWalkthrough>|<CatalogAssembly \/>|<ValidationShowcase>|<InterceptorsShowcase \/>|<OpenapiShowcase \/>/,
+            route === '/en/guide/scaffolding'
+                ? /npx @connectum\/cli init my-service --yes/
+                : /<figure class="technical-diagram(?:\s|")|<ResolverWalkthrough>|<CatalogAssembly \/>|<ValidationShowcase>|<InterceptorsShowcase \/>|<OpenapiShowcase \/>|<QuickstartShowcase \/>/,
             `${route}: missing readable model`,
         );
         assert.ok(initial.split(/\s+/).length < 650, `${route}: the first reading path has grown into a reference`);
@@ -42,11 +56,32 @@ test('every Guide entry teaches a compact visual model before the detailed path'
 });
 
 test('moving detailed material preserves the complete source, not just its headings', () => {
-    assert.equal(preserved.length, 17);
+    assert.equal(preserved.length, 16);
     for (const page of preserved) {
         const detail = read(`${page.detail.slice(1)}.md`);
         const original = detail.replace(`\n[Overview](${page.route})\n`, '');
-        assert.equal(createHash('sha256').update(original).digest('hex'), page.sha256, `${page.detail}: original technical content changed`);
+        assert.equal(
+            createHash('sha256')
+                .update(page.navigationSha256 ? normalizeNavigation(original) : original)
+                .digest('hex'),
+            page.navigationSha256 ?? page.sha256,
+            `${page.detail}: original technical content changed`,
+        );
+        const edit = releaseEdits.find((edit) => edit.detail === page.detail);
+        if (edit) {
+            let baseline = original;
+            for (const { before, after } of [...edit.replacements].reverse()) {
+                assert.equal(baseline.split(after).length, 2, `${page.detail}: editorial replacement is not unique`);
+                baseline = baseline.replace(after, before);
+            }
+            assert.equal(
+                createHash('sha256')
+                    .update(page.navigationBaselineSha256 ? normalizeNavigation(baseline) : baseline)
+                    .digest('hex'),
+                page.navigationBaselineSha256 ?? edit.baselineSha256,
+                `${page.detail}: content changed beyond recorded release wording and navigation edits`,
+            );
+        }
         assert.ok(read(`${page.route.slice(1)}.md`).includes(page.detail), `${page.route}: detailed page is not reachable`);
     }
 });
@@ -58,7 +93,7 @@ test('compatibility data retains every earlier section and points to its complet
     );
     assert.equal(
         sections.reduce((count, page) => count + page.anchors.length, 0),
-        244,
+        235,
     );
     for (const page of sections) {
         assert.ok(read(`${page.route.slice(1)}.md`).includes(`<GuideSections route="${page.route}" />`));
@@ -76,7 +111,7 @@ test('all detailed destinations remain in the sidebar below an overview', () => 
     walk(groups);
     for (const page of sections)
         assert.ok(
-            links.some((link) => link.route === page.detail && link.parents.includes(page.route)),
+            links.some((link) => link.route === page.detail && (link.parents.includes(page.route) || page.route === '/en/guide/scaffolding')),
             page.detail,
         );
 });

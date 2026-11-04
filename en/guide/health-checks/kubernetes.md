@@ -158,4 +158,4 @@ shutdown guide; otherwise Kubernetes may kill the process before cleanup finishe
 - [Protocol Details](/en/guide/health-checks/protocol) -- gRPC methods, HTTP endpoints, configuration
 - [Graceful Shutdown](/en/guide/server/graceful-shutdown) -- shutdown options, hooks, lifecycle events
 - [Kubernetes Deployment](/en/guide/production/kubernetes) -- full deployment guide
-- [@connectum/healthcheck](/en/packages/healthcheck) -- Package Guide
+- [@connectum/healthcheck](/en/guide/health-checks) -- Package Guide

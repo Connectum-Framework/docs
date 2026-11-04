@@ -177,5 +177,5 @@ const otel = createOtelInterceptor({ recordMessages: true });
 - [Observability Overview](/en/guide/observability) -- back to overview
 - [Tracing](/en/guide/observability/tracing) -- server/client interceptors, deep tracing
 - [Backends & Configuration](/en/guide/observability/backends) -- configure metrics exporters
-- [@connectum/otel](/en/packages/otel) -- Package Guide
+- [@connectum/otel](/en/guide/observability) -- Package Guide
 - [@connectum/otel API](/en/api/@connectum/otel/) -- Full API Reference

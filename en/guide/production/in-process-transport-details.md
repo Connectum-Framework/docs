@@ -316,12 +316,12 @@ transportParityTest('greeter.sayHello emits the same span on both transports', {
 });
 ```
 
-See [Spans and metrics of `@connectum/otel` in a test](/en/packages/testing#isolated-telemetry) for the constraints, and [@connectum/testing](/en/packages/testing) for the full API.
+See [Spans and metrics of `@connectum/otel` in a test](/en/guide/testing/integration#isolated-telemetry) for the constraints, and [@connectum/testing](/en/api/@connectum/testing/) for the full API.
 
 ## See Also
 
-- [@connectum/core](/en/packages/core) — module overview and generated API routes
-- [@connectum/otel](/en/packages/otel) — `connectum.transport` attribute and `transport` metric label
-- [@connectum/testing](/en/packages/testing) — `createLocalClient`, `transportParityTest`
+- [@connectum/core](/en/guide/server) — module overview and generated API routes
+- [@connectum/otel](/en/guide/observability) — `connectum.transport` attribute and `transport` metric label
+- [@connectum/testing](/en/guide/testing/integration) — `createLocalClient`, `transportParityTest`
 - [Connectum Runtime Architecture](/en/guide/production/architecture)
 - [API Reference: @connectum/core](/en/api/@connectum/core/)

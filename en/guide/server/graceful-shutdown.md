@@ -570,5 +570,5 @@ await server.start();
 - [Lifecycle](/en/guide/server/lifecycle) -- states, events, and the shutdownSignal
 - [Health Checks & Kubernetes](/en/guide/health-checks) -- configure health monitoring
 - [Configuration](/en/guide/server/configuration) -- environment variables and TLS
-- [@connectum/core](/en/packages/core) -- Package Guide
+- [@connectum/core](/en/guide/server) -- Package Guide
 - [@connectum/core API](/en/api/@connectum/core/) -- Full API Reference

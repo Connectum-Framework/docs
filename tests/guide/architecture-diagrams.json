@@ -1,0 +1,8 @@
+{
+    ".vitepress/theme/assets/diagrams/guide/architecture.html": "e23188d34aa36bbaa89ec9834a150f8f9485fbaa915f2aea8dc3616d9aba7c9e",
+    ".vitepress/theme/assets/diagrams/runtime-composition.svg": "68a6908eeebf72ebc0ee78736078c9f3bf13b9dc0db30e3c53275792362eda1f",
+    ".vitepress/theme/assets/diagrams/catalog-routing.svg": "38bf101301f9d270d84cafb1639b154a8c4ceb5373e7473a0a281c56524a1b74",
+    ".vitepress/theme/components/GuideOverview.vue": "b6c8180e11cea2224ed527abf3d6a42cfef451f52c3f8badc6969068dfbb6689",
+    ".vitepress/theme/components/RuntimeCompositionDiagram.vue": "caad90b03ca0c02597d1e0b65fbfb903acd673bfe367d6c5b79c5b6ffa47d98e",
+    ".vitepress/theme/components/CatalogRoutingDiagram.vue": "533cc51261550abd62645160f4100390af02e5d632176afca760d9e5963f1ed2"
+}

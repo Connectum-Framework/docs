@@ -359,7 +359,7 @@ await server.start();
 - [Auth Overview](/en/guide/auth) -- all authentication strategies
 - [Authorization (RBAC)](/en/guide/auth/authorization) -- declarative rules-based authorization
 - [Auth Context](/en/guide/auth/context) -- accessing identity in handlers
-- [@connectum/auth](/en/packages/auth) -- Package Guide
+- [@connectum/auth](/en/guide/auth) -- Package Guide
 - [@connectum/auth API](/en/api/@connectum/auth/) -- Full API Reference
 - [OpenAPI](/en/guide/openapi) -- publish a contract whose `security` reflects these options
 - [ADR-024: Auth/Authz Strategy](/en/contributing/adr/024-auth-authz-strategy) -- design rationale

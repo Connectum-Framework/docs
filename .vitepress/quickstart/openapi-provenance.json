@@ -1,0 +1,12 @@
+{
+  "generator": "buf.build/community/sudorandom-connect-openapi:v0.25.7",
+  "inputs": {
+    ".vitepress/quickstart/additions/proto/page/v1/page.proto": "fa50e1a71204ac52ebcc57c2a210f1fb9128ad73e8e8253257962145861c6720",
+    ".vitepress/quickstart/buf.gen.openapi.yaml": "310ef25fd3faea7984e96e0b2b3ec17240f00ce08ca0d03a6f4510c1acd2ab7f",
+    ".vitepress/quickstart/generated/page_pb.ts": "74b1478764ba23692e61ffef877aa8dc9af6c73decf1cff2bf66790018456307",
+    ".vitepress/quickstart/runtime-provenance.json": "962f7c3636e596e05494ba9a9335c0247a79c0aaabf22028e125b0adf921ff30",
+    "scripts/generate-quickstart-openapi.mjs": "5edd1e34677a070e9ea84bb3a3cd1a28058d98f22619c9d2ad2fc6ebd3fd6b07"
+  },
+  "generatedSha256": "978ae7b6ab5c38bc3426f73214950c1e4650d3504f2d2bdb60bb5841b7b7a81c",
+  "artifactSha256": "504b21a59580128ba9e043c7d4558b6405502f56a35e189248c7c35affe1dafd"
+}

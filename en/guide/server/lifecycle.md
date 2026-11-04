@@ -263,5 +263,5 @@ await server.start();
 - [Server Overview](/en/guide/server) -- quick start and key concepts
 - [Configuration](/en/guide/server/configuration) -- environment variables and TLS
 - [Graceful Shutdown](/en/guide/server/graceful-shutdown) -- hooks, timeouts, and Kubernetes
-- [@connectum/core](/en/packages/core) -- Package Guide
+- [@connectum/core](/en/guide/server) -- Package Guide
 - [@connectum/core API](/en/api/@connectum/core/) -- Full API Reference

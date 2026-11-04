@@ -273,5 +273,5 @@ describe('updateProfile', () => {
 - [JWT Authentication](/en/guide/auth/jwt) -- token verification
 - [Gateway Authentication](/en/guide/auth/gateway) -- header-based auth
 - [Authorization](/en/guide/auth/authorization) -- RBAC and access control
-- [@connectum/auth](/en/packages/auth) -- Package Guide
+- [@connectum/auth](/en/guide/auth) -- Package Guide
 - [@connectum/auth API](/en/api/@connectum/auth/) -- Full API Reference

@@ -282,5 +282,5 @@ Earlier releases passed `context` to `register()`. See [Custom protocols: setup/
 - [Protocols Overview](/en/guide/protocols) -- back to overview
 - [Server Reflection](/en/guide/protocols/reflection) -- built-in reflection protocol
 - [Custom Interceptors](/en/guide/interceptors/custom) -- creating custom interceptor middleware
-- [@connectum/core](/en/packages/core) -- Package Guide
+- [@connectum/core](/en/guide/server) -- Package Guide
 - [@connectum/core API](/en/api/@connectum/core/) -- Full API Reference

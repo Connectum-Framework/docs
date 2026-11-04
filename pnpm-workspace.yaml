@@ -36,7 +36,7 @@ overrides:
   'nanoid@>=3.0.0 <3.3.18': '3.3.18'
   'postcss@<8.5.25': '8.5.25'
   # Keep the transitive Node transport on the same Connect release as the demos.
-  '@connectrpc/connect-node': 2.2.0
+  '@connectrpc/connect-node': 2.3.0
   'source-map-js@>=1.0.0 <1.2.2': '1.2.2'
   'katex@<0.18.2': '0.18.2'
   # One Vue family: vitepress and its plugins resolve `vue ^3.5` independently of the

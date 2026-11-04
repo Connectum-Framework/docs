@@ -60,12 +60,14 @@
         "id": "troubleshooting",
         "title": "Troubleshooting"
       }
-    ]
+    ],
+    "navigationSha256": "bd3f11553b1a73b1e3ac4bde300b420bc044ac82921d0cf2edeb4b36781d3023",
+    "navigationBaselineSha256": "bd3f11553b1a73b1e3ac4bde300b420bc044ac82921d0cf2edeb4b36781d3023"
   },
   {
     "route": "/en/guide/scaffolding",
     "detail": "/en/guide/scaffolding-commands",
-    "sha256": "2f01f389cc3a276f4b02302bdefb854de84c6b84e9704289f332b0aad14dcd04",
+    "sha256": "2aa930a5a92e71a599c296d876dde32de1e799f7006834aae9453f9c91bc9e56",
     "anchors": [
       {
         "id": "scaffolding-a-new-service",
@@ -131,7 +133,9 @@
         "id": "adding-a-service-by-hand",
         "title": "Adding a service by hand"
       }
-    ]
+    ],
+    "navigationSha256": "9242b6ccfb3b6de11d7fe0fde100eb39835f3a601e12e51ba1133790d500e2e1",
+    "navigationBaselineSha256": "be7ebcb2d30a905edf5f5c59c77a9662afd6b416c62ef75e4ce2cb1ae3964973"
   },
   {
     "route": "/en/guide/validation",
@@ -182,7 +186,9 @@
         "id": "related",
         "title": "Related"
       }
-    ]
+    ],
+    "navigationSha256": "70bcb2507170120bc2abcf548113dfcabd9877f0eef4f44624336a86b4df909c",
+    "navigationBaselineSha256": "70bcb2507170120bc2abcf548113dfcabd9877f0eef4f44624336a86b4df909c"
   },
   {
     "route": "/en/guide/openapi",
@@ -221,7 +227,9 @@
         "id": "related",
         "title": "Related"
       }
-    ]
+    ],
+    "navigationSha256": "35d42cb46faead1da1141e78661c2ad5082b39e37d2600324a414876c9ac78b2",
+    "navigationBaselineSha256": "35d42cb46faead1da1141e78661c2ad5082b39e37d2600324a414876c9ac78b2"
   },
   {
     "route": "/en/guide/service-communication/choosing-a-mechanism",
@@ -256,7 +264,9 @@
         "id": "related",
         "title": "Related"
       }
-    ]
+    ],
+    "navigationSha256": "c7a35399b0bef320b63faa0ae20f7540b995008a683a5367e59c64976071e13c",
+    "navigationBaselineSha256": "c7a35399b0bef320b63faa0ae20f7540b995008a683a5367e59c64976071e13c"
   },
   {
     "route": "/en/guide/service-communication/resolvers",
@@ -319,7 +329,9 @@
         "id": "related",
         "title": "Related"
       }
-    ]
+    ],
+    "navigationSha256": "cee9f76b804b5228f4be060379e54e841c95eee1a689f68f8ab50406f8981a36",
+    "navigationBaselineSha256": "cee9f76b804b5228f4be060379e54e841c95eee1a689f68f8ab50406f8981a36"
   },
   {
     "route": "/en/guide/events",
@@ -370,7 +382,9 @@
         "id": "learn-more",
         "title": "Learn More"
       }
-    ]
+    ],
+    "navigationSha256": "abfa859481ad756b3243af12e34eb456098bca12e40cefe77d97bf50e59eb322",
+    "navigationBaselineSha256": "abfa859481ad756b3243af12e34eb456098bca12e40cefe77d97bf50e59eb322"
   },
   {
     "route": "/en/guide/protocols/reflection",
@@ -461,7 +475,9 @@
         "id": "related",
         "title": "Related"
       }
-    ]
+    ],
+    "navigationSha256": "c2adde9f595ed3ab1f7054ae715e71018580cad60f452c495ceeb3d0a1157ad4",
+    "navigationBaselineSha256": "c2adde9f595ed3ab1f7054ae715e71018580cad60f452c495ceeb3d0a1157ad4"
   },
   {
     "route": "/en/guide/production/docker",
@@ -540,7 +556,9 @@
         "id": "what-s-next",
         "title": "What&#39;s Next"
       }
-    ]
+    ],
+    "navigationSha256": "771ffae933d88eb9419e1b8509eedbd4e36655d07a32e749c4eff1b06d6a15c1",
+    "navigationBaselineSha256": "771ffae933d88eb9419e1b8509eedbd4e36655d07a32e749c4eff1b06d6a15c1"
   },
   {
     "route": "/en/guide/production/kubernetes",
@@ -607,7 +625,9 @@
         "id": "what-s-next",
         "title": "What&#39;s Next"
       }
-    ]
+    ],
+    "navigationSha256": "b91d87902f73d6aa9776adfdbb0769f8da266b88bfaf9e258cc902bee1b39a90",
+    "navigationBaselineSha256": "b91d87902f73d6aa9776adfdbb0769f8da266b88bfaf9e258cc902bee1b39a90"
   },
   {
     "route": "/en/guide/production/envoy-gateway",
@@ -698,7 +718,9 @@
         "id": "what-s-next",
         "title": "What&#39;s Next"
       }
-    ]
+    ],
+    "navigationSha256": "f2161ccf471adf1ad76aa2a6984619d082c3a4cededb7b0939d0eba05e7441d8",
+    "navigationBaselineSha256": "f2161ccf471adf1ad76aa2a6984619d082c3a4cededb7b0939d0eba05e7441d8"
   },
   {
     "route": "/en/guide/production/service-mesh",
@@ -813,50 +835,9 @@
         "id": "what-s-next",
         "title": "What&#39;s Next"
       }
-    ]
-  },
-  {
-    "route": "/en/guide/production/architecture",
-    "detail": "/en/guide/production/architecture-details",
-    "sha256": "983f0c8fb86fe33a8544765842f604abc66d09ad4673f539fd0184ebbbcf22a7",
-    "anchors": [
-      {
-        "id": "connectum-runtime-architecture",
-        "title": "Connectum Runtime Architecture"
-      },
-      {
-        "id": "boundary-and-ownership",
-        "title": "Boundary and ownership"
-      },
-      {
-        "id": "runtime-composition",
-        "title": "Runtime composition"
-      },
-      {
-        "id": "network-and-in-process-parity",
-        "title": "Network and in-process parity"
-      },
-      {
-        "id": "catalog-call-routing",
-        "title": "Catalog call routing"
-      },
-      {
-        "id": "extension-seams",
-        "title": "Extension seams"
-      },
-      {
-        "id": "deployment-boundary",
-        "title": "Deployment boundary"
-      },
-      {
-        "id": "build-time-inputs",
-        "title": "Build-time inputs"
-      },
-      {
-        "id": "related",
-        "title": "Related"
-      }
-    ]
+    ],
+    "navigationSha256": "3efe5b4208ca8b61d1cc232d767fac9c6ef50581baa911a74f68f9a840d68ad0",
+    "navigationBaselineSha256": "3efe5b4208ca8b61d1cc232d767fac9c6ef50581baa911a74f68f9a840d68ad0"
   },
   {
     "route": "/en/guide/runtime-compatibility",
@@ -911,7 +892,9 @@
         "id": "related",
         "title": "Related"
       }
-    ]
+    ],
+    "navigationSha256": "3a43b613e988c2dadfc174c7e7583ab9b48f41dec9b28f192c899610f469a894",
+    "navigationBaselineSha256": "3a43b613e988c2dadfc174c7e7583ab9b48f41dec9b28f192c899610f469a894"
   },
   {
     "route": "/en/guide/production/in-process-transport",
@@ -982,7 +965,9 @@
         "id": "see-also",
         "title": "See Also"
       }
-    ]
+    ],
+    "navigationSha256": "c3e9696899e1bb18401f4a26050cbbd7cd3116758abc067c9e8162d74758b634",
+    "navigationBaselineSha256": "c3e9696899e1bb18401f4a26050cbbd7cd3116758abc067c9e8162d74758b634"
   },
   {
     "route": "/en/guide/production/transport-matrix",
@@ -1041,7 +1026,9 @@
         "id": "learn-more",
         "title": "Learn More"
       }
-    ]
+    ],
+    "navigationSha256": "e26ec62aaea5c349ce4e50eb052b1ac2a3b3e0749fa74cb5b38fab2f3ca17a67",
+    "navigationBaselineSha256": "e26ec62aaea5c349ce4e50eb052b1ac2a3b3e0749fa74cb5b38fab2f3ca17a67"
   },
   {
     "route": "/en/guide/protocols/custom",
@@ -1092,6 +1079,8 @@
         "id": "related",
         "title": "Related"
       }
-    ]
+    ],
+    "navigationSha256": "658694215b49acaaf3386c3a55ca88d2f30b3bfa76a0683ca477c86d8018b9e4",
+    "navigationBaselineSha256": "658694215b49acaaf3386c3a55ca88d2f30b3bfa76a0683ca477c86d8018b9e4"
   }
 ]

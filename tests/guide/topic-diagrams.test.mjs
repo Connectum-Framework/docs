@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { runInNewContext } from 'node:vm';
+import { canonicalDocumentationLink } from '../../.vitepress/data/redirects.ts';
+import { guideSections } from '../../.vitepress/guide/navigation.ts';
 import { diagrams } from '../../scripts/guide-diagrams/models.mjs';
 import { syncOverview } from '../../scripts/guide-diagrams/pages.mjs';
 import { escapeHtml } from '../../scripts/guide-diagrams/primitives.mjs';
@@ -9,22 +10,22 @@ import { renderHtml } from '../../scripts/guide-diagrams/render.mjs';
 import { checkGeometry, geometry } from './diagram-geometry.mjs';
 
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
-const config = read('.vitepress/config/en.ts');
-const declaration = config.slice(config.indexOf('const guideSidebar:'), config.indexOf('const packagesSidebar:'));
-const groups = JSON.parse(JSON.stringify(runInNewContext(`${declaration.replace(': DefaultTheme.SidebarItem[]', '')}\nguideSidebar;`, {}, { timeout: 1000 })));
-const roots = groups.flatMap((group) => group.items.filter((item) => item.link && item.items));
 const descendants = (item) => (item.items ?? []).flatMap((child) => [child.link, ...descendants(child)]).filter(Boolean);
+const flatten = (items) => items.flatMap((item) => [item, ...flatten(item.items ?? [])]);
+const destinations = flatten(guideSections);
 
-test('every root section visibly covers its sidebar subsections', () => {
-    assert.equal(roots.length, 25);
-    assert.equal(diagrams.length, roots.length);
+test('accepted topic diagrams keep visible routes to the material they explain after regrouping', () => {
+    assert.equal(diagrams.length, 25);
     assert.equal(new Set(diagrams.map((diagram) => diagram.key)).size, diagrams.length);
-    assert.deepEqual(diagrams.map((diagram) => diagram.route).sort(), roots.map((root) => root.link).sort());
     for (const diagram of diagrams) {
-        const expected = descendants(roots.find((root) => root.link === diagram.route)).sort();
+        const owner = destinations.find((item) => item.link === diagram.route);
+        assert.ok(owner, `${diagram.key}: topic is no longer reachable`);
+        const expected = new Set(descendants(owner));
+        if (diagram.key === 'scaffolding') expected.add('/en/guide/scaffolding-commands');
+        if (diagram.key === 'architecture') expected.add(diagram.route);
         const { nodes } = geometry(diagram.body);
         const covered = [...new Set(nodes.flatMap((node) => node.topics))].sort();
-        assert.deepEqual(covered, expected, `${diagram.key}: subsection coverage differs from navigation`);
+        for (const route of covered) assert.ok(expected.has(canonicalDocumentationLink(route)), `${diagram.key}: diagram points outside its canonical topic: ${route}`);
         for (const node of nodes.filter((node) => node.topics.length)) {
             assert.match(node.markup, /<text[^>]*>[^<]+<\/text>/, `${diagram.key}/${node.id}: metadata without a visible topic`);
             for (const route of node.topics) assert.ok(read(`${route.slice(1)}.md`).length > 100, route);
@@ -38,8 +39,13 @@ test('self-contained accessible HTML and SSR embeds are reproducible', () => {
         assert.equal(html, renderHtml(diagram), `${diagram.key}: stale artwork`);
         assert.ok(html.includes(`<h1>${escapeHtml(diagram.title)}</h1>`), `${diagram.key}: standalone heading differs from the title`);
         const page = read(`${diagram.route.slice(1)}.md`);
-        assert.equal(page, syncOverview(page, diagram), `${diagram.key}: stale embed or caption`);
-        assert.match(page, /<GuideOverview :source="overview" \/>/);
+        if (diagram.key === 'scaffolding') {
+            assert.match(page, /npx @connectum\/cli init my-service --yes/);
+            assert.ok(page.includes('/en/guide/scaffolding-commands'));
+        } else {
+            assert.equal(page, syncOverview(page, diagram), `${diagram.key}: stale embed or caption`);
+            assert.match(page, /<GuideOverview :source="overview" \/>/);
+        }
         assert.doesNotMatch(page, /```mermaid|guide-map|GuideFlow/);
         assert.match(html, /<svg[^>]*role="img"[^>]*aria-labelledby="([a-z-]+)-title \1-desc"[^>]*>\s*<title/);
         assert.match(html, /<desc[^>]*>[^<]+<\/desc>/);

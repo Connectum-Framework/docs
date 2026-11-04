@@ -164,7 +164,7 @@ describe('my interceptor', () => {
 });
 ```
 
-`createMockFn()` is API-compatible with the subset of `node:test`'s `mock.fn()` that the testing helpers rely on: `.mock.callCount()` and `.mock.calls`, where each call records `arguments`, `result`, `error` and `this`, the implementation receives the `this` of the call, and `.mock.calls` returns a copy on every read. It does not record the `stack` and `target` of a call and has none of the other `mock.fn()` members (`mockImplementation()`, `resetCalls()`, `restore()`). Assertions that stay within that subset work on both. Full API: [@connectum/testing](/en/packages/testing).
+`createMockFn()` is API-compatible with the subset of `node:test`'s `mock.fn()` that the testing helpers rely on: `.mock.callCount()` and `.mock.calls`, where each call records `arguments`, `result`, `error` and `this`, the implementation receives the `this` of the call, and `.mock.calls` returns a copy on every read. It does not record the `stack` and `target` of a call and has none of the other `mock.fn()` members (`mockImplementation()`, `resetCalls()`, `restore()`). Assertions that stay within that subset work on both. Full API: [@connectum/testing](/en/api/@connectum/testing/).
 
 The `@connectum/testing/parity` subpath registers a test through the `node:test` API
 (`transportParityTest`), so it needs a runner that provides that API: `node --test` (or a plain
@@ -202,5 +202,5 @@ packages in your application. This repository does not validate that combination
 - [Runtime Support](/en/guide/typescript/runtime-support) -- how each runtime executes TypeScript and loads `@connectum/*` packages
 - [Service Communication](/en/guide/service-communication) -- client transport configuration and patterns
 - [Testing](/en/guide/testing) -- scenario-based API testing
-- [@connectum/testing](/en/packages/testing) -- Package Guide
-- [@connectum/otel](/en/packages/otel) -- Package Guide
+- [@connectum/testing](/en/guide/testing/integration) -- Package Guide
+- [@connectum/otel](/en/guide/observability) -- Package Guide

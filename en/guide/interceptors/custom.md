@@ -33,7 +33,7 @@ const myInterceptor: Interceptor = (next) => async (req) => {
 Connectum follows the factory pattern for all interceptors -- a function that accepts an options object and returns an `Interceptor`. This is the recommended approach for reusable interceptors:
 
 ::: tip
-The **[@connectum/auth](/en/packages/auth)** package provides authentication and authorization interceptors. Use it when its policies fit your service instead of implementing those concerns from scratch.
+The **[@connectum/auth](/en/guide/auth)** package provides authentication and authorization interceptors. Use it when its policies fit your service instead of implementing those concerns from scratch.
 :::
 
 ```typescript
@@ -164,7 +164,7 @@ receives `internal error` (code `Internal`) or an empty text (when the code is `
 for an abort, or the error carried a numeric `code` from 1 to 16 other than `Internal`).
 Set `exposeErrorMessages: true` on the error handler to send the original text instead.
 Cause retention and logging are conditional, not universal. See
-[What a client sees when a handler fails](/en/guide/interceptors/built-in#what-a-client-sees-when-a-handler-fails)
+[What a client sees when a handler fails](/en/guide/interceptors/error-handling#what-the-client-receives)
 for the exact rules.
 :::
 
@@ -238,7 +238,7 @@ const server = createServer({
 This example audits unary RPCs only and bypasses streaming calls. For a stream,
 `await next(req)` opens the response; it does not establish successful completion.
 Observing stream completion and failure requires wrapping response iteration,
-as the built-in [request logger](/en/guide/interceptors/built-in#request-logging) does.
+as the built-in [request logger](/en/guide/interceptors/logging) does.
 
 ```typescript
 import type { Interceptor } from '@connectrpc/connect';
@@ -316,6 +316,6 @@ describe('createAuthInterceptor', () => {
 - [Built-in Interceptors](/en/guide/interceptors/built-in) -- default chain reference
 - [Method Filtering](/en/guide/interceptors/method-filtering) -- per-method interceptor routing
 - [Custom Protocols](/en/guide/protocols/custom) -- creating protocol plugins
-- [@connectum/interceptors](/en/packages/interceptors) -- Package Guide
+- [@connectum/interceptors](/en/guide/interceptors) -- Package Guide
 - [@connectum/interceptors API](/en/api/@connectum/interceptors/) -- Full API Reference
 - [with-custom-interceptor example](https://github.com/Connectum-Framework/examples/tree/main/with-custom-interceptor) -- API key auth & rate limiting interceptors

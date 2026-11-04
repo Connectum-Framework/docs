@@ -1,0 +1,86 @@
+{
+  "successful": {
+    "code": "OK",
+    "response": {
+      "title": "Your private page",
+      "body": "This content requires a verified JWT."
+    },
+    "protocols": [
+      "Connect HTTP/2",
+      "gRPC"
+    ],
+    "curl": true
+  },
+  "missing": {
+    "code": "Unauthenticated",
+    "message": "Missing credentials"
+  },
+  "invalid": {
+    "code": "Unauthenticated",
+    "message": "Authentication failed"
+  },
+  "health": {
+    "status": "SERVING"
+  },
+  "reflection": {
+    "services": [
+      "greeter.v1.GreeterService",
+      "grpc.health.v1.Health",
+      "page.v1.PageService"
+    ]
+  },
+  "otel": {
+    "exporter": "console",
+    "spans": [
+      "page.v1.PageService/GetPage"
+    ]
+  },
+  "wire": {
+    "curl": {
+      "successful": {
+        "status": 200,
+        "body": {
+          "title": "Your private page",
+          "body": "This content requires a verified JWT."
+        }
+      },
+      "missing": {
+        "status": 401,
+        "body": {
+          "code": "unauthenticated",
+          "message": "Missing credentials"
+        }
+      },
+      "invalid": {
+        "status": 401,
+        "body": {
+          "code": "unauthenticated",
+          "message": "Authentication failed"
+        }
+      }
+    },
+    "grpc": {
+      "successful": {
+        "code": "OK",
+        "body": {
+          "title": "Your private page",
+          "body": "This content requires a verified JWT."
+        }
+      },
+      "missing": {
+        "code": "Unauthenticated",
+        "body": {
+          "code": "Unauthenticated",
+          "message": "Missing credentials"
+        }
+      },
+      "invalid": {
+        "code": "Unauthenticated",
+        "body": {
+          "code": "Unauthenticated",
+          "message": "Authentication failed"
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,7 @@
+import { tasklist } from '@mdit/plugin-tasklist';
 import { defineConfig } from 'vitepress';
 import llmstxt, { copyOrDownloadAsMarkdownButtons } from 'vitepress-plugin-llms';
+import { documentationRedirects, findRedirect } from '../data/redirects.ts';
 import { pmContainerPlugin } from '../plugins/pmContainer.js';
 import { runtimeContainerPlugin } from '../plugins/runtimeContainer.js';
 import { DEFAULT_PACKAGE_MANAGER, PACKAGE_MANAGER_STORAGE_KEY, PACKAGE_MANAGERS } from '../theme/packageManager.js';
@@ -30,13 +32,7 @@ const restoreSelection = (param: string, attribute: string, key: string, values:
 
 const restoreRuntimeScript = restoreSelection('runtime', 'runtime', RUNTIME_STORAGE_KEY, RUNTIMES, DEFAULT_RUNTIME);
 
-const restorePackageManagerScript = restoreSelection(
-    'pm',
-    'pm',
-    PACKAGE_MANAGER_STORAGE_KEY,
-    PACKAGE_MANAGERS,
-    DEFAULT_PACKAGE_MANAGER,
-);
+const restorePackageManagerScript = restoreSelection('pm', 'pm', PACKAGE_MANAGER_STORAGE_KEY, PACKAGE_MANAGERS, DEFAULT_PACKAGE_MANAGER);
 
 export const sharedConfig = defineConfig({
     title: 'Connectum',
@@ -66,9 +62,7 @@ export const sharedConfig = defineConfig({
     themeConfig: {
         logo: { src: '/assets/connectum-wordmark-animated.svg?v=2', alt: 'Connectum' },
         siteTitle: false,
-        socialLinks: [
-            { icon: 'github', link: 'https://github.com/Connectum-Framework/connectum' },
-        ],
+        socialLinks: [{ icon: 'github', link: 'https://github.com/Connectum-Framework/connectum' }],
         search: {
             provider: 'local',
             options: {
@@ -77,31 +71,45 @@ export const sharedConfig = defineConfig({
             },
         },
         footer: {
-            message: 'Released under the Apache License 2.0. · <a href="/llms.txt">llms.txt</a> · <a href="/llms-full.txt">llms-full.txt</a>',
+            message:
+                '<a href="/en/migration/">Migration</a> · <a href="/en/contributing/">Contributing</a> · <a href="https://github.com/Connectum-Framework/examples">Examples</a> · Released under the Apache License 2.0. · <a href="/llms.txt">llms.txt</a> · <a href="/llms-full.txt">llms-full.txt</a>',
             copyright: 'Copyright <a href="https://highload.zone" target="_blank">Highload.Zone</a>',
         },
     },
     markdown: {
         lineNumbers: true,
         config(md) {
+            md.use(tasklist, { disabled: true, label: true });
             md.use(copyOrDownloadAsMarkdownButtons);
             md.use(runtimeContainerPlugin);
             md.use(pmContainerPlugin);
         },
     },
     srcExclude: ['**/api/_media/**'],
-    ignoreDeadLinks: [
-        /localhost/,
-        /_media/,
-    ],
+    ignoreDeadLinks: [/localhost/, /_media/],
     cleanUrls: true,
     sitemap: {
         hostname: 'https://connectum.dev',
+        transformItems: (items) => items.filter((item) => !findRedirect(item.url.startsWith('/') ? item.url : `/${item.url}`)),
+    },
+    transformPageData(page) {
+        const redirect = findRedirect(`/${page.relativePath.replace(/\.md$/, '').replace(/\/index$/, '/')}`);
+        if (redirect) page.frontmatter.search = false;
+    },
+    transformHead({ pageData }) {
+        const redirect = findRedirect(`/${pageData.relativePath.replace(/\.md$/, '').replace(/\/index$/, '/')}`);
+        if (!redirect) return [];
+        return [
+            ['link', { rel: 'canonical', href: `https://connectum.dev${redirect.to.split('#')[0]}` }],
+            ['meta', { name: 'robots', content: 'noindex,follow' }],
+        ];
     },
     vite: {
-        plugins: [llmstxt({
-            ignoreFiles: ['index.md', 'README.md'],
-        })],
+        plugins: [
+            llmstxt({
+                ignoreFiles: ['index.md', 'README.md', ...documentationRedirects.map(({ from }) => `${from.replace(/^\//, '')}${from.endsWith('/') ? 'index' : ''}.md`)],
+            }),
+        ],
         optimizeDeps: {
             /* The theme registers the ELK layout engine on the Mermaid it imports, and
                `vitepress-plugin-mermaid` renders through the Mermaid *it* imports. On a

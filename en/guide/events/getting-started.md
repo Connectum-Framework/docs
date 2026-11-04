@@ -276,6 +276,9 @@ await eventBus.stop();
 ```
 
 `data` is `MessageInitShape` of the schema, so a plain object type-checks as shown.
+
+Nested messages, repeated fields and oneofs can be written inline. `ctx.publish`
+accepts the same initializer.
 A message built with `create(UserCreatedSchema, { ... })` is accepted as well.
 
 The publisher and subscriber must use the same broker and stream. This publisher

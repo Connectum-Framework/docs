@@ -83,4 +83,4 @@ Names that are already camelCase (`userId`, `email`) are unchanged.
 
 Run your test suite against `@connectum/test-fixtures` 1.3.0. For a stronger check, compile the same message with a real `.proto` and compare `create(realDescriptor)` with `create(mock)`.
 
-See also [`@connectum/test-fixtures`](/en/packages/test-fixtures).
+See also [`@connectum/test-fixtures`](/en/guide/testing/unit).

@@ -8,8 +8,8 @@
         "src/inventory.ts": "9f65e8cd7be5649b301b1c48395f8640ef1352d431f42feea672f56fec3bb098",
         "src/server.ts": "44a83a277569649b0c4ed22da87dc47296b7b8b5912900656c6392e586e55767",
         "src/capture.ts": "ca06e9005a6cf44afbfd31eac88972dcbea6620a264581ca2b6c272b22d7dc85",
-        "package.json": "d55b5d8ccc7120bc9a1f2be097f1aac471b51ec03f1aa1f64d4cd434a332008a",
-        "pnpm-lock.yaml": "7dff4154afdbb8861565631b6933291a32383b721a89d741722acfad4c3be3ab",
+        "package.json": "85cb3339758fa6df10e1ae3c27a90446ce9c91e1af420b9bcf7261279324554d",
+        "pnpm-lock.yaml": "e863e416247b0c6d6a0352be83a4df0d301a5023eff69717f7d6b422d472f668",
         "buf.gen.yaml": "85b969d822dde72f391ca4bc345e70cd06f46e26420986811509c767e298e6ca",
         "../settings.ts": "c1696d39ff6630adaf351e5bd1beca9bc03fcef0ad143afcc21bccc7cd160975"
     },
@@ -21,7 +21,13 @@
             },
             "result": {
                 "code": "OK",
-                "events": ["audit: before", "stockTag: before", "handler: return 7 units", "stockTag: after (set header)", "audit: after (header = fixture)"],
+                "events": [
+                    "audit: before",
+                    "stockTag: before",
+                    "handler: return 7 units",
+                    "stockTag: after (set header)",
+                    "audit: after (header = fixture)"
+                ],
                 "handlerCalls": 1,
                 "sourceHeader": "fixture",
                 "response": {
@@ -36,7 +42,13 @@
             },
             "result": {
                 "code": "OK",
-                "events": ["stockTag: before", "audit: before", "handler: return 7 units", "audit: after (header = unset)", "stockTag: after (set header)"],
+                "events": [
+                    "stockTag: before",
+                    "audit: before",
+                    "handler: return 7 units",
+                    "audit: after (header = unset)",
+                    "stockTag: after (set header)"
+                ],
                 "handlerCalls": 1,
                 "sourceHeader": "fixture",
                 "response": {
@@ -51,7 +63,11 @@
             },
             "result": {
                 "code": "OK",
-                "events": ["audit: before", "handler: return 7 units", "audit: after (header = unset)"],
+                "events": [
+                    "audit: before",
+                    "handler: return 7 units",
+                    "audit: after (header = unset)"
+                ],
                 "handlerCalls": 1,
                 "sourceHeader": null,
                 "response": {
@@ -66,7 +82,11 @@
             },
             "result": {
                 "code": "NotFound",
-                "events": ["audit: before", "stockTag: before", "handler: throw NotFound"],
+                "events": [
+                    "audit: before",
+                    "stockTag: before",
+                    "handler: throw NotFound"
+                ],
                 "handlerCalls": 1,
                 "sourceHeader": null,
                 "error": "SKU not found"
@@ -79,7 +99,11 @@
             },
             "result": {
                 "code": "NotFound",
-                "events": ["stockTag: before", "audit: before", "handler: throw NotFound"],
+                "events": [
+                    "stockTag: before",
+                    "audit: before",
+                    "handler: throw NotFound"
+                ],
                 "handlerCalls": 1,
                 "sourceHeader": null,
                 "error": "SKU not found"
@@ -92,7 +116,10 @@
             },
             "result": {
                 "code": "NotFound",
-                "events": ["audit: before", "handler: throw NotFound"],
+                "events": [
+                    "audit: before",
+                    "handler: throw NotFound"
+                ],
                 "handlerCalls": 1,
                 "sourceHeader": null,
                 "error": "SKU not found"

@@ -16,7 +16,7 @@ Accepted -- 2026-02-20; revised -- 2026-10-08 (Phase 2 cancelled; see Current De
 > checklist, and rated alternatives -- is preserved unchanged. Its package inventory
 > is historical: the text names 12 and 13 packages (a partial update on 2026-03-22),
 > `@connectum/testing` has been published since 2026-03-05 (`private: false`), and
-> the monorepo has 15 packages today; see [Packages](/en/packages/).
+> the monorepo has 15 packages today; see [Packages](/en/guide/about#modules).
 
 ## Current Decision (2026-10-08)
 
@@ -47,7 +47,7 @@ The group includes all framework modules and tools, including `@connectum/testin
 and `@connectum/test-fixtures`. `@connectum/testing` is a public package
 (`private: false`) with main and `/parity` exports; it is not an unpublished
 exception to this policy. Package inventories and dependency layers belong in
-[Packages](/en/packages/) and [Architecture](/en/guide/production/architecture).
+[Packages](/en/guide/about#modules) and [Architecture](/en/guide/production/architecture).
 A dependency layer does not define a version group.
 
 ### Release identity

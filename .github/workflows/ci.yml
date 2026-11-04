@@ -44,6 +44,18 @@ jobs:
       - name: Test overview boundaries and preserved guide content
         run: pnpm guide:test
 
+      - name: Check canonical navigation and compatibility routes
+        run: |
+          pnpm docs:routes:check
+          pnpm navigation:typecheck
+
+      - name: Check Quickstart sources, recorded provenance and types
+        run: |
+          pnpm quickstart:generate
+          git diff --exit-code -- .vitepress/quickstart/project-provenance.json
+          pnpm quickstart:test
+          pnpm quickstart:typecheck
+
       - name: Check homepage walkthroughs and generation
         run: |
           pnpm homepage:generate

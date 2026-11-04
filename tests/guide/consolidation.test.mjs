@@ -5,10 +5,10 @@ import { test } from 'node:test';
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 
 test('the catalog aggregate strategy correction belongs to the reference while the overview retains its links', () => {
-    const reference = read('en/reference/service-catalog.md');
+    const reference = read('en/guide/service-communication/catalog-configuration.md');
     assert.match(reference, /local: protoc-gen-connectum-catalog\n {4}strategy: all/);
     assert.match(reference, /duplicate generated file name/);
-    assert.match(read('en/guide/service-communication/service-catalog.md'), /\/en\/reference\/service-catalog#generating-the-catalog/);
+    assert.match(read('en/guide/service-communication/service-catalog.md'), /\/en\/guide\/service-communication\/catalog-configuration#generating-the-catalog/);
 });
 
 test('the moved transport reference preserves the Workers support distinction and its former fragment', () => {

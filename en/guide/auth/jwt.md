@@ -187,5 +187,5 @@ If an intentionally public RPC still needs a token, check authentication
 - [Auth Overview](/en/guide/auth) -- all authentication strategies
 - [Authorization](/en/guide/auth/authorization) -- RBAC rules and programmatic authorization
 - [Auth Context](/en/guide/auth/context) -- accessing identity in handlers
-- [@connectum/auth](/en/packages/auth) -- Package Guide
+- [@connectum/auth](/en/guide/auth) -- Package Guide
 - [@connectum/auth API](/en/api/@connectum/auth/) -- Full API Reference

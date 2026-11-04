@@ -1,0 +1,53 @@
+/* the stock hover selector must not keep an explicitly dismissed menu visible. */
+.VPNavBarMenuGroup.VPFlyout .button[aria-expanded="false"] + .menu {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.VPNavBarMenuLink[href="/en/builder"] > span,
+.VPNavScreenMenuLink[href="/en/builder"] > span {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--vp-c-brand-1);
+    border-radius: 8px;
+    padding: 0 12px;
+    line-height: 32px;
+    color: var(--vp-c-brand-1);
+    transition: background-color 0.2s;
+}
+
+.VPNavBarMenuLink[href="/en/builder"]:hover > span,
+.VPNavBarMenuLink[href="/en/builder"]:focus-visible > span,
+.VPNavScreenMenuLink[href="/en/builder"]:hover > span,
+.VPNavScreenMenuLink[href="/en/builder"]:focus-visible > span {
+    background-color: var(--vp-c-brand-soft);
+}
+
+/* resource links must remain available when the default theme hides its sidebar footer. */
+.Layout .VPFooter.has-sidebar.VPFooter {
+    display: block;
+}
+
+@media (min-width: 960px) {
+    .Layout .VPFooter.has-sidebar.VPFooter {
+        padding-left: calc(var(--vp-sidebar-width) + 32px);
+    }
+}
+
+.compatibility-route {
+    max-width: 760px;
+    margin: 48px auto;
+    padding: 24px;
+    line-height: 1.7;
+}
+
+.compatibility-route a {
+    color: var(--vp-c-brand-1);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.compatibility-route li {
+    margin-top: 8px;
+    scroll-margin-top: 96px;
+}

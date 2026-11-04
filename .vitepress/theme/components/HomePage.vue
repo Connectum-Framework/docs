@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+// biome-ignore lint/correctness/noUnusedImports: the Vue template renders the documented version.
 import site from '../../data/site.json';
+// biome-ignore lint/correctness/noUnusedImports: the Vue template mounts this component.
 import EcosystemRail from './EcosystemRail.vue';
+// biome-ignore lint/correctness/noUnusedImports: the Vue template mounts this component.
 import HomeCodeWalkthrough from './HomeCodeWalkthrough.vue';
+// biome-ignore lint/correctness/noUnusedImports: the Vue template mounts this component.
 import HomeDeployments from './HomeDeployments.vue';
+// biome-ignore lint/correctness/noUnusedImports: the Vue template mounts this component.
 import ModuleGrid from './ModuleGrid.vue';
 
 const homeRoot = ref<HTMLElement>();
@@ -31,6 +36,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => revealObserver?.disconnect());
 
+// biome-ignore lint/correctness/noUnusedVariables: the Vue template iterates these goal links.
 const goals = [
     {
         label: 'New to Connectum',
@@ -57,11 +63,12 @@ const goals = [
         label: 'Know what you need',
         title: 'Find an exact option',
         description: 'Jump by module or symbol into the generated API, compatibility matrix, or migration guidance.',
-        link: '/en/reference/',
+        link: '/en/api/',
         action: 'Open reference',
     },
 ] as const;
 
+// biome-ignore lint/correctness/noUnusedVariables: the Vue template iterates these lifecycle entries.
 const lifecycle = [
     ['Define', 'Proto contracts and generated types'],
     ['Run', 'Server lifecycle and transport'],
@@ -75,12 +82,12 @@ const lifecycle = [
     <main ref="homeRoot" class="connectum-home">
         <section class="home-hero" aria-labelledby="home-title">
             <div class="home-hero__copy">
-                <p class="home-eyebrow">gRPC + ConnectRPC for TypeScript</p>
-                <h1 id="home-title">From your first RPC to operating a service</h1>
+                <p class="home-eyebrow">Microservices framework</p>
+                <h1 id="home-title">Proto is the single source of truth</h1>
                 <p class="home-hero__lead">Connectum provides a TypeScript service runtime for proto contracts, request middleware, security, observability, and operations.</p>
                 <div class="home-actions">
-                    <a class="home-button home-button--primary" href="/en/builder">Build your service</a>
-                    <a class="home-button home-button--secondary" href="/en/reference/">Find an API</a>
+                    <a class="home-button home-button--primary" href="/en/guide/about">Get started</a>
+                    <a class="home-button home-button--secondary" href="/en/guide/production/architecture">Explore architecture</a>
                 </div>
                 <dl class="home-support" aria-label="Documentation support information">
                     <div>
@@ -173,7 +180,7 @@ const lifecycle = [
                 <p>Each module links to its guide, configuration help, and generated API reference.</p>
             </div>
             <ModuleGrid />
-            <p class="home-section__more"><a href="/en/packages/">Compare all packages →</a></p>
+            <p class="home-section__more"><a href="/en/guide/about#modules">Find a module's guide and API →</a></p>
         </section>
 
         <section class="home-section home-resources" aria-labelledby="resources-title">

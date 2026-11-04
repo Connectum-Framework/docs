@@ -139,6 +139,6 @@ does not validate a live server's access policy.
 ## Related
 
 - [Proto-Based Authz](/en/guide/auth/proto-authz) -- the authz options this overlay reads
-- [@connectum/auth](/en/packages/auth) -- Package Guide (`resolveMethodAuth`, `getPublicMethods`)
+- [@connectum/auth](/en/guide/auth) -- Package Guide (`resolveMethodAuth`, `getPublicMethods`)
 - [ADR-030: OpenAPI generation with proto-authz overlay](/en/contributing/adr/030-openapi-authz-generation) -- design rationale
 - [`protoc-gen-connect-openapi`](https://github.com/sudorandom/protoc-gen-connect-openapi) -- the base generator

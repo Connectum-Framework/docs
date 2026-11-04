@@ -1,11 +1,16 @@
 ---
-title: What Is Connectum?
+title: Get started
 description: A concise mental model for the Connectum framework and where to begin.
 docType: concept
 outline: deep
 ---
 
-# What Is Connectum?
+# Get started {#what-is-connectum}
+
+<script setup>
+import ModuleGrid from '../../.vitepress/theme/components/ModuleGrid.vue';
+import TechnologyStack from '../../.vitepress/theme/components/TechnologyStack.vue';
+</script>
 
 Connectum builds on ConnectRPC to give TypeScript services a common
 way to start, stop and connect request middleware. Your API stays in Protobuf;
@@ -19,25 +24,11 @@ typed Protobuf RPCs.
 
 ## Mental Model
 
-<figure class="technical-diagram" aria-label="How a contract becomes a registered service">
+<TechnologyStack />
 
-```mermaid
-flowchart TD
-    accTitle: From a contract to a registered service
-    accDescr: Generate descriptors and message types from Protobuf. Bind the descriptors to your TypeScript handlers with defineService, then register the service on a server.
-    Contract["Protobuf contract<br/>services · RPCs<br/>messages"] -->|generate| Types["Descriptors<br/>message types"]
-    Types --> Service["defineService<br/>contract + handlers"]
-    Handlers["TypeScript<br/>handlers"] --> Service
-    Service --> Server["createServer<br/>register the service"]
-    class Contract accent
-```
-
-<figcaption>Your contract describes the API; your handlers implement it; the server runs it. Generated descriptors connect the contract and implementation.</figcaption>
-</figure>
-
-Start with [one working RPC](/en/guide/quickstart), including a request rejected
-by configured validation, without an external broker. Authentication, events,
-telemetry and resilience are optional next steps, not prerequisites.
+Start with [one protected RPC](/en/guide/quickstart), from a small contract to
+an authenticated response. The [manual tutorial](/en/guide/quickstart-manual)
+also explains the server foundation without the CLI.
 
 ## What Connectum Owns
 
@@ -45,7 +36,7 @@ ConnectRPC supplies the RPC layer; protobuf-es supplies generated message and
 service types; Protovalidate supplies constraint validation. Connectum adds a
 shared server lifecycle, explicit module composition and typed catalog calls.
 Runtime checks depend on the middleware and configuration you actually connect.
-See [Guarantees and limits](/en/reference/guarantees) for prerequisites,
+See [Guarantees and limits](/en/guide/guarantees) for prerequisites,
 enforcement layers, limitations and source/test evidence.
 
 Connectum does not provide an ORM, frontend framework, or CommonJS build. Public
@@ -55,13 +46,14 @@ requirements are documented in [Runtime Compatibility](/en/guide/runtime-compati
 ## Choose Your Path {#choose-your-path}
 
 - New service: [Build Your First Connectum Service](/en/guide/quickstart)
-- Server behavior: [Server](/en/guide/server)
-- Validation and middleware: [Interceptors](/en/guide/interceptors)
-- Service-to-service design: [Choosing a Communication Mechanism](/en/guide/service-communication/choosing-a-mechanism)
-- Authentication and authorization: [Auth and Authz](/en/guide/auth)
-- Production signals: [Observability](/en/guide/observability)
-- Deployment: [Docker](/en/guide/production/docker) or [Kubernetes](/en/guide/production/kubernetes)
-- Exact interfaces: [API and Reference](/en/reference/)
+- Application composition: [Build a service](/en/guide/build-a-service)
+- Calls, local transports and events: [Communication](/en/guide/communication)
+- Unit, integration and deployed scenarios: [Testing](/en/guide/testing)
+- Identity, permissions and TLS: [Secure services](/en/guide/secure-services)
+- Production signals and probes: [Observe and operate](/en/guide/observe-and-operate)
+- Containers, orchestration and gateways: [Deploy](/en/guide/deploy)
+- Runtime boundaries and extensions: [Advanced](/en/guide/advanced)
+- Exact interfaces: [Generated API](/en/api/)
 
 ## Architecture and Boundaries {#architecture-overview}
 
@@ -84,3 +76,12 @@ design decisions, including why capabilities remain separate modules.
 - [OpenTelemetry for JavaScript](https://opentelemetry.io/docs/languages/js/)
 - [gRPC health checking protocol](https://github.com/grpc/grpc/blob/master/doc/health-checking.md)
 - [Protovalidate](https://github.com/bufbuild/protovalidate)
+
+## Find a module {#modules}
+
+Each module has a Guide for its usage and a generated API for exact symbols.
+Installation and behavior live with the Guide that owns that capability.
+
+::: details Browse modules by capability
+<ModuleGrid />
+:::

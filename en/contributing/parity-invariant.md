@@ -74,7 +74,7 @@ revised or accompanied by a documented carve-out in the spec.
    sequence around every run: it resets the `@connectum/otel` provider and
    registers that run's span and metric collectors, so the second and later
    scenarios in a process record spans too (see
-   [Spans and metrics of `@connectum/otel` in a test](/en/packages/testing#isolated-telemetry)).
+   [Spans and metrics of `@connectum/otel` in a test](/en/guide/testing/integration#isolated-telemetry)).
 2. **Parity suite** — aggregated by `scripts/parity-suite.sh`, which runs the
    parity tests of `@connectum/testing` (interceptors, validation, streaming,
    error mapping, coexistence, request admission, reflection, catalog-routed

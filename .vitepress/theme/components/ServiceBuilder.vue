@@ -36,7 +36,6 @@ const modified = computed(() => (project.value ? previewFiles(baseline, project.
 const paths = computed(() => (project.value ? visiblePreviewFiles(project.value) : []));
 const tree = computed(() => projectTree(paths.value));
 const activeFile = computed(() => (paths.value.includes(requestedFile.value) ? requestedFile.value : (paths.value[0] ?? 'src/server.ts')));
-const isPreview = provenance.releaseStatus === 'preview';
 const currentCode = computed(() => project.value?.[activeFile.value] ?? '');
 const rows = computed(() => compactDiff(baseline[activeFile.value] ?? '', currentCode.value));
 const highlighter = shallowRef<DiffHighlighter>();
@@ -382,7 +381,7 @@ onBeforeUnmount(() => {
                     with <code>requires: { }</code> in the method option.
                 </p>
                 <p v-else class="builder-field-help">
-                    The CLI command covers the selected modules.<template v-if="isPreview"> It requires CLI {{ provenance.cliVersion }}, which is not published yet.</template>
+                    The CLI command covers the selected modules.
                 </p>
                 <div class="builder-command-heading">
                     <h3>After creating the project</h3>

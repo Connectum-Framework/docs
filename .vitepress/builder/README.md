@@ -45,6 +45,6 @@ before/after files separately, then maps tokens onto the compact diff; removed l
 therefore retain their original multiline comment/string context. Vue renders tokens
 as text spans, not injected HTML, and clipboard output still comes from the plain diff.
 
-The snapshot currently targets the upcoming 1.3 release. Review the registry version
-and release status in the update script before publishing the builder as a released
-feature. The page must not suggest that an unpublished CLI is already installable.
+The snapshot targets the documentation's release line. Verify its behavior against
+that framework source and build. The npm latest tag does not determine whether a
+documented feature receives a release-availability label.

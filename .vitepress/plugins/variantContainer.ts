@@ -60,7 +60,8 @@ export interface MarkdownItLike {
         };
     };
     renderer: {
-        rules: Record<string, ((tokens: Token[], idx: number) => string) | undefined>;
+        // existing renderer rules have wider signatures; this plugin only adds its own rule.
+        rules: Record<string, unknown>;
     };
 }
 
@@ -105,12 +106,7 @@ function markerLength(text: string): number {
  * Walks the container body, skipping fenced code and nested containers, and calls
  * `onLine` for every line that belongs to the container itself.
  */
-function walkBody(
-    state: StateBlock,
-    bodyStart: number,
-    bodyEnd: number,
-    onLine: (text: string, line: number, insideNested: boolean) => void,
-): void {
+function walkBody(state: StateBlock, bodyStart: number, bodyEnd: number, onLine: (text: string, line: number, insideNested: boolean) => void): void {
     let fence: string | null = null;
     let depth = 0;
 
@@ -141,8 +137,7 @@ function walkBody(
 export function createVariantContainer<V extends string>(options: VariantContainerOptions<V>) {
     const { name, prefix, values, labels, icons, requireAll, allowSingle, validate } = options;
     const icon = (value: V) =>
-        `<svg class="${prefix}-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">` +
-        `<path fill="currentColor" d="${icons[value]}"/></svg>`;
+        `<svg class="${prefix}-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">` + `<path fill="currentColor" d="${icons[value]}"/></svg>`;
     const tokenType = `${prefix}_html`;
     const isValue = (candidate: string): candidate is V => (values as readonly string[]).includes(candidate);
 
@@ -154,20 +149,12 @@ export function createVariantContainer<V extends string>(options: VariantContain
     const assertNoHeadings = (state: StateBlock, bodyStart: number, bodyEnd: number, fail: (m: string) => never) => {
         walkBody(state, bodyStart, bodyEnd, (text) => {
             if (/^#{1,6}\s/.test(text)) {
-                fail(
-                    `headings are not allowed inside "::: ${name}" (found "${text}").\n` +
-                        'Keep the heading above the block and put only the variant-specific body inside it.',
-                );
+                fail(`headings are not allowed inside "::: ${name}" (found "${text}").\nKeep the heading above the block and put only the variant-specific body inside it.`);
             }
         });
     };
 
-    const splitSections = (
-        state: StateBlock,
-        bodyStart: number,
-        bodyEnd: number,
-        fail: (m: string) => never,
-    ): Section<V>[] => {
+    const splitSections = (state: StateBlock, bodyStart: number, bodyEnd: number, fail: (m: string) => never): Section<V>[] => {
         const sections: Section<V>[] = [];
 
         walkBody(state, bodyStart, bodyEnd, (text, line, insideNested) => {
@@ -219,9 +206,7 @@ export function createVariantContainer<V extends string>(options: VariantContain
         for (const section of sections) {
             // A single-variant block has no tab strip, so it is never hidden -- there
             // would be no control to reveal it. It reads as a labelled callout instead.
-            const label = grouped
-                ? ''
-                : `<div class="${prefix}-only-label">${icon(section.value)}<span>${labels[section.value]}</span></div>`;
+            const label = grouped ? '' : `<div class="${prefix}-only-label">${icon(section.value)}<span>${labels[section.value]}</span></div>`;
             const className = grouped ? `${prefix}-panel` : `${prefix}-panel-static ${prefix}-only`;
             openTag(state, `<div class="${className}" data-${prefix}-value="${section.value}">${label}`);
             state.md.block.tokenize(state, section.start, section.end);
@@ -256,10 +241,7 @@ export function createVariantContainer<V extends string>(options: VariantContain
                 const explicit = rest[0];
                 if (explicit !== undefined) {
                     if (!allowSingle) {
-                        fail(
-                            `"::: ${name} ${explicit}" is not supported -- write a grouped block with ` +
-                                `${values.map((v) => `"== ${v}"`).join(' / ')} sections instead.`,
-                        );
+                        fail(`"::: ${name} ${explicit}" is not supported -- write a grouped block with ` + `${values.map((v) => `"== ${v}"`).join(' / ')} sections instead.`);
                     }
                     if (!isValue(explicit)) {
                         fail(`unknown ${name} "${explicit}" -- expected one of ${values.join(', ')}.`);
@@ -289,10 +271,7 @@ export function createVariantContainer<V extends string>(options: VariantContain
                 } else {
                     sections = splitSections(state, startLine + 1, bodyEnd, fail);
                     if (!sections.length) {
-                        fail(
-                            `"::: ${name}" has no ${values.map((v) => `"== ${v}"`).join(' / ')} sections. ` +
-                                'A block with nothing to switch between should be a plain block.',
-                        );
+                        fail(`"::: ${name}" has no ${values.map((v) => `"== ${v}"`).join(' / ')} sections. A block with nothing to switch between should be a plain block.`);
                     }
                     if (requireAll) {
                         const missing = values.filter((value) => !sections.some((s) => s.value === value));
@@ -323,6 +302,6 @@ export function createVariantContainer<V extends string>(options: VariantContain
         );
 
         // The tokens above carry ready-made HTML.
-        md.renderer.rules[tokenType] = (tokens, idx) => tokens[idx].content;
+        md.renderer.rules[tokenType] = (tokens: Token[], idx: number) => tokens[idx].content;
     };
 }

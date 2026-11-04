@@ -34,5 +34,5 @@ for both successful routing and a missing route; a browser-model test alone is
 not evidence that the published packages behave that way.
 
 The example deliberately pins published 1.2.0 core/catalog packages and uses full
-protobuf request messages. It must not acquire an unpublished CLI prerequisite
-just because the reference describes the upcoming 1.3 line.
+protobuf request messages. That compatibility fixture remains independent from
+the reference's target-release examples.

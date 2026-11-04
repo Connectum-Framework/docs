@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package page.v1;
+
+import "connectum/auth/v1/options.proto";
+
+service PageService {
+  rpc GetPage(GetPageRequest) returns (GetPageResponse) {
+    option (connectum.auth.v1.method_auth) = { requires: {} };
+  }
+}
+
+message GetPageRequest {}
+
+message GetPageResponse {
+  string title = 1;
+  string body = 2;
+}
