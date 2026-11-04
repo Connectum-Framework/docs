@@ -35,13 +35,14 @@ test('built routes and local README anchors are checked instead of accepting a p
     const root = await mkdtemp(resolve(temporaryRoot, 'connectum-readme-links-'));
     try {
         const readme = resolve(root, 'README.md');
-        await writeFile(readme, '# Package\n\n## Usage\n\n## Usage\n\n## [Linked usage](guide.md)\n');
+        await writeFile(readme, '# Package\n\n## Usage\n\n## Usage\n\n## [Linked usage](guide.md)\n\n## &lt;script&gt; usage\n');
         await writeFile(resolve(root, 'server.html'), '<h2 id="lifecycle">Lifecycle</h2>');
         assert.equal(builtSiteTarget(root, new URL('https://connectum.dev/server')), resolve(root, 'server.html'));
         assert.equal(builtSiteTarget(root, new URL('https://connectum.dev/missing')), undefined);
         assert.equal(checkLocalLink({ markdown, root, readme, href: '#usage-1' }).ok, true);
         assert.equal(checkLocalLink({ markdown, root, readme, href: '#gone' }).ok, false);
         assert.equal(checkLocalLink({ markdown, root, readme, href: '#linked-usage' }).ok, true);
+        assert.equal(checkLocalLink({ markdown, root, readme, href: '#script-usage' }).ok, true, 'Entity-escaped heading text keeps its visible words.');
         assert.equal(htmlHasFragment('<a id="user-content-usage">', 'usage'), true);
         assert.equal(htmlHasFragment('<h1 id="present">', 'missing'), false);
         await mkdir(resolve(root, 'packages/test/tests/integration'), { recursive: true });

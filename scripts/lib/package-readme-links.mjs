@@ -78,10 +78,11 @@ function markdownHasFragment(markdown, source, fragment) {
         for (const child of tokens[index + 1].children ?? []) {
             if (child.type === 'link_open' && child.attrGet('class') === 'header-anchor') permalink = true;
             else if (child.type === 'link_close') permalink = false;
-            else if (!permalink && ['text', 'code_inline', 'image'].includes(child.type)) visible += child.content;
+            else if (!permalink && ['text', 'code_inline', 'image'].includes(child.type)) {
+                visible += child.type === 'code_inline' ? child.content : markdown.utils.unescapeAll(child.content);
+            }
         }
         const heading = visible
-            .replace(/<[^>]*>/g, '')
             .trim()
             .toLowerCase()
             .replace(/[^\p{L}\p{M}\p{N}_\-\s]/gu, '')
