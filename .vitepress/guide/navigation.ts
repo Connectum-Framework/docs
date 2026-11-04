@@ -15,7 +15,6 @@ export const guideSections: GuideSection[] = [
         items: [
             { text: 'Build your first service', link: '/en/guide/quickstart', collapsed: true, items: [{ text: 'Step-by-step tutorial', link: '/en/guide/quickstart-manual' }] },
             { text: 'Scaffold a service', link: '/en/guide/scaffolding' },
-            { text: 'Service builder', link: '/en/builder' },
         ],
     },
     {

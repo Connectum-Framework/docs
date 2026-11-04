@@ -97,6 +97,7 @@ try {
             const nav = page.getByRole('navigation', { name: 'Main Navigation', exact: true });
             assert.deepEqual(await nav.locator(':scope > .VPNavBarMenuLink, :scope > .VPNavBarMenuGroup > button').allTextContents(), ['Get started', 'Guides', 'API', 'Builder']);
             await uniquePageLinks(nav);
+            assert.equal(await page.locator('.VPSidebar a[href="/en/builder"]').count(), 0);
             await builderOutline(nav.getByRole('link', { name: 'Builder', exact: true }));
             result.header.push({ theme, order: ['Get started', 'Guides', 'API', 'Builder'], outlinedBuilder: true, uniquePages: true });
             for (const [label, route] of [

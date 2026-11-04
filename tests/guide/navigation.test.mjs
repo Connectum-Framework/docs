@@ -22,6 +22,9 @@ test('header routes directly to About, Builder, section entries and generated AP
     assert.equal(nav[0].link, '/en/guide/about');
     assert.equal(nav[2].link, '/en/api/');
     assert.equal(nav[3].link, '/en/builder');
+    const gettingStarted = guideSections.find(({ id }) => id === 'get-started');
+    assert.ok(gettingStarted);
+    assert.ok(!flatten(gettingStarted.items).some((item) => item.link === '/en/builder'));
     assert.deepEqual(
         nav[1].items,
         guideSections.filter(({ id }) => id !== 'get-started').map(({ text, link }) => ({ text, link })),
