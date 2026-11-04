@@ -15,10 +15,11 @@ export function deploymentMarkup(svg = '') {
             <p class="home-eyebrow">Service calls</p>
             <h2 id="service-calls-title">Same code.<br>Different deployments.</h2>
             <p>Keep your Protobuf contracts and service handlers. Run services together as a monolith, separately as microservices, or in a hybrid deployment.</p>
-            <p>Call other services with <code>ctx.call()</code>. The same typed call runs in-process or over RPC, depending on your server configuration.</p>
+            <p>A generated catalog supplies the types for <code>ctx.call()</code>. Local registration and configured remote resolvers choose where each call runs.</p>
+            <p>These diagrams illustrate routing; endpoints, credentials and process deployment remain your configuration.</p>
             <div class="home-inline-links">
                 <a href="/en/guide/service-communication/service-catalog">Explore service calls →</a>
-                <a href="/en/guide/service-communication/resolvers">Configure remote routes →</a>
+                <a href="/en/guide/service-communication/resolver-configuration">Configure remote routes →</a>
             </div>
         </div>`;
 }

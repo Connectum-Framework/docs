@@ -248,7 +248,10 @@ for (const module of publicModules) {
     if (seenSlugs.has(module.slug)) errors.push(`duplicate module slug: ${module.slug}`);
     seenSlugs.add(module.slug);
     if (!resolveRoute(module.api)) errors.push(`${module.name}: missing generated API destination ${module.api}`);
-    if (!resolveRoute(module.guide)) errors.push(`${module.name}: missing guide destination ${module.guide}`);
+    const [guidePath, guideFragment] = module.guide.split('#');
+    const guideRoute = resolveRoute(guidePath);
+    if (!guideRoute) errors.push(`${module.name}: missing guide destination ${module.guide}`);
+    else if (guideFragment && !pages.get(guideRoute).anchors.has(guideFragment)) errors.push(`${module.name}: missing guide fragment ${module.guide}`);
 }
 
 const navigationSource = readFileSync(resolve(projectRoot, '.vitepress/config/en.ts'), 'utf8');
