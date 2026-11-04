@@ -2,7 +2,7 @@
 
 # Interface: AmqpConsumerOptions
 
-Defined in: [packages/events-amqp/src/types.ts:895](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L895)
+Defined in: [packages/events-amqp/src/types.ts:904](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L904)
 
 Consumer options.
 
@@ -12,7 +12,7 @@ Consumer options.
 
 > `readonly` `optional` **exclusive?**: `boolean`
 
-Defined in: [packages/events-amqp/src/types.ts:941](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L941)
+Defined in: [packages/events-amqp/src/types.ts:950](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L950)
 
 Whether the private queue of a subscription without `group` is exclusive
 to the subscriber's connection, so the broker removes it with that
@@ -33,7 +33,7 @@ true
 
 > `readonly` `optional` **prefetch?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:903](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L903)
+Defined in: [packages/events-amqp/src/types.ts:912](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L912)
 
 Prefetch count (QoS) — how many unacknowledged messages
 a consumer can have at a time. An integer from 0 (no limit) to 65535;
@@ -51,7 +51,7 @@ any other value makes `AmqpAdapter()` throw a `RangeError`.
 
 > `readonly` `optional` **redeliveryDelay?**: `number`
 
-Defined in: [packages/events-amqp/src/types.ts:929](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L929)
+Defined in: [packages/events-amqp/src/types.ts:938](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/types.ts#L938)
 
 Milliseconds to hold a message unacknowledged after its handler threw,
 before it is requeued. Opt-in: unset or `0` requeues at once, so a

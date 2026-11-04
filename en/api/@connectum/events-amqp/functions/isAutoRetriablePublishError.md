@@ -4,7 +4,7 @@
 
 > **isAutoRetriablePublishError**(`err`, `options?`): `boolean`
 
-Defined in: [packages/events-amqp/src/AmqpAdapter.ts:624](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/AmqpAdapter.ts#L624)
+Defined in: [packages/events-amqp/src/AmqpAdapter.ts:625](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/AmqpAdapter.ts#L625)
 
 The publish AUTO-RETRY boundary: which publish failures the opt-in
 `publishRetry` retries inline.
