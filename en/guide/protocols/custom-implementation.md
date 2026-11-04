@@ -75,7 +75,7 @@ const serverA = createServer({ services: [routesA], protocols: [Reflection()] })
 const serverB = createServer({ services: [routesB], protocols: [Reflection()] });
 ```
 
-Protocols are set up and registered in array order. The `context.services` (and `context.registry`, their files) a protocol receives in `setup` hold every mounted application service plus the services of the protocols listed **before** it, as frozen snapshots. That is why `Healthcheck()` does not track its own `grpc.health.v1.Health` service, and why it tracks only the services of protocols listed before it. `Reflection()` is different: it reads the complete set in `ready`, so it lists every service whatever its position in the array:
+Protocols are set up and registered in array order. The `context.services` (and `context.registry`, their files) a protocol receives in `setup` hold every mounted application service plus the services of the protocols listed **before** it, as frozen snapshots. `Healthcheck()` and `Reflection()` both read the complete set in `ready`, so neither depends on its position in the array: Healthcheck tracks every mounted service except its own `grpc.health.v1.Health` and the reflection services, and Reflection lists every service:
 
 ```typescript
 import { createServer } from '@connectum/core';
@@ -244,7 +244,7 @@ const server = createServer({
 
 ## Using ProtocolContext
 
-In `setup`, `context.services` lists the `DescService` objects (from `@bufbuild/protobuf`) of the services mounted before your protocol: the application services, then the services of the protocols listed before yours. In `ready` it lists all of them. Use it whenever you need the services the server actually serves — this is how the built-in Healthcheck (in `setup`) and Reflection (in `ready`) decide what to track and list:
+In `setup`, `context.services` lists the `DescService` objects (from `@bufbuild/protobuf`) of the services mounted before your protocol: the application services, then the services of the protocols listed before yours. In `ready` it lists all of them. Use it whenever you need the services the server actually serves — this is how the built-in Healthcheck and Reflection (both in `ready`) decide what to track and list:
 
 ```typescript
 setup(context): void {
