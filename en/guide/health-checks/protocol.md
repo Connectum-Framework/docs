@@ -103,7 +103,7 @@ Every `Healthcheck()` without `manager` uses this singleton, and each server's s
 | `getStatus(service)` | Get status of a specific service or component. Returns `ServiceStatus \| undefined` (`undefined` for an unknown name — does not throw). |
 | `getAllStatuses()` | Get a Map of all service and component statuses |
 | `areAllHealthy()` | Check if all services and components report `SERVING` |
-| `initialize(serviceNames)` | Initialize the RPC service slice (called by the protocol's `setup`, before its first `register`; in-process transports do not re-run it, a retry after a failed route materialization does). Replaces only `service` entries; never touches components. |
+| `initialize(serviceNames)` | Initialize the RPC service slice (called by the protocol's `setup` and again by its `ready`, which passes every mounted service; in-process transports do not re-run either, a retry after a failed route materialization does). Replaces only `service` entries; never touches components. |
 | `clear()` | Clear all services and components |
 
 `update()`, `register()` and `set()` accept only the four `ServingStatus` values above. A value of another type (a string such as `"SERVING"`, `null`, `undefined`) throws `TypeError`; a number outside 0 to 3 (a fraction, `NaN`, `99`) throws `RangeError`; a component or service name that is not a string throws `TypeError`. The registry is left as it was, so `Health.Check` and `Health.List` keep answering.
@@ -155,7 +155,7 @@ A client that stops reading while its status keeps changing makes the server hol
 `List` is part of the [gRPC health protocol](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto),
 alongside `Check` and `Watch`. It returns a snapshot of the tracked service statuses.
 
-Lists all tracked services with their statuses. Healthcheck tracks the services mounted before it in `protocols`, so the services of protocols listed after it (`Reflection()` among them) are not tracked. A service that is only declared — for example next to a mounted service in the same `.proto` file — is not tracked, and `Check` answers `NOT_FOUND` for it:
+Lists all tracked services with their statuses. Healthcheck tracks every service the server mounts: yours and those of the other protocols (`Reflection()` among them), wherever `Healthcheck()` stands in `protocols`. Each starts as `UNKNOWN` and counts in the overall status. Healthcheck never tracks its own `grpc.health.v1.Health` service. A service that is only declared — for example next to a mounted service in the same `.proto` file — is not tracked, and `Check` answers `NOT_FOUND` for it:
 
 ```bash
 grpcurl -plaintext localhost:5000 grpc.health.v1.Health/List
