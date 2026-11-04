@@ -406,6 +406,44 @@ rejects with `AmqpConnectionError` and the original error (for example
 loop, the message cannot name the last connection error and says "none observed".
 With `recovery: false` the original error is thrown unchanged.
 
+### A topology refusal on the first connect {#first-connect-topology}
+
+The default `connect()` retries without limit so that a service can start before
+another one fixes the topology. A broker that answers but refuses the setup is
+retried the same way, and without a callback nothing reports it.
+Typical causes, each a `406 PRECONDITION_FAILED` that no retry can heal:
+
+- an exchange that already exists with another type;
+- a queue that already exists with other arguments (`x-max-length`, `durable`, and so on);
+- an exchange type the broker does not know in `topology.exchanges`.
+
+A refused permission (`403 ACCESS_REFUSED`) behaves the same way. With default
+options (no `lifecycle.onLifecycle` or `onSetupFailed`, no
+`failFastOnInitialSetupError`, no `initialConnectMaxRetries`) the adapter emits one
+process warning per distinct broker reply, so the wait is no longer silent:
+
+```text
+[CONNECTUM_AMQP_TOPOLOGY_SETUP_FAILED] AmqpTopologyWarning: AmqpAdapter: the broker refused the
+topology setup of the first connect, and connect() keeps retrying: Topology declaration failed:
+Operation failed: ExchangeDeclare; 406 (PRECONDITION-FAILED) with message "PRECONDITION_FAILED -
+inequivalent arg 'type' for exchange 'orders' in vhost '/': received 'topic' but current is 'fanout'". ...
+```
+
+The warning does not change the outcome: `connect()` keeps waiting and resolves once
+the conflict is removed. Pick what the startup should do instead:
+
+| Goal | Setting |
+|---|---|
+| Reject `connect()` on the first broker refusal | `failFastOnInitialSetupError: true` (rejects with `AmqpTopologyError`) |
+| Reject after a bounded number of attempts, an unreachable broker included | `recovery.initialConnectMaxRetries` |
+| Read the failure in your own code | `lifecycle.onLifecycle`, event `setup-failed { initial: true }` (no warning is emitted then) |
+
+An unreachable broker and a connection lost while the setup runs are not topology
+failures: no warning, and the retry goes on as before. A reconnect after the first
+success is not warned about either; see [Stop on topology drift](#topology-drift).
+A mistyped `exchangeType` never reaches the broker: it is rejected when the adapter
+is created ([Invalid options fail at creation](#option-validation)).
+
 ### When recovery gives up {#recovery-gives-up}
 
 Recovery ends for good in four cases: a finite `maxRetries` is exhausted, the
@@ -883,7 +921,7 @@ never emits `settlement-skipped`. Handler acknowledgements are counted, not acte
 and only the first settlement per delivery per handler is counted, as in the real
 adapter (a bare `nack()` counts as a requeue); model a redelivery by calling `deliver()` again with a higher `attempt`. A topology
 failure queued before `connect()` without `failFastOnInitialSetupError` is reported
-and the fake then connects, where the real adapter would keep retrying. For wire-level
+and the fake then connects, where the real adapter would keep retrying and, on default options, print the process warning the fake never emits. For wire-level
 behavior, run integration tests against a broker.
 
 ## Verify
@@ -903,18 +941,26 @@ behavior, run integration tests against a broker.
 ## Troubleshooting
 
 - **`connect()` never returns.** Either the broker is unreachable and `maxRetries` is
-  `Infinity`, or the broker answers but the topology setup fails the same way every time
-  (see the next entry). Set `initialConnectMaxRetries` to bound startup, and call
+  `Infinity`, or the broker answers but refuses the topology setup the same way every
+  time (see the next entry). Set `initialConnectMaxRetries` to bound startup, and call
   `disconnect()` to cancel a `connect()` that is still waiting.
-- **`connect()` hangs although the broker is reachable.** The topology setup runs inside
-  the retry loop, so a failure that cannot heal on its own is retried under the default
-  unlimited budget without an error or an event: an `exchangeType` that the broker does
-  not know, an exchange that already exists with another type, a queue redeclared with
-  different arguments (`406 PRECONDITION_FAILED`). A mistyped `exchangeType` is now
-  rejected when the adapter is created. For the other cases set
-  `failFastOnInitialSetupError: true`: the first setup error then rejects `connect()`
-  with `AmqpTopologyError`. With `lifecycle.onLifecycle` the failure is at least
-  reported once, as `setup-failed { initial: true }`, but `connect()` still waits.
+- **`connect()` waits although the broker is reachable, and the process printed a
+  `CONNECTUM_AMQP_TOPOLOGY_SETUP_FAILED` warning.** The broker answered the topology
+  setup with a refusal that no retry can heal, usually `406 PRECONDITION_FAILED`: an
+  exchange that already exists with another type, a queue redeclared with other
+  arguments, an exchange type in `topology.exchanges` that the broker does not know. The
+  warning names the exchange or queue and quotes the broker. Fix the topology or the
+  configuration; `connect()` then resolves on its own at the next attempt. To fail at
+  startup instead, set `failFastOnInitialSetupError: true` (rejects with
+  `AmqpTopologyError`) or `recovery.initialConnectMaxRetries`. See
+  [A topology refusal on the first connect](#first-connect-topology). A mistyped
+  `exchangeType` is rejected when the adapter is created and never gets here.
+- **`connect()` waits and nothing was printed.** The warning is emitted only when no
+  other channel reports the failure. With `lifecycle.onLifecycle`, `onSetupFailed`,
+  `failFastOnInitialSetupError` or `initialConnectMaxRetries` set, read the
+  `setup-failed` event or the rejection instead; if none shows up, the broker is most
+  likely unreachable, which is not a topology failure (check the URL and the network),
+  or the process runs with `--no-warnings`.
 - **`AmqpTopologyError` says `Connection closed: 541 (INTERNAL-ERROR)` for a queue.**
   The broker answered the declaration by closing the connection, and the message and
   `cause` carry its reply. RabbitMQ 4.3 and later refuse a named queue that is not
