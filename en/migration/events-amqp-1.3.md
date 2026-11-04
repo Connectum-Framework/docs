@@ -225,6 +225,18 @@ with `recovery: false`, and code that relied on a dropped connection to fail sta
 under `failFastOnInitialSetupError`. Handle `AmqpConnectionError` there, or treat the
 startup as retryable.
 
+### Read the warning about a refused topology {#first-connect-topology-warning}
+
+If the broker refuses the topology setup of the first connect (an exchange that
+exists with another type, a queue with other arguments), the adapter used to wait in silence.
+From 1.3 a service on default options (no `lifecycle` callback, no
+`failFastOnInitialSetupError`, no `initialConnectMaxRetries`) prints one process
+warning with code `CONNECTUM_AMQP_TOPOLOGY_SETUP_FAILED` per distinct broker reply.
+`connect()` still keeps retrying and resolves once the conflict is gone, so nothing
+needs to change for the service to start. Fix the topology the warning names, or set
+`failFastOnInitialSetupError: true` to make the startup reject. See
+[A topology refusal on the first connect](/en/guide/events/amqp-reliability#first-connect-topology).
+
 ### Watch for `consumer-lost` {#consumer-lost}
 
 When the broker ends one subscription's consumer on a live connection (the queue was
