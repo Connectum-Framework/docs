@@ -155,7 +155,7 @@ A client that stops reading while its status keeps changing makes the server hol
 `List` is part of the [gRPC health protocol](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto),
 alongside `Check` and `Watch`. It returns a snapshot of the tracked service statuses.
 
-Lists all tracked services with their statuses. Healthcheck tracks every service the server mounts: yours and those of the other protocols (`Reflection()` among them), wherever `Healthcheck()` stands in `protocols`. Each starts as `UNKNOWN` and counts in the overall status. Healthcheck never tracks its own `grpc.health.v1.Health` service. A service that is only declared — for example next to a mounted service in the same `.proto` file — is not tracked, and `Check` answers `NOT_FOUND` for it:
+Lists all tracked services with their statuses. Healthcheck tracks your services and the services of custom protocols, wherever `Healthcheck()` stands in `protocols`. Each starts as `UNKNOWN` and counts in the overall status. It never tracks its own `grpc.health.v1.Health` service or the reflection services (`grpc.reflection.v1` and `v1alpha`), so `Reflection()` changes neither `List` nor the overall status. A service that is only declared — for example next to a mounted service in the same `.proto` file — is not tracked, and `Check` answers `NOT_FOUND` for it:
 
 ```bash
 grpcurl -plaintext localhost:5000 grpc.health.v1.Health/List
