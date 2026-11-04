@@ -39,7 +39,7 @@
         "cytoscape-cose-bilkent": "^4.1.0",
         "dayjs": "^1.11.20",
         "debug": "^4.4.3",
-        "esbuild": "0.21.5",
+        "esbuild": "0.28.1",
         "mermaid": "^11.16.1",
         "shiki": "2.5.0",
         "typescript": "5.9.3",
