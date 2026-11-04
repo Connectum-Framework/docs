@@ -77,7 +77,8 @@ revised or accompanied by a documented carve-out in the spec.
    [Spans and metrics of `@connectum/otel` in a test](/en/packages/testing#isolated-telemetry)).
 2. **Parity suite** — aggregated by `scripts/parity-suite.sh`, which runs the
    parity tests of `@connectum/testing` (interceptors, validation, streaming,
-   error mapping, coexistence, request admission, reflection),
+   error mapping, coexistence, request admission, reflection, catalog-routed
+   `ctx.call` / `ctx.stream`),
    `@connectum/auth` (authentication and authorization), and
    `@connectum/otel` (OTEL). Validation and authorization scenarios run the
    **shipped** interceptors (`createDefaultInterceptors()`,

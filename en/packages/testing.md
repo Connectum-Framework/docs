@@ -133,6 +133,45 @@ What to know before you use either:
 - Two empty results still compare as equal. Assert that `spans.flush()` is not empty
   before the scenario returns it.
 
+## Catalog Calls in a Parity Scenario {#catalog-calls}
+
+A handler that calls another service with `ctx.call` or `ctx.stream` goes through
+the same catalog dispatch on both transports. Give `transportParityTest` the catalog
+and, for services that run elsewhere, the resolver. Both servers of a run receive them
+as `createServer({ catalog, remoteResolver })` would.
+
+~~~typescript
+import { createClient } from '@connectrpc/connect';
+import { mapResolver } from '@connectum/core';
+import { transportParityTest } from '@connectum/testing/parity';
+import { serviceCatalog } from './gen/catalog.gen.ts'; // from protoc-gen-connectum-catalog
+
+transportParityTest('Orders.createOrder reaches Inventory identically', {
+  services: [ordersService], // Inventory is not mounted here
+  catalog: serviceCatalog,
+  remoteResolver: mapResolver({ 'shop.v1.InventoryService': inventoryTransport }),
+  scenario: async ({ transport }) => {
+    const order = await createClient(OrdersService, transport).createOrder({ sku: 'A-1' });
+    return { response: { orderId: order.orderId } };
+  },
+});
+~~~
+
+What to know before you use them:
+
+- A service in `services` is called in-process on both runs. Any other catalog
+  service goes through `remoteResolver`, as in production.
+- The resolver is called by both runs of a test, so the transport it returns serves
+  both. Start the remote service once for the whole test, for example in `before`,
+  and reset whatever it records between the runs.
+- Without these options the servers are built as before, and a handler's `ctx.call`
+  fails as it does on a server without a catalog.
+- The parity suite of the framework runs this on a catalog that `buf generate` and
+  `protoc-gen-connectum-catalog` produce, with the target on the same server, on
+  another server, and behind two remote hops. Check the expected results against the
+  documented contract ([Service Catalog](/en/reference/service-catalog)), then compare the two
+  runs, as the suite's scenarios do.
+
 ## Learn / Configure / API Reference {#api-reference}
 
 - **Learn:** [Focused guide](/en/guide/testing)
