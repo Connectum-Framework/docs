@@ -166,5 +166,5 @@ const server = createServer({
 - [Security Overview](/en/guide/security) -- back to overview
 - [TLS Configuration](/en/guide/security/tls) -- TLS options, utility functions, self-signed certs
 - [Kubernetes Deployment](/en/guide/production/kubernetes) -- full deployment guide
-- [@connectum/core](/en/packages/core) -- Package Guide
+- [@connectum/core](/en/guide/server) -- Package Guide
 - [@connectum/core API](/en/api/@connectum/core/) -- Full API Reference

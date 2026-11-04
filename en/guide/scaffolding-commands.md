@@ -1,10 +1,10 @@
 ---
-title: Scaffolding a New Service
-description: Create a Connectum project, add services, and generate proto client types with the CLI.
+title: Scaffold structure and CLI
+description: Understand the generated application's structure, module composition and detailed CLI behavior.
 docType: tutorial
 ---
 
-# Scaffolding a New Service
+# Scaffold structure and CLI {#scaffolding-a-new-service}
 
 [Overview](/en/guide/scaffolding)
 
@@ -312,9 +312,8 @@ fetched base, or `^1.3.0` if that is higher, so no base entry is lowered (also w
 auth or events keeps the base's ranges. In a project scaffolded with `--events`,
 `generate service --with-events` writes the events option proto to the same excluded
 path, so a new event-handler service also imports the descriptor from
-`@connectum/events`. Projects scaffolded with an earlier published CLI cannot use this
-generated import path until the required package exports are published; they can adopt it by
-hand: [Option descriptors from the packages](/en/migration/option-descriptor-imports).
+`@connectum/events`. To adopt these imports in an older project, upgrade its packages
+and follow [Option descriptors from the packages](/en/migration/option-descriptor-imports).
 
 ### Enums in generated code
 

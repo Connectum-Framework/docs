@@ -168,6 +168,6 @@ failing a rule's requirements skips that rule rather than denying immediately.
 - [Proto-Based Authorization](/en/guide/auth/proto-authz) -- declarative authz via `.proto` options
 - [Auth Context](/en/guide/auth/context) -- accessing identity in handlers
 - [Method Filtering](/en/guide/interceptors/method-filtering) -- per-method interceptor routing
-- [@connectum/auth](/en/packages/auth) -- Package Guide
+- [@connectum/auth](/en/guide/auth) -- Package Guide
 - [@connectum/auth API](/en/api/@connectum/auth/) -- Full API Reference
 - [ADR-024: Auth/Authz Strategy](/en/contributing/adr/024-auth-authz-strategy) -- design rationale

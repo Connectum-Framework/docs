@@ -1,37 +1,35 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useRoute } from 'vitepress';
-import site from '../../data/site.json';
+import { computed } from 'vue';
 import { findModule } from '../../data/modules.ts';
+// biome-ignore lint/correctness/noUnusedImports: the Vue template renders the documented version.
+import site from '../../data/site.json';
+import { sectionForRoute } from '../../guide/navigation.ts';
 
 const route = useRoute();
 
+// biome-ignore lint/correctness/noUnusedVariables: the Vue template renders the route context.
 const context = computed(() => {
     const path = route.path;
     if (path === '/en/' || path === '/en/index.html') return null;
 
-    const packageMatch = path.match(/^\/en\/(?:packages|api\/@connectum)\/([^/]+)/);
+    const packageMatch = path.match(/^\/en\/api\/@connectum\/([^/]+)/);
     const module = packageMatch ? findModule(packageMatch[1]) : undefined;
 
     if (path.startsWith('/en/api/')) {
         return {
             section: 'API reference',
-            sectionLink: '/en/reference/',
+            sectionLink: '/en/api/',
             detail: module?.name ?? 'Generated TypeDoc',
-            detailLink: module?.hub,
+            detailLink: module?.api,
         };
     }
-    if (path.startsWith('/en/packages/')) {
-        return { section: 'Packages', sectionLink: '/en/packages/', detail: module?.category, detailLink: undefined };
-    }
     if (path.startsWith('/en/guide/')) {
-        return { section: 'Guides', sectionLink: '/en/guide/about', detail: undefined, detailLink: undefined };
+        const section = sectionForRoute(path);
+        return { section: section?.text ?? 'Guides', sectionLink: section?.link ?? '/en/guide/about', detail: undefined, detailLink: undefined };
     }
     if (path.startsWith('/en/migration/')) {
         return { section: 'Migration', sectionLink: '/en/migration/', detail: undefined, detailLink: undefined };
-    }
-    if (path.startsWith('/en/reference/')) {
-        return { section: 'API', sectionLink: '/en/reference/', detail: undefined, detailLink: undefined };
     }
     return null;
 });

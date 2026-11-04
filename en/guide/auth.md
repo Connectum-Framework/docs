@@ -67,4 +67,26 @@ The security invariant is `error handling → authentication → authorization �
 
 - Learn the model here and in [ADR-024](/en/contributing/adr/024-auth-authz-strategy).
 - Configure a concrete trust boundary in the focused guides above.
-- Use the [`@connectum/auth` module hub](/en/packages/auth) and [generated API](/en/api/@connectum/auth/) for exact symbols.
+- Use the [generated API](/en/api/@connectum/auth/) for exact symbols.
+
+## Installation {#installation}
+
+:::: details Add authentication and authorization
+::: pm
+== npm
+```bash
+npm install @connectum/auth
+```
+== pnpm
+```bash
+pnpm add @connectum/auth
+```
+== bun
+```bash
+bun add @connectum/auth
+```
+:::
+
+Keep the shared protobuf and Connect peers compatible with the rest of your
+application; see [peer requirements](/en/migration/peer-dependencies).
+::::

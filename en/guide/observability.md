@@ -57,7 +57,35 @@ Use `createOtelInterceptor({ filter: ({ service }) => !service.includes('grpc.he
 
 Focused guides explain task behavior. Exact option fields belong to generated interfaces such as [`OtelInterceptorOptions`](/en/api/@connectum/otel/interfaces/OtelInterceptorOptions) and [`ProviderOptions`](/en/api/@connectum/otel/provider/interfaces/ProviderOptions).
 
-Use the [`@connectum/otel` module hub](/en/packages/otel) for installation, key entry points, source, and API routes. Avoid copying exporter tables into tracing or metrics pages; backend configuration is their canonical owner.
+Exporter tables and provider configuration belong to
+[Backends and configuration](/en/guide/observability/backends).
 
 The project's Bun CI does not validate this telemetry integration; see
 [runtime limitations](/en/guide/runtime-compatibility-details#otel).
+
+## Installation {#installation}
+
+:::: details Add OpenTelemetry integration
+::: pm
+== npm
+```bash
+npm install @connectum/otel
+```
+== pnpm
+```bash
+pnpm add --allow-build='!protobufjs' @connectum/otel
+```
+== bun
+```bash
+bun add @connectum/otel
+```
+:::
+
+On pnpm 11 and later, explicitly decline the transitive `protobufjs` build
+script as above; otherwise installation ends with `ERR_PNPM_IGNORED_BUILDS`.
+OpenTelemetry APIs, SDKs and exporters are regular dependencies;
+`@opentelemetry/api` stays in `>=1.9.0 <1.10.0`. Protobuf and Connect are peers;
+see [peer dependency compatibility](/en/migration/peer-dependencies).
+Installation alone does not initialize a provider or select an exporter; follow
+the backend guide before expecting telemetry.
+::::

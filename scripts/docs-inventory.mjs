@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import process from 'node:process';
 
@@ -128,7 +128,7 @@ function parseInternalLinks(source) {
 
 function inferContentType(sourcePath) {
     if (sourcePath.startsWith('en/api/')) return 'generated-reference';
-    if (sourcePath.startsWith('en/packages/')) return 'package-hub-migration';
+    if (sourcePath.startsWith('en/packages/') || sourcePath.startsWith('en/reference/')) return 'compatibility';
     if (sourcePath.startsWith('en/migration/')) return 'migration';
     if (sourcePath.startsWith('en/contributing/adr/')) return 'adr';
     if (sourcePath.startsWith('en/contributing/')) return 'contributor-guide';
@@ -141,7 +141,7 @@ function inferAudience(contentType, route) {
     if (route === '/en/') return 'all';
     if (contentType === 'tutorial') return 'beginner';
     if (contentType === 'generated-reference') return 'expert';
-    if (contentType === 'package-hub-migration') return 'practitioner, expert';
+    if (contentType === 'compatibility') return 'legacy-link reader';
     if (contentType === 'migration') return 'upgrader, operator';
     if (contentType === 'adr') return 'architect, contributor';
     if (contentType === 'contributor-guide') return 'contributor';
@@ -152,7 +152,7 @@ function migrationDisposition(contentType, route) {
     if (route === '/en/') return 'keep-and-redesign';
     if (contentType === 'tutorial') return 'keep-and-rewrite';
     if (contentType === 'concept') return 'keep-and-trim';
-    if (contentType === 'package-hub-migration') return 'keep-and-trim';
+    if (contentType === 'compatibility') return 'redirect-to-canonical';
     if (contentType === 'guide-review') return 'keep-and-consolidate';
     if (contentType === 'migration') return 'keep-and-reorganize';
     return 'keep';
@@ -160,7 +160,7 @@ function migrationDisposition(contentType, route) {
 
 function canonicalOwner(contentType) {
     if (contentType === 'generated-reference') return 'generated API';
-    if (contentType === 'package-hub-migration') return 'module learning and routing';
+    if (contentType === 'compatibility') return 'canonical Guide or generated API destination';
     if (contentType === 'migration') return 'release migration';
     if (contentType === 'adr') return 'architecture rationale';
     if (contentType === 'contributor-guide') return 'contributor workflow';
@@ -264,7 +264,9 @@ if (format === 'json') {
         '',
         `Pages: ${inventory.totals.pages}; headings: ${inventory.totals.headings}; words including code: ${inventory.totals.wordsIncludingCode}.`,
         '',
-        `Areas: ${Object.entries(inventory.totals.pagesByArea).map(([area, count]) => `${area} ${count}`).join('; ')}.`,
+        `Areas: ${Object.entries(inventory.totals.pagesByArea)
+            .map(([area, count]) => `${area} ${count}`)
+            .join('; ')}.`,
         '',
         `Build outputs: sitemap ${inventory.totals.buildOutputs.sitemapUrls ?? 'not built'} URLs; search ${inventory.totals.buildOutputs.searchDocuments ?? 'not built'} documents; LLM ${inventory.totals.buildOutputs.llmOutputs.filter((output) => output.present).length}/3 files.`,
         '',

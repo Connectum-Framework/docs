@@ -14,6 +14,9 @@ that adapter's generated API reference.
 This guide targets the `1.3.x` release line. Features marked `Since 1.3.0`
 require the corresponding package at 1.3.0 or later.
 
+Install `@connectum/events` and the adapter package for your broker; see
+[installation](/en/guide/events/getting-started#step-1-install-packages).
+
 ## Broker Selection Matrix {#adapter-comparison}
 
 | Adapter | Persistence | Consumer coordination | Ordering scope | Best starting fit |
@@ -63,7 +66,6 @@ import { NatsAdapter } from '@connectum/events-nats';
 const adapter = NatsAdapter({ servers: 'nats://localhost:4222' });
 ```
 
-- [Module hub](/en/packages/events-nats)
 - [`NatsAdapterOptions`](/en/api/@connectum/events-nats/types/interfaces/NatsAdapterOptions)
 
 ### Start position {#nats-start-position}
@@ -585,7 +587,6 @@ consumer keeps failing until the topic exists again.
 
 ### Related
 
-- [Module hub](/en/packages/events-kafka)
 - [`KafkaAdapterOptions`](/en/api/@connectum/events-kafka/types/interfaces/KafkaAdapterOptions)
 - [Redpanda example](https://github.com/Connectum-Framework/examples/tree/main/with-events-redpanda)
 
@@ -612,8 +613,29 @@ import { RedisAdapter } from '@connectum/events-redis';
 const adapter = RedisAdapter({ url: 'redis://localhost:6379' });
 ```
 
-The adapter speaks RESP2 unless you opt into RESP3 through `redisOptions`; see
-[Redis protocol](/en/packages/events-redis#redis-protocol).
+### Redis protocol {#redis-protocol}
+
+The adapter connects with RESP2 by default, so upgrading `ioredis` does not
+change the wire protocol of an existing application. To use RESP3, set
+`protocol: 3` in `redisOptions`:
+
+```typescript
+const adapter = RedisAdapter({
+  url: 'redis://localhost:6379',
+  redisOptions: {
+    protocol: 3,
+    replyMapping: 'resp3',
+  },
+});
+```
+
+`replyMapping` chooses how `ioredis` returns RESP3 map replies: `'legacy'` as
+flat arrays, `'resp3'` as plain objects. The adapter reads stream replies in
+either shape. `replyMapping: 'resp3'` requires `protocol: 3`: with RESP2,
+explicit or default, `RedisAdapter()` throws a `TypeError` when it is called,
+before opening any connection. Omit `replyMapping` to keep the ioredis default,
+`'legacy'`. The dedicated blocking connections used for `XREADGROUP` duplicate
+the main connection and use the same protocol and reply mapping.
 
 ### Redelivery of pending entries {#redis-redelivery}
 
@@ -705,7 +727,6 @@ when you need wildcard routing.
 
 ### Related
 
-- [Module hub](/en/packages/events-redis)
 - [`RedisAdapterOptions`](/en/api/@connectum/events-redis/types/interfaces/RedisAdapterOptions)
 
 ### Stream names and retention {#redis-stream-retention}
@@ -748,7 +769,6 @@ const adapter = AmqpAdapter({
 });
 ```
 
-- [Module hub](/en/packages/events-amqp)
 - [Run the AMQP adapter reliably](/en/guide/events/amqp-reliability) — publish retry, recovery, lifecycle, and broker-free tests
 - [`AmqpAdapterOptions`](/en/api/@connectum/events-amqp/types/interfaces/AmqpAdapterOptions)
 - [AMQP example](https://github.com/Connectum-Framework/examples/tree/main/with-events-amqp)
@@ -923,4 +943,4 @@ subscription cancellation, acknowledgement behavior, and error semantics explici
 
 - [Publish and Subscribe](/en/guide/events/getting-started)
 - [Event Middleware](/en/guide/events/middleware)
-- [`@connectum/events`](/en/packages/events)
+- [`@connectum/events`](/en/guide/events)

@@ -122,6 +122,6 @@ bulkhead failure behavior. The logger case does not compare sink output. Use the
 
    Without it, only the first scenario in a process records spans; the later
    ones compare two empty lists and pass. See
-   [Spans and metrics of `@connectum/otel` in a test](/en/packages/testing#isolated-telemetry).
+   [Spans and metrics of `@connectum/otel` in a test](/en/guide/testing/integration#isolated-telemetry).
 3. From the framework repository root, run `bash ./scripts/parity-suite.sh` locally.
 4. Update the table above.

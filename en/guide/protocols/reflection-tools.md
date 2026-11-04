@@ -356,5 +356,5 @@ A protocol that wraps `Reflection()` and delegates to it must forward `ready` as
 - [Protocols Overview](/en/guide/protocols) -- back to overview
 - [Custom Protocols](/en/guide/protocols/custom) -- create your own protocol plugins
 - [Health Checks](/en/guide/health-checks) -- health monitoring
-- [@connectum/reflection](/en/packages/reflection) -- Package Guide
+- [@connectum/reflection](/en/guide/protocols/reflection) -- Package Guide
 - [@connectum/reflection API](/en/api/@connectum/reflection/) -- Full API Reference

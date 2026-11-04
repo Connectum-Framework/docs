@@ -175,7 +175,7 @@ async createAccount(request: CreateAccountRequest) {
 ## Related
 
 - [Interceptors](/en/guide/interceptors) -- the validation interceptor in the chain
-- [@connectum/interceptors](/en/packages/interceptors) -- Package Guide
+- [@connectum/interceptors](/en/guide/interceptors) -- Package Guide
 - [ADR-005: Input Validation Strategy](/en/contributing/adr/005-input-validation-strategy) -- design rationale and alternatives
 - [protovalidate documentation](https://github.com/bufbuild/protovalidate) -- full constraint reference
 - [@connectrpc/validate](https://www.npmjs.com/package/@connectrpc/validate) -- official ConnectRPC validation package

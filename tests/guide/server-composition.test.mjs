@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import { plateStyles, partGeometry as sharedGeometry } from '../../scripts/isometric-plates.mjs';
 import { model, partGeometry, project, renderHtml, renderSvg } from '../../scripts/server-composition.mjs';
 
 test('the embedded artwork is reproducible from its checked-in HTML source', () => {
@@ -12,6 +13,8 @@ test('the embedded artwork is reproducible from its checked-in HTML source', () 
 });
 
 test('three compact prisms share one projection, equal gaps and one focal part', () => {
+    assert.ok(renderSvg().includes(plateStyles));
+    assert.match(renderSvg(), /class="server-composition connectum-isometric"/);
     assert.equal(model.parts.length, 3);
     assert.deepEqual(
         model.parts.filter((part) => part.focal).map((part) => part.key),
@@ -21,6 +24,10 @@ test('three compact prisms share one projection, equal gaps and one focal part',
     assert.deepEqual(project(4, 0, 0), [model.origin[0] + 4, model.origin[1] + 2]);
     assert.deepEqual(project(0, 4, 0), [model.origin[0] - 4, model.origin[1] + 2]);
     const geometries = model.parts.map((part) => partGeometry(part.level));
+    assert.deepEqual(
+        geometries,
+        model.parts.map((part) => sharedGeometry(part.level, model.origin)),
+    );
     assert.equal(geometries[0].z, 0);
     for (let i = 1; i < geometries.length; i++) {
         assert.equal(geometries[i].z - geometries[i - 1].z - model.thickness, model.gap);

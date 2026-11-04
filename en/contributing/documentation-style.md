@@ -28,7 +28,7 @@ reference, and architecture history on one URL.
 | Tutorial | Complete a bounded learning path | Prerequisites, goal, sequential steps, verification, next steps | Optional production hardening, exhaustive options | `en/guide/**` |
 | How-to | Accomplish one real task | Problem, prerequisites, focused steps, verification, failure path | Product pitch, unrelated alternatives, full API tables | `en/guide/**` |
 | Concept | Understand a mental model or decision | Context, model, boundaries, links to tasks | Step-by-step setup, exhaustive symbols | `en/guide/**` |
-| Package hub | Decide whether and how to use one module | Purpose, install variants, minimal example when applicable, load-bearing entry points, Learn / Configure / API links | Exhaustive option/type catalog, copied guide chapters | `en/packages/<name>.md` |
+| Section entry | Choose a task and a reading path | Scope, relationships between topics, canonical child links | Repeated child explanations, separate package marketing | `en/guide/**` |
 | Reference | Look up exact signatures, fields, defaults, or compatibility | Generated symbols or a deliberately maintained matrix | Narrative tutorials, duplicated rationale | `en/api/**` or a named canonical matrix |
 | Migration | Determine whether an upgrade requires action | Affected versions, required action, before/after, verification | Complete release history and unrelated features | `en/migration/**` |
 | ADR | Understand why an architectural decision was made | Status, context, decision, consequences, alternatives | Current task instructions that belong in guides | `en/contributing/adr/**` |
@@ -36,6 +36,35 @@ reference, and architecture history on one URL.
 Contributor workflow pages are a separate audience. They describe how to work on
 Connectum itself and use the repository's supported Node.js and pnpm toolchain,
 not consumer-facing runtime or package-manager choices.
+
+## Canonical navigation and ownership
+
+Human-written usage and behavior live in Guides. Installation belongs to the
+Guide that owns a capability; exact signatures, fields and types are generated
+from framework source into `en/api/`. Do not recreate separate package overview
+pages or a hand-written API landing tree.
+
+The header links to Get started, the Guide-section dropdown, generated API and
+Builder, in that order. Builder has an outlined treatment. Get started is not
+repeated inside the dropdown. A linked sidebar section heading is its landing
+page; do not add a second child link to the same page under another label.
+Section titles, routes and sidebar membership are defined in
+`.vitepress/guide/navigation.ts`; section entry pages use `GuideSection` for
+their topic links. Testing is a separate section. Local/remote transport and
+events belong to Communication. Advanced is not collapsible.
+
+Old package/reference addresses are compatibility routes described in
+`.vitepress/data/site.json`. Their fragment maps route earlier links to the
+canonical material. `pnpm docs:routes` renders the transition pages, while
+`pnpm docs:routes:check` detects drift. They are excluded from search, sitemap
+and LLM bundles and keep usable destination links without JavaScript. Update
+the map before moving content; preserve a specific fragment whenever its new
+owner retains that section. Link new content directly to the owner.
+
+Interceptors has one composition guide and focused policy pages. Reuse the
+existing Validation guide rather than copying it into a second interceptor
+article. Keep unit, application-integration and deployed E2E tests distinct:
+in-process tests do not establish network or TLS behavior.
 
 ## Overview-first Guides
 
@@ -110,6 +139,11 @@ Resolvers select remote transports; reflection exposes schemas at a known
 server address. Do not use “service discovery” as if those were the same job.
 
 ## Prose and README guidance
+
+Write checklists with `- [ ]` and `- [x]`. The shared Markdown renderer emits
+labelled, read-only native checkboxes, including inside runtime and package-manager
+tabs. Their checked state comes from the source; checking off a personal copy is
+not saved by the documentation site. Keep ordinary lists as ordinary list items.
 
 - Put source examples, executable statements and configuration objects in fenced
   code blocks with an explicit language. Use VitePress's native highlighting,
@@ -195,29 +229,26 @@ docType: concept
 ## Apply the concept
 ```
 
-### Package hub
+### Section entry
 
 ```md
 ---
-title: @connectum/<name>
-description: <One-sentence module purpose>
-docType: package-hub
+title: <Guide section>
+description: <Tasks covered by this section>
+docType: section
 ---
 
-# @connectum/<name>
+# <Guide section>
 
-<Who needs it and when.>
+<Scope and a short reading path. Explain how the topics relate.>
 
-## Install
-## Start here
-## Key entry points
-## Learn / Configure / API reference
-## Related modules
+## Topics
+
+<GuideSection section="<section-id>" />
 ```
 
-List only entry points a reader needs to orient themselves. Link every exact
-interface or function to generated TypeDoc. Architecture layer may appear as
-metadata, but it does not determine reader navigation.
+The shared section definition owns the topic links. Keep task instructions on
+the child pages and link exact interfaces or functions to generated TypeDoc.
 
 ### Migration
 
@@ -307,6 +338,14 @@ any source edit; otherwise it checks the examples against stale output. Both com
 listed in [CLI Commands](/en/contributing/cli-commands).
 
 ## Canonical ownership
+
+### Target release
+
+The site documents its declared release line, including features implemented for
+that release. Describe their behavior directly. Do not label them Preview,
+upcoming or unpublished because the npm latest tag points to an older release.
+Verify examples against the target framework source and build. Keep genuine
+migration boundaries and runtime requirements; do not invent missing features.
 
 When information could appear in several places, these locations win:
 
@@ -413,7 +452,9 @@ parity between tabs.
 
 ### Diagrams and process flows
 
-Use Mermaid for process flows, state machines, sequences, and architecture diagrams.
+Use Mermaid for process flows, state machines, sequences, and architecture diagrams,
+except for the authored SVG Guide overviews described above and the composition
+plates below.
 Do not represent a diagram as aligned text, Unicode arrows, or ASCII boxes inside a
 plain code fence. Mermaid diagrams inherit light/dark colors, remain readable at narrow
 widths, and provide a keyboard-accessible fullscreen view.
@@ -421,6 +462,85 @@ widths, and provide a keyboard-accessible fullscreen view.
 Use a fenced text block only for literal command output or a file tree. Use a generated
 image only when the subject cannot be expressed clearly in Mermaid; include useful alt
 text, preserve the editable source, and verify both themes.
+
+#### Isometric composition style
+
+The composition figure on [Server](/en/guide/server) is the visual reference for
+all isometric figures. [Get started](/en/guide/about#mental-model) uses the same
+plates with responsive HTML explanations. Keep the subject's layout and meaning;
+reuse the geometry and skin from `scripts/isometric-plates.mjs`.
+
+- Project every vertex with `project(x, y, z, origin)`:
+  `[ox + x - y, oy + (x + y) / 2 - z]`. This is a 2:1 dimetric projection.
+  Do not draw a shallower diamond, skew the SVG with CSS, or place corners by hand.
+- Use the shared `plateModel`: a 184 × 184 footprint, radius 12 and thickness 20.
+  Rounded corners project to elliptical arcs with radii `r * sqrt(2)` and
+  `r / sqrt(2)`. Scale uniformly; do not thicken the side faces independently.
+- Generate faces with `partGeometry()` and `renderPlateFaces()`. Paint the opaque
+  silhouette, top, left and right faces, front rim, then the outline. The outline
+  is 1.2 units with rounded joins; the rim is 0.8 units at 0.55 opacity.
+- Include `plateStyles` and the `connectum-isometric` class. The module owns both
+  theme palettes. Neutral light faces use paper on top, 7% ink on the left and
+  15% ink on the right. Dark faces use the module's opaque dark surfaces.
+  Keep the left face lighter than the right. No page-local face colors,
+  translucent solids, gradients, shadows or glow.
+- Give one plate at most `data-focal`. It uses the shared blue top, side faces
+  and border. Other plates stay neutral. About accents Connectum; Server accents
+  Your services. Color does not replace a name or explanation.
+- Keep one horizontal name outside each plate. Use the site's sans-serif font
+  for names and mono only for code or technical sublabels. Server uses a right
+  label column with 0.8-unit leaders and 2-unit dots; About keeps its semantic
+  HTML headings and prose alongside each decorative SVG, below it on phones.
+  Do not repeat the name on the top face or rotate text into the projection.
+- In an exploded composition, keep the common vertical axis and the shared
+  60-unit model gap. Responsive HTML rows use their content height instead:
+  preserve About's compact 4px row gap, 16px on phones, and tightly cropped
+  viewBoxes. Do not increase whitespace to compensate for a different prism.
+
+The checked-in HTML files are generated assets consumed by the Vue components.
+Regenerate both after editing the shared renderer:
+
+```bash
+node scripts/server-composition.mjs
+node scripts/technology-stack.mjs
+pnpm guide:test
+```
+
+Review the production pages in both themes and on desktop and mobile. Run
+`scripts/check-technology-stack-browser.mjs` against the existing preview with
+`PLAYWRIGHT_MODULE` pointing to an installed Playwright module. It compares
+computed face colors, outlines and rims with Server, checks responsive bounds
+and text contrast, and exercises no-JS and print views. Server keeps local
+keyboard-scrollable overflow; About's decorative plates scale with independent
+HTML text. Preserve all labels and captions without JavaScript. A meaningful
+SVG needs an accessible title and description; a plate fully explained by
+adjacent HTML stays `aria-hidden="true"` and unfocusable.
+
+About has one optional decorative scroll effect. Its SVG plates lift by at most
+24, 18 and 12px on desktop, 14, 10 and 6px on phones. Each spends that travel over
+one plate height as its untransformed top crosses `96px + plate height` to `96px`
+in the viewport. This short local range keeps the motion on screen; document
+length and viewport height do not dilute it. Only the whole decorative SVG
+translates vertically; its geometry, labels, row heights and gaps stay fixed.
+The limits and scroll mapping live in
+`stackParallax.ts`; `useStackParallax.ts` schedules one frame per batch of passive
+scroll events, using untransformed HTML wrappers as its reference. There is no
+constant frame loop, rotation, zoom or inertia. Work pauses outside the viewport
+and on hidden pages; unmount removes listeners, observers and pending frames.
+The effect works without CSS scroll-timeline support, including in Firefox.
+Do not add it to Server or other diagrams.
+
+Reduced motion, print, no-JS and standalone HTML retain the complete static
+figure. A short note explains reduced motion or an explicit static link. Use
+`?motion=static` or `<html data-motion="static">` for stable captures. Run
+`scripts/check-technology-stack-parallax-browser.mjs --browser chrome` and
+`--browser firefox` against the existing preview. Test short wheel gestures
+while the plate remains wholly visible, including its motion relative to its
+label and neighboring plates. Adding content below must not change the effect.
+Do not use a full-page or offscreen end position as proof of visible parallax. Test
+reverse scroll and lifecycle cleanup. Text must remain stationary in document
+coordinates, moving plates must not touch labels, and a stationary page must
+produce no autonomous motion.
 
 #### The shared diagram theme
 
@@ -551,6 +671,7 @@ Do not describe a client-side compatibility page as a permanent HTTP redirect.
 - [ ] Process, state, sequence, and architecture diagrams use Mermaid instead of aligned text.
 - [ ] Diagrams carry no literal colors; any semantic variant is also readable without color.
 - [ ] Diagram labels, arrows, and routes were checked in both themes; collisions were fixed in the source.
+- [ ] Isometric plates reuse the Server geometry and shared skin; generated sources and browser style comparisons agree.
 - [ ] Links and controls have visible keyboard focus and meaningful labels.
 - [ ] Mobile layouts have usable touch targets and no horizontal overflow.
 - [ ] Motion is non-essential and respects reduced-motion preferences.

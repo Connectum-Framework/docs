@@ -5,12 +5,17 @@ import DefaultTheme from 'vitepress/theme';
 import CopyOrDownloadAsMarkdownButtons from 'vitepress-plugin-llms/vitepress-components/CopyOrDownloadAsMarkdownButtons.vue';
 import CatalogAssembly from './components/CatalogAssembly.vue';
 import CatalogRoutingDiagram from './components/CatalogRoutingDiagram.vue';
+import CompatibilityRedirect from './components/CompatibilityRedirect.vue';
+import GuideSection from './components/GuideSection.vue';
 import GuideSections from './components/GuideSections.vue';
+import MovedInterceptorSections from './components/MovedInterceptorSections.vue';
 import RuntimeCompositionDiagram from './components/RuntimeCompositionDiagram.vue';
 import Layout from './Layout.vue';
 import './custom.css';
 import './styles/guide-overview.css';
 import './styles/controls.css';
+import './styles/navigation.css';
+import './styles/task-lists.css';
 
 /**
  * Mermaid 11 keeps only dagre in its core; every other layout engine arrives as a
@@ -49,6 +54,9 @@ export default {
         app.component('CatalogRoutingDiagram', CatalogRoutingDiagram);
         app.component('CatalogAssembly', CatalogAssembly);
         app.component('GuideSections', GuideSections);
+        app.component('GuideSection', GuideSection);
+        app.component('CompatibilityRedirect', CompatibilityRedirect);
+        app.component('MovedInterceptorSections', MovedInterceptorSections);
         app.component('RuntimeCompositionDiagram', RuntimeCompositionDiagram);
     },
 } satisfies Theme;

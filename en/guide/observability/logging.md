@@ -70,5 +70,5 @@ When an active span exists, the OpenTelemetry SDK automatically includes `trace_
 - [Observability Overview](/en/guide/observability) -- back to overview
 - [Tracing](/en/guide/observability/tracing) -- distributed tracing setup
 - [Backends & Configuration](/en/guide/observability/backends) -- configure log exporters
-- [@connectum/otel](/en/packages/otel) -- Package Guide
+- [@connectum/otel](/en/guide/observability) -- Package Guide
 - [@connectum/otel API](/en/api/@connectum/otel/) -- Full API Reference

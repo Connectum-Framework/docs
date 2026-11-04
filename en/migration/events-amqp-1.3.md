@@ -297,5 +297,5 @@ const adapter = AmqpAdapter({
 ## Related release notes
 
 - [Run the AMQP adapter reliably](/en/guide/events/amqp-reliability)
-- [`@connectum/events-amqp` package page](/en/packages/events-amqp)
+- [AMQP adapter guide](/en/guide/events/amqp-reliability)
 - [Connectum GitHub releases](https://github.com/Connectum-Framework/connectum/releases)

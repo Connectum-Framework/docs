@@ -28,9 +28,6 @@ export function overlayMethod(base: JsonObject, method: DescMethod) {
     if (!object(operation)) return { kind: 'skipped' as const, document, path };
 
     const auth = resolveMethodAuth(method);
-    // refuse ambiguous credentials here even with readers that allow both flags.
-    if (auth.public && auth.internal) throw new Error('A method cannot be both public and internal. The example overlay rejects these options; choose one access boundary.');
-
     document.components ??= {};
     if (!object(document.components)) throw new Error('The base components value is not an object.');
     document.components.securitySchemes ??= {};

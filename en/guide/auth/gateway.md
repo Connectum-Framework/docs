@@ -189,5 +189,5 @@ not compensate for a mismatched subject header.
 - [Auth Overview](/en/guide/auth) -- all authentication strategies
 - [JWT Authentication](/en/guide/auth/jwt) -- direct token verification
 - [Auth Context](/en/guide/auth/context) -- accessing identity in handlers
-- [@connectum/auth](/en/packages/auth) -- Package Guide
+- [@connectum/auth](/en/guide/auth) -- Package Guide
 - [@connectum/auth API](/en/api/@connectum/auth/) -- Full API Reference

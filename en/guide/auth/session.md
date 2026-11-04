@@ -171,5 +171,5 @@ whether your mapper supplies `expiresAt`.
 - [Auth Overview](/en/guide/auth) -- all authentication strategies
 - [JWT Authentication](/en/guide/auth/jwt) -- token-based authentication
 - [Auth Context](/en/guide/auth/context) -- accessing identity in handlers
-- [@connectum/auth](/en/packages/auth) -- Package Guide
+- [@connectum/auth](/en/guide/auth) -- Package Guide
 - [@connectum/auth API](/en/api/@connectum/auth/) -- Full API Reference

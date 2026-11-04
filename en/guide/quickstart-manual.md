@@ -487,7 +487,7 @@ this tutorial.
 | Observe the service | [Tracing, metrics, and logging](/en/guide/observability) |
 | Tune lifecycle behavior | [Graceful Shutdown](/en/guide/server/graceful-shutdown) |
 | Add resilience deliberately | [Built-in Interceptor Chain](/en/guide/interceptors/built-in) |
-| Sync reflected contracts | [Server Reflection](/en/guide/protocols/reflection) and [`@connectum/cli`](/en/packages/cli) |
+| Sync reflected contracts | [Server Reflection](/en/guide/protocols/reflection) and [`@connectum/cli`](/en/guide/scaffolding-commands) |
 | Call another service | [Choosing a Communication Mechanism](/en/guide/service-communication/choosing-a-mechanism) |
 | Test the service | [Testing](/en/guide/testing) |
 | Deploy it | [Docker](/en/guide/production/docker) and [Kubernetes](/en/guide/production/kubernetes) |

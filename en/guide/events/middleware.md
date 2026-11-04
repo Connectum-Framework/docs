@@ -414,4 +414,4 @@ const composed = composeMiddleware(middlewares, async (rawEvent, ctx) => {
 - [Events Overview](/en/guide/events) -- architecture and core concepts
 - [Getting Started](/en/guide/events/getting-started) -- step-by-step setup
 - [with-events-dlq](https://github.com/Connectum-Framework/examples/tree/main/with-events-dlq) -- full DLQ example with NATS JetStream
-- [@connectum/events](/en/packages/events) -- Package Guide
+- [@connectum/events](/en/guide/events) -- Package Guide

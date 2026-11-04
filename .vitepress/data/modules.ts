@@ -5,7 +5,6 @@ export interface PublicModule {
     readonly name: `@connectum/${string}`;
     readonly category: ModuleCategory;
     readonly summary: string;
-    readonly hub: `/en/packages/${string}`;
     readonly guide: `/en/guide/${string}`;
     readonly api: `/en/api/@connectum/${string}/`;
     readonly source: `https://github.com/Connectum-Framework/connectum/tree/main/packages/${string}`;
@@ -19,7 +18,6 @@ export const publicModules = [
         name: '@connectum/core',
         category: 'Foundation',
         summary: 'Server lifecycle, service registration, configuration, TLS, and in-process clients.',
-        hub: '/en/packages/core',
         guide: '/en/guide/server',
         api: '/en/api/@connectum/core/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/core',
@@ -31,7 +29,6 @@ export const publicModules = [
         name: '@connectum/interceptors',
         category: 'Foundation',
         summary: 'Error handling, validation, timeouts, resilience, and method-scoped middleware.',
-        hub: '/en/packages/interceptors',
         guide: '/en/guide/interceptors',
         api: '/en/api/@connectum/interceptors/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/interceptors',
@@ -43,7 +40,6 @@ export const publicModules = [
         name: '@connectum/auth',
         category: 'Security',
         summary: 'JWT, gateway, session, internal-service authentication, and authorization.',
-        hub: '/en/packages/auth',
         guide: '/en/guide/auth',
         api: '/en/api/@connectum/auth/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/auth',
@@ -55,7 +51,6 @@ export const publicModules = [
         name: '@connectum/events',
         category: 'Communication',
         summary: 'Proto-first publish and subscribe with middleware, retries, and dead-letter handling.',
-        hub: '/en/packages/events',
         guide: '/en/guide/events',
         api: '/en/api/@connectum/events/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/events',
@@ -67,7 +62,6 @@ export const publicModules = [
         name: '@connectum/events-nats',
         category: 'Communication',
         summary: 'NATS JetStream adapter for the Connectum EventBus.',
-        hub: '/en/packages/events-nats',
         guide: '/en/guide/events/adapters',
         api: '/en/api/@connectum/events-nats/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/events-nats',
@@ -79,7 +73,6 @@ export const publicModules = [
         name: '@connectum/events-kafka',
         category: 'Communication',
         summary: 'Kafka and Redpanda adapter for the Connectum EventBus.',
-        hub: '/en/packages/events-kafka',
         guide: '/en/guide/events/adapters',
         api: '/en/api/@connectum/events-kafka/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/events-kafka',
@@ -91,7 +84,6 @@ export const publicModules = [
         name: '@connectum/events-redis',
         category: 'Communication',
         summary: 'Redis Streams and Valkey adapter for the Connectum EventBus.',
-        hub: '/en/packages/events-redis',
         guide: '/en/guide/events/adapters',
         api: '/en/api/@connectum/events-redis/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/events-redis',
@@ -103,7 +95,6 @@ export const publicModules = [
         name: '@connectum/events-amqp',
         category: 'Communication',
         summary: 'AMQP and RabbitMQ adapter with topology and reliable-publishing controls.',
-        hub: '/en/packages/events-amqp',
         guide: '/en/guide/events/adapters',
         api: '/en/api/@connectum/events-amqp/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/events-amqp',
@@ -115,7 +106,6 @@ export const publicModules = [
         name: '@connectum/otel',
         category: 'Operations',
         summary: 'OpenTelemetry tracing, metrics, logging, providers, and client/server instrumentation.',
-        hub: '/en/packages/otel',
         guide: '/en/guide/observability',
         api: '/en/api/@connectum/otel/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/otel',
@@ -127,7 +117,6 @@ export const publicModules = [
         name: '@connectum/healthcheck',
         category: 'Operations',
         summary: 'gRPC health protocol, HTTP probes, readiness state, and Kubernetes integration.',
-        hub: '/en/packages/healthcheck',
         guide: '/en/guide/health-checks',
         api: '/en/api/@connectum/healthcheck/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/healthcheck',
@@ -138,7 +127,6 @@ export const publicModules = [
         name: '@connectum/reflection',
         category: 'Operations',
         summary: 'gRPC Server Reflection for discovery, inspection, and tooling.',
-        hub: '/en/packages/reflection',
         guide: '/en/guide/protocols/reflection',
         api: '/en/api/@connectum/reflection/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/reflection',
@@ -149,8 +137,7 @@ export const publicModules = [
         name: '@connectum/cli',
         category: 'Tooling and testing',
         summary: 'Service scaffolding, service generation, version inspection, and reflection-based proto sync.',
-        hub: '/en/packages/cli',
-        guide: '/en/guide/scaffolding',
+        guide: '/en/guide/scaffolding-commands',
         api: '/en/api/@connectum/cli/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/cli',
         entryPoints: ['connectum init', 'connectum generate service', 'connectum proto sync'],
@@ -160,7 +147,6 @@ export const publicModules = [
         name: '@connectum/protoc-gen-catalog',
         category: 'Tooling and testing',
         summary: 'Buf plugin that generates typed service-catalog call and stream mappings.',
-        hub: '/en/packages/protoc-gen-catalog',
         guide: '/en/guide/service-communication/service-catalog',
         api: '/en/api/@connectum/protoc-gen-catalog/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/protoc-gen-catalog',
@@ -171,8 +157,7 @@ export const publicModules = [
         name: '@connectum/testing',
         category: 'Tooling and testing',
         summary: 'Supported test servers, local transports, parity helpers, collectors, and assertions.',
-        hub: '/en/packages/testing',
-        guide: '/en/guide/testing',
+        guide: '/en/guide/testing/integration',
         api: '/en/api/@connectum/testing/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/testing',
         example: 'https://github.com/Connectum-Framework/examples/tree/main/runn',
@@ -183,21 +168,14 @@ export const publicModules = [
         name: '@connectum/test-fixtures',
         category: 'Tooling and testing',
         summary: 'Low-level mock factories and protobuf descriptor fixtures for advanced test tooling.',
-        hub: '/en/packages/test-fixtures',
-        guide: '/en/guide/testing',
+        guide: '/en/guide/testing/unit',
         api: '/en/api/@connectum/test-fixtures/',
         source: 'https://github.com/Connectum-Framework/connectum/tree/main/packages/test-fixtures',
         entryPoints: ['createMockRequest', 'createFakeService', 'createMockStream'],
     },
 ] as const satisfies readonly PublicModule[];
 
-export const moduleCategories = [
-    'Foundation',
-    'Security',
-    'Communication',
-    'Operations',
-    'Tooling and testing',
-] as const satisfies readonly ModuleCategory[];
+export const moduleCategories = ['Foundation', 'Security', 'Communication', 'Operations', 'Tooling and testing'] as const satisfies readonly ModuleCategory[];
 
 export function findModule(slug: string): PublicModule | undefined {
     return publicModules.find((module) => module.slug === slug);

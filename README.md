@@ -44,6 +44,58 @@ Run these commands from the repository root after installing dependencies.
 `docs:validate:built` checks the generated routes, search index, sitemap, and LLM
 outputs. Open the preview URL printed by VitePress and stop it with Ctrl+C.
 
+Navigation and compatibility routes have their own checks:
+
+```bash
+pnpm guide:test
+pnpm navigation:typecheck
+pnpm docs:routes:check
+```
+
+When changing a compatibility destination, update `.vitepress/data/site.json`
+and run `pnpm docs:routes`. Keep the canonical article in Guides; the generated
+transition page preserves links without maintaining another copy of its prose.
+
+The runnable unit and integration examples are checked against the built
+framework revision recorded by the scaffold generator:
+
+```bash
+pnpm --dir .vitepress/catalog/example install --frozen-lockfile
+CONNECTUM_FRAMEWORK_ROOT=../connectum pnpm testing-guides:verify
+```
+
+This check generates a default scaffold, links its dependencies to that target,
+runs protobuf generation, typechecks, then executes the exact TypeScript
+snippets from the Testing guides. It uses a temporary local gRPC listener and
+does not require a broker or change the application's lockfile.
+
+After changing navigation, check the links already published in every framework
+package README against the built site, including fragments:
+
+```bash
+pnpm docs:check:package-readmes --framework-root ../connectum
+```
+
+The check also resolves relative files and requests external URLs, so it needs
+network access. It writes `.tmp/package-readme-links.json` and fails on unresolved
+targets. After deployment, repeat with `--site-url https://connectum.dev` to
+check the served pages as well. Preserve published links through compatibility
+routes rather than requiring a package release just to replace a URL.
+
+For browser regressions, point `PLAYWRIGHT_MODULE` to an installed Playwright
+`index.mjs` and use an already running preview. These checks use Chrome and
+start no server; the accepted-demo check also needs `unzip` to inspect the
+project downloaded by Builder.
+
+```bash
+node scripts/check-navigation-browser.mjs --url http://127.0.0.1:4185 --output .tmp/navigation-browser
+node scripts/check-quickstart-browser.mjs --url http://127.0.0.1:4185 --output .tmp/quickstart-browser
+node scripts/check-accepted-demos-browser.mjs --url http://127.0.0.1:4185 --output .tmp/accepted-demos-browser
+```
+
+The checks save screenshots, accessibility snapshots and JSON reports. Inspect
+the screenshots alongside the assertions before accepting a navigation change.
+
 ## Check code examples
 
 The framework repository runs the examples from this site and from its package
@@ -69,8 +121,9 @@ docs/
 │   ├── index.md         # Landing page
 │   ├── guide/           # User guide (progressive)
 │   │   └── production/  # Production deployment
-│   ├── packages/        # Per-package guides
+│   ├── packages/        # Compatibility routes into canonical Guides
 │   ├── api/             # Auto-generated API Reference (TypeDoc)
+│   ├── reference/       # Compatibility routes into Guides and generated API
 │   ├── migration/       # Migration & changelog
 │   └── contributing/    # Contributor guides and ADRs
 ├── public/              # Static assets (assets/, CNAME, robots.txt)

@@ -295,5 +295,5 @@ does not ensure cleanup finishes; see [Graceful shutdown](/en/guide/server/grace
 - [Custom Interceptors](/en/guide/interceptors/custom) -- creating custom interceptors
 - [Custom Protocols](/en/guide/protocols/custom) -- creating protocol plugins
 - [Method Filtering](/en/guide/interceptors/method-filtering) -- per-method interceptor routing
-- [@connectum/core](/en/packages/core) -- Package Guide
+- [@connectum/core](/en/guide/server) -- Package Guide
 - [@connectum/core API](/en/api/@connectum/core/) -- Full API Reference

@@ -75,7 +75,7 @@ export const diagrams = [
             ),
             node('catalog', 24, 24, 272, 104, 'Generated service catalog', ['Compile-time contract knowledge', 'Runtime descriptors; no endpoints'], {
                 shape: 'document',
-                topics: [`${calls}service-catalog`, '/en/reference/service-catalog'],
+                topics: [`${calls}service-catalog`, '/en/guide/service-communication/catalog-configuration'],
             }),
             node('caller', 336, 24, 328, 104, 'Catalog call', ['ctx.call / ctx.stream', 'Inherit handler deadline and signal']),
             node('patterns', 24, 176, 168, 128, 'Call patterns', ['Chains and fan-out', 'Streams + cancellation', 'Translate partial errors'], { topics: [`${calls}patterns`] }),

@@ -116,11 +116,11 @@ Configure [security](/en/guide/security), [validation](/en/guide/validation) and
 The same catalog also supports streaming, inherited deadlines, explicit header
 propagation and callers outside a handler. These do not need to be learned before
 the first working call. The complete details are in the
-[configuration and behavior reference](/en/reference/service-catalog).
+[configuration and behavior reference](/en/guide/service-communication/catalog-configuration).
 
 ## Related
 
-- [Full catalog reference](/en/reference/service-catalog)
+- [Full catalog reference](/en/guide/service-communication/catalog-configuration)
 - [Remote resolvers](/en/guide/service-communication/resolvers)
 - [How the catalog is formed](/en/guide/service-communication/service-catalog)
 - [Communication patterns](/en/guide/service-communication/patterns)

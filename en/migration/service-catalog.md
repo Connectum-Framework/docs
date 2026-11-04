@@ -415,7 +415,7 @@ A `send()` on a `ctx.stream()` handle for a client-streaming or bidi call (and o
 
 **Action — only if a handler sent after closing.** Move every `send()` before `close()`, or open a new handle for the later messages. Code that never sends after `close()` is unaffected, and a second `close()` stays harmless.
 
-Not changed: the `responses` iterable of a bidi handle is single-use. Two loops over it at the same time split the messages between them, and a loop started after another has ended or left with `break` receives nothing. See [Streaming calls](/en/reference/service-catalog#streaming-calls).
+Not changed: the `responses` iterable of a bidi handle is single-use. Two loops over it at the same time split the messages between them, and a loop started after another has ended or left with `break` receives nothing. See [Streaming calls](/en/guide/service-communication/catalog-configuration#streaming-calls).
 
 ## Migration checklist
 

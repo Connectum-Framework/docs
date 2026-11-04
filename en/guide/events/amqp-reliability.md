@@ -34,6 +34,9 @@ reference.
 The wildcard translation and validation described here ship with
 `@connectum/events-amqp` 1.3.0. Earlier versions keep their previous routing
 behavior.
+
+Follow the
+[migration guide](/en/migration/events-amqp-1.3) when upgrading an existing adapter.
 :::
 
 The EventBus topic becomes the AMQP routing key. By default a named `group`

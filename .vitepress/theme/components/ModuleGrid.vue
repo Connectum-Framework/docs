@@ -1,19 +1,25 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { moduleCategories, publicModules, type ModuleCategory } from '../../data/modules.ts';
+import { type ModuleCategory, moduleCategories, publicModules } from '../../data/modules.ts';
 
-const props = withDefaults(defineProps<{
-    categories?: readonly ModuleCategory[];
-    showApi?: boolean;
-}>(), {
-    categories: () => moduleCategories,
-    showApi: true,
-});
+const props = withDefaults(
+    defineProps<{
+        categories?: readonly ModuleCategory[];
+        showApi?: boolean;
+    }>(),
+    {
+        categories: () => moduleCategories,
+        showApi: true,
+    },
+);
 
-const groups = computed(() => props.categories.map((category) => ({
-    category,
-    modules: publicModules.filter((module) => module.category === category),
-})));
+// biome-ignore lint/correctness/noUnusedVariables: the Vue template iterates these groups; vue-tsc checks it.
+const groups = computed(() =>
+    props.categories.map((category) => ({
+        category,
+        modules: publicModules.filter((module) => module.category === category),
+    })),
+);
 </script>
 
 <template>
@@ -23,12 +29,11 @@ const groups = computed(() => props.categories.map((category) => ({
             <div class="module-grid">
                 <article v-for="module in group.modules" :key="module.slug" class="module-card">
                     <p class="module-card__eyebrow">{{ module.category }}</p>
-                    <h3><a :href="module.hub">{{ module.name }}</a></h3>
+                    <h3><a :href="module.guide">{{ module.name }}</a></h3>
                     <p>{{ module.summary }}</p>
                     <p class="module-card__symbols">{{ module.entryPoints.join(' · ') }}</p>
                     <div class="module-card__links">
-                        <a :href="module.guide">Learn</a>
-                        <a :href="module.hub">Overview</a>
+                        <a :href="module.guide">Guide</a>
                         <a v-if="showApi" :href="module.api">API</a>
                     </div>
                 </article>

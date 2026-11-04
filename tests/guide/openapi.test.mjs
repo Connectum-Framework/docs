@@ -75,8 +75,8 @@ test('a deny policy remains a deny from the actual reader even though credential
 test('the example explicitly refuses contradictory public/internal credentials instead of displaying a stale successful spec', () => {
     const result = run('conflict');
     assert.equal(result.kind, 'rejected');
-    assert.match(result.message, /cannot be both public and internal/);
-    assert.match(result.message, /example overlay rejects/);
+    assert.match(result.message, /shop\.v1\.InventoryService\/CheckStock is marked both public and internal/);
+    assert.match(result.message, /public skips every check, internal requires a trusted peer/);
     assert.equal(result.document, undefined);
     assert.equal(result.output, undefined);
     assert.equal(run('public').kind, 'patched');
@@ -137,7 +137,7 @@ test('the generated base and its inputs match recorded hashes and include the re
     const provenance = JSON.parse(read('.vitepress/openapi/provenance.json'));
     const hash = (source) => createHash('sha256').update(source).digest('hex');
     assert.equal(provenance.generator, 'buf.build/community/sudorandom-connect-openapi:v0.25.7');
-    assert.equal(provenance.authVersion, '1.2.0');
+    assert.equal(provenance.authVersion, '1.3.0');
     assert.equal(base.info.version, provenance.fixtureVersion);
     assert.equal(base.info.version, '1.0.0');
     assert.equal(hash(read('.vitepress/openapi/base/shop/v1/inventory.openapi.json')), provenance.artifactSha256);
@@ -148,7 +148,7 @@ test('the browser bundle is the unchanged published reader and matches the publi
     const provenance = JSON.parse(read('.vitepress/openapi/generated/provenance.json'));
     const installed = new URL('../../', import.meta.resolve('@connectum/auth/proto'));
     const hash = (source) => createHash('sha256').update(source).digest('hex');
-    assert.equal(provenance.authVersion, '1.2.0');
+    assert.equal(provenance.authVersion, '1.3.0');
     assert.equal(hash(readFileSync(new URL('src/proto/reader.ts', installed))), provenance.sourceSha256);
     assert.equal(hash(readFileSync(new URL('gen/connectum/auth/v1/options_pb.js', installed))), provenance.schemaSha256);
     assert.equal(hash(read('.vitepress/openapi/generated/auth-reader.mjs')), provenance.bundleSha256);
@@ -156,7 +156,19 @@ test('the browser bundle is the unchanged published reader and matches the publi
     for (const method of methods)
         for (const annotation of annotations) {
             const descriptor = methodDescriptor({ method: method.id, annotation: annotation.id });
-            assert.deepEqual(browserReader(descriptor), resolveMethodAuth(descriptor));
+            if (annotation.id === 'conflict') {
+                let browserError;
+                assert.throws(
+                    () => browserReader(descriptor),
+                    (error) => {
+                        browserError = error;
+                        return /is marked both public and internal/.test(error.message);
+                    },
+                );
+                assert.throws(() => resolveMethodAuth(descriptor), { message: browserError.message });
+            } else {
+                assert.deepEqual(browserReader(descriptor), resolveMethodAuth(descriptor));
+            }
         }
 });
 
@@ -167,7 +179,7 @@ test('the Node inspection command executes every non-default annotation and stre
             const cli = spawnSync(process.execPath, ['scripts/inspect-openapi-overlay.mjs', '--method', method.id, '--annotation', annotation.id], { cwd: root, encoding: 'utf8' });
             if (result.kind === 'rejected') {
                 assert.equal(cli.status, 1);
-                assert.match(cli.stderr, /example overlay rejects/);
+                assert.equal(cli.stderr.trim(), result.message);
                 assert.equal(cli.stdout, '');
             } else {
                 assert.equal(cli.status, 0, cli.stderr);
@@ -215,7 +227,12 @@ test('every displayed proto snippet compiles to the same effective options as th
                 const registry = createFileRegistry(fromBinary(FileDescriptorSetSchema, bytes));
                 const compiled = registry.getService('shop.v1.InventoryService').methods[0];
                 const edited = methodDescriptor(settings);
-                assert.deepEqual(resolveMethodAuth(compiled), resolveMethodAuth(edited), `${method.id}/${annotation.id}`);
+                if (annotation.id === 'conflict') {
+                    assert.throws(() => resolveMethodAuth(compiled), /is marked both public and internal/);
+                    assert.throws(() => resolveMethodAuth(edited), /is marked both public and internal/);
+                } else {
+                    assert.deepEqual(resolveMethodAuth(compiled), resolveMethodAuth(edited), `${method.id}/${annotation.id}`);
+                }
             }
     } finally {
         rmSync(directory, { recursive: true, force: true });

@@ -1,37 +1,35 @@
 ---
-title: Scaffold a Service
-description: Choose a starting project, inspect its generated files, and keep generation tied to your proto contracts.
+title: Scaffold a service
+description: Create a runnable Connectum project with the CLI, then take ownership of its files.
 docType: concept
 outline: 2
 ---
 
-<script setup>
-import GuideOverview from '../../.vitepress/theme/components/GuideOverview.vue';
-import overview from '../../.vitepress/theme/assets/diagrams/guide/scaffolding.html?raw';
-</script>
+# Scaffold a service {#scaffolding-a-new-service}
 
-# Scaffolding a New Service
+`connectum init` creates a runnable project with a sample service, health checks
+and reflection. The generated files are your application: edit its contract,
+write handlers and configure the capabilities you select.
 
-Scaffolding writes the starting files. After that, they are your application —
-not hidden framework configuration.
+```bash
+npx @connectum/cli init my-service --yes
+cd my-service
+pnpm install
+pnpm start
+```
 
-<figure class="technical-diagram" data-guide-overview="scaffolding" aria-label="Scaffolding commands and owned files">
-<GuideOverview :source="overview" />
-<figcaption>The builder previews a pinned generator. Optional modules still need their broker, auth configuration and telemetry backend.</figcaption>
-</figure>
+Run `init` without `--yes` to choose runtime, package manager and modules
+interactively. The default project uses pnpm and direct Node.js TypeScript
+execution; check [runtime requirements](/en/guide/runtime-compatibility).
+The CLI fetches its pinned example base from GitHub, so the first run needs
+network access.
 
-## Start with the files
+Use [Builder](/en/builder) to inspect the selected project before downloading it,
+or follow [Quickstart](/en/guide/quickstart) to add a protected Page RPC.
 
-The [service builder](/en/builder) lets you inspect the project and download all
-its files. It also shows what each selected capability changes.
-
-Prefer to build everything yourself? Follow the
-[manual first-service tutorial](/en/guide/quickstart-manual).
-
-## Use the CLI deliberately
-
-The [command guide](/en/guide/scaffolding-commands) keeps the full `init`,
-`generate service` and `proto sync` instructions, naming rules and generated-file
-behavior. The builder identifies its pinned generator source.
+The [scaffold structure and CLI guide](/en/guide/scaffolding-commands) in
+Build a service explains generated files, module composition, command options,
+service generation and proto synchronization. The
+[manual tutorial](/en/guide/quickstart-manual) builds the foundation without `init`.
 
 <GuideSections route="/en/guide/scaffolding" />

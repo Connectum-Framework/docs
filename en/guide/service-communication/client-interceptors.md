@@ -256,5 +256,5 @@ Streaming request and response size metrics are recorded as `0`.
 - [Interceptors](/en/guide/interceptors) -- server-side interceptor chain
 - [Gateway Authentication](/en/guide/auth/gateway) -- server side of `createClientGatewayInterceptor`
 - [Client-Side Auth Interceptors](/en/guide/auth/client-interceptors) -- bearer and gateway credentials
-- [@connectum/otel](/en/packages/otel) -- Package Guide
+- [@connectum/otel](/en/guide/observability) -- Package Guide
 - [@connectum/otel API](/en/api/@connectum/otel/) -- Full API Reference

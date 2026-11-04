@@ -48,4 +48,5 @@ Start with the [health protocol](/en/guide/health-checks/protocol) or
 
 Readiness means the process can accept useful work; liveness means it should not be restarted. During shutdown, mark the service not serving before draining traffic. Worker-only processes with `services: []` should register an application component in the manager so `/healthz` has an explicit readiness source; the protocol guide owns that pattern.
 
-Use the [`@connectum/healthcheck` module hub](/en/packages/healthcheck) for installation and navigation.
+Use the [health protocol guide](/en/guide/health-checks/protocol#installation)
+for installation and configuration.

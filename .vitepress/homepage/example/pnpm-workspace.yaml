@@ -3,3 +3,5 @@ packages:
 allowBuilds:
   '@bufbuild/buf': true
   esbuild: true
+minimumReleaseAgeExclude:
+  - '@connectum/core@1.3.0'

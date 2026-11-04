@@ -1,10 +1,10 @@
-// Generated from @connectum/auth@1.2.0 src/proto/reader.ts; do not edit.
+// Generated from @connectum/auth@1.3.0 src/proto/reader.ts; do not edit.
 // SPDX-License-Identifier: Apache-2.0
 
-// node_modules/.pnpm/@connectum+auth@1.2.0/node_modules/@connectum/auth/src/proto/reader.ts
+// node_modules/.pnpm/@connectum+auth@1.3.0_@bufbuild+protobuf@2.16.0_@connectrpc+connect@2.3.0_@bufbuild+pro_49fe5d89b3861ef60b957c083e6fb869/node_modules/@connectum/auth/src/proto/reader.ts
 import { getOption, hasOption, isFieldSet } from "@bufbuild/protobuf";
 
-// node_modules/.pnpm/@connectum+auth@1.2.0/node_modules/@connectum/auth/gen/connectum/auth/v1/options_pb.js
+// node_modules/.pnpm/@connectum+auth@1.3.0_@bufbuild+protobuf@2.16.0_@connectrpc+connect@2.3.0_@bufbuild+pro_49fe5d89b3861ef60b957c083e6fb869/node_modules/@connectum/auth/gen/connectum/auth/v1/options_pb.js
 import { extDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import { file_google_protobuf_descriptor } from "@bufbuild/protobuf/wkt";
 var file_connectum_auth_v1_options = /* @__PURE__ */ fileDesc("Ch9jb25uZWN0dW0vYXV0aC92MS9vcHRpb25zLnByb3RvEhFjb25uZWN0dW0uYXV0aC52MSIxChBBdXRoUmVxdWlyZW1lbnRzEg0KBXJvbGVzGAEgAygJEg4KBnNjb3BlcxgCIAMoCSJ1CgpNZXRob2RBdXRoEg4KBnB1YmxpYxgBIAEoCBI1CghyZXF1aXJlcxgCIAEoCzIjLmNvbm5lY3R1bS5hdXRoLnYxLkF1dGhSZXF1aXJlbWVudHMSDgoGcG9saWN5GAMgASgJEhAKCGludGVybmFsGAQgASgIIoYBCgtTZXJ2aWNlQXV0aBIWCg5kZWZhdWx0X3BvbGljeRgBIAEoCRI9ChBkZWZhdWx0X3JlcXVpcmVzGAIgASgLMiMuY29ubmVjdHVtLmF1dGgudjEuQXV0aFJlcXVpcmVtZW50cxIOCgZwdWJsaWMYAyABKAgSEAoIaW50ZXJuYWwYBCABKAg6YAoLbWV0aG9kX2F1dGgSHi5nb29nbGUucHJvdG9idWYuTWV0aG9kT3B0aW9ucxi0hwMgASgLMh0uY29ubmVjdHVtLmF1dGgudjEuTWV0aG9kQXV0aFIKbWV0aG9kQXV0aDpkCgxzZXJ2aWNlX2F1dGgSHy5nb29nbGUucHJvdG9idWYuU2VydmljZU9wdGlvbnMYtYcDIAEoCzIeLmNvbm5lY3R1bS5hdXRoLnYxLlNlcnZpY2VBdXRoUgtzZXJ2aWNlQXV0aA", [file_google_protobuf_descriptor]);
@@ -13,7 +13,7 @@ var ServiceAuthSchema = /* @__PURE__ */ messageDesc(file_connectum_auth_v1_optio
 var method_auth = /* @__PURE__ */ extDesc(file_connectum_auth_v1_options, 0);
 var service_auth = /* @__PURE__ */ extDesc(file_connectum_auth_v1_options, 1);
 
-// node_modules/.pnpm/@connectum+auth@1.2.0/node_modules/@connectum/auth/src/proto/reader.ts
+// node_modules/.pnpm/@connectum+auth@1.3.0_@bufbuild+protobuf@2.16.0_@connectrpc+connect@2.3.0_@bufbuild+pro_49fe5d89b3861ef60b957c083e6fb869/node_modules/@connectum/auth/src/proto/reader.ts
 var resolvedCache = /* @__PURE__ */ new WeakMap();
 var DEFAULT_RESOLVED = {
   public: false,
@@ -45,6 +45,11 @@ function computeMethodAuth(method) {
   const methodInternalSet = mtdAuth !== void 0 && isFieldSet(mtdAuth, MethodAuthSchema.field.internal);
   const serviceInternalSet = svcAuth !== void 0 && isFieldSet(svcAuth, ServiceAuthSchema.field.internal);
   const isInternal = methodInternalSet ? mtdAuth?.internal === true : serviceInternalSet ? svcAuth?.internal === true : false;
+  if (isPublic && isInternal) {
+    throw new Error(
+      `@connectum/auth: ${service.typeName}/${method.name} is marked both public and internal, which contradicts itself (public skips every check, internal requires a trusted peer). To make the method public set "public: true, internal: false" on it; to make it internal set "internal: true, public: false" (a method-level "public: false" also overrides a "public: true" inherited from the service).`
+    );
+  }
   let requires;
   if (mtdAuth !== void 0 && mtdAuth.requires !== void 0) {
     requires = {
@@ -57,18 +62,16 @@ function computeMethodAuth(method) {
       scopes: svcAuth.defaultRequires.scopes
     };
   }
-  let policy;
-  if (mtdAuth !== void 0 && mtdAuth.policy !== "") {
-    policy = normalizePolicy(mtdAuth.policy);
-  } else if (svcAuth !== void 0 && svcAuth.defaultPolicy !== "") {
-    policy = normalizePolicy(svcAuth.defaultPolicy);
-  }
+  const servicePolicy = svcAuth !== void 0 && svcAuth.defaultPolicy !== "" ? normalizePolicy(svcAuth.defaultPolicy, method, "service_auth.default_policy") : void 0;
+  const policy = mtdAuth !== void 0 && mtdAuth.policy !== "" ? normalizePolicy(mtdAuth.policy, method, "method_auth.policy") : servicePolicy;
   return { public: isPublic, internal: isInternal, policy, requires };
 }
-function normalizePolicy(value) {
+function normalizePolicy(value, method, option) {
   if (value === "allow") return "allow";
   if (value === "deny") return "deny";
-  return void 0;
+  throw new Error(
+    `@connectum/auth: invalid ${option} ${JSON.stringify(value)} on ${method.parent.typeName}/${method.name}; expected "allow" or "deny" (case-sensitive), or leave it unset to use the interceptor default.`
+  );
 }
 function getPublicMethods(services) {
   const patterns = [];

@@ -365,5 +365,5 @@ const userClient = createClient(UserService, transport);
 - [Client Interceptors](/en/guide/service-communication/client-interceptors) -- OTel client interceptor, resilience
 - [Metrics](/en/guide/observability/metrics) -- counters, histograms, automatic RPC metrics
 - [Logging](/en/guide/observability/logging) -- structured logging with trace correlation
-- [@connectum/otel](/en/packages/otel) -- Package Guide
+- [@connectum/otel](/en/guide/observability) -- Package Guide
 - [@connectum/otel API](/en/api/@connectum/otel/) -- Full API Reference

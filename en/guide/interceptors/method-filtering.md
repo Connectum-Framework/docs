@@ -219,13 +219,13 @@ Built-in interceptors have `skip*` options for call-kind and operational-service
 Keep fallback's default `skipStreaming: true` until
 [#465](https://github.com/Connectum-Framework/connectum/issues/465) is resolved.
 Its streaming response has a known defect, separate from the opening-only timeout
-and retry behavior below; see [Fallback response](/en/guide/interceptors/built-in#fallback-response).
+and retry behavior below; see [Fallback response](/en/guide/interceptors/fallback#fallback-response-metadata).
 :::
 
 For timeout and retry, `skipStreaming: false` covers opening the response, not
 subsequent iteration: retry can repeat opening failures, and timeout limits the
 opening wait. Neither restarts or times out consumption of an opened response.
-See [Cancellation and Streaming Scope](/en/guide/interceptors/built-in#cancellation-and-streaming-scope).
+See [Cancellation and streaming scope](/en/guide/interceptors/timeout#cooperate-with-cancellation).
 
 These options complement `createMethodFilterInterceptor`: method filtering selects
 methods, while each matched interceptor applies its own call-scope policy.
@@ -249,5 +249,5 @@ Setting `skipStreaming: true` bypasses retry for streaming calls; it does not me
 - [Built-in Interceptors](/en/guide/interceptors/built-in) -- default chain reference
 - [Custom Interceptors](/en/guide/interceptors/custom) -- creating custom interceptors
 - [Custom Protocols](/en/guide/protocols/custom) -- creating protocol plugins
-- [@connectum/interceptors](/en/packages/interceptors) -- Package Guide
+- [@connectum/interceptors](/en/guide/interceptors) -- Package Guide
 - [ADR-014: Method Filter Interceptor](/en/contributing/adr/014-method-filter-interceptor) -- design rationale

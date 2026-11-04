@@ -243,5 +243,5 @@ const server = createServer({
 
 - [Security Overview](/en/guide/security) -- back to overview
 - [Mutual TLS (mTLS)](/en/guide/security/mtls) -- client certificate authentication, production best practices
-- [@connectum/core](/en/packages/core) -- Package Guide
+- [@connectum/core](/en/guide/server) -- Package Guide
 - [@connectum/core API](/en/api/@connectum/core/) -- Full API Reference

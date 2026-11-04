@@ -1,0 +1,8 @@
+{
+  "frameworkCommit": "8a6af2cb8c9aa7390aa95ee9e524e3e23593d756",
+  "artifacts": {
+    "project-provenance.json": "67c050ce0a3c50da2afe064b09cfcb75bf4d3cbdf25125269a1af5abcf1a4d1a",
+    "recording.json": "e1e01315371f1c2d251dab12797a06b4d8d5e48fc3b2fc6625a2d0cddb678614",
+    "generated/page_pb.ts": "74b1478764ba23692e61ffef877aa8dc9af6c73decf1cff2bf66790018456307"
+  }
+}

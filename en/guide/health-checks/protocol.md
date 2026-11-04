@@ -11,6 +11,26 @@ Connectum implements the [gRPC Health Checking Protocol](https://github.com/grpc
 
 ## Configuration
 
+<span id="installation"></span>
+
+Install `@connectum/healthcheck` with your package manager, then register
+`Healthcheck()` in the server's `protocols` array:
+
+::: pm
+== npm
+```bash
+npm install @connectum/healthcheck
+```
+== pnpm
+```bash
+pnpm add @connectum/healthcheck
+```
+== bun
+```bash
+bun add @connectum/healthcheck
+```
+:::
+
 The `Healthcheck()` factory function accepts the following options:
 
 ```typescript
@@ -359,5 +379,5 @@ describe('health check', () => {
 
 - [Health Checks Overview](/en/guide/health-checks) -- back to overview
 - [Kubernetes Integration](/en/guide/health-checks/kubernetes) -- probes, graceful shutdown, shutdown timeline
-- [@connectum/healthcheck](/en/packages/healthcheck) -- Package Guide
+- [@connectum/healthcheck](/en/guide/health-checks) -- Package Guide
 - [@connectum/healthcheck API](/en/api/@connectum/healthcheck/) -- Full API Reference

@@ -220,7 +220,7 @@ Support and caveats differ by adapter:
 | `MemoryAdapter` | Yes | Same matcher as above. |
 | `NatsAdapter` | Yes, native | The server evaluates the filter for every message, so subjects first used after the subscription are delivered. When several patterns of one subscription match the same subject (`orders.created`, `orders.*`, `orders.>`), the handler still runs once per event; see [overlapping patterns](/en/guide/events/adapters#nats-overlapping-patterns). |
 | `KafkaAdapter` | Yes, as a regex over topic names | A matching topic created later is picked up at `consumerOptions.topicDiscoveryInterval` (default 5 min; `false` keeps the list fixed; in a group, after the longest interval among its members). A pattern that opens with a wildcard never matches topics starting with `__` (Kafka's internal topics). |
-| `AmqpAdapter` | Yes, on a topic exchange | `>` becomes `*.#`, so `user.>` needs at least one more segment. Other exchange types do not match patterns: a direct exchange binds the pattern as a literal key (rejected with `topologyMode: "assert"`), and a fanout exchange delivers every key to the queue, as does a headers exchange unless `topology.bindings` declares the queue's bindings (then the declared `x-match` bindings decide), so `EventBus` drops events with no matching handler. See the [AMQP module page](/en/packages/events-amqp). |
+| `AmqpAdapter` | Yes, on a topic exchange | `>` becomes `*.#`, so `user.>` needs at least one more segment. Other exchange types do not match patterns: a direct exchange binds the pattern as a literal key (rejected with `topologyMode: "assert"`), and a fanout exchange delivers every key to the queue, as does a headers exchange unless `topology.bindings` declares the queue's bindings (then the declared `x-match` bindings decide), so `EventBus` drops events with no matching handler. See the [AMQP module page](/en/guide/events/amqp-reliability). |
 | `RedisAdapter` | No | A pattern containing `*` or `>` is rejected when the subscription is made, so `bus.start()` fails with `RedisAdapter: wildcard pattern "..." is not supported. Redis Streams requires explicit topic names.` Subscribe to exact topic names; see [Redis wildcards](/en/guide/events/adapters#redis-wildcards). |
 
 ::: warning Kafka: topics created after the subscription
@@ -282,4 +282,4 @@ Adopt a convention across your project:
 - [Events Overview](/en/guide/events) -- architecture and core concepts
 - [Getting Started](/en/guide/events/getting-started) -- step-by-step setup
 - [Adapters](/en/guide/events/adapters) -- wildcard support per adapter
-- [@connectum/events](/en/packages/events) -- Package Guide
+- [@connectum/events](/en/guide/events) -- Package Guide

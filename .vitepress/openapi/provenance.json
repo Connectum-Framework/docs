@@ -1,6 +1,6 @@
 {
   "generator": "buf.build/community/sudorandom-connect-openapi:v0.25.7",
-  "authVersion": "1.2.0",
+  "authVersion": "1.3.0",
   "fixtureVersion": "1.0.0",
   "normalization": "Set the required info.version to the fixture API version; paths and schemas are unchanged.",
   "inputs": {

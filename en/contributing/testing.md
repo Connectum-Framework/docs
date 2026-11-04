@@ -9,7 +9,7 @@ docType: contributor-guide
 This page describes how tests for the `@connectum/*` packages themselves are written. To
 test a service built with Connectum, use the
 [Testing guide](/en/guide/testing) and the
-[`@connectum/testing`](/en/packages/testing) package instead. For the commands that run
+[`@connectum/testing`](/en/guide/testing/integration) package instead. For the commands that run
 the suites, see [CLI Commands](/en/contributing/cli-commands).
 
 ## Test runner and APIs
@@ -98,7 +98,7 @@ Conventions you will see across the repository:
 - **Shared helpers.** `@connectum/testing` provides local clients and mock contexts, and
   its separate `@connectum/testing/parity` entry provides the `transportParityTest()`
   driver (the root entry does not re-export it). `@connectum/test-fixtures` provides mock requests,
-  descriptors, and streams. See [`@connectum/test-fixtures`](/en/packages/test-fixtures)
+  descriptors, and streams. See [`@connectum/test-fixtures`](/en/guide/testing/unit)
   for what it offers.
 
 Tests are not covered by the Biome formatter or linter (`biome.json` excludes

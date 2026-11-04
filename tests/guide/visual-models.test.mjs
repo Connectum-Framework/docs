@@ -26,17 +26,13 @@ test('the generic animation player, clock and stylesheet are removed, not merely
     assert.equal(staticFigures, 0, 'Generic card models must not return to the Guide');
 });
 
-test('the About pilot retains dependencies while Interceptors maps the whole section', () => {
+test('About uses the technology stack while Interceptors retains its own section-wide model', () => {
     const about = read('en/guide/about.md');
     const interceptors = read('en/guide/interceptors.md');
-    for (const source of [about, interceptors]) {
-        assert.match(source, /<figure class="technical-diagram"/);
-        assert.match(source, /<figcaption>/);
-        assert.doesNotMatch(source, /<figure class="guide-map"/);
-    }
-    assert.match(about, /Handlers\[.*\] --> Service/);
-    assert.match(about, /accTitle:/);
-    assert.match(about, /accDescr:/);
+    assert.match(about, /<TechnologyStack \/>/);
+    assert.doesNotMatch(about, /```mermaid|<figure class="guide-map"/);
+    assert.match(interceptors, /<figure class="technical-diagram"/);
+    assert.match(interceptors, /<figcaption>/);
     assert.match(interceptors, /data-guide-overview="interceptors"/);
     assert.match(interceptors, /<GuideOverview :source="overview" \/>/);
 });

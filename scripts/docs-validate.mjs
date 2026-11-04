@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import process from 'node:process';
 import { publicModules } from '../.vitepress/data/modules.ts';
+import { findRedirect } from '../.vitepress/data/redirects.ts';
+import { movedInterceptorSections } from '../.vitepress/guide/interceptor-sections.ts';
+import { guideSections as navigationSections } from '../.vitepress/guide/navigation.ts';
 
 const projectRoot = resolve(import.meta.dirname, '..');
 const workspaceRoot = resolve(projectRoot, '..');
 const configuredFrameworkRoot = process.env.CONNECTUM_FRAMEWORK_ROOT;
-const frameworkRoot = configuredFrameworkRoot
-    ? resolve(configuredFrameworkRoot)
-    : resolve(workspaceRoot, 'connectum');
+const frameworkRoot = configuredFrameworkRoot ? resolve(configuredFrameworkRoot) : resolve(workspaceRoot, 'connectum');
 const contentRoot = resolve(projectRoot, 'en');
 const buildRoot = resolve(projectRoot, '.vitepress/dist');
 const site = JSON.parse(readFileSync(resolve(projectRoot, '.vitepress/data/site.json'), 'utf8'));
@@ -42,20 +43,22 @@ function cleanHeading(value) {
 }
 
 function slugify(value) {
-    return cleanHeading(value)
-        .normalize('NFKD')
-        .replace(/[\u0300-\u036f]/g, '')
-        // biome-ignore lint/suspicious/noControlCharactersInRegex: fragment normalization must match VitePress, including removed control characters.
-        .replace(/[\u0000-\u001f]/g, '')
-        .replace(/[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '')
-        .replace(/^(\d)/, '_$1')
-        .toLowerCase();
+    return (
+        cleanHeading(value)
+            .normalize('NFKD')
+            .replace(/[\u0300-\u036f]/g, '')
+            // biome-ignore lint/suspicious/noControlCharactersInRegex: fragment normalization must match VitePress, including removed control characters.
+            .replace(/[\u0000-\u001f]/g, '')
+            .replace(/[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '')
+            .replace(/^(\d)/, '_$1')
+            .toLowerCase()
+    );
 }
 
 function anchorsFor(source) {
-    const anchors = new Set();
+    const anchors = new Set([...source.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
     const counts = new Map();
     let inFence = false;
     for (const line of source.split(/\r?\n/)) {
@@ -83,10 +86,17 @@ function internalLinks(source) {
 }
 
 const markdownFiles = collectFiles(contentRoot, '.md');
-const pages = new Map(markdownFiles.map((file) => {
-    const source = readFileSync(file, 'utf8');
-    return [routeFor(file), { file, source, anchors: anchorsFor(source) }];
-}));
+const pages = new Map(
+    markdownFiles.map((file) => {
+        const source = readFileSync(file, 'utf8');
+        return [routeFor(file), { file, source, anchors: anchorsFor(source) }];
+    }),
+);
+for (const redirect of site.redirects) {
+    const page = pages.get(redirect.from);
+    for (const fragment of Object.keys(redirect.fragments ?? {})) page?.anchors.add(fragment);
+}
+for (const section of movedInterceptorSections) pages.get('/en/guide/interceptors/built-in')?.anchors.add(section.id);
 
 // the compatibility disclosure is server-rendered from the same data as these checks.
 const guideSections = JSON.parse(readFileSync(resolve(projectRoot, '.vitepress/guide/sections.json'), 'utf8'));
@@ -203,7 +213,13 @@ for (const redirect of site.redirects) {
     if (redirectsBySource.has(redirect.from)) errors.push(`duplicate redirect source ${redirect.from}`);
     redirectsBySource.set(redirect.from, redirect.to);
     if (!resolveRoute(redirect.from)) errors.push(`redirect source page is missing: ${redirect.from}`);
-    if (!resolveRoute(redirect.to)) errors.push(`redirect target page is missing: ${redirect.to}`);
+    for (const destination of [redirect.to, ...Object.values(redirect.fragments ?? {})]) {
+        const [path, fragment] = destination.split('#');
+        const target = resolveRoute(path);
+        if (!target) errors.push(`redirect target page is missing: ${destination}`);
+        else if (fragment && !pages.get(target).anchors.has(fragment)) errors.push(`redirect target fragment is missing: ${destination}`);
+        if (findRedirect(path)) errors.push(`redirect target is another compatibility route: ${destination}`);
+    }
     if (redirect.from === redirect.to) errors.push(`redirect points to itself: ${redirect.from}`);
 }
 
@@ -231,12 +247,21 @@ const seenSlugs = new Set();
 for (const module of publicModules) {
     if (seenSlugs.has(module.slug)) errors.push(`duplicate module slug: ${module.slug}`);
     seenSlugs.add(module.slug);
-    if (!resolveRoute(module.hub)) errors.push(`${module.name}: missing package hub ${module.hub}`);
     if (!resolveRoute(module.api)) errors.push(`${module.name}: missing generated API destination ${module.api}`);
     if (!resolveRoute(module.guide)) errors.push(`${module.name}: missing guide destination ${module.guide}`);
 }
 
 const navigationSource = readFileSync(resolve(projectRoot, '.vitepress/config/en.ts'), 'utf8');
+for (const section of navigationSections) {
+    if (!resolveRoute(section.link)) errors.push(`missing Guide section landing ${section.link}`);
+    const walk = (items) => {
+        for (const item of items) {
+            if (item.link && (!resolveRoute(item.link) || findRedirect(item.link))) errors.push(`non-canonical sidebar target ${item.link}`);
+            if (item.items) walk(item.items);
+        }
+    };
+    walk(section.items);
+}
 for (const redirect of site.redirects) {
     if (navigationSource.includes(`link: '${redirect.from}'`) || navigationSource.includes(`link: "${redirect.from}"`)) {
         errors.push(`compatibility route remains in primary navigation: ${redirect.from}`);
@@ -272,7 +297,14 @@ if (checkBuiltOutputs) {
         const search = JSON.parse(readFileSync(resolve(buildRoot, 'hashmap.json'), 'utf8'));
         const llms = `${readFileSync(resolve(buildRoot, 'llms.txt'), 'utf8')}\n${readFileSync(resolve(buildRoot, 'llms-full.txt'), 'utf8')}`;
 
-        for (const route of ['/en/', '/en/guide/quickstart', '/en/packages/', '/en/reference/', '/en/guide/runtime-compatibility', '/en/migration/']) {
+        for (const route of [
+            '/en/',
+            '/en/guide/quickstart',
+            '/en/api/',
+            ...navigationSections.map((section) => section.link),
+            '/en/guide/runtime-compatibility',
+            '/en/migration/',
+        ]) {
             if (!sitemap.includes(`https://connectum.dev${route}`)) errors.push(`sitemap missing canonical route ${route}`);
         }
 
@@ -280,12 +312,17 @@ if (checkBuiltOutputs) {
         const expectedSearchKeys = [
             'en_guide_quickstart.md',
             'en_guide_runtime-compatibility.md',
-            'en_reference_index.md',
+            'en_guide_testing_integration.md',
             'en_api_@connectum_auth_interfaces_jwtauthinterceptoroptions.md',
             'en_api_@connectum_core_types_interfaces_createserveroptions.md',
         ];
         for (const key of expectedSearchKeys) {
             if (!searchKeys.includes(key)) errors.push(`local search missing ${key}`);
+        }
+        for (const redirect of site.redirects) {
+            if (sitemap.includes(`https://connectum.dev${redirect.from}<`)) errors.push(`sitemap includes compatibility route ${redirect.from}`);
+            if (llms.includes(`https://connectum.dev${redirect.from}`) || llms.includes(`](${redirect.from})`))
+                errors.push(`LLM output includes compatibility route ${redirect.from}`);
         }
 
         for (const phrase of ['Build your first service', 'Runtime Compatibility', 'JwtAuthInterceptorOptions']) {

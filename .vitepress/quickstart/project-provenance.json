@@ -1,0 +1,28 @@
+{
+  "command": "npx @connectum/cli@1.3.0 init private-page --auth --otel --yes",
+  "cliSourceCommit": "8a6af2cb8c9aa7390aa95ee9e524e3e23593d756",
+  "baseRef": "v1.3.1",
+  "sourceHashes": {
+    ".dockerignore": "dedf3b8d6642126f9b918ae8ac45bc184460bec5ed7f686f3668f2634cc80c72",
+    ".gitignore": "317438c4ed93430d26073ce6d95ccfc3f5d31183ace3c75e249908d45f3b3962",
+    "buf.gen.yaml": "fce09362c8625a57eceb2fd4cb1d094b77681a47c0ac5cb9e6c34cfb11e60ad1",
+    "buf.yaml": "647ea7317059fa08c9c9dd89399ace3b1241a3f680d93af33d8837648db083c7",
+    "Dockerfile": "718b46d79e9cd39323278ac925d3a74e24e35af461479a04e9d409c049200563",
+    "Dockerfile.bun": "89ad2f7003e6be76243313cb42d20d4f4025b64eb66a81dc5497f51bbfe71403",
+    "package.json": "3bfe84137bf89d9fe3620d1284658c373fa926b012e3d528f7a38fe96e26f0b2",
+    "pnpm-workspace.yaml": "b0a97b4b9789f80fecc8c04b35cba953cd61480e385562d2e1a4aba480fa44ae",
+    "proto/greeter/v1/greeter.proto": "e925cd3d4e1d1deb4101172252a15a91895e84db28d6b8f526ddc82fb2763a1c",
+    "README.md": "01dc30cd8d5b909947cc7ca50220ff59b9e1c9a3df0858cfc412f983a1297a02",
+    "src/auth.ts": "26d2ffe52362c7e42f215b250f02aecde621cc7ec4ff84f64300e9eaa9d10a8d",
+    "src/index.ts": "cf32dcd227c9139e5ac7efb82df7ee2ac0c9a0802abc806e25c3bb43ad0c305f",
+    "src/server.ts": "049162a86b59f2a554da200f24824c050bf88b507fa8964a57384812b2dbc7a1",
+    "src/services/greeterService.ts": "d5f87e1cfbafea2826b800fe8f604a50e51a68142e19f3d40ed0ab9d70c0b50b",
+    "tests/e2e/e2e.test.ts": "562cbdbcf16c999dad11395300fd0fa04f28df8ddca8db50caac73d51a1c97fe",
+    "tsconfig.json": "5703f7ca4609e9270dad8b45418a62028ef70834dfc60492ec1d44722e09b443",
+    "proto/page/v1/page.proto": "fa50e1a71204ac52ebcc57c2a210f1fb9128ad73e8e8253257962145861c6720",
+    "src/services/pageService.ts": "c7d256f0b1229984c87496ed887f370b3b7909eb875b13638a0f58dcc3fb2e41",
+    "tests/quickstart/capture.ts": "fb682693b8bb997721b122163f363ee7ad1a0ed03e46a43361499cd75a1da259",
+    "requests/get-page.sh": "c23eeec90483007351c0a0bef1adfba8cab21862c03f164b24e089ec8328253e",
+    "requests/variants.ts": "2efcb3cd33319337e98f5ce9a95546610f8ea6848c6e17239b752ae1a26cc8cf"
+  }
+}

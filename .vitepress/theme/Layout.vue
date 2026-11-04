@@ -6,8 +6,10 @@ import mediumZoom from 'medium-zoom'
 import { isPackageManager, PACKAGE_MANAGER_STORAGE_KEY, setPackageManager } from './packageManager.ts'
 import { isRuntime, RUNTIME_STORAGE_KEY, setRuntime } from './runtime.ts'
 import PageContext from './components/PageContext.vue'
+import { useNavigationKeyboard } from './useNavigationKeyboard.ts'
 
 const route = useRoute()
+useNavigationKeyboard()
 
 // --- Medium Zoom for images ---
 let zoom: ReturnType<typeof mediumZoom>

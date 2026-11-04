@@ -804,48 +804,6 @@
     ]
   },
   {
-    "route": "/en/guide/production/architecture",
-    "detail": "/en/guide/production/architecture-details",
-    "anchors": [
-      {
-        "id": "connectum-runtime-architecture",
-        "title": "Connectum Runtime Architecture"
-      },
-      {
-        "id": "boundary-and-ownership",
-        "title": "Boundary and ownership"
-      },
-      {
-        "id": "runtime-composition",
-        "title": "Runtime composition"
-      },
-      {
-        "id": "network-and-in-process-parity",
-        "title": "Network and in-process parity"
-      },
-      {
-        "id": "catalog-call-routing",
-        "title": "Catalog call routing"
-      },
-      {
-        "id": "extension-seams",
-        "title": "Extension seams"
-      },
-      {
-        "id": "deployment-boundary",
-        "title": "Deployment boundary"
-      },
-      {
-        "id": "build-time-inputs",
-        "title": "Build-time inputs"
-      },
-      {
-        "id": "related",
-        "title": "Related"
-      }
-    ]
-  },
-  {
     "route": "/en/guide/runtime-compatibility",
     "detail": "/en/guide/runtime-compatibility-details",
     "anchors": [

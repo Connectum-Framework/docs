@@ -14,3 +14,5 @@ node_modules/
 .vitepress/interceptors/example/gen/
 .vitepress/openapi/base/connectum/
 .vitepress/homepage/example/gen/
+.vitepress/quickstart/example/
+.vitepress/quickstart/openapi-base/

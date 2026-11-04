@@ -232,5 +232,5 @@ Use EventBus when services need to react to events **asynchronously** without di
 - [Custom Topics](/en/guide/events/custom-topics) -- proto options for topic naming
 - [Middleware](/en/guide/events/middleware) -- retry, DLQ, custom middleware
 - [Adapters](/en/guide/events/adapters) -- detailed adapter comparison and configuration
-- [@connectum/events](/en/packages/events) -- Package Guide
+- [@connectum/events](/en/guide/events) -- Package Guide
 - [@connectum/events API](/en/api/@connectum/events/) -- Full API Reference

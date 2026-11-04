@@ -321,5 +321,5 @@ before sending OpenTelemetry logs.
 - [Metrics](/en/guide/observability/metrics) -- custom metrics
 - [Logging](/en/guide/observability/logging) -- structured logging
 - [Docker Deployment](/en/guide/production/docker) -- containerized setup
-- [@connectum/otel](/en/packages/otel) -- Package Guide
+- [@connectum/otel](/en/guide/observability) -- Package Guide
 - [@connectum/otel API](/en/api/@connectum/otel/) -- Full API Reference

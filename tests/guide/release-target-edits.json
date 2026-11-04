@@ -1,0 +1,12 @@
+[
+  {
+    "detail": "/en/guide/scaffolding-commands",
+    "baselineSha256": "2f01f389cc3a276f4b02302bdefb854de84c6b84e9704289f332b0aad14dcd04",
+    "replacements": [
+      {
+        "before": "`@connectum/events`. Projects scaffolded with an earlier published CLI cannot use this\ngenerated import path until the required package exports are published; they can adopt it by\nhand: [Option descriptors from the packages](/en/migration/option-descriptor-imports).",
+        "after": "`@connectum/events`. To adopt these imports in an older project, upgrade its packages\nand follow [Option descriptors from the packages](/en/migration/option-descriptor-imports)."
+      }
+    ]
+  }
+]

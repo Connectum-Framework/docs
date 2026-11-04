@@ -94,7 +94,7 @@ You need to act if you enable `fallback` in `createDefaultInterceptors()` or bui
 | The fallback `handler` returns a plain object with the response fields (`{ items: [] }`) | On a server the call failed with a `serialize binary: ...` text | The object is turned into the response message |
 | The `handler` returns `undefined`, `null`, a string, or an object that does not fit the response type (an unknown key, a number in a string field, a non-array in a repeated field, ...) | `undefined` failed on a server with a `serialize binary: ...` text; the other values were not checked and were passed on as the response | `TypeError` naming `createFallbackInterceptor`, the expected type and the path of the problem; behind the error handler the client gets `Internal: internal error` |
 
-The default chain order is now `errorHandler, timeout, bulkhead, circuitBreaker, retry, validation, fallback, serializer`. It differs from before only when `fallback` is enabled.
+With fallback enabled, the default chain is `errorHandler, timeout, bulkhead, validation, fallback, circuitBreaker, retry, serializer`. Without fallback, validation stays after retry. See [Fallback position](/en/guide/interceptors/fallback#fallback-position) for the retry and breaker behavior.
 
 **Action:** if you compose the chain yourself, put the validation interceptor before the fallback interceptor. If your `handler` returns a plain object, check that every key is a field of the method's response; if it returns something else, return `create(OutputSchema, { ... })`. If something relied on a rejected request being answered by the fallback value, handle `INVALID_ARGUMENT` in the caller instead.
 
