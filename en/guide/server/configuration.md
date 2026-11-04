@@ -34,7 +34,7 @@ console.log(config.NODE_ENV);       // "development" (default)
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
-| `PORT` | `number` | `5000` | Server port, a whole number from 1 to 65535; a fractional value such as `80.5` is rejected with an error on `PORT` |
+| `PORT` | `number` | `5000` | Server port, a whole number from 1 to 65535 written in decimal digits. A fractional value such as `80.5`, or a notation `Number()` would read (`0x50`, `1e3`, `+80`, spaces around the digits), is rejected with an error on `PORT`; leading zeros stay decimal (`08080` is `8080`) |
 | `LISTEN` | `string` | `"0.0.0.0"` | Listen address |
 | `NODE_ENV` | `enum` | `"development"` | `"development"`, `"production"`, or `"test"` |
 
@@ -57,15 +57,17 @@ console.log(config.NODE_ENV);       // "development" (default)
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
-| `OTEL_SERVICE_NAME` | `string` | -- | Service name reported to the collector |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | `string (url)` | -- | OTLP collector endpoint (e.g. `http://localhost:4318`) |
+| `OTEL_SERVICE_NAME` | `string` | -- | Service name reported to the collector. An empty value is read as unset, as the OpenTelemetry SDK reads its own variables |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `string (url)` | -- | OTLP collector endpoint, an absolute `http:` or `https:` URL (e.g. `http://localhost:4318`); `localhost:4318` and `ftp://collector` are rejected with an error on the variable; an empty value is read as unset |
 
 ### Graceful Shutdown
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
 | `GRACEFUL_SHUTDOWN_ENABLED` | `boolean` | `true` | Enable automatic graceful shutdown on SIGTERM/SIGINT |
-| `GRACEFUL_SHUTDOWN_TIMEOUT_MS` | `number` | `30000` | Maximum time (ms) to wait for in-flight requests (0--300000) |
+| `GRACEFUL_SHUTDOWN_TIMEOUT_MS` | `number` | `30000` | Maximum time (ms) to wait for in-flight requests: a whole number from 0 to 300000 |
+
+An empty or whitespace-only `GRACEFUL_SHUTDOWN_TIMEOUT_MS` and a fractional value such as `1.5` are rejected with an issue on the variable, the way an empty `PORT` is. Leave the variable out to get the default. `0` is accepted and means "do not wait for in-flight requests" (see [Graceful Shutdown](/en/guide/server/graceful-shutdown#shutdown-options)).
 
 ::: tip
 Boolean environment variables accept `"true"`, `"false"`, `"1"`, `"0"`, `"yes"`, and `"no"`.
@@ -155,6 +157,12 @@ server.on('ready', () => {
 
 await server.start();
 ```
+
+Options passed to `createServer()` directly get the same fail-fast check as the variables. `port` must be an integer from `0` (a free port chosen by the system) to `65535`, and `host` a non-empty string; any other value, a numeric string such as `"5000"` included, throws a `TypeError` or `RangeError` that names the option. Before this check, a non-numeric string `port` was read as a Unix socket path and an empty `host` bound every interface.
+
+### Server log messages
+
+The `LOG_*` variables above belong to the schema; `createServer()` does not read them to choose where its own messages go (the listening address, received signals, shutdown problems, transport warnings). Those go to `console` unless you pass a `logger` object with `info`, `warn` and `error` functions. See [Server log messages](/en/guide/server/lifecycle#server-log-messages) for the full list and the rules of the option.
 
 ## TLS Configuration
 

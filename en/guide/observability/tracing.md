@@ -30,18 +30,46 @@ attributes, signal toggles, or data recording that the service requires; use
 for the exact fields. Keep message recording disabled unless its privacy and volume
 impact has been reviewed.
 
+### Callbacks that throw
+
+`filter` and `attributeFilter` run your code on the path of every call, on the
+server and on the client interceptor. A bug in them never fails the call. A `filter`
+that throws instruments the call (losing telemetry silently is worse than an extra
+span). An `attributeFilter` that throws for an attribute drops that attribute, so an
+attribute is exported only if the filter approved it; the other attributes are kept.
+The error is reported through the OpenTelemetry diagnostics channel
+(`diag.error`), not once per call: once per interceptor and callback, and once more
+if the first failure came before the provider existed. That channel prints nothing
+until a diagnostics logger is registered; creating the provider (for example with
+`initProvider()`) registers one at the `ERROR` level, and a logger you registered
+yourself receives the report without a provider. Reporting never creates the
+provider.
+
 ### Span status
 
 A span that ends without a failure keeps the default status, **unset**. The
 interceptors, `traced()` and `traceAll()` never set `OK`: the OpenTelemetry Trace API
 asks instrumentation libraries not to, and the RPC conventions leave the status unset
 when a call succeeds. They set `ERROR`, with the error message, only when the call or
-function fails or is canceled. A stream whose consumer stops early (`return()` or
+function fails. A stream whose consumer stops early (`return()` or
 `break`) also ends unset, because that is neither a failure nor a confirmed success.
 
-To count failures, filter on `status = error`; to count successes, use "status is not
-error" or the `rpc.response.status_code` attribute, which still reports `OK` for a
-successful unary call. Cancellation is reported as `CANCELED` (one L, the Connect
+Which Connect codes are failures depends on the side of the call, as the
+OpenTelemetry Connect RPC conventions define it:
+
+| Span | `ERROR` for | Status unset for |
+|------|-------------|------------------|
+| Client (`createOtelClientInterceptor()`) | every code except `OK` | `OK` |
+| Server (`createOtelInterceptor()`) | `unknown`, `deadline_exceeded`, `unimplemented`, `internal`, `unavailable`, `data_loss`, and an error that is not a `ConnectError` (the server turns it into `unknown`) | every other code, for example `not_found`, `invalid_argument`, `permission_denied`, `unauthenticated`, `failed_precondition`, `canceled` |
+
+The same rule applies to a stream that fails after it started. The code is reported
+either way: `rpc.response.status_code` and `error.type` carry the code name on the
+server span of a `NOT_FOUND` answer, whose status stays unset.
+
+To count failures of the server, filter on `status = error`; to count every non-OK
+answer, use the `rpc.response.status_code` or `error.type` attribute. To count
+successes, use "status is not error" or `rpc.response.status_code`, which still
+reports `OK` for a successful unary call. Cancellation is reported as `CANCELED` (one L, the Connect
 spelling) in `rpc.response.status_code` and `error.type`. Queries over data from
 both Connect and gRPC stacks can match both spellings with `CANCEL+ED`. See
 [RPC telemetry attribute names](/en/migration/otel-rpc-attributes#span-status-is-unset-on-success).
@@ -83,10 +111,11 @@ For outgoing RPC calls, use `createOtelClientInterceptor()` to propagate trace c
 import { createConnectTransport } from '@connectrpc/connect-node';
 import { createClient } from '@connectrpc/connect';
 import { createOtelClientInterceptor } from '@connectum/otel';
-import { UserService } from '#gen/user_pb.js';
+import { UserService } from '#gen/user_pb.ts';
 
 const transport = createConnectTransport({
   baseUrl: 'http://user-service:5001',
+  httpVersion: '1.1', // required by the types; use '2' for an upstream that serves HTTP/2
   interceptors: [
     createOtelClientInterceptor({
       serverAddress: 'user-service',   // Required
@@ -131,6 +160,16 @@ Recording never affects the call. If the arguments cannot be recorded (a
 still runs and returns its own result, and the span has no `function.args`
 attribute.
 
+### Promises, generators and other results
+
+The span ends when the result of the function is final:
+
+- A returned `Promise`: when it settles. A rejection ends the span with `ERROR`.
+- A returned sync or async generator (the result of calling a `function*` or `async function*`): when the generator is exhausted, throws, or is closed early with `break` or `return()`. A generator function returns before its body has run, so the span stays open while you iterate. Every step of the body runs with the span as the active span, and spans that the body starts are its children. You receive the same generator object, with its prototype and any property the function added to it (a frozen generator is returned as it is, and its span ends at once). A generator that you never iterate never ends its span, because none of its code runs.
+- Anything else, including arrays, `Map`, streams and a thenable that is not a native `Promise`: when the function returns. A thenable is not awaited, because calling its `then` can start work (a lazily executed query builder) that the caller has not asked for yet.
+
+`traceAll()` applies the same rules to every traced method.
+
 ### Thrown values
 
 Any thrown value is a failure, including `null`, `undefined`, `0` and `""`: the
@@ -139,6 +178,12 @@ the original value unchanged. For a value that is not an `Error` the recorded
 message is the text of the value (the empty string is shown as `""`). The same
 holds for `traceAll()`, the server and client interceptors and streams: a stream
 that raises a falsy value ends its span with `ERROR`.
+
+The recorded `exception` event names the class of the error in `exception.type`
+(`ConnectError` for a Connect error, never its numeric code). The Connect code is
+in `error.type` and `rpc.response.status_code` of the span. `error.type` is never
+empty: an error whose class has no name reports the error's `name`, and `_OTHER`
+when that is empty too.
 
 ## Deep Tracing with `traceAll()`
 
@@ -181,6 +226,65 @@ values need redaction before they become span attributes.
 `traceAll()` uses ES6 Proxy and creates method wrappers lazily on first access. It prevents double-wrapping automatically.
 :::
 
+Property reads pass through untouched. Getters run with the original object as `this`, so a getter over a `#private` field, `Map.size` and `Set.size` work on a traced object. One case cannot be traced: an own method that is neither writable nor configurable, which is every method of a frozen object (`Object.freeze()`). A proxy must return the real value of such a property, so that method is returned as it is and produces no span.
+
+## When the span ends {#when-the-span-ends}
+
+`traced()` and `traceAll()` end the span of a call when its result is final. What that means depends on what the function returns:
+
+| Result | The span ends |
+|---|---|
+| A native `Promise` (a promise from another realm, such as a `vm` context, counts) | When the promise settles. A rejection marks the span `ERROR`. |
+| A sync or async generator object | When the generator is exhausted, throws, or is closed. A generator that is never iterated never ends its span. |
+| A thenable that is not a native promise, such as a lazy query builder (a Knex builder, a Mongoose `Query`, a superagent request) | When the caller reads it with `await` or `then()` and it settles. |
+| Anything else (a plain value, an array, a `Map`) | When the function returns. |
+
+For a generator and for a thenable the caller receives the same object the function returned. A thenable keeps its prototype and its chain methods (`where()`, `limit()`), and it stays lazy: tracing does not start it before the caller reads it. While the span follows a thenable, `then` is replaced on the object itself; when the thenable settles, the original `then` is put back. The work that a lazy thenable starts inside its `then` runs with the span as the active span, so spans it starts are children of the traced span.
+
+```typescript
+import { traceAll } from '@connectum/otel';
+
+const orders = traceAll({
+  // Returns a lazy query builder: nothing runs until the caller awaits it.
+  findOpen: () => knex('orders').where({ status: 'open' }),
+}, { prefix: 'Orders' });
+
+const query = orders.findOpen(); // the span "Orders.findOpen" starts here
+const rows = await query;        // the query runs and the span ends when it settles
+```
+
+### Thenable details {#thenable-details}
+
+- **Idle time.** The span of a thenable covers the time between the call and the first read. The event `connectum.result.read` is added on the first `then` and marks where that idle time ends.
+- **Rejections.** A rejection of the thenable marks the span `ERROR`, and the caller receives the original error. A handler the caller leaves out (`then(onSuccess)`, or `catch(onFailure)`, which goes through `then(undefined, onFailure)`) reaches the thenable as missing, as it would without tracing. The span then follows the outcome through the native promise that `then` returns, which real libraries return. A callback-style thenable that returns no native promise tells the span nothing about an outcome the caller did not ask for; `await` passes both handlers.
+- **Nested layers.** Traced functions that return the same thenable one from another (a `traceAll` service over a `traceAll` repository) all end when it settles, up to eight layers. The spans past the eighth end at once.
+- **Ends at once.** The span ends when the function returns, as for any other value, if the thenable is frozen or sealed, if its `then` is a getter (tracing does not read the getter), or if eight layers already follow it.
+
+### A thenable that is never read {#unread-thenable}
+
+A thenable is followed through its `then`. A builder that the caller consumes another way never calls the replaced `then`. The same holds for an immutable builder whose chain methods return new objects, because the caller then holds a different object than the one that was traced. Calls of this kind:
+
+- Mongoose: `exec()`, `cursor()`, `clone()`
+- Knex: `stream()`, `toSQL()`, `clone()`
+- superagent: `end(callback)`
+
+The span of such a call ends when the garbage collector collects the builder. It is closed at the moment the traced function returned, so it covers only the call and not the work, and it carries the event `connectum.result.unread`. The moment is up to the collector: the span is exported late, and a process that exits before the collection exports nothing.
+
+To get a span that covers the work, wrap the call in an async function and await the builder inside it:
+
+```typescript
+import { traced } from '@connectum/otel';
+
+const findOpen = traced(
+  async () => await Order.find({ status: 'open' }).exec(),
+  { name: 'Orders.findOpen' },
+);
+```
+
+::: info Since 1.3.0
+Before 1.3.0 the span of a generator or of a thenable that is not a native promise ended the moment the function returned and had zero duration. It now covers the work. A builder consumed without `then` still has a span that covers only the call, but the span is exported when the garbage collector runs, or not at all, instead of immediately. Dashboards and alerts that relied on the old zero-length spans can see the difference.
+:::
+
 ## Distributed Tracing Across Services
 
 The client interceptor starts a `CLIENT` span under whatever span is active in the calling handler and injects the trace context into the request headers. The receiving server interceptor extracts it:
@@ -219,8 +323,8 @@ import { createServer } from '@connectum/core';
 import { createConnectTransport } from '@connectrpc/connect-node';
 import { createClient } from '@connectrpc/connect';
 import { createOtelInterceptor, createOtelClientInterceptor } from '@connectum/otel';
-import { UserService } from '#gen/user_pb.js';
-import gatewayRoutes from '#gen/routes.js';
+import { UserService } from '#gen/user_pb.ts';
+import gatewayRoutes from '#gen/routes.ts';
 
 // Server: trace incoming requests
 const server = createServer({
@@ -237,6 +341,7 @@ const server = createServer({
 // Client: propagate trace context to Service B
 const transport = createConnectTransport({
   baseUrl: 'http://user-service:5001',
+  httpVersion: '1.1',
   interceptors: [
     createOtelClientInterceptor({
       serverAddress: 'user-service',

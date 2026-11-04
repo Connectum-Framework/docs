@@ -7,9 +7,8 @@ outline: deep
 
 # Getting Started with Events
 
-This guide targets the documented `1.3.x` release line. The `drainPublishTimeout`
-option in the example requires `@connectum/events` 1.3.0 or later; it is
-unavailable from the published `1.2.x` package until 1.3.0 is released.
+This guide targets the `1.3.x` release line. The `drainPublishTimeout` option in
+the example requires `@connectum/events` 1.3.0 or later.
 
 This guide walks you through setting up event-driven communication between Connectum microservices using the EventBus. You finish with one published event handled successfully; broker selection and middleware tuning are optional next steps.
 
@@ -213,6 +212,13 @@ export const eventBus = createEventBus({
 [Shutdown drain](/en/guide/events#shutdown-drain) for what each budget waits for
 and how they combine.
 
+`createEventBus` checks the timeouts when the bus is created. `handlerTimeout`
+must be an integer from `1` to `4294967295` ms, and `drainTimeout` a finite number
+from `0` to `2147483647` ms. Anything else (`NaN`, a negative number, `Infinity`,
+a fraction for `handlerTimeout`, `0` for `handlerTimeout`, a non-number) throws a
+`RangeError` or `TypeError` that names the option. Leave an option out to use its
+default.
+
 ## Step 6: Integrate with Connectum Server
 
 Pass the EventBus to `createServer()` for automatic lifecycle management:
@@ -268,6 +274,9 @@ await eventBus.publish(UserCreatedSchema, {
 
 await eventBus.stop();
 ```
+
+`data` is `MessageInitShape` of the schema, so a plain object type-checks as shown.
+A message built with `create(UserCreatedSchema, { ... })` is accepted as well.
 
 The publisher and subscriber must use the same broker and stream. This publisher
 matches the NATS bus in Step 5; if you chose another adapter, configure both sides

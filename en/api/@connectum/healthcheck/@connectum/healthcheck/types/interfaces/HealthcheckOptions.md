@@ -52,11 +52,20 @@ not checked.
 
 > `optional` **manager?**: [`HealthcheckManager`](../../classes/HealthcheckManager.md)
 
-Defined in: [types.ts:62](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L62)
+Defined in: [types.ts:83](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L83)
 
 Custom HealthcheckManager instance.
 Useful for testing or running multiple servers in one process.
 When not provided, uses the default module-level singleton.
+
+Servers that omit it share the singleton, and each server's start
+re-initializes it with only that server's services. Starting a second
+server therefore removes the services the second server does not mount:
+the first keeps running but answers NOT_FOUND for its own services that
+are missing there. Overall health (empty service name) is computed over
+the one shared registry, so it also depends on the other server's
+statuses. Give every server of a multi-server process its own
+`createHealthcheckManager()`.
 
 ***
 
@@ -64,9 +73,21 @@ When not provided, uses the default module-level singleton.
 
 > `optional` **watchInterval?**: `number`
 
-Defined in: [types.ts:55](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L55)
+Defined in: [types.ts:67](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/types.ts#L67)
 
-Watch interval in milliseconds for streaming health updates
+Period in milliseconds of the re-check that `Health.Watch` runs on top
+of the manager's change notifications.
+
+A change reaches watchers when the manager announces it, in order and
+without waiting for this interval, so a status that changes and changes
+back between two ticks is still delivered. The interval only bounds how
+late a watcher learns of a state that changed without an announcement.
+
+Must be an integer from 1 to 2147483647. Anything else throws
+`RangeError` (or `TypeError` for a non-number, `null` included) from
+`Healthcheck()`: zero, fractions, `NaN`, negative numbers and larger
+values are turned into a 1 ms delay by the platform, which would make
+every `Watch` call poll about a thousand times a second.
 
 #### Default
 

@@ -7,9 +7,8 @@ outline: deep
 
 # Custom Topics
 
-This guide targets the documented `1.3.x` release line. Features marked `Since
-1.3.0` require `@connectum/events` 1.3.0 or later; they are unavailable from
-the published `1.2.x` package until 1.3.0 is released.
+This guide targets the `1.3.x` release line. Features marked `Since 1.3.0`
+require `@connectum/events` 1.3.0 or later.
 
 By default, the EventBus routes events using the protobuf message's `typeName` (e.g., `orders.v1.OrderCreated`). You can override this with a custom topic name using proto options or publish-time overrides.
 
@@ -105,7 +104,7 @@ plugins:
 The EventBus resolves the publish topic automatically when the publisher process has the relevant service registered — either via `routes` (subscriber side) or via the `publishes` option (publisher-only side). In that case no `PublishOptions.topic` override is needed:
 
 ```typescript
-import { OrderCancelledSchema, OrderEventService } from '#gen/orders/v1/orders_pb.js';
+import { OrderCancelledSchema, OrderEventService } from '#gen/orders/v1/orders_pb.ts';
 
 // Publisher-only process: declare the service in `publishes` so the
 // custom topic from the proto option is resolved automatically.

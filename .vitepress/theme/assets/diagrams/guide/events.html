@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Publish, consume, recover and drain events</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Publish, consume, recover and drain events</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Publish, consume, recover and drain events; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 576" role="img" aria-labelledby="events-title events-desc" data-overview="events" data-visual-type="architecture">
+<title id="events-title">Publish, consume, recover and drain events</title>
+<desc id="events-desc">A typed publication resolves its topic and passes through the chosen adapter to matching consuming middleware and a handler, with dead letters, AMQP recovery and shutdown relay as separate reliability concerns.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="events-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<path class="go-edge" data-from="publisher" data-to="topic" data-points="196,68 240,68" d="M196 68 L240 68" marker-end="url(#events-arrow)"/>
+<path class="go-edge" data-from="topic" data-to="adapter" data-points="448,88 484,88" d="M448 88 L484 88" marker-end="url(#events-arrow)"/>
+<path class="go-edge go-dashed" data-from="adapter" data-to="subscription" data-points="568,152 568,224" d="M568 152 L568 224" marker-end="url(#events-arrow)"/>
+<path class="go-edge" data-from="subscription" data-to="middleware" data-points="484,280 448,280" d="M484 280 L448 280" marker-end="url(#events-arrow)"/>
+<path class="go-edge" data-from="middleware" data-to="handler" data-points="240,280 196,280" d="M240 280 L196 280" marker-end="url(#events-arrow)"/>
+<path class="go-edge go-dashed" data-from="middleware" data-to="dead-letter" data-points="352,336 352,424" d="M352 336 L352 424" marker-end="url(#events-arrow)"/>
+<path class="go-edge go-dashed" data-from="handler" data-to="relay" data-points="112,336 112,424" d="M112 336 L112 424" marker-end="url(#events-arrow)"/>
+<path class="go-edge go-dashed" data-from="recovery" data-to="subscription" data-points="568,424 568,336" d="M568 424 L568 336" marker-end="url(#events-arrow)"/>
+<path class="go-edge go-dashed" data-from="recovery" data-to="adapter" data-points="640,480 664,480 664,96 640,96" d="M640 480 L656 480 Q664 480 664 472 L664 104 Q664 96 656 96 L640 96" marker-end="url(#events-arrow)"/>
+<g class="go-label" data-label-box="360 368 80 20"><rect x="360" y="368" width="80" height="20"/><text class="go-tag" x="400" y="382" text-anchor="middle">EXHAUSTED</text></g>
+<g class="go-label" data-label-box="120 368 72 20"><rect x="120" y="368" width="72" height="20"/><text class="go-tag" x="156" y="382" text-anchor="middle">STOPPING</text></g>
+<g data-node="publisher" data-box="24 24 172 88" data-topics="/en/guide/events/getting-started"><rect class="go-surface" x="24" y="24" width="172" height="88" rx="6"/><text class="go-name" x="40" y="54" text-anchor="start">Publish event</text><text class="go-detail" x="40" y="74" text-anchor="start">Typed protobuf</text><text class="go-detail" x="40" y="94" text-anchor="start">Await adapter outcome</text></g>
+<g data-node="topic" data-box="240 24 208 128" data-topics="/en/guide/events/custom-topics" data-focal=""><rect class="go-surface" x="240" y="24" width="208" height="128" rx="6"/><text class="go-name" x="256" y="64" text-anchor="start">Resolve topic</text><text class="go-detail" x="256" y="84" text-anchor="start">Override, then declarations</text><text class="go-detail" x="256" y="104" text-anchor="start">Else schema.typeName</text><text class="go-detail" x="256" y="124" text-anchor="start">strictTopics can reject</text></g>
+<g data-node="adapter" data-box="484 24 156 128" data-topics="/en/guide/events/adapters"><rect class="go-surface" x="484" y="24" width="156" height="128" rx="6"/><text class="go-name" x="500" y="64" text-anchor="start">Event adapter</text><text class="go-detail" x="500" y="84" text-anchor="start">Memory / NATS</text><text class="go-detail" x="500" y="104" text-anchor="start">Kafka / Redis / AMQP</text><text class="go-detail" x="500" y="124" text-anchor="start">Connect / disconnect</text></g>
+<g data-node="subscription" data-box="484 224 156 112" data-topics="/en/guide/events/concepts /en/guide/events/custom-topics"><rect class="go-surface" x="484" y="224" width="156" height="112" rx="6"/><text class="go-name" x="500" y="256" text-anchor="start">Subscription</text><text class="go-name" x="500" y="276" text-anchor="start">match</text><text class="go-detail" x="500" y="296" text-anchor="start">Exact or wildcard</text><text class="go-detail" x="500" y="316" text-anchor="start">No route: ack + skip</text></g>
+<g data-node="middleware" data-box="240 224 208 112" data-topics="/en/guide/events/middleware" data-focal=""><rect class="go-surface" x="240" y="224" width="208" height="112" rx="6"/><text class="go-name" x="256" y="266" text-anchor="start">Consume middleware</text><text class="go-detail" x="256" y="286" text-anchor="start">Custom → DLQ → retry</text><text class="go-detail" x="256" y="306" text-anchor="start">Retries re-enter handler</text></g>
+<g data-node="handler" data-box="24 224 172 112" data-topics="/en/guide/events/getting-started /en/guide/events/concepts"><rect class="go-surface" x="24" y="224" width="172" height="112" rx="6"/><text class="go-name" x="40" y="266" text-anchor="start">Event handler</text><text class="go-detail" x="40" y="286" text-anchor="start">Side effects, then ack</text><text class="go-detail" x="40" y="306" text-anchor="start">Idempotent on redelivery</text></g>
+<g data-node="dead-letter" data-box="240 424 208 128" data-topics="/en/guide/events/middleware"><rect class="go-surface" x="240" y="424" width="208" height="128" rx="6"/><text class="go-name" x="256" y="464" text-anchor="start">Dead-letter topic</text><text class="go-detail" x="256" y="484" text-anchor="start">Copy after retry exhaustion</text><text class="go-detail" x="256" y="504" text-anchor="start">Acknowledge after publication</text><text class="go-detail" x="256" y="524" text-anchor="start">Publish failure can lose event</text></g>
+<g data-node="recovery" data-box="484 424 156 128" data-topics="/en/guide/events/amqp-reliability"><rect class="go-surface" x="484" y="424" width="156" height="128" rx="6"/><text class="go-name" x="500" y="454" text-anchor="start">AMQP</text><text class="go-name" x="500" y="474" text-anchor="start">recovery</text><text class="go-detail" x="500" y="494" text-anchor="start">Reconnect + replay</text><text class="go-detail" x="500" y="514" text-anchor="start">Restore consumers</text><text class="go-detail" x="500" y="534" text-anchor="start">Observe terminal loss</text></g>
+<g data-node="relay" data-box="24 424 172 128" data-topics="/en/guide/events/concepts /en/guide/events/relay-during-shutdown"><rect class="go-surface" x="24" y="424" width="172" height="128" rx="6"/><text class="go-name" x="40" y="454" text-anchor="start">Shutdown</text><text class="go-name" x="40" y="474" text-anchor="start">relay</text><text class="go-detail" x="40" y="494" text-anchor="start">In-flight ctx.publish</text><text class="go-detail" x="40" y="514" text-anchor="start">Drain + abort grace</text><text class="go-detail" x="40" y="534" text-anchor="start">Then disconnect</text></g>
+</svg></section>
+<figcaption>Publishing skips consuming middleware. Local retries re-enter the handler; exhausted failures can produce a DLQ copy, whose publication can also fail. Shutdown relay uses in-flight ctx.publish before the handler returns. Recovery and relay details marked Since 1.3.0 require that release.</figcaption></figure></main></body></html>

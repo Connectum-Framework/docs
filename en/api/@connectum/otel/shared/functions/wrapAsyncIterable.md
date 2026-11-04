@@ -2,9 +2,9 @@
 
 # Function: wrapAsyncIterable()
 
-> **wrapAsyncIterable**\<`T`\>(`iterable`, `span`, `direction`, `recordMessages`, `endSpanOnComplete?`): `AsyncGenerator`\<`T`\>
+> **wrapAsyncIterable**\<`T`\>(`iterable`, `span`, `direction`, `recordMessages`, `endSpanOnComplete?`, `streamOptions?`): `AsyncGenerator`\<`T`\>
 
-Defined in: [shared.ts:85](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L85)
+Defined in: [shared.ts:118](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/shared.ts#L118)
 
 Wraps an AsyncIterable to track streaming messages with OTel span events.
 
@@ -54,6 +54,12 @@ Whether to record individual message events
 `boolean` = `false`
 
 Whether to end the span when the stream completes
+
+### streamOptions?
+
+[`StreamOptions`](../interfaces/StreamOptions.md) = `{}`
+
+The message type of the stream and the end-of-stream hook
 
 ## Returns
 

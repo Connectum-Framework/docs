@@ -4,7 +4,7 @@
 
 > **ArgsFilter** = (`args`) => `unknown`[]
 
-Defined in: [types.ts:94](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L94)
+Defined in: [types.ts:101](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L101)
 
 Args filter for traced() -- sanitize/transform function arguments before recording
 

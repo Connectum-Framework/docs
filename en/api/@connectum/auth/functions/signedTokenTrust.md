@@ -4,7 +4,7 @@
 
 > **signedTokenTrust**(`options`): [`InternalTrustSource`](../type-aliases/InternalTrustSource.md)
 
-Defined in: [packages/auth/src/internal-auth-interceptor.ts:270](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/internal-auth-interceptor.ts#L270)
+Defined in: [packages/auth/src/internal-auth-interceptor.ts:285](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/internal-auth-interceptor.ts#L285)
 
 Trust source that verifies a per-service signed JWT via issuer-bound JWKS
 (ADR-029 option (b) — non-mesh per-service containment, NOT a shared secret).

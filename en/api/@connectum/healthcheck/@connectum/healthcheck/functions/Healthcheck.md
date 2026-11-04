@@ -4,7 +4,7 @@
 
 > **Healthcheck**(`options?`): `ProtocolRegistration`
 
-Defined in: [Healthcheck.ts:120](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/Healthcheck.ts#L120)
+Defined in: [Healthcheck.ts:126](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/Healthcheck.ts#L126)
 
 Create healthcheck protocol registration
 
@@ -33,12 +33,22 @@ ProtocolRegistration for createServer
 
 ## Throws
 
-when `httpPaths` is an empty array
+when `httpPaths` is an empty array, or `watchInterval`
+  is a number that is not an integer from 1 to 2147483647
 
 ## Throws
 
-when `httpPaths` is not an array, or an entry is not a
-  string, does not start with `/`, or contains `?` or `#`
+when `options` is not an object (`null` included),
+  `manager` is not a HealthcheckManager, `httpEnabled` is not a boolean,
+  `httpPaths` is not an array, or an entry is not a string, does not start
+  with `/`, or contains `?` or `#`; or when `watchInterval` is not a number
+  (including `null`)
+
+A second `Healthcheck()` in one server (or an application service that
+already is `grpc.health.v1.Health`) cannot be seen from here. It is refused
+with an `Error` when the server builds its routes: `start()` rejects, and so
+does the first call made through `localClient()` (the client itself is
+created without building routes).
 
 ## Example
 

@@ -2,7 +2,7 @@
 
 # Interface: MockDescMethodOptions
 
-Defined in: [types.ts:84](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L84)
+Defined in: [types.ts:111](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L111)
 
 Options for [createMockDescMethod](../../index/functions/createMockDescMethod.md).
 
@@ -12,7 +12,7 @@ Options for [createMockDescMethod](../../index/functions/createMockDescMethod.md
 
 > `optional` **input?**: [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: [types.ts:86](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L86)
+Defined in: [types.ts:113](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L113)
 
 Input message descriptor.
 
@@ -22,7 +22,7 @@ Input message descriptor.
 
 > `optional` **kind?**: `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"` \| `"unary"`
 
-Defined in: [types.ts:90](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L90)
+Defined in: [types.ts:117](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L117)
 
 Method kind. Default: `'unary'`
 
@@ -32,7 +32,7 @@ Method kind. Default: `'unary'`
 
 > `optional` **output?**: [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: [types.ts:88](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L88)
+Defined in: [types.ts:115](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L115)
 
 Output message descriptor.
 
@@ -42,7 +42,7 @@ Output message descriptor.
 
 > `optional` **useSensitiveRedaction?**: `boolean`
 
-Defined in: [types.ts:99](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L99)
+Defined in: [types.ts:126](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L126)
 
 Put the fixture-only marker `{ debug_redact: true }` into `proto.options`. Default: `false`
 

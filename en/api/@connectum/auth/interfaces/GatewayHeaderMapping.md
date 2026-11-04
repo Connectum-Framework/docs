@@ -2,7 +2,7 @@
 
 # Interface: GatewayHeaderMapping
 
-Defined in: [packages/auth/src/types.ts:306](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L306)
+Defined in: [packages/auth/src/types.ts:380](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L380)
 
 Header name mapping for gateway auth context extraction.
 
@@ -14,7 +14,7 @@ Maps AuthContext fields to custom header names used by the API gateway.
 
 > `readonly` `optional` **claims?**: `string`
 
-Defined in: [packages/auth/src/types.ts:322](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L322)
+Defined in: [packages/auth/src/types.ts:396](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L396)
 
 Header containing JSON-encoded claims
 
@@ -24,7 +24,7 @@ Header containing JSON-encoded claims
 
 > `readonly` `optional` **name?**: `string`
 
-Defined in: [packages/auth/src/types.ts:310](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L310)
+Defined in: [packages/auth/src/types.ts:384](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L384)
 
 Header containing the display name
 
@@ -34,7 +34,7 @@ Header containing the display name
 
 > `readonly` `optional` **roles?**: `string`
 
-Defined in: [packages/auth/src/types.ts:316](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L316)
+Defined in: [packages/auth/src/types.ts:390](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L390)
 
 Header containing the roles: a JSON array of strings (`["admin","editor"]`) or a
 comma-separated list (`admin, editor`). Any value that is not a JSON array, including
@@ -46,7 +46,7 @@ JSON of another kind such as `123` or `true`, is read as a comma-separated list.
 
 > `readonly` `optional` **scopes?**: `string`
 
-Defined in: [packages/auth/src/types.ts:318](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L318)
+Defined in: [packages/auth/src/types.ts:392](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L392)
 
 Header containing space-separated scopes
 
@@ -56,7 +56,7 @@ Header containing space-separated scopes
 
 > `readonly` **subject**: `string`
 
-Defined in: [packages/auth/src/types.ts:308](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L308)
+Defined in: [packages/auth/src/types.ts:382](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L382)
 
 Header containing the authenticated subject
 
@@ -66,6 +66,6 @@ Header containing the authenticated subject
 
 > `readonly` `optional` **type?**: `string`
 
-Defined in: [packages/auth/src/types.ts:320](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L320)
+Defined in: [packages/auth/src/types.ts:394](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L394)
 
 Header containing credential type

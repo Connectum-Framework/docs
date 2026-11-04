@@ -4,7 +4,7 @@
 
 > **createBulkheadInterceptor**(`options?`): `Interceptor`
 
-Defined in: [bulkhead.ts:64](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/bulkhead.ts#L64)
+Defined in: [bulkhead.ts:75](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/bulkhead.ts#L75)
 
 Create bulkhead interceptor
 
@@ -12,6 +12,13 @@ Limits concurrent requests to prevent resource exhaustion.
 Requests beyond capacity are queued. Requests beyond queue size are rejected
 with `ResourceExhausted` and the text `Bulkhead capacity exceeded (capacity: N,
 queueSize: M)`; branch on the code, not on the text.
+
+Queued calls run in arrival order. A call whose request signal aborts while it
+waits leaves the queue at once, frees its place and fails with `Canceled`
+(the abort reason itself when it is a `ConnectError`); its handler never
+runs. A call that arrives with an already aborted signal fails the same way
+without taking a slot or a queue place. A slot is held until the downstream
+call settles, so work that ignores its signal still counts against `capacity`.
 
 `capacity` must be an integer of at least 1 and `queueSize` an integer of at
 least 0; anything else throws at construction (`TypeError` for a non-number,

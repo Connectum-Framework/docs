@@ -1,25 +1,25 @@
 ---
-title: Reject Requests Before the Body Is Read
+title: Reject Requests Before the Body Is Parsed
 description: Use a server-wide request gate and per-message read limit to turn away unauthenticated or oversized requests cheaply, on HTTP and in-process alike.
 docType: how-to
 outline: deep
 ---
 
-# Reject Requests Before the Body Is Read
+# Reject Requests Before the Body Is Parsed
 
 Authentication interceptors run after the request message is available: for unary calls it has already been received and parsed. Two opt-in `createServer()` options reject a request earlier:
 
-- `requestGate` runs once the request headers arrive, **before any request message is received, decompressed, or parsed**. Throw a `ConnectError` and the call ends without its body ever being read.
-- `readMaxBytes` caps the size of each request message. A larger message ends the call with `resource_exhausted` before the handler runs.
+- `requestGate` runs once the request headers arrive, **before any request message is received, decompressed, or parsed**. Throw a `ConnectError` and the call ends without its request message ever being received, decompressed, or parsed. (On a kept-alive HTTP/1 connection the transport may still discard part of the unread body; see [Before you begin](#before-you-begin).)
+- `readMaxBytes` caps the encoded size of each request message (JSON bytes for a JSON client, protobuf bytes for a binary one). A larger message ends the call with `resource_exhausted` before the handler runs.
 
-Both are unset by default; a server that does not set them behaves exactly as before.
+Both are unset by default; a server that does not set them accepts every request, up to the transport's own cap of 4294967295 bytes (about 4 GiB) per message. Because that bounds nothing in practice, `createServer()` writes one warning through the server logger when `readMaxBytes` is unset; see [When no limit is set](#when-no-limit-is-set).
 
 The checks run in this order for a call to an RPC on the router:
 
 ```mermaid
 flowchart TD
     Headers["Request headers arrive"] --> Gate{"requestGate<br/>throws?"}
-    Gate -->|"yes"| R1["Call ends with the thrown error,<br/>body never read"]
+    Gate -->|"yes"| R1["Call ends with the thrown error,<br/>message never parsed"]
     Gate -->|"no"| Read{"Message larger<br/>than readMaxBytes?"}
     Read -->|"yes"| R2["resource_exhausted"]
     Read -->|"no"| Chain["Server interceptors:<br/>authentication, validation, and so on"]
@@ -35,7 +35,7 @@ HTTP endpoints served outside the router skip all of these checks; see
 
 ## Before you begin
 
-- `@connectum/core` 1.3.0 or later. **Version 1.3.0 is not yet published to npm.** The current-main implementation requires `@connectrpc/connect` 2.2.0, which introduced `requestGate`.
+- `@connectum/core` 1.3.0 or later. It requires `@connectrpc/connect` and `@connectrpc/connect-node` `^2.3.0`; `requestGate` itself was introduced in Connect 2.2.0. On a kept-alive HTTP/1 connection, `@connectrpc/connect-node` 2.3.0 discards up to 256 KiB of the unread body of a rejected call. The connection stays reusable only if that drain consumes the whole body; otherwise connect-node answers with `Connection: close` and closes the socket. Your handler still never parses a rejected call's message.
 - Decide what the gate may check. It sees only the call's `HandlerContext`: the service and method descriptors, the request headers, the deadline signal, and context values. It cannot see the request message.
 
 ## Configure a gate
@@ -118,7 +118,24 @@ const server = createServer({
 });
 ```
 
-A message exactly at the limit is accepted. The limit applies per message, so on a client-streaming or bidi call each message is checked separately. The value must be an integer from 1 to 4294967295 (Connect's maximum). `createServer()` throws a `RangeError` naming `readMaxBytes` for anything else — `0`, negatives, fractions, `NaN`, `Infinity` — and a `TypeError` for a non-number, so a misconfigured limit cannot silently turn into no limit.
+A message exactly at the limit is accepted. The limit counts the bytes of the message in the encoding the client chose, so the same logical message can fit for one client and not for another. For a message with a single `text` string field (and `readMaxBytes: 102`), the longest accepted text is 100 ASCII characters for a gRPC client, a Connect client with binary encoding, and an in-process call, because the protobuf message takes `N + 2` bytes (tag, length byte and the text). A Connect client with JSON encoding gets 91 characters, because `{"text":"..."}` takes `N + 11` bytes. The gRPC envelope header (5 bytes) is not counted. Choose the limit with the largest encoding your clients use in mind. The limit applies per message, so on a client-streaming or bidi call each message is checked separately. The value must be an integer from 1 to 4294967295 (Connect's maximum). `createServer()` throws a `RangeError` naming `readMaxBytes` for anything else — `0`, negatives, fractions, `NaN`, `Infinity` — and a `TypeError` for a non-number, so a misconfigured limit cannot silently turn into no limit.
+
+Choose the largest message your services legitimately accept. For comparison, the default receive limit of a grpc-go server is 4 MiB.
+
+### When no limit is set
+
+Without `readMaxBytes`, Connect applies its own cap of 4294967295 bytes. An authentication interceptor runs only after the message has been received, so one oversized request from a caller that has not authenticated can exhaust the memory of the process. The default is not changed, because a lower one would break services that accept large messages. Instead `createServer()` writes this warning once, when the server is created:
+
+```text
+createServer: readMaxBytes is not set, so incoming messages are not limited (the default is the transport's cap of 4294967295 bytes, about 4 GiB). An authentication interceptor runs only after a message has been received, so one oversized request can exhaust memory. Set readMaxBytes to the largest message your services accept. See https://connectum.dev/en/guide/security/request-admission
+```
+
+The warning goes to the server's `logger` (`console` when none is set) and is written once per server, not on each start or stop. To remove it:
+
+- set `readMaxBytes` on `createServer()`. Any valid value counts, including the largest, `4294967295`, if you decide that no tighter bound is right;
+- or pass a `logger` whose `warn` method drops it. The `logger` receives every other message of the server's own too, so filter by text rather than silencing `warn` as a whole.
+
+A `readMaxBytes` set only in a service's own options does not remove the warning: the server-wide value is what protects protocols and services that set none.
 
 ## What the gate and the limit cover
 
@@ -183,6 +200,7 @@ In-process calls carry an internal transport marker header that the logger and O
 |---|---|---|
 | Internal `ctx.call` fails with `unauthenticated` | The gate applies to in-process calls, and the credential was not forwarded | Add the header to `propagateHeaders` or set it in an outgoing interceptor |
 | One service ignores the server gate | Its service options set `requestGate` (possibly to `undefined`) | Remove the key, or have the service gate call the server gate |
+| `readMaxBytes is not set` warning at startup | The server has no per-message read limit | Set `readMaxBytes` on `createServer()`, see [When no limit is set](#when-no-limit-is-set) |
 | Rejections missing from traces and logs | Gate rejections run no server interceptor | Wrap the gate with an audit wrapper |
 | gRPC health probe fails after enabling a gate | gRPC Health is a router RPC and is gated | Use the HTTP health endpoints for probes, or let the gate admit the health service |
 

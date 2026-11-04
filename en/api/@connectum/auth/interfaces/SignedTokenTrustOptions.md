@@ -2,7 +2,7 @@
 
 # Interface: SignedTokenTrustOptions
 
-Defined in: [packages/auth/src/types.ts:480](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L480)
+Defined in: [packages/auth/src/types.ts:575](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L575)
 
 Options for [signedTokenTrust](../functions/signedTokenTrust.md).
 
@@ -12,7 +12,7 @@ Options for [signedTokenTrust](../functions/signedTokenTrust.md).
 
 > `readonly` `optional` **header?**: `string`
 
-Defined in: [packages/auth/src/types.ts:492](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L492)
+Defined in: [packages/auth/src/types.ts:587](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L587)
 
 Header carrying the service token. The value may be a bare token or a
 `Bearer <token>` value.
@@ -29,7 +29,7 @@ Header carrying the service token. The value may be a bare token or a
 
 > `readonly` **issuers**: `Readonly`\<`Record`\<`string`, [`SignedTokenIssuer`](SignedTokenIssuer.md)\>\>
 
-Defined in: [packages/auth/src/types.ts:486](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L486)
+Defined in: [packages/auth/src/types.ts:581](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L581)
 
 Per-issuer configuration keyed by the issuer (`iss`) value. The keyset is
 selected by the token's claimed issuer and verification is pinned to that
@@ -41,7 +41,7 @@ same issuer — never a single shared keyset across issuers.
 
 > `readonly` `optional` **type?**: `string`
 
-Defined in: [packages/auth/src/types.ts:494](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L494)
+Defined in: [packages/auth/src/types.ts:589](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L589)
 
 Credential type set on the resulting AuthContext.
 

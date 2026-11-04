@@ -2,7 +2,7 @@
 
 # Interface: FakeDeliveryResult
 
-Defined in: [packages/events-amqp/src/testing.ts:130](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L130)
+Defined in: [packages/events-amqp/src/testing.ts:131](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L131)
 
 Settlement summary of one [FakeAmqpControl.deliver](FakeAmqpControl.md#deliver) call.
 
@@ -12,7 +12,7 @@ Settlement summary of one [FakeAmqpControl.deliver](FakeAmqpControl.md#deliver) 
 
 > `readonly` **acked**: `number`
 
-Defined in: [packages/events-amqp/src/testing.ts:134](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L134)
+Defined in: [packages/events-amqp/src/testing.ts:135](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L135)
 
 Handlers that called `ack()`.
 
@@ -22,7 +22,7 @@ Handlers that called `ack()`.
 
 > `readonly` **delivered**: `number`
 
-Defined in: [packages/events-amqp/src/testing.ts:132](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L132)
+Defined in: [packages/events-amqp/src/testing.ts:133](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L133)
 
 Handlers invoked (one per matching fan-out sub + one per distinct group).
 
@@ -32,7 +32,7 @@ Handlers invoked (one per matching fan-out sub + one per distinct group).
 
 > `readonly` **failed**: `number`
 
-Defined in: [packages/events-amqp/src/testing.ts:140](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L140)
+Defined in: [packages/events-amqp/src/testing.ts:141](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L141)
 
 Handlers that rejected (swallowed, like the real consumer's nack-on-error path).
 
@@ -42,7 +42,7 @@ Handlers that rejected (swallowed, like the real consumer's nack-on-error path).
 
 > `readonly` **nacked**: `number`
 
-Defined in: [packages/events-amqp/src/testing.ts:136](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L136)
+Defined in: [packages/events-amqp/src/testing.ts:137](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L137)
 
 Handlers that called `nack(false)`.
 
@@ -52,6 +52,6 @@ Handlers that called `nack(false)`.
 
 > `readonly` **requeued**: `number`
 
-Defined in: [packages/events-amqp/src/testing.ts:138](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L138)
+Defined in: [packages/events-amqp/src/testing.ts:139](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/testing.ts#L139)
 
 Handlers that called `nack(true)` or a bare `nack()` — model redelivery by delivering again with `attempt + 1`.

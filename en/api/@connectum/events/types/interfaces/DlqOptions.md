@@ -2,7 +2,7 @@
 
 # Interface: DlqOptions
 
-Defined in: [packages/events/src/types.ts:326](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L326)
+Defined in: [packages/events/src/types.ts:344](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L344)
 
 Dead letter queue middleware options
 
@@ -12,7 +12,7 @@ Dead letter queue middleware options
 
 > `optional` **errorSerializer?**: (`error`) => `string`
 
-Defined in: [packages/events/src/types.ts:335](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L335)
+Defined in: [packages/events/src/types.ts:358](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L358)
 
 Custom error serializer for DLQ metadata.
 Defaults to `error.name` only (e.g. "TypeError") to prevent credential leaks.
@@ -35,6 +35,9 @@ For production, provide a custom serializer that redacts sensitive data
 
 > **topic**: `string`
 
-Defined in: [packages/events/src/types.ts:328](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L328)
+Defined in: [packages/events/src/types.ts:351](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L351)
 
-DLQ topic name
+DLQ topic name: a non-empty string. Anything else (a missing or empty value, a non-string)
+makes `createEventBus` and `dlqMiddleware` throw when they are created, because every failed
+event would otherwise be lost. Whether the broker accepts the name is decided by the adapter
+at the first publish; a rejected publish is reported as a `dlq-failed` observer event.

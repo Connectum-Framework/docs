@@ -4,7 +4,7 @@
 
 > **CatalogStream** = \<`K`\>(`method`) => [`StreamReturn`](StreamReturn.md)\<[`ConnectumStreamMap`](../interfaces/ConnectumStreamMap.md)\[`K`\]\>
 
-Defined in: [packages/core/src/context.ts:137](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L137)
+Defined in: [packages/core/src/context.ts:170](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L170)
 
 The typed **streaming** catalog-call surface: `stream(method)` returns a
 kind-specific factory keyed off [ConnectumStreamMap](../interfaces/ConnectumStreamMap.md). Shared by the

@@ -1,0 +1,192 @@
+:root {
+    --control-focus: var(--vp-c-brand-1);
+    --control-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%2367676c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.dark {
+    --control-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23c2c2c4' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* one stroke replaces the control border instead of surrounding it with a second frame. */
+:root :is(button, input, select, textarea, summary, [role="button"], .home-goal-card, .reference-routes > a) {
+    --control-focus-offset: -1px;
+}
+:root
+    :is(a[href], button, input, select, textarea, summary, [role="button"], [tabindex]:not([tabindex="-1"])):not(:disabled):not(
+        :where(
+            .assembly-picker input,
+            .catalog-scene-picker input,
+            .builder-radio input,
+            .builder-feature input,
+            .builder-resilience label input,
+            .builder-contract-choice input,
+            .vp-code-group .tabs input,
+            .VPLocalSearchBox .search-input
+        )
+    ):focus-visible {
+    outline: 2px solid var(--control-focus);
+    outline-offset: var(--control-focus-offset, 2px);
+    border-color: transparent;
+    box-shadow: none;
+    transition: none;
+}
+
+/* radio/checkbox cards and search have one focus owner: their visible container. */
+:root :is(.assembly-picker label, .catalog-scene-picker label, .builder-radio, .builder-feature, .builder-resilience label, .builder-contract-choice):has(input:focus-visible),
+:root .VPLocalSearchBox .search-bar:has(.search-input:focus-visible) {
+    outline: 2px solid var(--control-focus);
+    outline-offset: -1px;
+    border-color: transparent;
+    box-shadow: none;
+    transition: none;
+}
+:root .VPLocalSearchBox .search-bar:focus-within:not(:has(.search-input:focus-visible)) {
+    border-color: var(--vp-c-divider);
+}
+/* vitepress makes this transition important; do not fade the old border through focus. */
+:root .VPSwitch:focus-visible {
+    /* biome-ignore lint/complexity/noImportantStyles: VitePress declares the border transition important. */
+    transition: none !important;
+}
+/* VitePress hides these radios with opacity; the adjacent tab label must own focus. */
+:root .vp-code-group .tabs input:focus-visible + label {
+    outline: 2px solid var(--control-focus);
+    outline-offset: -2px;
+    border-color: transparent;
+    box-shadow: none;
+}
+:root .vp-code-group .tabs input:focus-visible + label::after {
+    background-color: transparent;
+}
+
+/* decorative card borders must not become a second keyboard-focus indicator. */
+:root :is(.home-goal-card, .reference-routes > a, .home-resources nav a):focus-visible::before,
+:root .module-card:has(a:focus-visible)::before {
+    opacity: 0;
+    animation: none;
+}
+:root .module-card:has(a:focus-visible) {
+    border-color: var(--home-border, var(--vp-c-divider));
+    box-shadow: none;
+    transition: none;
+}
+
+/* the fallback remains a native select, with an affordance that the theme reset removed. */
+:root select:not([multiple]):not([size]) {
+    appearance: none;
+    min-inline-size: 0;
+    min-block-size: 44px;
+    padding: 10px 40px 10px 12px;
+    border: 1px solid var(--vp-c-text-2);
+    border-radius: 8px;
+    color: var(--vp-c-text-1);
+    background-color: var(--vp-c-bg-soft);
+    background-image: var(--control-select-arrow);
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    cursor: pointer;
+    color-scheme: light;
+}
+.dark select:not([multiple]):not([size]) {
+    color-scheme: dark;
+}
+:root select:not([multiple]):not([size]):where(:hover:not(:disabled)) {
+    border-color: var(--vp-c-brand-1);
+}
+:root select:not([multiple]):not([size]):disabled {
+    color: var(--vp-c-text-3);
+    border-color: var(--vp-c-divider);
+    cursor: not-allowed;
+}
+
+/* CSS-only enhancement keeps the existing select/options and their native semantics. */
+@supports (appearance: base-select) and selector(::picker(select)) {
+    :root select:not([multiple]):not([size]),
+    :root select:not([multiple]):not([size])::picker(select) {
+        appearance: base-select;
+    }
+    :root select:not([multiple]):not([size]) {
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding-inline-end: 12px;
+        background-image: none;
+    }
+    :root select:not([multiple]):not([size])::picker-icon {
+        content: "";
+        inline-size: 8px;
+        block-size: 8px;
+        margin-inline-start: auto;
+        flex-shrink: 0;
+        border-inline-end: 1.5px solid currentColor;
+        border-block-end: 1.5px solid currentColor;
+        color: var(--vp-c-text-2);
+        transform: translateY(-2px) rotate(45deg);
+    }
+    :root select:not([multiple]):not([size]):open::picker-icon {
+        color: var(--vp-c-brand-1);
+        transform: translateY(2px) rotate(225deg);
+    }
+    :root select:not([multiple]):not([size])::picker(select) {
+        inline-size: anchor-size(width);
+        max-inline-size: calc(100vw - 24px);
+        max-block-size: min(320px, 60dvh);
+        margin-block-start: 6px;
+        padding: 4px;
+        overflow: auto;
+        border: 1px solid var(--vp-c-divider);
+        border-radius: 10px;
+        color: var(--vp-c-text-1);
+        background: var(--vp-c-bg);
+        box-shadow: var(--vp-shadow-2);
+    }
+    :root select:not([multiple]):not([size]) option {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        min-block-size: 44px;
+        padding: 10px 12px;
+        border: 0;
+        border-radius: 6px;
+        color: var(--vp-c-text-1);
+        background: var(--vp-c-bg);
+        font: inherit;
+        white-space: normal;
+        cursor: pointer;
+    }
+    :root select:not([multiple]):not([size]) option:checked {
+        color: var(--vp-c-brand-1);
+        background: var(--vp-c-brand-soft);
+        font-weight: 600;
+    }
+    :root select:not([multiple]):not([size]) option:is(:hover, :focus-visible) {
+        outline: none;
+        background: var(--vp-c-default-soft);
+    }
+    :root select:not([multiple]):not([size]) option::checkmark {
+        order: 1;
+        margin-inline-start: auto;
+        color: var(--vp-c-brand-1);
+    }
+}
+
+@media (max-width: 639px) {
+    :root select:not([multiple]):not([size]) {
+        font-size: 16px;
+    }
+}
+@media (forced-colors: active) {
+    :root {
+        --control-focus: Highlight;
+    }
+    :root select:not([multiple]):not([size]) {
+        appearance: auto;
+        padding-inline-end: 12px;
+        color: FieldText;
+        border-color: ButtonText;
+        background: Field;
+    }
+}

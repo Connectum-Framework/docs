@@ -4,7 +4,7 @@
 
 > **createCircuitBreakerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [circuit-breaker.ts:104](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/circuit-breaker.ts#L104)
+Defined in: [circuit-breaker.ts:107](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/circuit-breaker.ts#L107)
 
 Create circuit breaker interceptor
 
@@ -14,7 +14,10 @@ When circuit is open, requests fail immediately without calling the service.
 Circuit States:
 - Closed (normal): Requests pass through
 - Open (failing): Requests rejected immediately
-- Half-Open (testing): Single request allowed to test recovery
+- Half-Open (testing): Single request allowed to test recovery. While that probe
+  is in flight, every other call is rejected at once with the same
+  `Unavailable` error as in the open state; none of them waits for the probe.
+  A successful probe closes the circuit, a failed one opens it again.
 
 By default only infrastructure errors trip the breaker (see
 [defaultFailurePredicate](defaultFailurePredicate.md)); business codes like invalid_argument or

@@ -1,0 +1,13 @@
+{
+  "generator": "buf.build/community/sudorandom-connect-openapi:v0.25.7",
+  "authVersion": "1.2.0",
+  "fixtureVersion": "1.0.0",
+  "normalization": "Set the required info.version to the fixture API version; paths and schemas are unchanged.",
+  "inputs": {
+    ".vitepress/openapi/example/proto/shop/v1/inventory.proto": "3284e2d8893eac2823d649f2f78879e563c398315db01c0d3281bde68459adab",
+    ".vitepress/openapi/example/proto/connectum/auth/v1/options.proto": "9a142c74d4ccc1e84bdb7e411e5ddbf6eca27b6067b64e86fb31043c449de427",
+    ".vitepress/openapi/buf.gen.openapi.yaml": "23b84c8554aea9d70e8f6e9193d3b3f5edddfe5369b3043a5b15db782b968c75"
+  },
+  "generatedSha256": "7b4d5addebab5bfab2dd89234593fccc8021d0a113c6523d59975ef293af8a9e",
+  "artifactSha256": "b84018a32a93c6d3d20bdff14cd19089c1f515748795963874238353fecbd9ec"
+}

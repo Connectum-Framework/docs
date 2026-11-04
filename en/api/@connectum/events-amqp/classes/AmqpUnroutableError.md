@@ -2,7 +2,7 @@
 
 # Class: AmqpUnroutableError
 
-Defined in: [packages/events-amqp/src/errors.ts:52](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L52)
+Defined in: [packages/events-amqp/src/errors.ts:58](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L58)
 
 The broker returned a `mandatory` message as unroutable
 (`basic.return`): no queue matched the configured exchange bindings.
@@ -17,7 +17,7 @@ The broker returned a `mandatory` message as unroutable
 
 > **new AmqpUnroutableError**(`message`, `routingKey`): `AmqpUnroutableError`
 
-Defined in: [packages/events-amqp/src/errors.ts:55](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L55)
+Defined in: [packages/events-amqp/src/errors.ts:61](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L61)
 
 #### Parameters
 
@@ -79,7 +79,7 @@ Defined in: node\_modules/.pnpm/typescript@5.9.3/node\_modules/typescript/lib/li
 
 > `readonly` **routingKey**: `string`
 
-Defined in: [packages/events-amqp/src/errors.ts:53](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L53)
+Defined in: [packages/events-amqp/src/errors.ts:59](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-amqp/src/errors.ts#L59)
 
 ***
 

@@ -254,7 +254,7 @@ import { createProtoAuthzInterceptor, getInternalMethods, getPublicMethods, reso
 const authz = createProtoAuthzInterceptor({
   defaultPolicy: 'deny',
   rules: [
-    { name: 'admin-fallback', methods: ['admin.v1.*/*'], requires: { roles: ['admin'] }, effect: 'allow' },
+    { name: 'admin-fallback', methods: ['admin.v1.AdminService/*'], requires: { roles: ['admin'] }, effect: 'allow' },
   ],
 });
 ```
@@ -312,10 +312,11 @@ flowchart TD
     Timeout --> Bulkhead[bulkhead]
     Bulkhead --> Breaker[circuitBreaker]
     Breaker --> Retry[retry]
-    Retry --> Fallback[fallback]
-    Fallback --> Validation[validation]
+    Retry --> Validation[validation]
     Validation --> Serializer[serializer]
 ```
+
+With a `fallback` enabled, validation and the fallback move in front of the circuit breaker and retry; see [Fallback position](/en/guide/interceptors/built-in#fallback-position).
 
 **Rationale:**
 1. `errorHandler` first — normalizes errors thrown or rejected by downstream interceptors, including auth errors inside this chain

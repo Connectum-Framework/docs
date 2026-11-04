@@ -2,9 +2,9 @@
 
 # Function: safeParseEnvConfig()
 
-> **safeParseEnvConfig**(`env?`): `ZodSafeParseResult`\<\{ `GRACEFUL_SHUTDOWN_ENABLED`: `boolean`; `GRACEFUL_SHUTDOWN_TIMEOUT_MS`: `number`; `HTTP_HEALTH_ENABLED`: `boolean`; `HTTP_HEALTH_PATH`: `string`; `LISTEN`: `string`; `LOG_BACKEND`: `"console"` \| `"otel"` \| `"pino"`; `LOG_FORMAT`: `"json"` \| `"pretty"`; `LOG_LEVEL`: `"error"` \| `"warn"` \| `"debug"` \| `"info"`; `NODE_ENV`: `"test"` \| `"production"` \| `"development"`; `OTEL_EXPORTER_OTLP_ENDPOINT?`: `string`; `OTEL_SERVICE_NAME?`: `string`; `PORT`: `number`; \}\>
+> **safeParseEnvConfig**(`env?`): `ZodSafeParseResult`\<\{ `GRACEFUL_SHUTDOWN_ENABLED`: `boolean`; `GRACEFUL_SHUTDOWN_TIMEOUT_MS`: `number`; `HTTP_HEALTH_ENABLED`: `boolean`; `HTTP_HEALTH_PATH`: `string`; `LISTEN`: `string`; `LOG_BACKEND`: `"console"` \| `"otel"` \| `"pino"`; `LOG_FORMAT`: `"json"` \| `"pretty"`; `LOG_LEVEL`: `"error"` \| `"warn"` \| `"info"` \| `"debug"`; `NODE_ENV`: `"test"` \| `"production"` \| `"development"`; `OTEL_EXPORTER_OTLP_ENDPOINT?`: `string`; `OTEL_SERVICE_NAME?`: `string`; `PORT`: `number`; \}\>
 
-Defined in: [packages/core/src/config/envSchema.ts:163](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/config/envSchema.ts#L163)
+Defined in: [packages/core/src/config/envSchema.ts:185](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/config/envSchema.ts#L185)
 
 Safely parse environment configuration (returns result object)
 
@@ -16,7 +16,7 @@ Safely parse environment configuration (returns result object)
 
 ## Returns
 
-`ZodSafeParseResult`\<\{ `GRACEFUL_SHUTDOWN_ENABLED`: `boolean`; `GRACEFUL_SHUTDOWN_TIMEOUT_MS`: `number`; `HTTP_HEALTH_ENABLED`: `boolean`; `HTTP_HEALTH_PATH`: `string`; `LISTEN`: `string`; `LOG_BACKEND`: `"console"` \| `"otel"` \| `"pino"`; `LOG_FORMAT`: `"json"` \| `"pretty"`; `LOG_LEVEL`: `"error"` \| `"warn"` \| `"debug"` \| `"info"`; `NODE_ENV`: `"test"` \| `"production"` \| `"development"`; `OTEL_EXPORTER_OTLP_ENDPOINT?`: `string`; `OTEL_SERVICE_NAME?`: `string`; `PORT`: `number`; \}\>
+`ZodSafeParseResult`\<\{ `GRACEFUL_SHUTDOWN_ENABLED`: `boolean`; `GRACEFUL_SHUTDOWN_TIMEOUT_MS`: `number`; `HTTP_HEALTH_ENABLED`: `boolean`; `HTTP_HEALTH_PATH`: `string`; `LISTEN`: `string`; `LOG_BACKEND`: `"console"` \| `"otel"` \| `"pino"`; `LOG_FORMAT`: `"json"` \| `"pretty"`; `LOG_LEVEL`: `"error"` \| `"warn"` \| `"info"` \| `"debug"`; `NODE_ENV`: `"test"` \| `"production"` \| `"development"`; `OTEL_EXPORTER_OTLP_ENDPOINT?`: `string`; `OTEL_SERVICE_NAME?`: `string`; `PORT`: `number`; \}\>
 
 ## Example
 

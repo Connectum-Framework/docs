@@ -2,7 +2,7 @@
 
 # Interface: EventRouter
 
-Defined in: [packages/events/src/types.ts:269](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L269)
+Defined in: [packages/events/src/types.ts:273](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L273)
 
 Event router for registering service event handlers.
 
@@ -15,7 +15,7 @@ Mirrors ConnectRPC's ConnectRouter pattern:
 
 > **service**\<`S`\>(`serviceDesc`, `handlers`): `void`
 
-Defined in: [packages/events/src/types.ts:271](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L271)
+Defined in: [packages/events/src/types.ts:275](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L275)
 
 Register event handlers for a service
 

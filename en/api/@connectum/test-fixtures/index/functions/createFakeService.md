@@ -4,7 +4,7 @@
 
 > **createFakeService**(`options?`): [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: [fake-service.ts:35](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/fake-service.ts#L35)
+Defined in: [fake-service.ts:36](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/fake-service.ts#L36)
 
 Create a fake [DescService](https://protobufes.com/reference/reflection/descriptors/#types) descriptor for testing.
 

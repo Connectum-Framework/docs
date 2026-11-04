@@ -4,7 +4,7 @@
 
 > **createSessionAuthInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/session-auth-interceptor.ts:66](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/session-auth-interceptor.ts#L66)
+Defined in: [packages/auth/src/session-auth-interceptor.ts:70](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/session-auth-interceptor.ts#L70)
 
 Create a session-based authentication interceptor.
 
@@ -30,6 +30,10 @@ Session auth configuration
 `Interceptor`
 
 ConnectRPC interceptor
+
+## Throws
+
+When `verifySession` or `mapSession` is not a function, or `extractToken` is set and is not a function
 
 ## Throws
 

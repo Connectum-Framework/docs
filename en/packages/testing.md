@@ -25,8 +25,9 @@ bun add -d @connectum/testing
 ~~~
 :::
 
-**Peer dependencies:** `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.2.0` and
-`@connectrpc/connect-node` `^2.2.0`, shared with your application. npm 7+, pnpm and Bun
+**Peer dependencies:** `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.3.0` and
+`@connectrpc/connect-node` `^2.3.0`, shared with your application. The package also installs
+`@connectum/core` and `@connectum/test-fixtures` as regular dependencies. npm 7+, pnpm and Bun
 install missing peers automatically — see
 [Peer dependencies on protobuf and Connect](/en/migration/peer-dependencies).
 
@@ -47,6 +48,21 @@ await withTestServer({ services: [greeterService] }, async (server) => {
 });
 ~~~
 
+## Mocks, Fakes and Assertions {#mocks-and-assertions}
+
+The main entry also re-exports the unit-test helpers of `@connectum/test-fixtures`, so one import covers a
+test that does not start a server:
+
+| Symbol | Use it to |
+|---|---|
+| [`createMockRequest`](/en/api/@connectum/testing/index/functions/createMockRequest) | Build a simplified request for an interceptor unit test. |
+| [`createMockNext`](/en/api/@connectum/testing/index/functions/createMockNext), [`createMockNextError`](/en/api/@connectum/testing/index/functions/createMockNextError), [`createMockNextSlow`](/en/api/@connectum/testing/index/functions/createMockNextSlow) | Build a `next` function that resolves, throws a `ConnectError`, or resolves after a delay. |
+| [`createMockFn`](/en/api/@connectum/testing/index/functions/createMockFn) | Create a function that records its calls (`.mock.calls`, `.mock.callCount()`). |
+| [`createMockStream`](/en/api/@connectum/testing/index/functions/createMockStream) | Create an async iterable that yields given items, for streaming handlers and interceptors. |
+| [`createFakeService`](/en/api/@connectum/testing/index/functions/createFakeService), [`createFakeMethod`](/en/api/@connectum/testing/index/functions/createFakeMethod), [`createMockDescMessage`](/en/api/@connectum/testing/index/functions/createMockDescMessage), [`createMockDescField`](/en/api/@connectum/testing/index/functions/createMockDescField), [`createMockDescMethod`](/en/api/@connectum/testing/index/functions/createMockDescMethod) | Build protobuf descriptors without running code generation. |
+| [`assertConnectError`](/en/api/@connectum/testing/index/functions/assertConnectError) | Assert that a thrown value is a `ConnectError` with the expected code and, optionally, a matching message. |
+| [`MOCK_RESPONSE_HEADER`](/en/api/@connectum/testing/index/variables/MOCK_RESPONSE_HEADER) | Name of the response header that marks a call served by `mockResolver()`. |
+
 ## Key Entry Points
 
 | Entry point | Use it to |
@@ -54,6 +70,68 @@ await withTestServer({ services: [greeterService] }, async (server) => {
 | `createTestServer` | Create an isolated Connectum server for a test. |
 | `withTestServer` | Manage test-server setup and teardown. |
 | `createLocalClient` | Exercise handlers through the in-process transport. |
+| `createMockContext`, `mockService`, `mockResolver` | Unit-test a handler's `ctx.call` / `ctx.stream` against canned services. |
+| `transportParityTest` (`@connectum/testing/parity`) | Run one scenario over HTTP/2 and in-process and compare the outcomes. |
+| `InMemorySpanCollector`, `InMemoryMetricCollector` | Collect spans and metrics in memory for assertions. |
+| `withTelemetry` | Give one test body its own span and metric collectors for `@connectum/otel` instrumentation. |
+
+Test server options, mock context behavior and the parity comparison are described in the [testing guide](/en/guide/testing#test-server).
+
+## Spans and Metrics of `@connectum/otel` in a Test {#isolated-telemetry}
+
+`@connectum/otel` keeps the tracer it created for the provider that was registered
+when it first recorded something. A scenario that only registers its own collector
+therefore sees spans in the first test of a process and nothing in later ones, and a
+parity comparison of two empty results still passes.
+
+Set the opt-in `telemetry` option of `transportParityTest` and the driver does the
+whole sequence around every run: it resets the provider, registers that run's `spans`
+and `metrics` collectors as the OpenTelemetry providers, and unregisters them when the
+run ends, also when the scenario throws. Run with `OTEL_TRACES_EXPORTER=none` and
+`OTEL_METRICS_EXPORTER=none`.
+
+~~~typescript
+import { createClient } from '@connectrpc/connect';
+import { createOtelInterceptor, shutdownProvider } from '@connectum/otel';
+import { transportParityTest } from '@connectum/testing/parity';
+
+transportParityTest('Greeter.sayHello emits the same span on both transports', {
+  services: [greeterRoutes],
+  interceptors: [createOtelInterceptor()],
+  telemetry: { shutdownProvider },
+  scenario: async ({ transport, spans }) => {
+    await createClient(GreeterService, transport).sayHello({ name: 'world' });
+    return { spans: spans.flush() };
+  },
+});
+~~~
+
+Outside the parity driver, `withTelemetry({ shutdownProvider }, body)` does the same
+around any async body and returns what the body returns:
+
+~~~typescript
+import { shutdownProvider } from '@connectum/otel';
+import { withTelemetry } from '@connectum/testing';
+
+const names = await withTelemetry({ shutdownProvider }, async ({ spans, metrics }) => {
+  await client.sayHello({ name: 'world' });
+  return spans.flush().map((span) => span.name);
+});
+~~~
+
+What to know before you use either:
+
+- `shutdownProvider` is a parameter, not an import. `@connectum/testing` does not
+  depend on `@connectum/otel`, and the function that is reset must be the one your
+  code under test uses.
+- The registrations are process-wide, so scenarios that use telemetry run one after
+  another. An overlapping call is refused with an error.
+- Without `telemetry` the parity driver behaves as before.
+- Only the span and metric providers are registered. The helper does not set the
+  `OTEL_*_EXPORTER` variables, a context manager, or a propagator; set them yourself
+  when the scenario needs them, for example to link a client span and a server span.
+- Two empty results still compare as equal. Assert that `spans.flush()` is not empty
+  before the scenario returns it.
 
 ## Learn / Configure / API Reference {#api-reference}
 

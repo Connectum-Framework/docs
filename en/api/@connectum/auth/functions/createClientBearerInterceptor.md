@@ -4,7 +4,7 @@
 
 > **createClientBearerInterceptor**(`options`): `Interceptor`
 
-Defined in: [packages/auth/src/client-bearer-interceptor.ts:51](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/client-bearer-interceptor.ts#L51)
+Defined in: [packages/auth/src/client-bearer-interceptor.ts:58](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/client-bearer-interceptor.ts#L58)
 
 Create a client interceptor that attaches a Bearer token to outgoing requests.
 
@@ -25,6 +25,14 @@ Configuration with a static token or async token factory
 `Interceptor`
 
 A ConnectRPC client Interceptor
+
+## Throws
+
+When `token` is neither a non-empty string nor a function
+
+A token factory that returns anything but a non-empty string (`undefined` or `null` after a failed
+refresh) fails that call with `Code.Unauthenticated` before any request is sent; the header is
+never set to the text `Bearer undefined`.
 
 ## Examples
 

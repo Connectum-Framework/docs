@@ -17,7 +17,7 @@ The handler examples on this page need:
 
 - **A loaded catalog.** The generated `catalog.gen.ts` types the method keys; without it `ctx.call` is statically uncallable. See [Generating the catalog](/en/guide/service-communication/service-catalog#generating-the-catalog).
 - **The catalog on the server.** Pass it as `createServer({ services, catalog })`. A callee that is not mounted on this server also needs a `remoteResolver` (see [Resolvers](/en/guide/service-communication/resolvers)); without one the call fails with `Unavailable`.
-- **Plain-object requests need a regenerated catalog.** They require the upcoming `@connectum/protoc-gen-catalog` 1.3.0. With the published 1.2.x generator, wrap each request in `create(Schema, { ... })`; see the [service-catalog migration guide](/en/migration/service-catalog).
+- **Plain-object requests need a regenerated catalog.** They require `@connectum/protoc-gen-catalog` 1.3.0 or later. With an earlier generator, wrap each request in `create(Schema, { ... })`; see the [service-catalog migration guide](/en/migration/service-catalog).
 
 A catalog key is `"<typeName>/<Method>"` with the proto method name in PascalCase (`CheckStock`), not the camelCase client method (`checkStock`).
 
@@ -43,7 +43,7 @@ sequenceDiagram
 ```typescript
 import { defineService } from '@connectum/core';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { OrderService } from '#gen/order/v1/order_pb.js';
+import { OrderService } from '#gen/order/v1/order_pb.ts';
 
 // Sequential: check stock, then process payment.
 // Pass the result to createServer({ services: [orderService], catalog }).
@@ -172,7 +172,7 @@ Use a plain `createClient` client inside a handler only for a service that is no
 
 ```typescript
 import { createClient } from '@connectrpc/connect';
-import { LedgerService } from '#gen/ledger/v1/ledger_pb.js';
+import { LedgerService } from '#gen/ledger/v1/ledger_pb.ts';
 
 const ledgerClient = createClient(LedgerService, ledgerTransport);
 

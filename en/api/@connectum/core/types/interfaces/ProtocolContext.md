@@ -2,12 +2,15 @@
 
 # Interface: ProtocolContext
 
-Defined in: [packages/core/src/types.ts:52](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L52)
+Defined in: [packages/core/src/types.ts:70](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L70)
 
-Context provided to [ProtocolRegistration.setup](ProtocolRegistration.md#setup)
+Context provided to [ProtocolRegistration.setup](ProtocolRegistration.md#setup) and
+[ProtocolRegistration.ready](ProtocolRegistration.md#ready)
 
 Contains information about registered services that protocols
 may need (e.g., reflection needs DescFile[], healthcheck needs service names).
+What it covers depends on the hook: `setup` sees the services registered
+before the protocol, `ready` sees all of them.
 
 ## Properties
 
@@ -15,12 +18,13 @@ may need (e.g., reflection needs DescFile[], healthcheck needs service names).
 
 > `readonly` **registry**: readonly `DescFile`[]
 
-Defined in: [packages/core/src/types.ts:59](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L59)
+Defined in: [packages/core/src/types.ts:78](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L78)
 
 Service file descriptors registered before this protocol: every mounted
 application service, then the files of the protocols that precede this
-one in the `protocols` array. A frozen snapshot — later registrations do
-not change it.
+one in the `protocols` array. In `ready` it is every file, protocols
+after this one included. A frozen snapshot — later registrations do not
+change it.
 
 ***
 
@@ -28,11 +32,12 @@ not change it.
 
 > `readonly` **services**: readonly [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)[]
 
-Defined in: [packages/core/src/types.ts:71](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L71)
+Defined in: [packages/core/src/types.ts:91](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L91)
 
 Services mounted before this protocol, in registration order: every
 mounted application service, then the services of the protocols that
-precede this one in the `protocols` array. A frozen snapshot — later
+precede this one in the `protocols` array. In `ready` it is every
+service, protocols after this one included. A frozen snapshot — later
 registrations do not change it.
 
 Use this, not `registry[].services`, to know which services the server

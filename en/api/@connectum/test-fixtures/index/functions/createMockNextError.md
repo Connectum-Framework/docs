@@ -4,7 +4,7 @@
 
 > **createMockNextError**(`code`, `message?`): `any`
 
-Defined in: [mock-next.ts:70](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-next.ts#L70)
+Defined in: [mock-next.ts:176](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-next.ts#L176)
 
 Create a mock `next` handler that always throws a [ConnectError](https://connectrpc.com/docs/web/errors).
 
@@ -29,6 +29,10 @@ Human-readable error message. Defaults to `"Mock error"`.
 `any`
 
 A spy-enabled async function that throws on every call.
+
+## Throws
+
+TypeError when `code` is not a `Code` of `@connectrpc/connect` (an integer from 1 to 16).
 
 ## Example
 

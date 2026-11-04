@@ -1,0 +1,256 @@
+.vp-doc .interceptors-showcase {
+    --interceptors-accent: #3153a0;
+    --interceptors-surface: #eaf0ff;
+    --vp-code-font-size: 12px;
+    margin: 24px 0;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 12px;
+    background: var(--vp-c-bg);
+    overflow-wrap: anywhere;
+}
+.dark .vp-doc .interceptors-showcase {
+    --interceptors-accent: #b9cdff;
+    --interceptors-surface: #202b43;
+}
+.vp-doc .interceptors-heading {
+    padding: 24px 24px 0;
+}
+.vp-doc .interceptors-eyebrow {
+    margin: 0 0 8px;
+    color: var(--interceptors-accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.vp-doc .interceptors-heading h2 {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 23px;
+    line-height: 1.3;
+    letter-spacing: -0.03em;
+}
+.vp-doc .interceptors-heading > p:last-child {
+    margin: 8px 0 20px;
+    color: var(--vp-c-text-2);
+    font-size: 14px;
+}
+.vp-doc .interceptors-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 0 24px 20px;
+}
+.vp-doc .interceptors-controls > div {
+    flex: 1 1 170px;
+    min-width: 0;
+}
+.vp-doc .interceptors-controls label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.vp-doc .interceptors-controls select {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px;
+    border: 1px solid var(--vp-c-text-2);
+    border-radius: 6px;
+    background: var(--vp-c-bg);
+    color: var(--vp-c-text-1);
+    font-size: 14px;
+}
+.vp-doc .interceptors-showcase button:not(.copy) {
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 6px;
+    background: var(--vp-c-bg);
+    color: var(--vp-c-text-1);
+    font-size: 12px;
+    cursor: pointer;
+}
+.vp-doc .interceptors-showcase button:disabled {
+    cursor: default;
+}
+.vp-doc .interceptors-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    border-top: 1px solid var(--vp-c-divider);
+    border-bottom: 1px solid var(--vp-c-divider);
+}
+.vp-doc .interceptors-source,
+.vp-doc .interceptors-result {
+    min-width: 0;
+    padding: 16px;
+}
+.vp-doc .interceptors-source {
+    border-right: 1px solid var(--vp-c-divider);
+    background: var(--vp-c-bg-soft);
+}
+.vp-doc .interceptors-pane-heading {
+    margin: 0 0 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.vp-doc .interceptors-source-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 16px 0 12px;
+    padding: 0;
+    border: 0;
+}
+.vp-doc .interceptors-source-picker button[aria-pressed="true"] {
+    border-color: var(--interceptors-accent);
+    color: var(--interceptors-accent);
+}
+.vp-doc .interceptors-log code {
+    padding: 0;
+    color: var(--vp-c-text-1);
+    background: none;
+    font-size: 12px;
+}
+.vp-doc .interceptors-code {
+    min-width: 0;
+}
+.vp-doc .interceptors-code div[class*="language-"] {
+    margin: 0;
+    border-radius: 6px;
+}
+.vp-doc .interceptors-code div[class*="language-"] pre {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.vp-doc .interceptors-showcase .interceptors-code pre code {
+    padding-right: 12px;
+    padding-left: 12px;
+    font-size: 12px;
+    line-height: 1.8;
+}
+.vp-doc .interceptors-code .line-numbers-wrapper {
+    padding-top: 20px;
+    font-size: 12px;
+    line-height: 1.8;
+}
+.vp-doc .interceptors-log {
+    margin: 0 0 20px;
+    padding: 12px 12px 12px 30px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 6px;
+    background: var(--vp-c-bg-soft);
+}
+.vp-doc .interceptors-log li {
+    margin: 0;
+    padding-left: 2px;
+    font-family: var(--vp-font-family-mono);
+    font-size: 12px;
+    line-height: 1.9;
+}
+.vp-doc .interceptors-caller {
+    padding: 12px;
+    border-left: 3px solid var(--interceptors-accent);
+    border-radius: 0 6px 6px 0;
+    background: var(--interceptors-surface);
+    font-size: 13px;
+}
+.vp-doc .interceptors-caller dl {
+    margin: 12px 0;
+    font-size: 12px;
+    line-height: 1.6;
+}
+.vp-doc .interceptors-caller dl > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0 8px;
+}
+.vp-doc .interceptors-caller dt {
+    color: var(--vp-c-text-2);
+}
+.vp-doc .interceptors-caller dd {
+    margin: 0;
+    font-weight: 600;
+}
+.vp-doc .interceptors-caller > p {
+    margin: 8px 0 0;
+    font-size: 12px;
+}
+.vp-doc .interceptors-reading-note {
+    margin: 12px 0 0;
+    font-size: 12px;
+    color: var(--vp-c-text-2);
+    line-height: 1.6;
+}
+.vp-doc .interceptors-local-note,
+.vp-doc .interceptors-static-note {
+    margin: 0;
+    padding: 16px 24px;
+    color: var(--vp-c-text-2);
+    font-size: 12px;
+    line-height: 1.7;
+}
+.vp-doc .interceptors-static-note {
+    padding-top: 0;
+}
+.vp-doc .interceptors-showcase details {
+    border-top: 1px solid var(--vp-c-divider);
+    padding: 0 24px;
+}
+.vp-doc .interceptors-showcase summary {
+    display: list-item;
+    min-height: 44px;
+    padding: 12px 0;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.vp-doc .interceptors-showcase details h3 {
+    margin: 20px 0 8px;
+    font-size: 14px;
+}
+.vp-doc .interceptors-showcase details p {
+    font-size: 13px;
+}
+.vp-doc .interceptors-example .interceptors-code {
+    margin: 12px 0 20px;
+}
+.vp-doc .interceptors-error {
+    color: var(--vp-c-danger-1);
+}
+@media (max-width: 639px) {
+    .vp-doc .interceptors-workspace {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .vp-doc .interceptors-source {
+        border-right: 0;
+        border-bottom: 1px solid var(--vp-c-divider);
+    }
+    .vp-doc .interceptors-heading {
+        padding: 20px 16px 0;
+    }
+    .vp-doc .interceptors-controls {
+        padding: 0 16px 20px;
+    }
+    .vp-doc .interceptors-local-note,
+    .vp-doc .interceptors-static-note,
+    .vp-doc .interceptors-showcase details {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+}
+@media print {
+    .vp-doc .interceptors-workspace {
+        display: block;
+    }
+    .vp-doc .interceptors-source {
+        border-right: 0;
+    }
+    .vp-doc .interceptors-controls,
+    .vp-doc .interceptors-source-picker {
+        display: none;
+    }
+}

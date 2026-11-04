@@ -1,0 +1,102 @@
+{
+    "transport": "Connect over HTTP/1.1",
+    "sources": {
+        "proto/shop/v1/inventory.proto": "fa6911c3b1063685db36c30b361472c91999352b4cc2e89daa3dbad7dcca4860",
+        "src/audit.ts": "2a75815cfed126ffb0a4da357231d1888f638668c9275d6aa1da4dcf381609c0",
+        "src/stockTag.ts": "aba682398c15ffcba3d694af7c08347cb5e8f3246958d2e93f034bd581e24270",
+        "src/chain.ts": "b5dfebf0019fca980170dddde79ae87a58fd6acf020fb399da601ad26fc713cc",
+        "src/inventory.ts": "9f65e8cd7be5649b301b1c48395f8640ef1352d431f42feea672f56fec3bb098",
+        "src/server.ts": "44a83a277569649b0c4ed22da87dc47296b7b8b5912900656c6392e586e55767",
+        "src/capture.ts": "ca06e9005a6cf44afbfd31eac88972dcbea6620a264581ca2b6c272b22d7dc85",
+        "package.json": "d55b5d8ccc7120bc9a1f2be097f1aac471b51ec03f1aa1f64d4cd434a332008a",
+        "pnpm-lock.yaml": "7dff4154afdbb8861565631b6933291a32383b721a89d741722acfad4c3be3ab",
+        "buf.gen.yaml": "85b969d822dde72f391ca4bc345e70cd06f46e26420986811509c767e298e6ca",
+        "../settings.ts": "c1696d39ff6630adaf351e5bd1beca9bc03fcef0ad143afcc21bccc7cd160975"
+    },
+    "records": [
+        {
+            "settings": {
+                "chain": "audit-first",
+                "outcome": "success"
+            },
+            "result": {
+                "code": "OK",
+                "events": ["audit: before", "stockTag: before", "handler: return 7 units", "stockTag: after (set header)", "audit: after (header = fixture)"],
+                "handlerCalls": 1,
+                "sourceHeader": "fixture",
+                "response": {
+                    "units": 7
+                }
+            }
+        },
+        {
+            "settings": {
+                "chain": "tag-first",
+                "outcome": "success"
+            },
+            "result": {
+                "code": "OK",
+                "events": ["stockTag: before", "audit: before", "handler: return 7 units", "audit: after (header = unset)", "stockTag: after (set header)"],
+                "handlerCalls": 1,
+                "sourceHeader": "fixture",
+                "response": {
+                    "units": 7
+                }
+            }
+        },
+        {
+            "settings": {
+                "chain": "audit-only",
+                "outcome": "success"
+            },
+            "result": {
+                "code": "OK",
+                "events": ["audit: before", "handler: return 7 units", "audit: after (header = unset)"],
+                "handlerCalls": 1,
+                "sourceHeader": null,
+                "response": {
+                    "units": 7
+                }
+            }
+        },
+        {
+            "settings": {
+                "chain": "audit-first",
+                "outcome": "failure"
+            },
+            "result": {
+                "code": "NotFound",
+                "events": ["audit: before", "stockTag: before", "handler: throw NotFound"],
+                "handlerCalls": 1,
+                "sourceHeader": null,
+                "error": "SKU not found"
+            }
+        },
+        {
+            "settings": {
+                "chain": "tag-first",
+                "outcome": "failure"
+            },
+            "result": {
+                "code": "NotFound",
+                "events": ["stockTag: before", "audit: before", "handler: throw NotFound"],
+                "handlerCalls": 1,
+                "sourceHeader": null,
+                "error": "SKU not found"
+            }
+        },
+        {
+            "settings": {
+                "chain": "audit-only",
+                "outcome": "failure"
+            },
+            "result": {
+                "code": "NotFound",
+                "events": ["audit: before", "handler: throw NotFound"],
+                "handlerCalls": 1,
+                "sourceHeader": null,
+                "error": "SKU not found"
+            }
+        }
+    ]
+}

@@ -2,7 +2,7 @@
 
 # Interface: TraceAllOptions
 
-Defined in: [types.ts:133](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L133)
+Defined in: [types.ts:140](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L140)
 
 Options for traceAll() Proxy-based object wrapper
 
@@ -12,7 +12,7 @@ Options for traceAll() Proxy-based object wrapper
 
 > `optional` **argsFilter?**: [`MethodArgsFilter`](../type-aliases/MethodArgsFilter.md)
 
-Defined in: [types.ts:157](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L157)
+Defined in: [types.ts:164](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L164)
 
 Transform/masking for recorded args -- has access to method name.
 
@@ -22,7 +22,7 @@ Transform/masking for recorded args -- has access to method name.
 
 > `optional` **exclude?**: `string`[]
 
-Defined in: [types.ts:144](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L144)
+Defined in: [types.ts:151](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L151)
 
 Blacklist of method names to exclude from wrapping
 
@@ -32,7 +32,7 @@ Blacklist of method names to exclude from wrapping
 
 > `optional` **include?**: `string`[]
 
-Defined in: [types.ts:141](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L141)
+Defined in: [types.ts:148](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L148)
 
 Whitelist of method names to wrap (if provided, only these are wrapped)
 
@@ -42,7 +42,7 @@ Whitelist of method names to wrap (if provided, only these are wrapped)
 
 > `optional` **prefix?**: `string`
 
-Defined in: [types.ts:138](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L138)
+Defined in: [types.ts:145](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L145)
 
 Prefix for span names: "${prefix}.${methodName}"
 Defaults to constructor.name or "Object"
@@ -53,7 +53,7 @@ Defaults to constructor.name or "Object"
 
 > `optional` **recordArgs?**: `boolean` \| `string`[]
 
-Defined in: [types.ts:152](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L152)
+Defined in: [types.ts:159](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/types.ts#L159)
 
 Record method arguments as span attributes.
 - `false` (default): no args recorded

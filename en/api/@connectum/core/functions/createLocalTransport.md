@@ -4,7 +4,7 @@
 
 > **createLocalTransport**(`server`, `options?`): `Transport`
 
-Defined in: [packages/core/src/localTransport.ts:175](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/localTransport.ts#L175)
+Defined in: [packages/core/src/localTransport.ts:190](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/localTransport.ts#L190)
 
 Create an in-process ConnectRPC `Transport` over the services already
 registered on the given Connectum `Server`.
@@ -19,11 +19,20 @@ the wrapped `createRouterTransport` already clones headers at the call
 boundary, providing mutation isolation between client and server.
 
 Cancellation: a streaming call is cancelled by the `AbortSignal` passed in
-the call options, by its deadline, or by `server.stop()`. The handler's
-`ctx.signal` aborts and its output generator is finished, so a handler
-parked at `yield` runs its `finally`. Leaving a `for await` loop with
-`break` is not a cancellation: the handler keeps running until one of the
-above happens.
+the call options, by its deadline, by `server.stop()`, or by the caller
+leaving its `for await` loop early with `break` (the response iterator's
+`return()`, which ends the call as it does over HTTP; requires
+`@connectrpc/connect` 2.3.0 or later). The handler's `ctx.signal` aborts and
+its output generator is finished, so a handler parked at `yield` runs its
+`finally`. After a `break` the client-side interceptors see their response
+stream end without an error; only the handler sees the call cancelled.
+A server-streaming or bidirectional call made once `server.stop()` has begun
+cannot be served: its first read fails with `unavailable` and the handler body
+does not start. A client-streaming or bidirectional handler waiting for the
+next request message is released when the caller cancels the call: its loop
+over the requests ends, as it does when HTTP/2 closes the request body.
+`server.stop()` does not do that: it does not end an in-process call, so an
+upload that is still being sent keeps being read.
 
 Request streams: the caller's request stream of a client-streaming or
 bidirectional call is advanced in the caller's async context, below the

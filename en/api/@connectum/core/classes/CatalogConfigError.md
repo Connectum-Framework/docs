@@ -14,7 +14,7 @@ Defined in: [packages/core/src/catalogErrors.ts:18](https://github.com/Connectum
 
 > **new CatalogConfigError**(`message`): `CatalogConfigError`
 
-Defined in: [packages/core/src/catalogErrors.ts:21](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogErrors.ts#L21)
+Defined in: [packages/core/src/catalogErrors.ts:26](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogErrors.ts#L26)
 
 #### Parameters
 

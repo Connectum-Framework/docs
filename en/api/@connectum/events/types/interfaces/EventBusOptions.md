@@ -2,7 +2,7 @@
 
 # Interface: EventBusOptions
 
-Defined in: [packages/events/src/types.ts:383](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L383)
+Defined in: [packages/events/src/types.ts:414](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L414)
 
 EventBus configuration options for createEventBus()
 
@@ -12,7 +12,7 @@ EventBus configuration options for createEventBus()
 
 > **adapter**: [`EventAdapter`](EventAdapter.md)
 
-Defined in: [packages/events/src/types.ts:385](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L385)
+Defined in: [packages/events/src/types.ts:416](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L416)
 
 Adapter instance (e.g., NatsAdapter, KafkaAdapter, MemoryAdapter)
 
@@ -22,7 +22,7 @@ Adapter instance (e.g., NatsAdapter, KafkaAdapter, MemoryAdapter)
 
 > `optional` **drainAbortGrace?**: `number`
 
-Defined in: [packages/events/src/types.ts:455](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L455)
+Defined in: [packages/events/src/types.ts:495](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L495)
 
 Maximum time in milliseconds `stop()` keeps waiting for handlers that are still running
 AFTER `drainTimeout` expired and they were force-aborted. A handler that ignores the abort
@@ -49,7 +49,7 @@ Must be a finite, non-negative number; anything else (negative, `NaN`, `Infinity
 
 > `optional` **drainPublishTimeout?**: `number`
 
-Defined in: [packages/events/src/types.ts:488](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L488)
+Defined in: [packages/events/src/types.ts:530](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L530)
 
 Opt-in symmetric publish drain during `stop()`: maximum time in
 milliseconds to wait for in-flight `publish()` promises (started BEFORE
@@ -82,7 +82,7 @@ in-flight publishes race the adapter disconnect exactly as before.
 
 > `optional` **drainTimeout?**: `number`
 
-Defined in: [packages/events/src/types.ts:434](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L434)
+Defined in: [packages/events/src/types.ts:474](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L474)
 
 Maximum time in milliseconds to wait for in-flight event handlers
 to complete during shutdown. After this timeout, remaining handlers
@@ -90,13 +90,17 @@ are force-aborted via AbortSignal.
 
 Default: 30000 (30 seconds). Set to 0 for immediate abort.
 
+Must be a finite number from 0 to 2147483647 (the longest delay a timer keeps). `NaN`, a
+negative number, `Infinity`, a larger number or a non-number makes `createEventBus` throw a
+`RangeError` or `TypeError` naming the option; leave it unset for the default.
+
 ***
 
 ### group?
 
 > `optional` **group?**: `string`
 
-Defined in: [packages/events/src/types.ts:409](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L409)
+Defined in: [packages/events/src/types.ts:440](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L440)
 
 Consumer group name, passed to every subscription of this bus.
 
@@ -112,12 +116,17 @@ events published during the downtime are not delivered. Set an explicit
 
 > `optional` **handlerTimeout?**: `number`
 
-Defined in: [packages/events/src/types.ts:426](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L426)
+Defined in: [packages/events/src/types.ts:462](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L462)
 
 Per-event handler timeout in milliseconds.
 
 Each event handler invocation gets an AbortSignal that fires after
 this duration. Default: 30000 (30 seconds).
+
+Must be an integer from 1 to 4294967295 (the range `AbortSignal.timeout()` accepts, and `0`
+would abort every signal before the handler runs). Anything else (`NaN`, negative, `0`,
+fractional, `Infinity`, a non-number) makes `createEventBus` throw a `RangeError` or
+`TypeError` naming the option.
 
 ***
 
@@ -125,7 +134,7 @@ this duration. Default: 30000 (30 seconds).
 
 > `optional` **middleware?**: [`MiddlewareConfig`](MiddlewareConfig.md)
 
-Defined in: [packages/events/src/types.ts:411](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L411)
+Defined in: [packages/events/src/types.ts:442](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L442)
 
 Middleware configuration
 
@@ -135,11 +144,13 @@ Middleware configuration
 
 > `optional` **observer?**: [`EventBusObserver`](../type-aliases/EventBusObserver.md)
 
-Defined in: [packages/events/src/types.ts:461](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L461)
+Defined in: [packages/events/src/types.ts:503](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L503)
 
-Receives what the shutdown could not finish, see [EventBusObserverEvent](../type-aliases/EventBusObserverEvent.md). Called
-synchronously by `stop()`; an error thrown by it (or a promise it returns that rejects)
-is swallowed, because reporting must never prevent the adapter from being disconnected.
+Receives what the shutdown could not finish and a failed dead-letter publish, see
+[EventBusObserverEvent](../type-aliases/EventBusObserverEvent.md). Called synchronously by the code that reports (`stop()`, or
+the dead-letter middleware); an error thrown by it (or a promise it returns that rejects)
+is swallowed, because reporting must never prevent the adapter from being disconnected or
+change what happens to the event.
 
 ***
 
@@ -147,7 +158,7 @@ is swallowed, because reporting must never prevent the adapter from being discon
 
 > `optional` **publishes?**: [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)[]
 
-Defined in: [packages/events/src/types.ts:399](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L399)
+Defined in: [packages/events/src/types.ts:430](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L430)
 
 Event service descriptors this bus publishes to (publish-only, no subscription).
 
@@ -165,7 +176,7 @@ hand-maintaining raw topic strings. Subscribers still register via `routes`.
 
 > `optional` **routes?**: [`EventRoute`](../type-aliases/EventRoute.md)[]
 
-Defined in: [packages/events/src/types.ts:387](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L387)
+Defined in: [packages/events/src/types.ts:418](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L418)
 
 Event routes to register
 
@@ -175,7 +186,7 @@ Event routes to register
 
 > `optional` **signal?**: `AbortSignal`
 
-Defined in: [packages/events/src/types.ts:419](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L419)
+Defined in: [packages/events/src/types.ts:450](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L450)
 
 Abort signal for graceful shutdown.
 
@@ -189,7 +200,7 @@ Automatically set when used with `createServer({ eventBus })`.
 
 > `optional` **strictTopics?**: `boolean`
 
-Defined in: [packages/events/src/types.ts:502](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L502)
+Defined in: [packages/events/src/types.ts:544](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L544)
 
 Reject a `publish()` whose topic cannot be resolved instead of silently
 falling back to the message `typeName`.

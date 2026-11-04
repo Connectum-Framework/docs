@@ -23,6 +23,13 @@ from external clients without using createGatewayAuthInterceptor().
 
 JSON-encoded claims object
 
+### ENCODING
+
+> `readonly` **ENCODING**: `"x-auth-encoding"` = `"x-auth-encoding"`
+
+Set to `percent-utf8` when the sender encoded a text (subject, name, type or scope) as
+`utf-8''` plus percent-encoded UTF-8. Readers decode `utf-8''` texts only when it is present.
+
 ### NAME
 
 > `readonly` **NAME**: `"x-auth-name"` = `"x-auth-name"`

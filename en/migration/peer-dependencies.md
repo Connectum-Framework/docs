@@ -18,7 +18,7 @@ each library.
 You need to act if **any** of these is true:
 
 - your `package.json` pins `@bufbuild/protobuf` below `2.16.0`, or `@connectrpc/connect` /
-  `@connectrpc/connect-node` below `2.2.0` (or outside the `2.x` line);
+  `@connectrpc/connect-node` below `2.3.0` (or outside the `2.x` line);
 - you install with `--legacy-peer-deps` or set `legacy-peer-deps=true` in `.npmrc`.
 
 If you use npm 7 or later, pnpm or Bun, and you either do not pin these libraries or pin
@@ -31,6 +31,18 @@ on an out-of-range copy stops at `createServer()`. Under strict Semantic
 Versioning this is a major change; it ships in 1.3.0 as an explicit exception to
 Connectum's breaking-changes policy, so that applications get the single-copy fix without
 waiting for 2.0.
+:::
+
+::: warning The Connect floor is 2.3.0, and `break` now ends a streaming call
+`@connectum/core` and `@connectum/testing` require `@connectrpc/connect` and
+`@connectrpc/connect-node` `^2.3.0`. An application left on 2.2.x stops at `createServer()`
+with `PeerDependencyVersionError`.
+
+Connect 2.3.0 also changes what leaving a `for await` loop over a streaming response does:
+`break` now ends the call. The handler's `context.signal` aborts and its `finally` block
+runs, over HTTP and in-process alike. Code that relied on a `break` leaving the call
+running (for example, reading only the first message of a long-lived stream and expecting
+the handler to continue) must not `break` out of the loop.
 :::
 
 ## Why it changed
@@ -50,7 +62,7 @@ the supported range visible at install time.
 
 | Package | Peer dependencies in 1.3.0 |
 |---|---|
-| `@connectum/core`, `@connectum/testing` | `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.2.0`, `@connectrpc/connect-node` `^2.2.0` |
+| `@connectum/core`, `@connectum/testing` | `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.3.0`, `@connectrpc/connect-node` `^2.3.0` |
 | `@connectum/auth`, `@connectum/events`, `@connectum/interceptors`, `@connectum/healthcheck`, `@connectum/reflection` | `@connectum/core`, `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.2.0` |
 | `@connectum/otel`, `@connectum/test-fixtures` | `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.2.0` |
 
@@ -70,12 +82,14 @@ the supported range visible at install time.
 |---|---|---|---|
 | Libraries not listed in your `package.json` | installed automatically | installed automatically | installed automatically |
 | Pins inside the ranges | one shared copy | one shared copy | one shared copy |
-| Pin below the range | install **fails**: `ERESOLVE unable to resolve dependency tree` | installs your copy and prints `Issues with peer dependencies found`; `pnpm peers check` lists `unmet peer <library>` | installs your copy and prints `warn: incorrect peer dependency "<library>@<version>"` — but see the note below |
+| Pin below the range | install **fails**: `ERESOLVE unable to resolve dependency tree` | installs your copy and prints `Issues with peer dependencies found`; `pnpm peers check` lists `unmet peer <library>` | installs your copy and, in the setups tested with Bun 1.4.4, prints **no warning** — see the note below |
 
-::: warning Bun can stay silent about an old `@bufbuild/protobuf`
-When your project also contains a tool that brings its own in-range `@bufbuild/protobuf`
-— `@bufbuild/protoc-gen-es` and `@connectum/protoc-gen-catalog` both do — Bun 1.4 installs
-a too-old `@bufbuild/protobuf` pin **without a warning**. The startup check below catches it.
+::: warning Bun does not warn about a pin below the range
+Bun 1.4.4 installed a pin below the range without any warning in every setup tried: a
+too-old `@bufbuild/protobuf` next to `@connectum/core`, the same setup with
+`@bufbuild/protoc-gen-es` added, and a `@connectrpc/connect` older than the one
+`@connectrpc/connect-node` requires, with no Connectum package at all. Do not rely on Bun's
+install output; the startup check below is what stops such an installation.
 :::
 
 ## What happens at startup
@@ -89,7 +103,17 @@ loaded. If one is outside the range above, the server is not created and
 PeerDependencyVersionError: @connectum/core loaded peer libraries outside its supported range:
   - @bufbuild/protobuf: loaded 2.12.1 (from /app/node_modules/@bufbuild/protobuf), @connectum/core requires ^2.16.0
 Generated code and the framework must share one in-range copy of each library; an older copy breaks generated types and Connect at runtime.
-Fix: raise your pins to the required ranges (npm install @bufbuild/protobuf@"^2.16.0", or the pnpm / bun equivalent), or force one in-range version with "overrides" (npm, Bun) or pnpm "overrides", then reinstall.
+Fix: raise your pins to the required ranges (npm install @bufbuild/protobuf@"^2.16.0", or the pnpm / bun equivalent), or force one in-range version with "overrides" in package.json (npm, Bun), "resolutions" in package.json (Yarn) or "overrides" in pnpm-workspace.yaml (pnpm 11 and later; the "pnpm" field of package.json is no longer read), then reinstall.
+```
+
+The last line of the message names the place each package manager reads. pnpm 11 and 12
+ignore `pnpm.overrides` in `package.json`: they print a warning (`The "pnpm" field in
+package.json is no longer read by pnpm`) and install the unpinned copy. For pnpm, put the
+override in `pnpm-workspace.yaml`:
+
+```yaml
+overrides:
+  '@bufbuild/protobuf': 2.16.0
 ```
 
 Lockstep is checked at startup too. `@connectrpc/connect-node` works only with the exact
@@ -98,7 +122,7 @@ that connect-node loads is another version, or a different copy than the one
 `@connectum/core` loads — a pair Bun installs without complaint:
 
 ```text
-  - @connectrpc/connect: loaded 2.2.0 (from /app/node_modules/@connectrpc/connect), @connectrpc/connect-node@2.1.2 requires 2.1.2
+  - @connectrpc/connect: loaded 2.3.0 (from /app/node_modules/@connectrpc/connect), @connectrpc/connect-node@2.1.2 requires 2.1.2
 @connectrpc/connect-node works only with the exact @connectrpc/connect version it declares: keep both on the same version, with a single copy.
 ```
 
@@ -121,7 +145,7 @@ range.
 ## Required changes
 
 1. **Bring your pins into range, or drop them.** Raise `@bufbuild/protobuf` to `^2.16.0`
-   and `@connectrpc/connect` / `@connectrpc/connect-node` to `^2.2.0`, keeping `connect`
+   and `@connectrpc/connect` / `@connectrpc/connect-node` to `^2.3.0`, keeping `connect`
    and `connect-node` on the **same** version. Alternatively, remove the pins and let
    npm, pnpm or Bun install the peers.
 2. **Regenerate code** with `@bufbuild/protoc-gen-es` 2.16 or later, so generated code
@@ -149,8 +173,8 @@ range.
 {
   "dependencies": {
     "@bufbuild/protobuf": "^2.16.0",
-    "@connectrpc/connect": "^2.2.0",
-    "@connectrpc/connect-node": "^2.2.0",
+    "@connectrpc/connect": "^2.3.0",
+    "@connectrpc/connect-node": "^2.3.0",
     "@connectum/core": "^1.3.0"
   }
 }

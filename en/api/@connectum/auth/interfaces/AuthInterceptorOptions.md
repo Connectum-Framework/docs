@@ -2,7 +2,7 @@
 
 # Interface: AuthInterceptorOptions
 
-Defined in: [packages/auth/src/types.ts:124](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L124)
+Defined in: [packages/auth/src/types.ts:129](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L129)
 
 Generic auth interceptor options
 
@@ -12,10 +12,15 @@ Generic auth interceptor options
 
 > `optional` **cache?**: [`CacheOptions`](CacheOptions.md)
 
-Defined in: [packages/auth/src/types.ts:166](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L166)
+Defined in: [packages/auth/src/types.ts:179](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L179)
 
 LRU cache for credentials verification results.
 Caches AuthContext by credential string to reduce verification overhead.
+
+The cache stores a private copy of the identity, and every request served from it receives its
+own copy (including `roles`, `scopes` and `claims`, nested plain objects and arrays too), so a
+handler that changes its `AuthContext` does not change what a later request with the same
+credential receives. Each hit costs one pass over the identity, proportional to its size.
 
 ***
 
@@ -23,7 +28,7 @@ Caches AuthContext by credential string to reduce verification overhead.
 
 > `optional` **extractCredentials?**: (`req`) => `string` \| `Promise`\<`string` \| `null`\> \| `null`
 
-Defined in: [packages/auth/src/types.ts:132](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L132)
+Defined in: [packages/auth/src/types.ts:137](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L137)
 
 Extract credentials from request.
 Default: extracts Bearer token from Authorization header.
@@ -50,7 +55,7 @@ Credential string or null if no credentials found
 
 > `optional` **propagatedClaims?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:173](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L173)
+Defined in: [packages/auth/src/types.ts:186](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L186)
 
 Filter which claims are propagated in headers (SEC-001).
 When set, only listed claim keys are included in x-auth-claims header.
@@ -62,7 +67,7 @@ When not set, all claims are propagated.
 
 > `optional` **propagateHeaders?**: `boolean`
 
-Defined in: [packages/auth/src/types.ts:160](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L160)
+Defined in: [packages/auth/src/types.ts:168](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L168)
 
 Propagate auth context as headers for downstream services.
 
@@ -78,10 +83,11 @@ false
 
 > `optional` **skipMethods?**: `string`[]
 
-Defined in: [packages/auth/src/types.ts:154](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L154)
+Defined in: [packages/auth/src/types.ts:162](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L162)
 
 Methods to skip authentication for.
-Patterns: "Service/Method" or "Service/*". The catch-all `"*"` is refused: creating the
+Patterns: "Service/Method" or "Service/*"; any other pattern, a partial wildcard included, throws
+when the interceptor is created. The catch-all `"*"` is refused: creating the
 interceptor throws, because it would switch authentication off for every method
 (to disable the interceptor, do not register it).
 
@@ -97,14 +103,16 @@ interceptor throws, because it would switch authentication off for every method
 
 > **verifyCredentials**: (`credentials`) => [`AuthContext`](AuthContext.md) \| `Promise`\<[`AuthContext`](AuthContext.md)\>
 
-Defined in: [packages/auth/src/types.ts:145](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L145)
+Defined in: [packages/auth/src/types.ts:152](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/types.ts#L152)
 
 Verify credentials and return auth context.
 REQUIRED. Must throw on invalid credentials.
 
 Error contract: a thrown `ConnectError` reaches the client unchanged (its code and
 message are sent verbatim, so keep the text public); any other thrown value becomes
-`Unauthenticated: Authentication failed` and its text is not sent.
+`Unauthenticated: Authentication failed` and its text is not sent. A returned value that is
+not an `AuthContext` (`null`, `undefined`, `false`, `{}`, a missing or mistyped `subject`,
+`type`, `roles`, `scopes` or `claims`) is treated the same way and is never cached.
 
 #### Parameters
 

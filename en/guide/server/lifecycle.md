@@ -37,16 +37,16 @@ The transitions are one-directional. A stopped server cannot be restarted -- cre
 | Call | created | starting | running | stopping | stopped |
 |------|---------|----------|---------|----------|---------|
 | `start()` | Starts the server | Rejects | Rejects | Rejects | Rejects |
-| `stop()` | Rejects; the server stays `created` | Rejects | Starts the shutdown | Returns the promise of the shutdown in progress and settles with its outcome | Resolves at once; runs no hooks and emits no events |
+| `stop()` | Rejects; the server stays `created` | Waits for the start to settle, then stops the server; resolves if the start fails | Starts the shutdown | Returns the promise of the shutdown in progress and settles with its outcome | Resolves at once; runs no hooks and emits no events |
 | `onShutdown()` | Registers the hook | Registers the hook | Registers the hook | Registers the hook (see the note below) | Throws |
 | `addService()`, `addInterceptor()`, `addProtocol()` | Add, unless the routes are already built | Throw | Throw | Throw | Throw |
 
-A rejected `start()` or `stop()` carries the message `Cannot start server: current state is "<state>", expected "created"` or `Cannot stop server: current state is "<state>", expected "running"`. The `add*` methods throw `Cannot add <service|interceptor|protocol>: server is already <state>. Add ... before calling start().`; `onShutdown()` in the stopped state throws `Cannot add shutdown hook: server is already stopped`.
+A rejected `start()` or `stop()` carries the message `Cannot start server: current state is "<state>", expected "created"` or, for a server that was never started, `Cannot stop server: current state is "created", expected "running"`. The `add*` methods throw `Cannot add <service|interceptor|protocol>: server is already <state>. Add ... before calling start().`; `onShutdown()` in the stopped state throws `Cannot add shutdown hook: server is already stopped`.
 
 - **Routes lock.** The `add*` methods also throw in the created state once the routes have been built. `start()` builds them, and so does the first use of the in-process client (`server.localClient()`), even on a server that is still in the created state.
 - **A failed `start()` ends in `stopped`.** The server cannot be started again.
 - **A hook registered while stopping.** `onShutdown()` accepts it without an error, but the shutdown collects its hooks once, after the transport has closed. A hook registered after that moment is not guaranteed to run.
-- **Signal handlers appear with `running`.** With `autoShutdown: true` the framework installs its signal handlers when the server enters `running`, just before `ready`, and removes them when `stop()` begins. In `created` and `starting` the framework has no handler for the signal. If you need to react to a signal during startup, install your own handler.
+- **Signal handlers appear with `starting`.** With `autoShutdown: true` the framework installs its signal handlers when `start()` begins. When `stop()` begins it replaces them with handlers that end the process on a repeated signal (see [Repeated signals](/en/guide/server/graceful-shutdown#repeated-signals)) until `stop()` completes, and when the start fails it removes them. In `created` the framework has no handler for the signal. A signal that arrives while the server is starting stops it as soon as the start has finished; see [Stop and signals during startup](/en/guide/server/graceful-shutdown#stop-during-start).
 
 ## Lifecycle Events
 
@@ -88,9 +88,11 @@ server.on('error', (err) => {
 
 ### Event Ordering
 
+The `error` events described below are emitted only when an `error` listener is registered.
+
 Events always fire in the transition order shown in the state diagram: `start`, `ready`, `stopping`, then `stop`.
 
-`error` may fire at any point. If startup fails before the server is listening, or a `start` listener throws, the sequence is `start → error`. If a `ready` listener throws, `ready` has already been emitted, so the sequence is `start → ready → error`. If the shutdown itself fails (closing the transport or a shutdown hook), it is `stopping → error → stop`: a failed shutdown still ends with `stop`, and `stop()` rejects with the original error, or with an `AggregateError` when the transport close and a hook both failed (see [Graceful Shutdown](/en/guide/server/graceful-shutdown)). A `stopping` or `stop` listener that throws is not a failed shutdown: it is reported through `error` and `stop()` still resolves.
+`error` may fire at any point. If startup fails before the server is listening, or a `start` listener throws, the sequence is `start → error`. If a `ready` listener throws, `ready` has already been emitted, so the sequence is `start → ready → error`. If the shutdown itself fails (closing the transport or a shutdown hook), it is `stopping → error → stop`: a failed shutdown still ends with `stop`, and `stop()` rejects with the original error, or with an `AggregateError` when several hooks failed, or when the transport close and a hook both failed (see [Graceful Shutdown](/en/guide/server/graceful-shutdown)). A `stopping` or `stop` listener that throws is not a failed shutdown: it is reported through `error` and `stop()` still resolves.
 
 ### Listener Exceptions
 
@@ -101,13 +103,58 @@ What happens when a listener throws depends on the phase:
 | `start`, `ready` | Is a startup failure. `start()` rejects with that exception, `error` is emitted, the port, the `autoShutdown` signal handlers and the event bus are released, and the server ends up `stopped`. |
 | `stopping`, `stop` | Is isolated. The remaining listeners of the event still run, the shutdown always reaches `stopped`, and the exception is reported through `error`. `stop()` does not reject because of it. |
 
-If no `error` listener is registered, an exception from a `stopping` or `stop` listener is printed with `console.error` instead of being swallowed. A failed shutdown started by a signal (`autoShutdown`) is reported once through `error` and never becomes an unhandled rejection.
+Register an `error` listener before `start()` to observe startup and shutdown
+failures. Without one, exceptions from `stopping` or `stop` listeners are written to the server logger's `error` method
+(`console.error` unless you pass [`logger`](#server-log-messages)), while failures of `start()` or `stop()` are carried by their
+rejected promises.
+
+For signal-triggered shutdown (`autoShutdown`), a failure is reported once through
+`error` only when a listener is registered. The signal handler catches the
+rejection, so it does not become an unhandled rejection; without a listener, a
+shutdown-hook failure can go unreported.
 
 Only synchronous exceptions are covered. An `async` listener that rejects is not awaited by the emitter; handle its errors inside the listener.
 
+## Server Log Messages {#server-log-messages}
+
+Besides emitting events, the server writes a few messages about its own lifecycle. By default they go to `console`. Pass `logger` to `createServer()` to send them to your own logger instead:
+
+```typescript
+const server = createServer({
+  services: [greeterService],
+  port: 5000,
+  logger: {
+    info: (message) => appLog.write('info', message),
+    warn: (message, ...details) => appLog.write('warn', message, details),
+    error: (message, ...details) => appLog.write('error', message, details),
+  },
+});
+```
+
+`logger` is an object with `info`, `warn` and `error` functions, typed as `ServerLogger`. Each method receives a complete message string first. When the message reports a failure, the error object follows it. The global `console` already fits this shape, so leaving the option out keeps the output as it was.
+
+| Level | Message | When |
+|-------|---------|------|
+| `info` | `Server listening <host>:<port>` | The transport is bound. The wildcard IPv6 address is shown as `localhost`. |
+| `info` | `Received <signal>, initiating graceful shutdown...` | A signal arrived while `autoShutdown` is on. |
+| `warn` | `Shutdown timeout (<n>ms) exceeded` | Closing the transport did not finish within `shutdown.timeout`. |
+| `warn` | A transport warning | Bidirectional streaming over plain HTTP/1.1 with `transportValidation: "warn"`, or TLS that can negotiate HTTP/1.1; see [Transport matrix](/en/guide/production/transport-matrix). |
+| `warn` | `Shutdown hook "<name>" depends on "<missing>", ...` | A hook depends on a name no hook registered; see [Graceful Shutdown](/en/guide/server/graceful-shutdown#unregistered-dependency). |
+| `error` | `Error during graceful close:` | Closing the transport failed. The error object follows. |
+| `error` | `Unhandled error in a server lifecycle listener:` | A `stopping` or `stop` listener threw and nobody listens to `error`. The error object follows. |
+| `error` | `An 'error' listener threw:` | A listener of the `error` event itself threw. The error object follows. |
+
+Three rules apply to the option:
+
+- **It is checked when the server is created.** `createServer()` throws a `TypeError` for a value that is not an object, and for an object whose `info`, `warn` or `error` is not a function. The message names the method, for example `createServer: logger.warn must be a function, got undefined`.
+- **A failing logger cannot stop the server.** If a method throws, or returns a promise that rejects, the failure is dropped. It does not fail `start()` and does not skip a shutdown hook, because the server has nowhere else to report a message the logger could not take.
+- **It covers only the messages above.** Request logging is a separate concern, handled by the logger interceptor.
+
+A logger whose methods take their arguments in another order, for example an object first and the message second, needs a small wrapper that maps `(message, ...details)` onto its own signature.
+
 ## The shutdownSignal
 
-Every server exposes an `AbortSignal` via `server.shutdownSignal`. The signal is **aborted** right after the `stopping` event has been emitted: inside a `stopping` listener it is not yet aborted, so react to it with `signal.addEventListener('abort', …)` rather than by reading `signal.aborted` there. Use it to propagate cancellation to streaming RPCs, background workers, and long-running operations.
+Every server exposes an `AbortSignal` via `server.shutdownSignal`. The signal is **aborted** right after the `stopping` event has been emitted: inside a `stopping` listener it is not yet aborted, so react to it with `signal.addEventListener('abort', …)` rather than by reading `signal.aborted` there. Use it to propagate cancellation to streaming RPCs, background workers, and long-running operations. A server stream whose handler ignores the signal is cut by the framework and ends with `unavailable`, not with a normal end of stream (see [Server streams](/en/guide/server/graceful-shutdown#streams-on-stop)).
 
 ```typescript
 server.on('ready', () => {
@@ -162,6 +209,10 @@ server.on('ready', () => {
 
 server.on('stopping', () => {
   healthcheckManager.update(ServingStatus.NOT_SERVING);
+});
+
+server.on('error', (err) => {
+  console.error('Server error:', err);
 });
 
 await server.start();

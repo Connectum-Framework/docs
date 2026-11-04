@@ -4,7 +4,7 @@
 
 > **createProtoAuthzInterceptor**(`options?`): `Interceptor`
 
-Defined in: [packages/auth/src/proto/proto-authz-interceptor.ts:132](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/proto/proto-authz-interceptor.ts#L132)
+Defined in: [packages/auth/src/proto/proto-authz-interceptor.ts:138](https://github.com/Connectum-Framework/connectum/blob/main/packages/auth/src/proto/proto-authz-interceptor.ts#L138)
 
 Create a proto-based authorization interceptor.
 
@@ -19,7 +19,9 @@ Authorization decision flow:
 3.  Get auth context               -- lazy: don't throw yet
 3b. internal = true:               -- service-to-service (ADR-029)
       no context                   --> throw Unauthenticated
-      no requires                  --> allow (any trusted internal caller)
+      no requires                  --> allow when the context was established by
+                                       createInternalAuthInterceptor, else
+                                       throw Unauthenticated (untrusted)
       has requires                 --> fall through to step 4 (inclusive roles)
 4.  requires defined, no context   --> throw Unauthenticated
 4b. requires defined, has context  --> satisfiesRequirements? allow : deny
@@ -50,6 +52,11 @@ Proto authorization interceptor options
 `Interceptor`
 
 ConnectRPC interceptor
+
+## Throws
+
+When `defaultPolicy` or the `effect` of a rule is not exactly `"allow"` or `"deny"`,
+  or when the `methods` of a rule hold a pattern other than `"*"`, `"Service/*"` or `"Service/Method"`
 
 ## Examples
 

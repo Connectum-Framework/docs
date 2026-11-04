@@ -2,7 +2,7 @@
 
 # Interface: EventBus
 
-Defined in: [packages/events/src/types.ts:508](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L508)
+Defined in: [packages/events/src/types.ts:550](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L550)
 
 EventBus interface -- manages adapter, routes, and middleware
 
@@ -12,9 +12,10 @@ EventBus interface -- manages adapter, routes, and middleware
 
 > **publish**\<`Desc`\>(`schema`, `data`, `options?`): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:522](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L522)
+Defined in: [packages/events/src/types.ts:567](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L567)
 
-Publish a typed event
+Publish a typed event. `data` is `MessageInitShape` of the schema: a plain object
+(nested messages and oneofs included) or an already built message.
 
 #### Type Parameters
 
@@ -30,7 +31,7 @@ Publish a typed event
 
 ##### data
 
-`MessageShape`\<`Desc`\>
+`MessageInitShape`\<`Desc`\>
 
 ##### options?
 
@@ -46,7 +47,7 @@ Publish a typed event
 
 > **start**(`options?`): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:518](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L518)
+Defined in: [packages/events/src/types.ts:560](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L560)
 
 Start the event bus: connect adapter, set up subscriptions.
 
@@ -74,7 +75,7 @@ shutdown or per-event timeout will abort in-flight processing.
 
 > **stop**(): `Promise`\<`void`\>
 
-Defined in: [packages/events/src/types.ts:520](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L520)
+Defined in: [packages/events/src/types.ts:562](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L562)
 
 Stop the event bus: drain subscriptions, disconnect adapter
 

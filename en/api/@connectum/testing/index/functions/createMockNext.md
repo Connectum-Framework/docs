@@ -4,7 +4,7 @@
 
 > **createMockNext**(`options?`): `any`
 
-Defined in: test-fixtures/dist/index.d.ts:316
+Defined in: test-fixtures/dist/index.d.ts:353
 
 Create a mock `next` handler that resolves with a successful response.
 
@@ -18,6 +18,8 @@ inspect `next.mock.calls` and `next.mock.callCount()` after the test.
 [`MockNextOptions`](../interfaces/MockNextOptions.md)
 
 Optional overrides for the response payload and stream flag.
+  Every call resolves with its own deep copy of `message`, so editing one response
+  changes neither the next one nor the supplied object.
 
 ## Returns
 

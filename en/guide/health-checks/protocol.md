@@ -17,15 +17,36 @@ The `Healthcheck()` factory function accepts the following options:
 Healthcheck({
   httpEnabled: true,                              // Enable HTTP health endpoints
   httpPaths: ['/healthz', '/health', '/readyz'],  // HTTP endpoint paths
-  watchInterval: 500,                             // Watch polling interval (ms)
+  watchInterval: 500,                             // Watch re-check interval (ms)
   manager: customManager,                         // Custom manager instance
 })
 ```
 
 Use `httpEnabled` and `httpPaths` for platform endpoints, `watchInterval` for the
-stream polling cadence, and `manager` when a test or multi-server process must avoid
-the singleton. See [`HealthcheckOptions`](/en/api/@connectum/healthcheck/@connectum/healthcheck/types/interfaces/HealthcheckOptions)
+`Watch` re-check period (see [Health.Watch](#health-watch)), and `manager` when a test
+or multi-server process must avoid the singleton. See [`HealthcheckOptions`](/en/api/@connectum/healthcheck/@connectum/healthcheck/types/interfaces/HealthcheckOptions)
 for the exact field types and defaults.
+
+`Healthcheck()` checks its options when it is called and throws instead of starting a
+server that misbehaves later:
+
+| Option | Accepted | Otherwise |
+|--------|----------|-----------|
+| `options` | an object, or nothing | `TypeError` (`null`, an array, a string) |
+| `httpEnabled` | `true` or `false` | `TypeError` (`"yes"`, `1`, `null`) |
+| `watchInterval` | an integer from 1 to 2147483647 | `RangeError` for `0`, a fraction, `NaN`, a negative number, `Infinity` or a larger number; `TypeError` for a string or `null` |
+| `manager` | a `HealthcheckManager` | `TypeError` |
+| `httpPaths` | see [Custom Paths](#custom-paths) | `RangeError` or `TypeError` |
+
+An omitted option (or an explicit `undefined`) takes its default. One server answers
+`grpc.health.v1.Health` from one registration: a second `Healthcheck()` in `protocols`,
+or an application service that is already `grpc.health.v1.Health`, makes `start()`
+(and the first call made through `localClient()`) reject with an error naming the service. The check
+runs when the server builds its routes, not at `createServer()`. One `Healthcheck()`
+value can still be passed to several servers.
+
+If a configuration that used to start now throws, see
+[Healthcheck option checks](/en/migration/healthcheck-option-checks).
 
 ## The healthcheckManager Singleton
 
@@ -57,6 +78,10 @@ flowchart TD
     class Mgr accent
 ```
 
+::: warning One singleton serves one server
+Every `Healthcheck()` without `manager` uses this singleton, and each server's start re-initializes it with only that server's services. Start a second server in the same process and every service the second server does not mount leaves the registry, including the first server's own. The first server keeps running, but it answers `NOT_FOUND` for those services. The overall check (empty service name) is computed over the one shared registry, so it also follows the other server's statuses: it reports `NOT_SERVING` while any entry is not `SERVING`. Neither server logs a warning. Give each server its own manager, as shown in [Isolated Manager for Testing](#isolated-manager-for-testing).
+:::
+
 ### ServingStatus Values
 
 | Status | Value | Description |
@@ -73,12 +98,15 @@ flowchart TD
 | `update(status, service?)` | Update status. Without `service`, updates **all** registered entries (services and components). Throws on an unknown name. |
 | `register(component, initialStatus?)` | Register an application health component (default `UNKNOWN`). Re-registering preserves the current status. |
 | `set(component, status)` | Set a component's status (upsert: registers the component if absent). |
+| `subscribe(listener)` | Call `listener` (no arguments) after every change of the registry; returns a function that removes it. `Health.Watch` is built on this. A listener must not change the registry: calling `update`, `register`, `set`, `unregister`, `initialize` or `clear` from inside one throws, so every listener sees the state of the change that notified it. |
 | `unregister(component)` | Remove a registered component. |
 | `getStatus(service)` | Get status of a specific service or component. Returns `ServiceStatus \| undefined` (`undefined` for an unknown name — does not throw). |
 | `getAllStatuses()` | Get a Map of all service and component statuses |
 | `areAllHealthy()` | Check if all services and components report `SERVING` |
 | `initialize(serviceNames)` | Initialize the RPC service slice (called by the protocol's `setup`, before its first `register`; in-process transports do not re-run it, a retry after a failed route materialization does). Replaces only `service` entries; never touches components. |
 | `clear()` | Clear all services and components |
+
+`update()`, `register()` and `set()` accept only the four `ServingStatus` values above. A value of another type (a string such as `"SERVING"`, `null`, `undefined`) throws `TypeError`; a number outside 0 to 3 (a fraction, `NaN`, `99`) throws `RangeError`; a component or service name that is not a string throws `TypeError`. The registry is left as it was, so `Health.Check` and `Health.List` keep answering.
 
 ## gRPC Health Check Protocol
 
@@ -102,7 +130,9 @@ grpcurl -plaintext \
   localhost:5000 grpc.health.v1.Health/Check
 ```
 
-### Health.Watch
+A service the manager does not track answers `NOT_FOUND`. The message repeats at most the first 128 characters of the requested name, followed by `…` when the name was longer, so a request with a very long name cannot build an oversized response.
+
+### Health.Watch {#health-watch}
 
 Streams health status changes in real time:
 
@@ -112,16 +142,20 @@ grpcurl -plaintext localhost:5000 grpc.health.v1.Health/Watch
 
 Behavior follows the gRPC specification:
 - Immediately sends the current status
-- Sends updates only when the status changes
+- Sends one message for every change of the status, in the order the changes happened, and nothing while the status holds
 - For unknown services, sends `SERVICE_UNKNOWN` (does not terminate the call)
 - Terminates when the client disconnects
+
+Changes come from the manager's notifications (`subscribe()`), not from sampling. A change reaches the client as soon as it is made, and a status that goes `NOT_SERVING` and back to `SERVING` inside one `watchInterval` is delivered as two messages. For that reason a watcher also sees short intermediate states, for example `UNKNOWN` between a service being registered and its first `update()`. `watchInterval` (default 500 ms) is only the period of a re-check that also finds a state change the manager did not announce.
+
+A client that stops reading while its status keeps changing makes the server hold one pending message per change for that call; the messages are not dropped, because dropping them would hide transitions.
 
 ### Health.List
 
 `List` is part of the [gRPC health protocol](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto),
 alongside `Check` and `Watch`. It returns a snapshot of the tracked service statuses.
 
-Lists all tracked services with their statuses. Healthcheck tracks the services mounted before it in `protocols`; a service that is only declared — for example next to a mounted service in the same `.proto` file — is not tracked, and `Check` answers `NOT_FOUND` for it:
+Lists all tracked services with their statuses. Healthcheck tracks the services mounted before it in `protocols`, so the services of protocols listed after it (`Reflection()` among them) are not tracked. A service that is only declared — for example next to a mounted service in the same `.proto` file — is not tracked, and `Check` answers `NOT_FOUND` for it:
 
 ```bash
 grpcurl -plaintext localhost:5000 grpc.health.v1.Health/List
@@ -169,7 +203,7 @@ The `service` query parameter selects one service or component. The answer depen
 | Request | Response |
 |---------|----------|
 | No `service` parameter | Overall health; the body carries `"service": "overall"` |
-| `?service=` (empty value) | The overall status and HTTP code, as if the parameter were absent |
+| `?service=` (empty value) | The overall status and HTTP code, as if the parameter were absent; the body carries `"service": "overall"` |
 | `?service=<known name>` | The status of that service or component, with its name in the `service` field |
 | `?service=<unknown name>` | `404 Not Found`, status `SERVICE_UNKNOWN`, with the requested name in the `service` field |
 
@@ -195,6 +229,8 @@ A request matches a configured path only when the path is identical:
 - The comparison is exact and case-sensitive. `/healthz/` and `/Healthz` do not match `/healthz`; such a request is not handled by the health endpoint. To serve both forms, list both.
 - The query string is ignored when matching, so `/healthz?service=my.service.v1.MyService` matches `/healthz`.
 - The request method is not checked.
+
+`createHttpHealthHandler(manager, healthPaths)`, the exported factory behind the endpoint, applies the same rules to `healthPaths` (`RangeError` for `[]`, `TypeError` for a bad entry) and serves the default paths when the argument is omitted.
 
 If you passed `httpPaths: []` before 1.3, see [HTTP health options validation](/en/migration/healthcheck-http-options).
 
@@ -272,7 +308,7 @@ curl http://localhost:5000/healthz
 
 ## Isolated Manager for Testing
 
-Use `createHealthcheckManager()` to create isolated instances for tests or multi-server setups:
+Use `createHealthcheckManager()` to create isolated instances for tests or multi-server setups. A process that runs two servers must pass a separate manager to each `Healthcheck()`, or the second start removes the first server's services from the shared singleton (see [The healthcheckManager Singleton](#the-healthcheckmanager-singleton)):
 
 ::: runtime bun
 Import the runner from `bun:test` instead of `node:test` and run the file with `bun test`.

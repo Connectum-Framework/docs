@@ -13,6 +13,7 @@ Replaces the previous OTLPProvider singleton with explicit lifecycle control.
 - [ProviderOptions](interfaces/ProviderOptions.md)
 - [ResourceAttributeInputs](interfaces/ResourceAttributeInputs.md)
 - [ServiceNameInputs](interfaces/ServiceNameInputs.md)
+- [ShutdownProviderOptions](interfaces/ShutdownProviderOptions.md)
 
 ## Functions
 

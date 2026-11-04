@@ -2,7 +2,7 @@
 
 # Interface: ServiceNameInputs
 
-Defined in: [provider.ts:87](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L87)
+Defined in: [provider.ts:173](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L173)
 
 Inputs for [resolveServiceName](../functions/resolveServiceName.md).
 
@@ -12,7 +12,7 @@ Inputs for [resolveServiceName](../functions/resolveServiceName.md).
 
 > `optional` **env?**: `object`
 
-Defined in: [provider.ts:91](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L91)
+Defined in: [provider.ts:177](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L177)
 
 Environment source (defaults to `process.env`).
 
@@ -34,6 +34,6 @@ Environment source (defaults to `process.env`).
 
 > `optional` **explicit?**: `string`
 
-Defined in: [provider.ts:89](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L89)
+Defined in: [provider.ts:175](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L175)
 
 Name passed in code (`ProviderOptions.serviceName`).

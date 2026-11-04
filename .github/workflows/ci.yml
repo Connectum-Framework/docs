@@ -33,6 +33,66 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Test catalog learning model
+        run: pnpm catalog:test
+
+      - name: Test and typecheck service builder
+        run: |
+          pnpm builder:test
+          pnpm builder:typecheck
+
+      - name: Test overview boundaries and preserved guide content
+        run: pnpm guide:test
+
+      - name: Check homepage walkthroughs and generation
+        run: |
+          pnpm homepage:generate
+          git diff --exit-code -- .vitepress/homepage/native.json .vitepress/homepage/provenance.json
+          pnpm homepage:test
+          pnpm homepage:typecheck
+
+      - name: Test homepage HTTP/2 fixture
+        run: |
+          pnpm --dir .vitepress/homepage/example install --frozen-lockfile
+          pnpm --dir .vitepress/homepage/example generate
+          pnpm --dir .vitepress/homepage/example typecheck
+          pnpm --dir .vitepress/homepage/example test
+
+      - name: Check validation descriptor generation
+        run: |
+          pnpm validation:generate
+          git diff --exit-code -- .vitepress/validation/gen
+
+      - name: Typecheck validation showcase
+        run: pnpm validation:typecheck
+
+      - name: Check interceptor descriptor generation and types
+        run: |
+          pnpm interceptors:generate
+          git diff --exit-code -- .vitepress/interceptors/gen
+          pnpm interceptors:typecheck
+
+      - name: Check OpenAPI descriptors and showcase types
+        run: |
+          pnpm openapi:generate
+          pnpm openapi:reader
+          git diff --exit-code -- .vitepress/openapi/gen .vitepress/openapi/generated
+          pnpm openapi:typecheck
+
+      - name: Test interceptor HTTP parity
+        run: |
+          pnpm --dir .vitepress/interceptors/example install --frozen-lockfile
+          pnpm --dir .vitepress/interceptors/example generate
+          pnpm --dir .vitepress/interceptors/example typecheck
+          pnpm --dir .vitepress/interceptors/example test
+
+      - name: Test validation RPC parity
+        run: |
+          pnpm --dir .vitepress/validation/example install --frozen-lockfile
+          pnpm --dir .vitepress/validation/example generate
+          pnpm --dir .vitepress/validation/example typecheck
+          pnpm --dir .vitepress/validation/example test
+
       - name: Build VitePress
         run: pnpm docs:build
 

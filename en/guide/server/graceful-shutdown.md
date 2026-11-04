@@ -32,8 +32,15 @@ server.on('stopping', () => {
   healthcheckManager.update(ServingStatus.NOT_SERVING);
 });
 
+server.on('error', (err) => {
+  console.error('Server error:', err);
+});
+
 await server.start();
 ```
+
+The error listener makes signal-triggered shutdown failures visible; exit-code
+policy belongs to your application.
 
 ## Shutdown Options
 
@@ -57,15 +64,17 @@ interface ShutdownOptions {
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `timeout` | `30000` | Maximum time (ms) to wait for in-flight requests |
+| `timeout` | `30000` | Maximum time (ms) to wait for in-flight requests. Bounds the connection drain only, not the [shutdown hooks](#hooks-after-the-timeout) |
 | `signals` | `['SIGTERM', 'SIGINT']` | OS signals that trigger shutdown |
-| `autoShutdown` | `false` | Automatically install signal handlers |
+| `autoShutdown` | `false` | Automatically install signal handlers when `start()` begins ([signals during startup](#stop-during-start)) |
 | `forceCloseOnTimeout` | `true` | Destroy every remaining client connection (HTTP/1.1, h2c, TLS) if the timeout is exceeded |
 
-`createServer()` validates both values and throws instead of starting a server that would cut connections at once:
+`createServer()` validates the shutdown options and throws instead of starting a server that would cut connections at once or never handle the signal:
 
 - `timeout` must be an integer from `0` to `2147483647` (the largest delay a Node.js timer accepts). `0` means "do not wait for in-flight requests". A number outside that range (`NaN`, `Infinity`, a negative or fractional number, a larger value) throws a `RangeError`; a value that is not a number throws a `TypeError`.
 - `forceCloseOnTimeout` must be a boolean; anything else throws a `TypeError`.
+- `autoShutdown` must be a boolean; anything else (the string `"yes"`, for example) throws a `TypeError`.
+- `signals` must be a non-empty array of signal names the platform knows, such as `'SIGTERM'` or `'SIGUSR2'`. An empty list, a string in place of an array, an unknown or lowercase name, and `SIGKILL` and `SIGSTOP` (a process cannot handle them) throw a `TypeError` or `RangeError` that names `shutdown.signals`, and the signal when one is unknown. The check also runs while `autoShutdown` is off. Without it, such a value left no handler installed, and `SIGTERM` ended the process without running the shutdown hooks.
 
 Both error messages name the option and the rejected value, in the same form as the [`readMaxBytes`](/en/guide/security/request-admission) check. Leaving an option out, or setting it to `undefined`, keeps the default.
 
@@ -87,13 +96,29 @@ When `server.stop()` is called (or a signal is received with `autoShutdown: true
 
 Steps 6 and 7 run even if closing the transport fails before the timeout, so your hooks always get to release their resources, and step 7 also runs if a hook fails. On this failure path the server emits `error` and then still emits `stop`, and `stop()` rejects with the error that occurred — or with an `AggregateError` carrying both when the transport close and a hook both failed. A close failure that only arrives after the timeout has already won is logged, not thrown: if the hooks succeed, `stop()` resolves normally.
 
-When a hook fails, `stop()` rejects with the first failure. Hooks that do not depend on the failed one and have already started keep running, but `stop()` does not wait for them; hooks that depend on the failed one do not run at all. Only the first failure is reported. Keep hooks independent and let each one catch and log its own errors if the others must finish before `stop` is emitted.
+A failing hook does not stop the others. Every hook runs and `stop()` waits for all of them before it emits `stop` and settles, because each hook releases a resource of its own and one failure says nothing about whether the rest can still succeed. A hook that depends on a failed hook runs once the failed one has finished. `stop()` then rejects with the failure itself when one hook failed, or with an `AggregateError` of all failures in registration order when several did (when the transport close failed as well, the `AggregateError` carries the close error and the hooks' error). A hook that never settles keeps `stop()` waiting, as it always has, so give hooks that talk to the network their own timeout.
+
+### Server streams {#streams-on-stop}
+
+A server stream whose handler is still sending when step 2 aborts the signal is ended by the framework. The client receives the messages already sent and then an error:
+
+| How the stream ends | What the client sees |
+|---|---|
+| The handler ignores `ctx.signal` and `stop()` cuts the stream | `unavailable` ("the server is shutting down"), over Connect, gRPC and in-process alike |
+| A deadline expires while the stream is sending | `deadline_exceeded` |
+| The client aborts the call | `canceled` |
+| The handler returns by itself after it sees the abort | A normal end: that is the handler's decision |
+| The handler converts the abort reason itself, for example `throw ConnectError.from(ctx.signal.reason)` | The error the handler raised: `canceled` |
+
+A normal end of stream means "the list is complete" to a client, so a stream the server had to cut must not look like one. `unavailable` tells a client that the call can be retried against another instance. Upgrading from 1.2, where such a stream ended without an error: see [Streams cut by stop()](/en/migration/shutdown-stream-cut).
 
 ### In-process calls
 
-The upcoming 1.3.0 release adds in-process cancellation to step 2. **This release is not yet published to npm.** In its current-main implementation, `context.signal` is aborted for calls made through `server.localClient()`, `server.client()` for a local service, `createLocalTransport()`, and `ctx.call` / `ctx.stream` to a local service; every hop of a local `ctx.call` chain sees it directly. A handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP.
+Since 1.3.0, step 2 also covers in-process calls: `context.signal` is aborted for calls made through `server.localClient()`, `server.client()` for a local service, `createLocalTransport()`, and `ctx.call` / `ctx.stream` to a local service; every hop of a local `ctx.call` chain sees it directly. A handler or stream that rethrows the abort ends the call with `canceled`, as over HTTP, and an in-process stream whose handler ignores the signal is cut with `unavailable` exactly like an HTTP one (see [Server streams](#streams-on-stop)).
 
-Steps 4 and 5 act on connections, and an in-process call has none: `stop()` neither waits for it nor destroys it, so a handler that ignores the signal keeps running and still completes its call. A local call made after `stop()` starts with an already-aborted signal. Upgrading from 1.2: see [In-process calls on shutdown](/en/migration/in-process-shutdown).
+Steps 4 and 5 act on connections, and an in-process call has none: `stop()` neither waits for it nor destroys it, so a handler that ignores the signal keeps running and still completes its call. A unary or client-streaming call made after `stop()` starts with an already-aborted signal and runs. A server-streaming or bidirectional call made after `stop()` has begun, from a shutdown hook for example, cannot be served: its first read fails with `unavailable` and the handler body does not start, so a hook never mistakes an empty list for a real answer.
+
+A client-streaming or bidirectional handler that is waiting for the next request message is released when the caller cancels the call (its `AbortSignal` or a deadline): its `for await` over the requests ends and its `finally` runs, as over HTTP/2. `stop()` does not do that. It does not end an in-process call, so an upload that is still being sent keeps being read and the call completes, as it does over HTTP/2 within the shutdown timeout. Upgrading from 1.2: see [In-process calls on shutdown](/en/migration/in-process-shutdown).
 
 ### EventBus
 
@@ -108,6 +133,12 @@ to the broker instead of starting a handler with an aborted `ctx.signal`. Handle
 that are already running finish, may publish through `ctx.publish`, and are drained by
 the hook as before. Since 1.3.0; see
 [Event bus stops receiving at the shutdown signal](/en/migration/events-reception-on-shutdown).
+
+Closing a subscription can take time of its own. A Kafka consumer finishes stopping only
+when the fetch request it has open returns, which takes up to five seconds for an idle
+consumer; the consumers of a bus stop together, so the bus waits for the slowest one. Count
+it into the time the `eventbus` hook adds. See
+[Stopping a consumer](/en/guide/events/adapters#kafka-stop-time).
 
 ## Shutdown Hooks
 
@@ -172,13 +203,41 @@ flowchart LR
 ```
 
 ::: warning Cycle detection
-The shutdown manager detects dependency cycles at registration time and throws an error:
+The shutdown manager detects dependency cycles at registration time. The call that closes the cycle throws and is not registered:
 
 ```typescript
-server.onShutdown('a', ['b'], () => {});
-server.onShutdown('b', ['a'], () => {}); // Throws: dependency cycle detected
+server.onShutdown('a', ['b'], () => {}); // Accepted: 'b' is not registered yet
+server.onShutdown('b', ['a'], () => {});
+// Throws: Adding shutdown handler "b" would create a dependency cycle
 ```
 :::
+
+::: warning Argument checks
+A call that matches none of the three forms -- `onShutdown(handler)`, `onShutdown(name, handler)`, `onShutdown(name, dependencies[], handler)` -- throws a `TypeError` that starts with `onShutdown(` at registration. That covers a missing hook function, a module name that is not a string, dependencies that are not an array of strings, and a single name passed where the array belongs (`onShutdown('x', 'db', fn)`).
+
+A dependency on a name that no hook registers is **not** an error: hooks may be registered in any order, so the name may be registered later. If it never is, the dependency is satisfied at once and the server logs a warning when it stops; see [Dependency on an unregistered name](#unregistered-dependency).
+:::
+
+### Dependency on an unregistered name {#unregistered-dependency}
+
+A dependency on a name that no hook registered is not an error. Hooks can be added in any order, so the names are checked once, when the server stops. The hook that names a missing dependency still runs, and it runs at once because there is nothing to wait for. A misspelled name silently loses the ordering you meant, so the server reports it:
+
+```typescript
+server.onShutdown('api', ['db'], async () => {
+  await api.drain();
+});
+// No hook named 'db' is ever registered.
+```
+
+When the server stops, the logger receives one warning:
+
+```text
+Shutdown hook "api" depends on "db", but no shutdown hook is registered under that name, so there is nothing to wait for. Check the name passed to onShutdown().
+```
+
+- **One warning per missing name.** If several hooks depend on the same missing name, a single warning lists them: `Shutdown hooks "a", "b" depend on "db", ...`. Each different missing name gets its own warning.
+- **A later registration is fine.** A dependency registered after the hook that names it gives no warning, as long as it is registered before the hooks run. The ordering then applies as usual.
+- **The warning goes to the server logger.** That is `console.warn` unless you pass [`logger`](/en/guide/server/lifecycle#server-log-messages) to `createServer()`.
 
 ### Multiple Handlers per Module
 
@@ -211,9 +270,41 @@ const server = createServer({
   },
 });
 
+server.on('error', (err) => {
+  console.error('Server error:', err);
+});
+
 await server.start();
 // Server stops cleanly on SIGTERM or SIGINT (Ctrl+C)
 ```
+
+The signal handlers are installed when `start()` begins and removed when the server stops or its start fails. All servers in a process share one process listener per signal, so a process (or a test suite) that hosts eleven or more servers with `autoShutdown` does not trigger Node.js's `MaxListenersExceededWarning`; each server still reacts to the signal on its own. See [Signals during startup](#stop-during-start) for what happens when the signal arrives before `start()` has finished.
+
+#### Repeated signals {#repeated-signals}
+
+The first `SIGTERM` or `SIGINT` starts the graceful shutdown. A second signal that
+arrives while the server is still stopping **ends the process at once**, in the middle
+of the shutdown hooks, with the same result as Node.js gives a process that has no
+handler for the signal (the process is terminated by that signal). This is deliberate:
+it is how an operator ends a shutdown that hangs, for example on a hook that never
+settles (see [Hooks run after the timeout](#hooks-after-the-timeout)) — a second
+Ctrl-C in a terminal, or `kill` again.
+
+The server logs a warning before it does so:
+
+```text
+Received SIGTERM again while the server is shutting down; the process is terminated now, without waiting for the remaining shutdown hooks
+```
+
+The hooks that have not finished are cut short, and the `stop` event is not emitted.
+Plan for this when a hook releases something that must not be left half-done.
+
+If your application registers its own `process.on('SIGTERM', ...)` listener (a
+`process.once` listener is not counted once it has run, because Node.js removes it
+before calling it), or another server in the same process is running, the process is
+not terminated: the listener
+receives the signal, and the warning says that other listeners handle it. A signal
+that arrives after `stop()` has completed is not handled by the server at all.
 
 ### Manual Shutdown
 
@@ -253,9 +344,11 @@ from your own code:
   and settle with its outcome, also when it fails.
 - A call after the server has stopped resolves immediately. It does not run the
   shutdown hooks again and emits no events.
-- A call on a server that was never started, or is still starting, rejects: that is a
-  lifecycle mistake, not a repeat. A rejected `stop()` before `start()` leaves the
-  server in the `created` state.
+- A call on a server that was never started rejects: that is a lifecycle mistake, not
+  a repeat. A rejected `stop()` before `start()` leaves the server in the `created`
+  state.
+- A call while `start()` is still in progress is honoured, see
+  [Stop and signals during startup](#stop-during-start).
 - `server.onShutdown()` on a server that has already stopped throws, because the hook
   could never run.
 
@@ -268,6 +361,17 @@ await Promise.all([
 
 await server.stop(); // already stopped: resolves, does nothing
 ```
+
+### Stop and signals during startup {#stop-during-start}
+
+Starting is the slowest phase when an `eventBus` connects to a broker, and a termination request is the one request an operator cannot repeat: Kubernetes sends `SIGTERM` once and follows with `SIGKILL` after the grace period. A request that arrives while `start()` is still in progress is therefore honoured, not dropped:
+
+- `server.stop()` waits for the start to settle and then stops the server, so the sequence is `start`, `ready`, `stopping`, `stop`; the event bus and the shutdown hooks run as usual. `start()` resolves first, and the server is already `stopping` when the caller of `start()` resumes.
+- Several `stop()` calls made during startup all settle with the outcome of that one stop.
+- If the start fails, `start()` rejects as before and the pending `stop()` resolves, because the server is already stopped and there is nothing left to stop.
+- With `autoShutdown`, the signal handlers exist from the moment `start()` begins, so a `SIGTERM` or `SIGINT` during startup follows the same path. Before 1.3 the handlers appeared only after the port was bound, and a signal during a slow startup ended the process with the default signal action (exit code 143 for `SIGTERM`) without running hooks or stopping the event bus.
+
+The request waits for the start to settle. A `start()` that never settles (a broker connection without a timeout) keeps the stop pending as well, so give a startup step that can hang its own timeout. The process stays killable meanwhile: with `autoShutdown`, the first signal during the start releases the framework's signal handlers, so a second `SIGTERM` or `SIGINT` gets the default action and ends the process, the same as a repeated signal while a running server is stopping. A manual `stop()` has no such escape; end the process yourself if the start does not settle.
 
 ## Kubernetes Integration
 
@@ -340,6 +444,36 @@ the maximum time your hooks can take, and a safety margin:
 `shutdown.timeout` bounds the connection-drain phase; it does not bound shutdown hooks.
 Keep hooks bounded so Kubernetes does not SIGKILL the process before they finish.
 :::
+
+### Hooks run after the timeout {#hooks-after-the-timeout}
+
+`shutdown.timeout` limits the connection drain. It does not limit shutdown hooks:
+`stop()` waits for every hook, and a hook that never settles (a database client that
+does not close, a broker that does not answer) keeps `stop()` pending. Under
+Kubernetes the pod then runs until the grace period ends and the process is killed
+with `SIGKILL`.
+
+The server does not cut hooks off, so a hang is made visible instead. When the
+timeout has elapsed and hooks are still running, the server writes **one** warning to
+its `logger` (the `logger` option of `createServer()`, `console` by default) naming the hooks that have not finished
+and the time since shutdown began:
+
+```text
+Shutdown timeout (30000ms) has elapsed and shutdown hooks are still running after 30004ms: broker. The timeout does not bound shutdown hooks, so stop() keeps waiting for them. Make sure each hook settles, or the orchestrator will kill the process.
+```
+
+- Only hooks that are executing are named. A hook that waits for a dependency is not
+  listed, so the list points at the hook that is stuck rather than at the ones queued
+  behind it.
+- A hook registered without a name appears as `anonymous hook #N`, N being its
+  registration order starting from 0. Give hooks names to make this line readable.
+- If the connection drain itself used up the timeout, hooks get the same budget again
+  from their own start before the warning appears, so a quick hook after a drain
+  timeout produces no warning.
+- Nothing about the shutdown changes: the warning appears once and `stop()` keeps
+  waiting. To end a shutdown that hangs, send the signal again (see
+  [Repeated signals](#repeated-signals)) or bound the hook in your own code with a
+  deadline of your choice.
 
 ## Timeout and Force Close Behavior
 

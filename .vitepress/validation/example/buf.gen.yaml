@@ -1,0 +1,9 @@
+version: v2
+plugins:
+  - local: protoc-gen-es
+    out: gen
+    include_imports: true
+    opt:
+      - target=ts
+      - import_extension=.ts
+      - erasable_syntax=true

@@ -5,7 +5,8 @@
 Proxy-based object wrapper for OpenTelemetry tracing
 
 Wraps all methods of an object in OTel spans using ES6 Proxy.
-Does NOT mutate the original object or its prototype.
+Does NOT mutate the original object or its prototype (see [traceAll](functions/traceAll.md) for the
+one exception).
 
 ## Functions
 

@@ -4,7 +4,7 @@
 
 > **createMockDescMessage**(`typeName`, `options?`): [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: test-fixtures/dist/index.d.ts:251
+Defined in: test-fixtures/dist/index.d.ts:284
 
 Create a mock [DescMessage](https://protobufes.com/reference/reflection/descriptors/#types) descriptor with all required structural
 properties.
@@ -55,6 +55,16 @@ A mock `DescMessage` object.
 ## Throws
 
 Error when two fields share the same field number.
+
+## Throws
+
+TypeError when a field `type` is not a protobuf scalar type name, as in
+  [createMockDescField](createMockDescField.md).
+
+## Throws
+
+RangeError when a field number is not allowed, as in [createMockDescField](createMockDescField.md)
+  (this includes a number continued automatically past 18999).
 
 ## Example
 

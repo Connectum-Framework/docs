@@ -37,13 +37,98 @@ Contributor workflow pages are a separate audience. They describe how to work on
 Connectum itself and use the repository's supported Node.js and pnpm toolchain,
 not consumer-facing runtime or package-manager choices.
 
+## Overview-first Guides
+
+The first page of each Guide sidebar topic teaches one idea before asking the
+reader to configure it. Keep its opening understandable without following an
+API reference, expanding a disclosure or watching an animation.
+
+- Start with a concrete problem and a small mental model. Use a short, labelled
+  visual and, where useful, one code excerpt. Say which imports, generated
+  descriptors or surrounding setup an excerpt assumes.
+- Keep the initial reading path short. Move full setup sequences, exhaustive
+  options, matrices, failure behavior and limitations to a focused page one
+  navigation level deeper. Do not delete technical material to shorten the entry.
+- Link deeper by intent: “Run the example”, “Configure the resolver”, or “Read
+  the complete matrix”. Add that destination beneath the overview in the sidebar.
+- Use the same domain example where concepts meet: Orders asks Inventory for
+  stock. Distinguish an illustration from a live RPC and provide an executable
+  counterpart for a claimed runtime result.
+- Preserve prior fragment URLs. `GuideSections` renders a native disclosure
+  from `.vitepress/guide/sections.json`, with an anchored link to each preserved
+  section. It works without JavaScript; hydration also opens a targeted section.
+  Keep those destinations and IDs synchronized when moving or renaming content.
+
+The first-service entry is an overview; its complete manual tutorial lives at
+[Build your first service step by step](/en/guide/quickstart-manual).
+Compatibility overviews explain the choice; the canonical exact tables live at
+[Runtime requirements and coverage](/en/guide/runtime-compatibility-details) and
+[Transport support and measurements](/en/guide/production/transport-matrix-details).
+
+Choose a visual mechanism for the explanation, not a universal animation with
+different labels. The service catalog uses `CatalogAssembly`: contract files,
+generation boundaries, package delivery and merging. The resolver walkthrough
+shows routing. Share colors, accessibility and motion controls, not choreography.
+
+Do not animate an ordered list of cards with a moving highlight or a repeated
+caption. Prefer a static diagram that exposes the relationship: a dependency
+graph, a composition boundary or a request/response sequence. For a section root,
+cover its subsections and their relationships before focusing on one request.
+Keep implementation details on the focused pages.
+
+Guide roots embed authored, static SVG from self-contained HTML sources through
+`GuideOverview`. The overview must be visible without JavaScript. Regenerate the
+sources and embeds with `node scripts/guide-diagrams.mjs`; models live under
+`scripts/guide-diagrams/`. Choose a layout for the subject and share only the
+low-level drawing primitives and the approved Connectum skin. Keep the accepted
+Server composition separate from its configuration/lifecycle overview.
+
+Other technical diagrams can use the shared Mermaid theme. Both mechanisms need
+a readable caption; neither should introduce a page-local palette.
+Keep authored diagrams at their native width in a local scroll frame on phones.
+Release that minimum width and clipping for print. Do not inflate a narrow graph
+or return to a universal card model.
+
+For a genuinely causal animation, never move, hide or type the page's explanatory
+text and code. Provide pause/resume and a native transcript; persist the reader's
+pause choice across navigation. Pause offscreen/hidden work, keep reduced motion
+static and clean up on navigation. Explicitly distinguish illustrations from
+live execution. Captions and complete explanations remain readable without JS.
+
+Start each code/result showcase with a successful scenario. Place it first in
+the controls and select it by default, including without JavaScript and after
+route navigation. Failure scenarios follow the successful call.
+
+Use shared styling and lifecycle practices; do not duplicate timers per page.
+Verify motion and pause behavior in a real browser, not only by checking that
+keyframes exist. Keep the existing resolver walkthrough for its routing scenes.
+Branching flows, runtime internals and complex relationships deeper in the Guide
+still use the diagram rules below.
+
+Catalogs describe **known contracts**; they do not discover running services.
+Resolvers select remote transports; reflection exposes schemas at a known
+server address. Do not use “service discovery” as if those were the same job.
+
 ## Prose and README guidance
+
+- Put source examples, executable statements and configuration objects in fenced
+  code blocks with an explicit language. Use VitePress's native highlighting,
+  language label, line numbers and copy control. Inline code is for identifiers,
+  option names and file paths, not complete configuration or call examples.
+- Vue-rendered examples follow the same rule: render a fenced block through the
+  Markdown renderer at build time. Do not interpolate plain text into handwritten
+  `pre`/`code` elements or replace syntax highlighting with a single code color.
+  Check the actual tokens in both themes, including collapsed details and no-JS.
 
 - Start with the reader's task or the result the page explains. Prefer concrete verbs and
   short sentences over greetings, filler, and claims such as “production-ready” or
   “industry-leading” unless the page defines evidence for them.
 - State technical claims at the level supported by their source. Link to the canonical
   guide or generated API for full behavior instead of repeating a second explanation.
+- Keep package and tool versions out of explanatory prose and demo labels. Pin
+  reproducible inputs in manifests, lockfiles and generated provenance. Include a
+  version in prose only when it defines a compatibility requirement or migration;
+  keep required version fields in actual protocol documents and executable examples.
 - A repository README identifies that repository, gives the commands needed to start or
   validate its work, and links to the canonical user documentation. Keep task-specific
   operational instructions where maintainers need them; do not duplicate a guide or an
@@ -228,8 +313,8 @@ When information could appear in several places, these locations win:
 | Information | Canonical owner | Other pages may contain |
 |---|---|---|
 | Function signatures, option fields, exported types, defaults | Generated API reference | A task-essential subset plus a direct API link |
-| Node.js/Bun support and known runtime limitations | [Runtime Compatibility](/en/guide/runtime-compatibility) | A one-line prerequisite and canonical link |
-| Request/response versus events choice | [Choosing a Communication Mechanism](/en/guide/service-communication/choosing-a-mechanism) | A contextual recommendation and link |
+| Node.js/Bun support and known runtime limitations | [Runtime requirements and coverage](/en/guide/runtime-compatibility-details) | A one-line prerequisite and canonical link |
+| Request/response versus events trade-offs | [Mechanism examples and failure behavior](/en/guide/service-communication/mechanisms) | A contextual recommendation and link |
 | Broker comparison | [Event Adapters](/en/guide/events/adapters) | Adapter-specific setup only |
 | Package installation and orientation | Package hub | A command required by the current task |
 | Required upgrade actions | [Migration](/en/migration/) | A release-note link to the migration |
@@ -258,7 +343,8 @@ one; link to the package API index only when several symbols are equally relevan
 
 - Add `title`, `description`, and `docType` frontmatter to hand-written pages.
 - Use one H1. Keep headings descriptive and preserve established anchors during
-  rewrites; add explicit `{#legacy-anchor}` headings when compatibility requires it.
+  rewrites; use explicit `{#legacy-anchor}` headings or an anchored compatibility
+  disclosure when material moves deeper.
 - Use root-relative internal links beginning with `/en/`, without `.md`.
 - Put every user-facing page in a logical sidebar group, unless it is a documented
   compatibility page intentionally excluded from navigation.

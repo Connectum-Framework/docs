@@ -12,6 +12,7 @@ Public API types for Server
 - [ProtocolRegistration](interfaces/ProtocolRegistration.md)
 - [Server](interfaces/Server.md)
 - [ServerClientOptions](interfaces/ServerClientOptions.md)
+- [ServerLogger](interfaces/ServerLogger.md)
 - [ShutdownOptions](interfaces/ShutdownOptions.md)
 - [TLSOptions](interfaces/TLSOptions.md)
 

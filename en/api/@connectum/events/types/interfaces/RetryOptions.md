@@ -2,7 +2,7 @@
 
 # Interface: RetryOptions
 
-Defined in: [packages/events/src/types.ts:304](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L304)
+Defined in: [packages/events/src/types.ts:308](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L308)
 
 Retry middleware options
 
@@ -12,9 +12,10 @@ Retry middleware options
 
 > `optional` **backoff?**: `"fixed"` \| `"exponential"` \| `"linear"`
 
-Defined in: [packages/events/src/types.ts:312](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L312)
+Defined in: [packages/events/src/types.ts:319](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L319)
 
-Backoff strategy
+Backoff strategy (default: `"exponential"`). Any other name throws a `RangeError` from
+`retryMiddleware`, and a non-string a `TypeError`; an unknown name used to behave as `"fixed"`.
 
 ***
 
@@ -22,9 +23,11 @@ Backoff strategy
 
 > `optional` **initialDelay?**: `number`
 
-Defined in: [packages/events/src/types.ts:314](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L314)
+Defined in: [packages/events/src/types.ts:325](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L325)
 
-Initial delay in ms (default: 1000)
+Initial delay in ms (default: 1000): a finite number from 0 to 2147483647 (the longest delay
+a timer keeps). `NaN`, a negative number, `Infinity`, a larger number or a non-number throws
+when the middleware is created.
 
 ***
 
@@ -32,9 +35,11 @@ Initial delay in ms (default: 1000)
 
 > `optional` **maxDelay?**: `number`
 
-Defined in: [packages/events/src/types.ts:316](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L316)
+Defined in: [packages/events/src/types.ts:331](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L331)
 
-Maximum delay in ms (default: 30000)
+Maximum delay in ms (default: 30000): a finite number from 1 to 2147483647. Every pause is
+capped at it, so `0` or a negative value (which would remove the pause), `NaN`, `Infinity`
+and a non-number throw when the middleware is created.
 
 ***
 
@@ -42,7 +47,7 @@ Maximum delay in ms (default: 30000)
 
 > `optional` **maxRetries?**: `number`
 
-Defined in: [packages/events/src/types.ts:310](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L310)
+Defined in: [packages/events/src/types.ts:314](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L314)
 
 Maximum number of retries after the first attempt: an integer of at least 0 (default: 3).
 `0` runs the handler once. Any other value (negative, fractional, `NaN`, infinite) makes
@@ -54,9 +59,10 @@ Maximum number of retries after the first attempt: an integer of at least 0 (def
 
 > `optional` **multiplier?**: `number`
 
-Defined in: [packages/events/src/types.ts:318](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L318)
+Defined in: [packages/events/src/types.ts:336](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L336)
 
-Multiplier for exponential backoff (default: 2)
+Multiplier for exponential backoff (default: 2): a finite number of at least 1. A smaller
+number (`0` included), `NaN`, `Infinity` and a non-number throw when the middleware is created.
 
 ***
 
@@ -64,7 +70,7 @@ Multiplier for exponential backoff (default: 2)
 
 > `optional` **retryableErrors?**: (`error`) => `boolean`
 
-Defined in: [packages/events/src/types.ts:320](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L320)
+Defined in: [packages/events/src/types.ts:338](https://github.com/Connectum-Framework/connectum/blob/main/packages/events/src/types.ts#L338)
 
 Filter: only retry for these error types
 

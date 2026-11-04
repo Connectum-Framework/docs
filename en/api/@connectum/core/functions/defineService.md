@@ -4,9 +4,14 @@
 
 > **defineService**\<`S`\>(`descriptor`, `handlers`, `options?`): [`ServiceDefinition`](../interfaces/ServiceDefinition.md)
 
-Defined in: [packages/core/src/defineService.ts:75](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L75)
+Defined in: [packages/core/src/defineService.ts:81](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/defineService.ts#L81)
 
 Define a service from its descriptor and handler map.
+
+`handlers` must be an object whose present members are functions (a method
+left out answers `unimplemented`); anything else throws a `TypeError` naming
+the service. Two definitions for one service type name are rejected by
+`createServer()` and `addService()`.
 
 Pass [ServiceOptions](../type-aliases/ServiceOptions.md) to set per-service handler options, e.g.
 interceptors applied to every method of this service:

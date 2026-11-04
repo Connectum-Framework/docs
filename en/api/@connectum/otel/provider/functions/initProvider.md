@@ -4,7 +4,7 @@
 
 > **initProvider**(`options?`): `void`
 
-Defined in: [provider.ts:483](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L483)
+Defined in: [provider.ts:593](https://github.com/Connectum-Framework/connectum/blob/main/packages/otel/src/provider.ts#L593)
 
 Initialize the OpenTelemetry provider with explicit options.
 
@@ -24,3 +24,9 @@ Optional provider configuration overrides
 ## Returns
 
 `void`
+
+## Throws
+
+TypeError when `options.settings` names a signal or an exporter that
+does not exist. The check runs before anything is created, also when a provider
+already exists and the options would otherwise be ignored.

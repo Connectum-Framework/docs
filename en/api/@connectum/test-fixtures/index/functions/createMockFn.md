@@ -4,7 +4,7 @@
 
 > **createMockFn**\<`F`\>(`impl`): [`MockFn`](../interfaces/MockFn.md)\<`F`\>
 
-Defined in: [mock-compat.ts:54](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-compat.ts#L54)
+Defined in: [mock-compat.ts:68](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/mock-compat.ts#L68)
 
 Create a portable mock function that wraps `impl` and records every call.
 

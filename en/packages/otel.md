@@ -17,13 +17,18 @@ npm install @connectum/otel
 ~~~
 == pnpm
 ~~~bash
-pnpm add @connectum/otel
+# pnpm 11 and later: decline the build script of protobufjs, a transitive dependency of the
+# OTLP gRPC exporters. Without the flag the install ends with ERR_PNPM_IGNORED_BUILDS (exit code 1).
+pnpm add --allow-build='!protobufjs' @connectum/otel
 ~~~
 == bun
 ~~~bash
 bun add @connectum/otel
 ~~~
 :::
+
+OpenTelemetry APIs, SDKs and exporters are regular dependencies; `@opentelemetry/api` stays on
+`>=1.9.0 <1.10.0`, the range that the SDK packages used here accept.
 
 **Peer dependencies:** `@bufbuild/protobuf` `^2.16.0` and `@connectrpc/connect` `^2.2.0`,
 shared with your application. npm 7+, pnpm and Bun install missing peers automatically — see
@@ -53,6 +58,7 @@ could create a second provider that competed for OpenTelemetry's global registra
 | `getProvider` / `OtelProvider` | Get the shared provider (`tracer`, `meter`, `logger`, `shutdown()`) and name its type; see [Provider management](/en/guide/observability/backends#provider-management). |
 | `createOtelInterceptor` | Instrument inbound RPCs. |
 | `createOtelClientInterceptor` | Instrument outbound RPCs and propagate context. |
+| `traced` / `traceAll` | Wrap functions or all methods of an object in spans; see [When the span ends](/en/guide/observability/tracing#when-the-span-ends) for promises, generators, and query builders. |
 
 ## Learn / Configure / API Reference {#api-reference}
 

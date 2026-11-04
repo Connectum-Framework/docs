@@ -4,7 +4,7 @@
 
 > **fetchReflectionData**(`url`, `options?`): `Promise`\<[`ReflectionResult`](../interfaces/ReflectionResult.md)\>
 
-Defined in: [utils/reflection.ts:275](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/utils/reflection.ts#L275)
+Defined in: [utils/reflection.ts:277](https://github.com/Connectum-Framework/connectum/blob/main/packages/cli/src/utils/reflection.ts#L277)
 
 Fetch service and file descriptor information from a running server via reflection.
 

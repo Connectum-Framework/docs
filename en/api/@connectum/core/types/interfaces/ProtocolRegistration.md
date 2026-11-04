@@ -2,7 +2,7 @@
 
 # Interface: ProtocolRegistration
 
-Defined in: [packages/core/src/types.ts:119](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L119)
+Defined in: [packages/core/src/types.ts:139](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L139)
 
 Protocol registration interface
 
@@ -14,11 +14,11 @@ the HTTP adapter, one per in-process transport (`server.localClient`,
 `ctx.call`). One-time work therefore belongs in `setup`, which runs once per
 server, while `register` runs once per router and must only add routes.
 
-A registration object belongs to one server. `setup` may keep per-server
-state in it (the service list below, reflection's descriptor set), so the
-same object passed to a second server is re-initialized by that server's
-`setup`, and the first server's later routers serve the second server's
-data. Call the protocol factory once per server.
+A registration object belongs to one server. `setup` and `ready` may keep
+per-server state in it (the service list below, reflection's descriptor
+set), so the same object passed to a second server is re-initialized by that
+server's hooks, and the first server's later routers serve the second
+server's data. Call the protocol factory once per server.
 
 ## Example
 
@@ -48,7 +48,7 @@ const server = createServer({
 
 > `optional` **httpHandler?**: [`HttpHandler`](../type-aliases/HttpHandler.md)
 
-Defined in: [packages/core/src/types.ts:146](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L146)
+Defined in: [packages/core/src/types.ts:182](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L182)
 
 Optional HTTP handler for fallback routing (e.g., /healthz endpoint)
 
@@ -58,17 +58,48 @@ Optional HTTP handler for fallback routing (e.g., /healthz endpoint)
 
 > `readonly` **name**: `string`
 
-Defined in: [packages/core/src/types.ts:121](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L121)
+Defined in: [packages/core/src/types.ts:141](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L141)
 
 Protocol name for identification (e.g., "healthcheck", "reflection")
 
 ## Methods
 
+### ready()?
+
+> `optional` **ready**(`context`): `void`
+
+Defined in: [packages/core/src/types.ts:179](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L179)
+
+Optional. Called once per server, after the `register` of the last
+protocol, with the complete service set: every mounted application
+service and the services of every protocol, wherever it stands in the
+`protocols` array. Use it for what must describe the whole server
+independently of protocol order (Reflection builds its listing here).
+
+By then the routes of the first router are already registered, so
+`ready` cannot add routes: a handler registered in `register` that needs
+this data reads it when a request arrives. Routers built later (one per
+in-process transport) do not call `ready` again. Like `setup`, `ready`
+runs again if the initial route materialization fails and is retried.
+A protocol without `ready` behaves as before.
+
+#### Parameters
+
+##### context
+
+[`ProtocolContext`](ProtocolContext.md)
+
+#### Returns
+
+`void`
+
+***
+
 ### register()
 
 > **register**(`router`): `void`
 
-Defined in: [packages/core/src/types.ts:143](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L143)
+Defined in: [packages/core/src/types.ts:163](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L163)
 
 Register protocol services on the router. Called once for every router
 the server builds (HTTP adapter and each in-process transport), so it
@@ -90,7 +121,7 @@ must only add routes and must not change state observable elsewhere.
 
 > `optional` **setup**(`context`): `void`
 
-Defined in: [packages/core/src/types.ts:136](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L136)
+Defined in: [packages/core/src/types.ts:156](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L156)
 
 Initialization: called while the server's routes are materialized,
 immediately before this protocol's first

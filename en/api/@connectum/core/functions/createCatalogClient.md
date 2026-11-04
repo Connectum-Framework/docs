@@ -4,10 +4,11 @@
 
 > **createCatalogClient**(`options`): [`CatalogClient`](../interfaces/CatalogClient.md)
 
-Defined in: [packages/core/src/catalogClient.ts:126](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L126)
+Defined in: [packages/core/src/catalogClient.ts:129](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/catalogClient.ts#L129)
 
 Build a standalone [CatalogClient](../interfaces/CatalogClient.md) from a [ServiceCatalog](../type-aliases/ServiceCatalog.md) and a
-[RemoteResolver](../type-aliases/RemoteResolver.md).
+[RemoteResolver](../type-aliases/RemoteResolver.md). Throws `CatalogConfigError` when `catalog` has a key
+that differs from its descriptor's `typeName` or `resolver` is not a function.
 The example assumes a catalog generated from the Quickstart Greeter proto
 and that service running at the configured HTTP/2 endpoint.
 

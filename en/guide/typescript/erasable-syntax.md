@@ -166,7 +166,7 @@ import { greeterService } from './services/greeterService';
 
 ### Generated Code (`#gen/`) Imports
 
-The extension used in generated protobuf imports (`#gen/*`) follows the `import_extension` option in your `buf.gen.yaml`. Run-directly projects like this one (and the example projects) generate `.ts` and import with `.ts`, which requires `allowImportingTsExtensions: true` in `tsconfig.json`. Compiled packages that ship JS instead set `import_extension=.js` and import with `.js`.
+The extension used in generated protobuf imports (`#gen/*`) follows the `import_extension` option in your `buf.gen.yaml`. Run-directly projects like this one (and the example projects) generate `.ts` and import with `.ts`, which requires `allowImportingTsExtensions: true` in `tsconfig.json`. Compiled packages that ship JS instead set `import_extension=.js` and import with `.js`. The examples across this documentation assume the run-directly setup and show `.ts`; in a compiled package, write `.js` in the same imports. With a mismatched extension Node.js fails at startup with `ERR_MODULE_NOT_FOUND`.
 
 For a run-directly project (`import_extension=.ts`):
 

@@ -11,9 +11,8 @@ Every Connectum EventBus uses the same `EventAdapter` contract. Choose a broker
 from workload and operational requirements, then keep broker-specific tuning in
 that adapter's generated API reference.
 
-This guide targets the documented `1.3.x` release line. Features marked `Since
-1.3.0` require the corresponding package release; they are unavailable from the
-published `1.2.x` packages until 1.3.0 is released.
+This guide targets the `1.3.x` release line. Features marked `Since 1.3.0`
+require the corresponding package at 1.3.0 or later.
 
 ## Broker Selection Matrix {#adapter-comparison}
 
@@ -133,6 +132,121 @@ only in part (`a.*.c` and `a.b.*`) need no special case.
   consumers of a named group in place for the next start; only the consumers of
   an auto-generated group are removed.
 
+### Consumer options {#nats-consumer-options}
+
+`NatsAdapter()` checks its options when it is created. A value it cannot honor throws
+a `TypeError` or `RangeError` that names the option; before 1.3.0 several of them were
+replaced silently (`ackWait: 0` became the default, an unknown `deliverPolicy` behaved like
+`"new"`, an empty `servers` list dialled the local address) or failed only at the first
+`subscribe()`. Valid values behave as before; see
+[NATS adapter options](/en/migration/events-nats-options) if an upgrade starts to throw.
+
+| Option | Default | Allowed |
+|---|---|---|
+| `servers` | required | a non-empty string, or a non-empty array of non-empty strings |
+| `consumerOptions.deliverPolicy` | `"new"` | `"new"`, `"all"`, `"last"` |
+| `consumerOptions.ackWait` | `30000` | a finite number of milliseconds greater than 0 |
+| `consumerOptions.maxDeliver` | `5` | `-1` (unlimited) or a positive integer |
+| `consumerOptions.prefetch` | the client's buffer of 100 | an integer from 1 to 2147483647 |
+| `consumerOptions.redeliveryDelay` | `0` | an integer number of milliseconds from 0 to 2147483647 |
+
+### Slow handlers and duplicates {#nats-prefetch}
+
+The server starts the `ackWait` timer of a message when it hands the message to the
+client, and the handler of a consumer runs one message at a time. The client buffers up to
+100 messages ahead of the handler, so a message at the back of a full buffer waits for
+every message in front of it. When that wait outgrows `ackWait` the server delivers the
+message again, and a single consumer sees duplicates. A full buffer of 100 with the
+default `ackWait` of 30 s reaches that point when handling takes more than 300 ms per
+message on average (the quotient of the two, not a measurement).
+
+Measured on JetStream 2.11 with `ackWait: 1500`: 8 messages of 400 ms each arrived 13
+times with the default buffer and 8 times with `prefetch: 1`. Set `consumerOptions.prefetch`
+to a small number for handlers that are slow compared with `ackWait / 100`, or raise
+`ackWait`. A smaller buffer makes the client ask the server for messages more often. The
+default is unchanged, and handlers must be idempotent either way.
+
+### Handler failures and `maxDeliver` {#nats-redelivery}
+
+A handler that throws gets its message back with a negative acknowledgement. With the
+default settings the server delivers it again at once, so the default `maxDeliver` of 5 is
+used up within milliseconds (five deliveries in 4 ms on JetStream 2.11 and 2.9.25) and a
+failure that a retry a second later would have cured is final. After the last delivery the server stops, the
+message stays in the stream until its retention removes it, and nothing consumes it again.
+
+- `consumerOptions.redeliveryDelay` is opt-in. With `redeliveryDelay: 1000` the server holds
+  the message for one second after each handler failure. The server keeps the pause, so it
+  does not block the handler or occupy buffer space; it applies to every failure of the
+  adapter's subscriptions, not to an explicit `nack()` of the handler, and `unsubscribe()`
+  cannot shorten it: the next consumer of the group receives the message after the pause.
+- A delay does not replace the [retry and dead-letter middleware](/en/guide/events/middleware)
+  for a message that can never succeed: each delivery still counts against `maxDeliver`.
+- When a handler failure or `nack()` gives a message back on the last delivery the consumer
+  allows, the adapter logs one error line that starts with `[EventBus/NATS]` and names the
+  topic, the delivery number, the consumer, the stream and the limit. A consumer with
+  `maxDeliver: -1` never reports it.
+
+### Metadata {#nats-metadata}
+
+The metadata passed to `publish()` reaches the handler (`ctx.metadata`) as it was given: keys
+keep their case, and keys that start with `x-` and values that are empty strings arrive too.
+One key belongs to the adapter: `x-event-id` carries the event id the adapter generates,
+and a value for it in the metadata is ignored. Before 1.3.0 the adapter dropped every
+`x-` key on publish and every empty value on receive, so a handler that read `x-request-id`
+saw it on Redis and in memory but not on NATS.
+
+### When the server loses the stream {#nats-stream-loss}
+
+Deleting a JetStream stream deletes its consumers. When the stream comes back, the adapter
+recreates the consumers of its subscriptions and the handlers receive events again:
+
+1. The adapter logs `[EventBus/NATS] The server lost consumer "..." ...` once.
+2. It polls for the stream (the pause grows from 250 ms to 5 s) and, when the stream exists,
+   creates the consumer again from the first message of the new stream: every message in a
+   stream created after the loss was published after it.
+3. It starts reading the new consumer and logs `... exists again; delivery resumes.`
+
+`unsubscribe()` and `disconnect()` end the wait, and so does a connection that the client closed
+for good (the adapter logs that the subscription receives nothing more). The adapter does not
+create a deleted stream itself, and `publish()` rejects while the stream does not exist. If the
+stream is lost again while the new consumer is being read, the consumer is created again first.
+
+How soon the adapter notices the loss depends on the server. When the server answers a waiting
+request for messages with `consumer deleted` or `no responders`, the adapter reacts at once. On
+nats-server 2.9 the server sometimes sends no answer at all to a request that was already
+waiting; the client then notices the loss only after it misses two idle heartbeats, which took
+30 to 45 s in the measurements (nats-server 2.9.25). On 2.10.29 and 2.15.0 this did not happen in
+60 deletions each. The adapter keeps the pull request cadence of every subscription as it is, so
+the delay on 2.9 is a known limit; use nats-server 2.10 or later when a subscription must resume
+sooner after its stream is recreated.
+
+A subscription that lists overlapping patterns (see above) recreates one consumer per pattern.
+Until a pattern's own consumer is back, a delivery of another pattern cannot know where the
+missing one starts and runs the handler itself, so an event can run the handler twice in that
+window and is never skipped; handlers must be idempotent, as everywhere on this adapter.
+
+A consumer deleted on its own, while its stream still exists, is a different case: an
+operator removed it, and the adapter does not create it again behind their back. It logs one
+line (`... was deleted while its stream still exists ...`), and the subscription receives
+nothing until the service subscribes again.
+
+### Timeout errors {#nats-timeouts}
+
+The client reports a request that got no answer as `TimeoutError: timeout`. The adapter puts
+what was being done in front of that text and keeps the error class and `name`:
+
+| Call | Message |
+|---|---|
+| `connect()` | `NatsAdapter: connect to <servers> did not complete in time: timeout` (20 s by default; `connectionOptions.timeout` changes it) |
+| `connect()`, creating the stream | `NatsAdapter: preparing stream "<stream>" on <servers> did not complete in time: timeout` |
+| `publish()` | `NatsAdapter: publish to topic "<topic>" on stream "<stream>" was not acknowledged in time: timeout` (5 s) |
+| `subscribe()` | `NatsAdapter: subscribe to topics ["<topic>", ...] on stream "<stream>" did not complete in time: timeout` |
+
+A topic longer than 100 characters is cut in the message and its length is given. A server
+URL with credentials (`nats://user:password@host:4222`) appears without them. When the broker
+is unreachable and the client has already given up reconnecting, the client's own
+`RequestError: connection closed` is raised instead and is not rewritten.
+
 ## Kafka or Redpanda {#kafka-adapter}
 
 Choose Kafka-compatible infrastructure for partitioned ordering, retained logs,
@@ -184,6 +298,55 @@ never override `brokers` or `clientId`.
 
 The `kafkaConfig` option of earlier versions is removed and throws a `TypeError`; see
 [Kafka adapter options](/en/migration/kafka-adapter-options).
+
+#### Validation {#kafka-option-validation}
+
+`KafkaAdapter()` checks these options when it is called and throws an error that names
+the option and the value it received, instead of failing later at `connect()` or
+`subscribe()` with a message that does not:
+
+| Option | Accepted | Error |
+|---|---|---|
+| the options object | an object | `TypeError` |
+| `brokers` | a non-empty array of non-empty `host:port` strings | `TypeError` (not an array, or a bad entry, with its position), `RangeError` (empty) |
+| `clientId` | a non-empty string, or omitted | `TypeError` |
+| `consumerOptions.sessionTimeout` | a finite number of milliseconds above 3000 (the heartbeat interval) | `RangeError` |
+| `retry.retries` | a non-negative integer | `RangeError` |
+| `retry.maxRetryTime`, `initialRetryTime`, `factor`, `multiplier` | a non-negative finite number | `RangeError` |
+| `sasl.mechanism` | `plain`, `scram-sha-256`, `scram-sha-512`, `oauthbearer` or `aws` | `RangeError` |
+
+A SASL mechanism that only the client library knows (a custom one) still goes in
+`clientOptions.sasl`, which replaces the typed `sasl`. See
+[Kafka adapter validation](/en/migration/kafka-option-validation).
+
+#### Connection errors {#kafka-connection-errors}
+
+When a broker's host name resolves to several addresses (`localhost` often does) and every
+one refuses the connection, Node reports the failure with an empty message. The adapter
+fills the reason in from the socket's error code and the broker address, so the error reads
+`Connection error: connect ECONNREFUSED localhost:9092` instead of `Connection error: `.
+The error keeps its class and its `cause`. A publish to a topic name the broker refuses
+fails with an error that names the topic. Kafka accepts names of ASCII letters, digits,
+`.`, `_` and `-`, at most 249 characters; the broker's own error is the `cause`.
+
+Calling `connect()` again while an earlier call is still connecting returns the same
+attempt: both calls settle together, and a failed attempt rejects both with the same
+error and is not remembered. `disconnect()` during `connect()` waits for the attempt and
+then closes the connection.
+
+### Topics that do not exist yet {#kafka-missing-topics}
+
+`subscribe()` on a topic the broker does not have fails at once with an error that names
+the topic and `consumerOptions.allowAutoTopicCreation`. A consumer service that starts
+before the first publisher therefore fails in `bus.start()` unless the topics exist.
+Either create the topics before the services start, or set
+`consumerOptions.allowAutoTopicCreation: true` and let the broker create them: the broker
+must allow it (`auto.create.topics.enable`, on by default in Apache Kafka), and
+`subscribe()` then asks again for up to ten seconds, because the broker answers the first
+request for a missing topic with an error and creates the topic a moment later. If the
+topic does not appear, the error says that the broker did not create it. Wildcard
+patterns only match topics that exist and are not affected. Publishing to a missing topic
+creates it when the broker allows it, as before.
 
 ### Acknowledgement and redelivery {#kafka-ack-redelivery}
 
@@ -289,6 +452,28 @@ after `handlerTimeout` (default `30000` ms), and a handler that ignores that sig
 and never returns holds its place in the group indefinitely. Make long handlers
 honour `ctx.signal`.
 
+### Stopping a consumer {#kafka-stop-time}
+
+Stopping a consumer waits for the fetch request it has open. The broker holds that request
+until a message arrives or the client's `maxWaitTimeInMs` (5000 ms in KafkaJS 2.2.4,
+`consumer/index.js`, and the adapter does not change it) has passed, so an idle consumer
+needs up to five seconds to stop: the rest of the current wait. The time depends on where in
+that five-second cycle `unsubscribe()` or `bus.stop()` is called. In a run against Kafka
+4.2.0 on Node 26 the stop took 4.0 s, 2.0 s and 0.5 s when it was called 1.0 s, 3.0 s and
+4.5 s after the consumer started, and 4.7 s when called 0.3 s after the start. A consumer
+that is receiving messages stops as soon as the fetch in flight returns.
+
+The consumers of a bus stop at the same time, so the cost is that of the slowest one, not
+the sum (three consumers together: 2.8 s). Count up to five seconds into the time that
+`bus.stop()` and the `eventbus` shutdown hook add to a server's shutdown (see
+[graceful shutdown](/en/guide/server/graceful-shutdown#eventbus)) and into
+`terminationGracePeriodSeconds`.
+
+On Node 26 a process that uses the Kafka client also prints
+`TimeoutNegativeWarning: <large negative number> is a negative number. Timeout duration was set to 1.`
+It comes from the client's request queue (KafkaJS 2.2.4, `RequestQueue.scheduleCheckPendingRequests`),
+not from Connectum; the timer runs after 1 ms, as the message says.
+
 ### Start position {#kafka-start-position}
 
 A consumer group with no committed offset starts at the end of the topic
@@ -329,7 +514,10 @@ properties differ from NATS:
   metadata request per wildcard subscription per interval. A discovered topic is
   read from its first message, whatever `fromBeginning` says. The checks use an
   extra admin connection, and subscriptions made only of literal topic names are
-  never checked. If listing the topics fails when the subscription starts,
+  never checked. A wildcard subscription lists the topics once when it starts
+  even with the checks off (and once more right after subscribing, so that a topic
+  created in between is not lost), so that it can tell a deleted topic from one that
+  never existed (see [a topic is deleted](#kafka-topic-deleted)). If listing the topics fails when the subscription starts,
   `subscribe()` rejects with that error: the same metadata request expands the
   wildcard, and a discovery started from an empty list would read the history of
   every existing topic. A check that fails later (for example because the
@@ -353,6 +541,47 @@ is lost meanwhile. In a measurement with two members at 1 s and 20 s, all 12
 messages sent to the new topic arrived, the last one 15.3 s after the topic was
 created (15.1 s on Redpanda; the exact delay depends on where the 20 s check
 falls). Give the members of a group the same interval.
+
+#### A topic is deleted {#kafka-topic-deleted}
+
+The Kafka client library cannot remove a topic from a running consumer. When a topic that
+a wildcard had matched is deleted, the consumer crashes on its next fetch, and the library
+restarts it with the same topic list, which fails on the deleted topic every time. Without
+help the other topics of the subscription deliver nothing until the library's own metadata
+refresh clears the state; in a measured run with Kafka 4.2.0 on Node 26 the first message
+reached the handler 300.7 s after the deletion, after 936 `consumer-restore-failed` events
+(`topicDiscoveryInterval` made no difference). With the replacement described below the same
+scenario delivered its first message 12.0 s after the deletion, and the lifecycle showed one
+`consumer-lost` and one `consumer-restored`.
+
+The adapter handles it. When a consumer of a wildcard subscription crashes with "unknown
+topic" and the broker's topic list shows that a topic the wildcard had matched is gone, it
+replaces the consumer: the new one joins the same group, subscribes the literal topics and
+the matches that still exist, and starts reading from the group's committed offsets.
+Messages published to the remaining topics meanwhile are delivered after the replacement,
+as with any restart of a consumer in a group that has committed (a topic the group has no
+committed offset for starts where `fromBeginning` says, except a topic that was found after
+the subscription started, which is read from its first message again). A matching topic that
+was created in between is subscribed and read from its first message when discovery is on.
+If the deleted topic is created again and discovery is on, it is consumed again from its
+first message. The recovery works with `topicDiscoveryInterval: false` too; the new consumer
+then keeps the topic list fixed and subscribes no topic created since the start. It cannot be
+turned off.
+
+With `lifecycle.onLifecycle` set you see one `consumer-lost` and then `consumer-restored`;
+the adapter also logs one warning that names the deleted topics. The replacement rebalances
+the group once, like a discovery restart, so messages being handled at that moment are
+delivered again. A crash for any other reason, or a crash while the broker still lists every
+matched topic, stays with the library's own restarts. When the adapter takes a crash over,
+it tells the library not to restart that consumer, so the old consumer is never started
+beside its replacement. If creating the replacement fails, the error is logged and the
+attempt is repeated every five seconds. A replacement whose start fails without an error
+from the client (for example because the group may not be joined: the client reports it as
+a crash and returns) counts as failed in the same way: it is disconnected and started again
+five seconds later, and the crash it caused reaches `lifecycle.onLifecycle` like any other.
+
+A subscription to a literal topic name is not replaced: if that topic is deleted, the
+consumer keeps failing until the topic exists again.
 
 ### Related
 
@@ -404,6 +633,68 @@ seconds, while the other entries claimed in the same pass are still delivered.
 adapter continues each pass where the previous one stopped; entries behind a
 long run of recently delivered ones are therefore reached too.
 
+Redelivery has no upper bound of its own: the adapter has no equivalent of the
+NATS `maxDeliver`, and an entry that keeps failing without the `retry` and `dlq`
+[middleware](/en/guide/events/middleware) stays pending and is claimed again
+every 30 seconds. This is the standard Redis Streams behavior; the bound
+belongs to the middleware:
+
+- **Retry plus DLQ.** Configure `retry` and `dlq` on the bus. `retry` re-runs
+  the handler inside the same delivery, so those runs do not raise the group's
+  delivery count. When they are exhausted, `dlq` publishes a copy to the
+  dead-letter topic and acknowledges the original, which leaves the pending
+  list. A poison message with `maxRetries: 2` runs the handler three times,
+  produces one dead-letter entry (`dlq.handler-runs` = `3`), and is not
+  redelivered. If the dead-letter publish itself fails, the original is
+  acknowledged without requeue and the failure is reported to the bus
+  `observer` as `dlq-failed`.
+- **A cap on redeliveries.** For a bound on how often the broker hands the same
+  entry out again, for example after handler crashes where no retry state
+  survives, read `event.attempt` in a custom middleware. On a redelivered entry
+  it carries the group's delivery count (`1` on the first delivery, `2` on the first reclaim). The
+  middleware can call `ctx.ack()` once the count passes your limit, instead of
+  calling `next()`.
+
+Only a delivery that ends in a rethrown error, a crash or `nack(true)` leaves
+the entry pending; with `retry` and `dlq` configured the common failing handler
+never reaches the 30-second reclaim at all.
+
+### Recovery after Redis loses a consumer group {#redis-group-recovery}
+
+A Redis that restarts without persistence, runs `FLUSHALL`, or fails over to a
+replica that never had the stream no longer knows your consumer group. Redis
+answers the consume loop with `NOGROUP`. The adapter then creates the group
+again (`XGROUP CREATE ... MKSTREAM`) on every stream of the subscription and
+keeps consuming; no restart of the service is needed. `publish()` keeps working
+throughout, because `XADD` re-creates the stream.
+
+The re-created group starts at the beginning of the stream (`0`), not at `$`.
+After a loss the stream holds what was published since, and `$` would drop the
+entries published before the recovery ran. The price is at-least-once delivery
+at its widest: when only the group was lost and the stream kept its history,
+entries the group had already handled are delivered again, so handlers must
+tolerate duplicates. Each re-created group writes one
+`[RedisAdapter] re-created consumer group ...` warning and, when you set
+`lifecycle.onLifecycle`, produces a [`group-recreated`](#redis-lifecycle) event.
+With an AOF (`appendonly yes`) the group survives a restart and none of this
+happens.
+
+### Connection and option checks {#redis-options}
+
+`brokerOptions.maxLen` and `count` must be positive safe integers and `blockMs`
+a non-negative safe integer. `RedisAdapter()` throws a `RangeError` naming the
+option when a value is outside that range; `maxLen: 0` is rejected because it
+would trim every published entry. `blockMs: 0` is valid and blocks without a
+deadline.
+
+`connect()` and `subscribe()` wait for the server to become ready for at most
+`redisOptions.connectTimeout` (ioredis default: 10000 ms). A server that accepts
+the TCP connection and never answers makes them reject with
+`RedisAdapter: connection not ready within N ms (redisOptions.connectTimeout)`
+instead of leaving `bus.start()` pending. Set `connectTimeout: 0` to remove the
+deadline. See [Redis adapter options](/en/migration/redis-adapter-options) if an
+existing service is affected.
+
 ### Wildcards are not supported {#redis-wildcards}
 
 Redis Streams has no pattern subscription. A topic containing `*` or `>` is
@@ -426,9 +717,11 @@ and restored as `ctx.metadata` when consumed.
 
 `brokerOptions.maxLen` adds approximate `XADD MAXLEN ~` trimming. It bounds
 retention, not the number of pending deliveries: trimming can remove entries
-that a consumer has not processed, so choose it from your retention needs. A new
-consumer group is created at `$` and starts with events published after its
-creation. Use the same explicit group across restarts to retain its consumption
+that a consumer has not processed, so choose it from your retention needs. It
+must be a positive integer (see [Connection and option checks](#redis-options)).
+A new consumer group is created at `$` and starts with events published after its
+creation; a group that Redis lost and the adapter
+[re-created](#redis-group-recovery) starts at the beginning of the stream. Use the same explicit group across restarts to retain its consumption
 state; omitting `group` creates a new random group.
 
 ### Entries written by other producers {#redis-foreign-entries}
@@ -501,6 +794,7 @@ The table below lists the NATS, Redis and Kafka events; the AMQP events are in
 | `disconnected` | `error` (NATS: `server`) | Once per loss | Once per loss of a connection that had been ready, however many reconnect attempts fail | Not emitted |
 | `reconnecting` | `attempt` (NATS), `attempt`, `delay`, `error` (Redis) | One per dial; the client gives no delay or error | One per scheduled attempt; the count restarts on ready | Not emitted |
 | `reconnect-failed` | `error` | Terminal: the client closed itself without your `disconnect()`, usually after its reconnect budget ran out | Terminal: the client ended without your close, which needs a `retryStrategy` that returns no delay | Not emitted |
+| `group-recreated` | `group`, `stream`, `connection` | — | Redis lost a consumer group and the subscription created it again; once per group | — |
 | `consumer-lost`, `consumer-restore-failed`, `consumer-restored` | `groupId`, `error`, `willRestore` / `attempt`, `willRetry` | — | — | A subscription's consumer crashed, crashed again before it came back, and joined its group again |
 
 ### NATS {#nats-lifecycle}
@@ -522,6 +816,11 @@ rejects with the error itself). Setting `onLifecycle` attaches an `error` listen
 connection, which replaces the client's own `[ioredis] Unhandled error event` line on
 stderr: the cause is in the `error` field of the events instead.
 
+`group-recreated` is specific to Redis. It reports a consumer group that Redis lost and the
+subscription created again (see [Recovery after Redis loses a consumer group](#redis-group-recovery)).
+`stream` is the stream key (`events:<topic>`) and `connection` is the `{ group, patterns }` of the
+subscription. Without `onLifecycle` the adapter still writes one warning line per re-created group.
+
 ### Kafka {#kafka-lifecycle}
 
 The client library reports no loss of the producer's connection, and a consumer rides out
@@ -532,7 +831,9 @@ carries `willRestore` (whether the client restarts the consumer on its own),
 `consumer-restore-failed` a counted `attempt` for each crash before the consumer came
 back, and `consumer-restored` the first group join after a crash. A first join,
 rebalances, the restart that [topic discovery](#kafka-wildcards) causes and your own
-`unsubscribe()` produce nothing.
+`unsubscribe()` produce nothing. When a wildcard subscription loses a matched topic, the
+crash is reported as `consumer-lost` and the replacement consumer's first group join as
+`consumer-restored` (see [a topic is deleted](#kafka-topic-deleted)).
 
 ## Automatic Client Identification
 

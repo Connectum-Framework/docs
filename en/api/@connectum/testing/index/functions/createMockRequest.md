@@ -4,7 +4,7 @@
 
 > **createMockRequest**(`options?`): `any`
 
-Defined in: test-fixtures/dist/index.d.ts:391
+Defined in: test-fixtures/dist/index.d.ts:432
 
 Create a simplified ConnectRPC request fixture for interceptor unit tests.
 

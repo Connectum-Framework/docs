@@ -4,6 +4,6 @@
 
 > **LifecycleEvent** = *typeof* [`LifecycleEvent`](../variables/LifecycleEvent.md)\[keyof *typeof* [`LifecycleEvent`](../variables/LifecycleEvent.md)\]
 
-Defined in: [packages/core/src/types.ts:222](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L222)
+Defined in: [packages/core/src/types.ts:260](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/types.ts#L260)
 
 Lifecycle event names

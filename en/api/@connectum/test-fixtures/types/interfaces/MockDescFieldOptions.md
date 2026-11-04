@@ -2,7 +2,7 @@
 
 # Interface: MockDescFieldOptions
 
-Defined in: [types.ts:70](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L70)
+Defined in: [types.ts:93](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L93)
 
 Options for [createMockDescField](../../index/functions/createMockDescField.md).
 
@@ -12,9 +12,11 @@ Options for [createMockDescField](../../index/functions/createMockDescField.md).
 
 > `optional` **fieldNumber?**: `number`
 
-Defined in: [types.ts:78](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L78)
+Defined in: [types.ts:105](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L105)
 
-Proto field number. Default: auto-incremented
+Proto field number, an integer from 1 to 536870911 outside the reserved range
+19000 to 19999; any other value throws. Default: `1` (auto-incremented in
+[createMockDescMessage](../../index/functions/createMockDescMessage.md))
 
 ***
 
@@ -22,7 +24,7 @@ Proto field number. Default: auto-incremented
 
 > `optional` **isSensitive?**: `boolean`
 
-Defined in: [types.ts:76](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L76)
+Defined in: [types.ts:99](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L99)
 
 Mark the field as sensitive: `proto.options` becomes a `google.protobuf.FieldOptions`
 message with `debugRedact` set to `true`, as in a compiled descriptor.
@@ -32,8 +34,8 @@ Default: `false`
 
 ### type?
 
-> `optional` **type?**: `string`
+> `optional` **type?**: [`MockScalarType`](../type-aliases/MockScalarType.md)
 
-Defined in: [types.ts:80](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L80)
+Defined in: [types.ts:107](https://github.com/Connectum-Framework/connectum/blob/main/packages/test-fixtures/src/types.ts#L107)
 
-Field scalar type. Default: `'string'`
+Field scalar type; a name that is not a [MockScalarType](../type-aliases/MockScalarType.md) throws. Default: `'string'`

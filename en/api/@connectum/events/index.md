@@ -16,6 +16,7 @@
 
 - [BroadcastReactor](interfaces/BroadcastReactor.md)
 - [BroadcastSubscribersOptions](interfaces/BroadcastSubscribersOptions.md)
+- [DlqPublishFailure](interfaces/DlqPublishFailure.md)
 
 ## Type Aliases
 

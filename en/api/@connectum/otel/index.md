@@ -18,6 +18,7 @@
 
 ## Interfaces
 
+- [BatchLogRecordProcessorOptions](interfaces/BatchLogRecordProcessorOptions.md)
 - [BatchSpanProcessorOptions](interfaces/BatchSpanProcessorOptions.md)
 - [CollectorOptions](interfaces/CollectorOptions.md)
 - [OtelBaseOptions](interfaces/OtelBaseOptions.md)
@@ -41,6 +42,7 @@
 
 ## Functions
 
+- [getBatchLogRecordProcessorOptions](functions/getBatchLogRecordProcessorOptions.md)
 - [getBatchSpanProcessorOptions](functions/getBatchSpanProcessorOptions.md)
 - [getCollectorOptions](functions/getCollectorOptions.md)
 - [getOTLPSettings](functions/getOTLPSettings.md)
@@ -297,6 +299,12 @@ Re-exports [RpcServerMetrics](metrics/interfaces/RpcServerMetrics.md)
 ### shutdownProvider
 
 Re-exports [shutdownProvider](provider/functions/shutdownProvider.md)
+
+***
+
+### ShutdownProviderOptions
+
+Re-exports [ShutdownProviderOptions](provider/interfaces/ShutdownProviderOptions.md)
 
 ***
 

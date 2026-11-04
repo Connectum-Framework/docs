@@ -4,7 +4,7 @@
 
 > **createFakeService**(`options?`): [`DescService`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: test-fixtures/dist/index.d.ts:77
+Defined in: test-fixtures/dist/index.d.ts:82
 
 Create a fake [DescService](https://protobufes.com/reference/reflection/descriptors/#types) descriptor for testing.
 

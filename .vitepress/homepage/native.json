@@ -1,0 +1,1968 @@
+{
+  "scenes": [
+    {
+      "label": "proto/greeter.proto",
+      "lang": "proto",
+      "code": "syntax = \"proto3\";\npackage greeter.v1;\n\nservice GreeterService {\n  rpc SayHello(SayHelloRequest)\n      returns (SayHelloResponse);\n}\n\nmessage SayHelloRequest { string name = 1; }\nmessage SayHelloResponse { string message = 1; }",
+      "start": 0,
+      "duration": 180,
+      "tokens": {
+        "light": [
+          [
+            {
+              "content": "syntax",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "=",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "\"proto3\"",
+              "color": "#032F62"
+            },
+            {
+              "content": ";",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "package",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "greeter.v1",
+              "color": "#032F62"
+            },
+            {
+              "content": ";",
+              "color": "#24292E"
+            }
+          ],
+          [],
+          [
+            {
+              "content": "service",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "GreeterService",
+              "color": "#6F42C1"
+            },
+            {
+              "content": " {",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "color": "#24292E"
+            },
+            {
+              "content": "rpc",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "SayHello",
+              "color": "#6F42C1"
+            },
+            {
+              "content": "(",
+              "color": "#24292E"
+            },
+            {
+              "content": "SayHelloRequest",
+              "color": "#6F42C1"
+            },
+            {
+              "content": ")",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "      ",
+              "color": "#24292E"
+            },
+            {
+              "content": "returns",
+              "color": "#cc3745"
+            },
+            {
+              "content": " (",
+              "color": "#24292E"
+            },
+            {
+              "content": "SayHelloResponse",
+              "color": "#6F42C1"
+            },
+            {
+              "content": ");",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "}",
+              "color": "#24292E"
+            }
+          ],
+          [],
+          [
+            {
+              "content": "message",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "SayHelloRequest",
+              "color": "#6F42C1"
+            },
+            {
+              "content": " { ",
+              "color": "#24292E"
+            },
+            {
+              "content": "string",
+              "color": "#cc3745"
+            },
+            {
+              "content": " name ",
+              "color": "#24292E"
+            },
+            {
+              "content": "=",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "1",
+              "color": "#005CC5"
+            },
+            {
+              "content": "; }",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "message",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "SayHelloResponse",
+              "color": "#6F42C1"
+            },
+            {
+              "content": " { ",
+              "color": "#24292E"
+            },
+            {
+              "content": "string",
+              "color": "#cc3745"
+            },
+            {
+              "content": " message ",
+              "color": "#24292E"
+            },
+            {
+              "content": "=",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "1",
+              "color": "#005CC5"
+            },
+            {
+              "content": "; }",
+              "color": "#24292E"
+            }
+          ]
+        ],
+        "dark": [
+          [
+            {
+              "content": "syntax",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "=",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "\"proto3\"",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": ";",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "package",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "greeter.v1",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": ";",
+              "color": "#E1E4E8"
+            }
+          ],
+          [],
+          [
+            {
+              "content": "service",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "GreeterService",
+              "color": "#B392F0"
+            },
+            {
+              "content": " {",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "rpc",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "SayHello",
+              "color": "#B392F0"
+            },
+            {
+              "content": "(",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "SayHelloRequest",
+              "color": "#B392F0"
+            },
+            {
+              "content": ")",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "      ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "returns",
+              "color": "#F97583"
+            },
+            {
+              "content": " (",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "SayHelloResponse",
+              "color": "#B392F0"
+            },
+            {
+              "content": ");",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "}",
+              "color": "#E1E4E8"
+            }
+          ],
+          [],
+          [
+            {
+              "content": "message",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "SayHelloRequest",
+              "color": "#B392F0"
+            },
+            {
+              "content": " { ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "string",
+              "color": "#F97583"
+            },
+            {
+              "content": " name ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "=",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "1",
+              "color": "#79B8FF"
+            },
+            {
+              "content": "; }",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "message",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "SayHelloResponse",
+              "color": "#B392F0"
+            },
+            {
+              "content": " { ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "string",
+              "color": "#F97583"
+            },
+            {
+              "content": " message ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "=",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "1",
+              "color": "#79B8FF"
+            },
+            {
+              "content": "; }",
+              "color": "#E1E4E8"
+            }
+          ]
+        ]
+      },
+      "stepLabel": "1 Proto"
+    },
+    {
+      "label": "console",
+      "lang": "bash",
+      "code": "$ buf generate proto",
+      "start": 180,
+      "duration": 105,
+      "tokens": {
+        "light": [
+          [
+            {
+              "content": "$",
+              "color": "#6F42C1"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "buf",
+              "color": "#032F62"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "generate",
+              "color": "#032F62"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "proto",
+              "color": "#032F62"
+            }
+          ]
+        ],
+        "dark": [
+          [
+            {
+              "content": "$",
+              "color": "#B392F0"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "buf",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "generate",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "proto",
+              "color": "#9ECBFF"
+            }
+          ]
+        ]
+      },
+      "stepLabel": "2 Generate",
+      "typing": {
+        "start": 8,
+        "frames": 40,
+        "resultAt": 54
+      }
+    },
+    {
+      "label": "src/greeter.ts",
+      "lang": "typescript",
+      "code": "import { defineService } from '@connectum/core';\nimport { GreeterService } from '../gen/greeter_pb.ts';\n\nexport const greeter = defineService(GreeterService, {\n  async sayHello({ name }) {\n    return { message: `Hello, ${name}!` };\n  },\n});",
+      "start": 285,
+      "duration": 180,
+      "tokens": {
+        "light": [
+          [
+            {
+              "content": "import",
+              "color": "#cc3745"
+            },
+            {
+              "content": " { defineService } ",
+              "color": "#24292E"
+            },
+            {
+              "content": "from",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "'@connectum/core'",
+              "color": "#032F62"
+            },
+            {
+              "content": ";",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "import",
+              "color": "#cc3745"
+            },
+            {
+              "content": " { GreeterService } ",
+              "color": "#24292E"
+            },
+            {
+              "content": "from",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "'../gen/greeter_pb.ts'",
+              "color": "#032F62"
+            },
+            {
+              "content": ";",
+              "color": "#24292E"
+            }
+          ],
+          [],
+          [
+            {
+              "content": "export",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "const",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "greeter",
+              "color": "#005CC5"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "=",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "defineService",
+              "color": "#6F42C1"
+            },
+            {
+              "content": "(GreeterService, {",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "color": "#24292E"
+            },
+            {
+              "content": "async",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "sayHello",
+              "color": "#6F42C1"
+            },
+            {
+              "content": "({ ",
+              "color": "#24292E"
+            },
+            {
+              "content": "name",
+              "color": "#b84f07"
+            },
+            {
+              "content": " }) {",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "    ",
+              "color": "#24292E"
+            },
+            {
+              "content": "return",
+              "color": "#cc3745"
+            },
+            {
+              "content": " { message: ",
+              "color": "#24292E"
+            },
+            {
+              "content": "`Hello, ${",
+              "color": "#032F62"
+            },
+            {
+              "content": "name",
+              "color": "#24292E"
+            },
+            {
+              "content": "}!`",
+              "color": "#032F62"
+            },
+            {
+              "content": " };",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "  },",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "});",
+              "color": "#24292E"
+            }
+          ]
+        ],
+        "dark": [
+          [
+            {
+              "content": "import",
+              "color": "#F97583"
+            },
+            {
+              "content": " { defineService } ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "from",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "'@connectum/core'",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": ";",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "import",
+              "color": "#F97583"
+            },
+            {
+              "content": " { GreeterService } ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "from",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "'../gen/greeter_pb.ts'",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": ";",
+              "color": "#E1E4E8"
+            }
+          ],
+          [],
+          [
+            {
+              "content": "export",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "const",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "greeter",
+              "color": "#79B8FF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "=",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "defineService",
+              "color": "#B392F0"
+            },
+            {
+              "content": "(GreeterService, {",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "async",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "sayHello",
+              "color": "#B392F0"
+            },
+            {
+              "content": "({ ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "name",
+              "color": "#FFAB70"
+            },
+            {
+              "content": " }) {",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "    ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "return",
+              "color": "#F97583"
+            },
+            {
+              "content": " { message: ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "`Hello, ${",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": "name",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "}!`",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": " };",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "  },",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "});",
+              "color": "#E1E4E8"
+            }
+          ]
+        ]
+      },
+      "stepLabel": "3 Handler"
+    },
+    {
+      "label": "src/server.ts",
+      "lang": "typescript",
+      "code": "import { createServer } from '@connectum/core';\nimport { greeter } from './greeter.ts';\n\nconst server = createServer({\n  services: [greeter],\n  port: 5000,\n  allowHTTP1: false,\n});\nawait server.start();",
+      "start": 465,
+      "duration": 150,
+      "tokens": {
+        "light": [
+          [
+            {
+              "content": "import",
+              "color": "#cc3745"
+            },
+            {
+              "content": " { createServer } ",
+              "color": "#24292E"
+            },
+            {
+              "content": "from",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "'@connectum/core'",
+              "color": "#032F62"
+            },
+            {
+              "content": ";",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "import",
+              "color": "#cc3745"
+            },
+            {
+              "content": " { greeter } ",
+              "color": "#24292E"
+            },
+            {
+              "content": "from",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "'./greeter.ts'",
+              "color": "#032F62"
+            },
+            {
+              "content": ";",
+              "color": "#24292E"
+            }
+          ],
+          [],
+          [
+            {
+              "content": "const",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "server",
+              "color": "#005CC5"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "=",
+              "color": "#cc3745"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "createServer",
+              "color": "#6F42C1"
+            },
+            {
+              "content": "({",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "  services: [greeter],",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "  port: ",
+              "color": "#24292E"
+            },
+            {
+              "content": "5000",
+              "color": "#005CC5"
+            },
+            {
+              "content": ",",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "  allowHTTP1: ",
+              "color": "#24292E"
+            },
+            {
+              "content": "false",
+              "color": "#005CC5"
+            },
+            {
+              "content": ",",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "});",
+              "color": "#24292E"
+            }
+          ],
+          [
+            {
+              "content": "await",
+              "color": "#cc3745"
+            },
+            {
+              "content": " server.",
+              "color": "#24292E"
+            },
+            {
+              "content": "start",
+              "color": "#6F42C1"
+            },
+            {
+              "content": "();",
+              "color": "#24292E"
+            }
+          ]
+        ],
+        "dark": [
+          [
+            {
+              "content": "import",
+              "color": "#F97583"
+            },
+            {
+              "content": " { createServer } ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "from",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "'@connectum/core'",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": ";",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "import",
+              "color": "#F97583"
+            },
+            {
+              "content": " { greeter } ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "from",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "'./greeter.ts'",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": ";",
+              "color": "#E1E4E8"
+            }
+          ],
+          [],
+          [
+            {
+              "content": "const",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "server",
+              "color": "#79B8FF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "=",
+              "color": "#F97583"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "createServer",
+              "color": "#B392F0"
+            },
+            {
+              "content": "({",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "  services: [greeter],",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "  port: ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "5000",
+              "color": "#79B8FF"
+            },
+            {
+              "content": ",",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "  allowHTTP1: ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "false",
+              "color": "#79B8FF"
+            },
+            {
+              "content": ",",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "});",
+              "color": "#E1E4E8"
+            }
+          ],
+          [
+            {
+              "content": "await",
+              "color": "#F97583"
+            },
+            {
+              "content": " server.",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "start",
+              "color": "#B392F0"
+            },
+            {
+              "content": "();",
+              "color": "#E1E4E8"
+            }
+          ]
+        ]
+      },
+      "stepLabel": "4 Server"
+    },
+    {
+      "label": "console",
+      "lang": "bash",
+      "code": "curl --http2-prior-knowledge -fsS \\\n  localhost:5000/greeter.v1.GreeterService/SayHello \\\n  -H 'Content-Type: application/json' -d '{\"name\":\"Alice\"}'\n\ngrpcurl -plaintext -import-path proto -proto greeter.proto \\\n  -d '{\"name\":\"Alice\"}' \\\n  localhost:5000 greeter.v1.GreeterService/SayHello",
+      "start": 615,
+      "duration": 444,
+      "tokens": {
+        "light": [
+          [
+            {
+              "content": "curl",
+              "color": "#6F42C1"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "--http2-prior-knowledge",
+              "color": "#005CC5"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "-fsS",
+              "color": "#005CC5"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "\\",
+              "color": "#005CC5"
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "color": "#24292E"
+            },
+            {
+              "content": "localhost:5000/greeter.v1.GreeterService/SayHello",
+              "color": "#032F62"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "\\",
+              "color": "#005CC5"
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "color": "#24292E"
+            },
+            {
+              "content": "-H",
+              "color": "#005CC5"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "'Content-Type: application/json'",
+              "color": "#032F62"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "-d",
+              "color": "#005CC5"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "'{\"name\":\"Alice\"}'",
+              "color": "#032F62"
+            }
+          ],
+          [],
+          [
+            {
+              "content": "grpcurl",
+              "color": "#6F42C1"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "-plaintext",
+              "color": "#005CC5"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "-import-path",
+              "color": "#005CC5"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "proto",
+              "color": "#032F62"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "-proto",
+              "color": "#005CC5"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "greeter.proto",
+              "color": "#032F62"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "\\",
+              "color": "#005CC5"
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "color": "#24292E"
+            },
+            {
+              "content": "-d",
+              "color": "#005CC5"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "'{\"name\":\"Alice\"}'",
+              "color": "#032F62"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "\\",
+              "color": "#005CC5"
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "color": "#24292E"
+            },
+            {
+              "content": "localhost:5000",
+              "color": "#032F62"
+            },
+            {
+              "content": " ",
+              "color": "#24292E"
+            },
+            {
+              "content": "greeter.v1.GreeterService/SayHello",
+              "color": "#032F62"
+            }
+          ]
+        ],
+        "dark": [
+          [
+            {
+              "content": "curl",
+              "color": "#B392F0"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "--http2-prior-knowledge",
+              "color": "#79B8FF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "-fsS",
+              "color": "#79B8FF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "\\",
+              "color": "#79B8FF"
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "localhost:5000/greeter.v1.GreeterService/SayHello",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "\\",
+              "color": "#79B8FF"
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "-H",
+              "color": "#79B8FF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "'Content-Type: application/json'",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "-d",
+              "color": "#79B8FF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "'{\"name\":\"Alice\"}'",
+              "color": "#9ECBFF"
+            }
+          ],
+          [],
+          [
+            {
+              "content": "grpcurl",
+              "color": "#B392F0"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "-plaintext",
+              "color": "#79B8FF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "-import-path",
+              "color": "#79B8FF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "proto",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "-proto",
+              "color": "#79B8FF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "greeter.proto",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "\\",
+              "color": "#79B8FF"
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "-d",
+              "color": "#79B8FF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "'{\"name\":\"Alice\"}'",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "\\",
+              "color": "#79B8FF"
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "localhost:5000",
+              "color": "#9ECBFF"
+            },
+            {
+              "content": " ",
+              "color": "#E1E4E8"
+            },
+            {
+              "content": "greeter.v1.GreeterService/SayHello",
+              "color": "#9ECBFF"
+            }
+          ]
+        ]
+      },
+      "examples": [
+        {
+          "label": "Connect · curl (HTTP/2)",
+          "code": "curl --http2-prior-knowledge -fsS \\\n  localhost:5000/greeter.v1.GreeterService/SayHello \\\n  -H 'Content-Type: application/json' -d '{\"name\":\"Alice\"}'",
+          "response": {
+            "message": "Hello, Alice!"
+          },
+          "status": "HTTP 200",
+          "tokens": {
+            "light": [
+              [
+                {
+                  "content": "curl",
+                  "color": "#6F42C1"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "--http2-prior-knowledge",
+                  "color": "#005CC5"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "-fsS",
+                  "color": "#005CC5"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "\\",
+                  "color": "#005CC5"
+                }
+              ],
+              [
+                {
+                  "content": "  ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "localhost:5000/greeter.v1.GreeterService/SayHello",
+                  "color": "#032F62"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "\\",
+                  "color": "#005CC5"
+                }
+              ],
+              [
+                {
+                  "content": "  ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "-H",
+                  "color": "#005CC5"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "'Content-Type: application/json'",
+                  "color": "#032F62"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "-d",
+                  "color": "#005CC5"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "'{\"name\":\"Alice\"}'",
+                  "color": "#032F62"
+                }
+              ]
+            ],
+            "dark": [
+              [
+                {
+                  "content": "curl",
+                  "color": "#B392F0"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "--http2-prior-knowledge",
+                  "color": "#79B8FF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "-fsS",
+                  "color": "#79B8FF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "\\",
+                  "color": "#79B8FF"
+                }
+              ],
+              [
+                {
+                  "content": "  ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "localhost:5000/greeter.v1.GreeterService/SayHello",
+                  "color": "#9ECBFF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "\\",
+                  "color": "#79B8FF"
+                }
+              ],
+              [
+                {
+                  "content": "  ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "-H",
+                  "color": "#79B8FF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "'Content-Type: application/json'",
+                  "color": "#9ECBFF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "-d",
+                  "color": "#79B8FF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "'{\"name\":\"Alice\"}'",
+                  "color": "#9ECBFF"
+                }
+              ]
+            ]
+          },
+          "visibleAt": 0,
+          "typingStart": 8,
+          "typingFrames": 177,
+          "resultAt": 191
+        },
+        {
+          "label": "gRPC · grpcurl",
+          "code": "grpcurl -plaintext -import-path proto -proto greeter.proto \\\n  -d '{\"name\":\"Alice\"}' \\\n  localhost:5000 greeter.v1.GreeterService/SayHello",
+          "response": {
+            "message": "Hello, Alice!"
+          },
+          "status": "gRPC OK",
+          "tokens": {
+            "light": [
+              [
+                {
+                  "content": "grpcurl",
+                  "color": "#6F42C1"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "-plaintext",
+                  "color": "#005CC5"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "-import-path",
+                  "color": "#005CC5"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "proto",
+                  "color": "#032F62"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "-proto",
+                  "color": "#005CC5"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "greeter.proto",
+                  "color": "#032F62"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "\\",
+                  "color": "#005CC5"
+                }
+              ],
+              [
+                {
+                  "content": "  ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "-d",
+                  "color": "#005CC5"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "'{\"name\":\"Alice\"}'",
+                  "color": "#032F62"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "\\",
+                  "color": "#005CC5"
+                }
+              ],
+              [
+                {
+                  "content": "  ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "localhost:5000",
+                  "color": "#032F62"
+                },
+                {
+                  "content": " ",
+                  "color": "#24292E"
+                },
+                {
+                  "content": "greeter.v1.GreeterService/SayHello",
+                  "color": "#032F62"
+                }
+              ]
+            ],
+            "dark": [
+              [
+                {
+                  "content": "grpcurl",
+                  "color": "#B392F0"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "-plaintext",
+                  "color": "#79B8FF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "-import-path",
+                  "color": "#79B8FF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "proto",
+                  "color": "#9ECBFF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "-proto",
+                  "color": "#79B8FF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "greeter.proto",
+                  "color": "#9ECBFF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "\\",
+                  "color": "#79B8FF"
+                }
+              ],
+              [
+                {
+                  "content": "  ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "-d",
+                  "color": "#79B8FF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "'{\"name\":\"Alice\"}'",
+                  "color": "#9ECBFF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "\\",
+                  "color": "#79B8FF"
+                }
+              ],
+              [
+                {
+                  "content": "  ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "localhost:5000",
+                  "color": "#9ECBFF"
+                },
+                {
+                  "content": " ",
+                  "color": "#E1E4E8"
+                },
+                {
+                  "content": "greeter.v1.GreeterService/SayHello",
+                  "color": "#9ECBFF"
+                }
+              ]
+            ]
+          },
+          "visibleAt": 221,
+          "typingStart": 229,
+          "typingFrames": 164,
+          "resultAt": 399
+        }
+      ],
+      "stepLabel": "5 Request + result"
+    }
+  ],
+  "evidence": {
+    "status": 200,
+    "request": {
+      "name": "Alice"
+    },
+    "response": {
+      "message": "Hello, Alice!"
+    },
+    "calls": {
+      "connect": {
+        "command": "curl --http2-prior-knowledge -fsS \\\n  localhost:5000/greeter.v1.GreeterService/SayHello \\\n  -H 'Content-Type: application/json' -d '{\"name\":\"Alice\"}'",
+        "stdout": "{\"message\":\"Hello, Alice!\"}",
+        "response": {
+          "message": "Hello, Alice!"
+        },
+        "status": 200
+      },
+      "grpc": {
+        "command": "grpcurl -plaintext -import-path proto -proto greeter.proto \\\n  -d '{\"name\":\"Alice\"}' \\\n  localhost:5000 greeter.v1.GreeterService/SayHello",
+        "stdout": "{\n  \"message\": \"Hello, Alice!\"\n}\n",
+        "response": {
+          "message": "Hello, Alice!"
+        }
+      }
+    },
+    "protocol": "Connect and gRPC over plaintext HTTP/2",
+    "sourceRevision": "f1456162e51a1f225f8f0d8c2fb7653eb1181aca",
+    "bufVersion": "1.75.0",
+    "grpcurlVersion": "grpcurl v1.9.4"
+  },
+  "fps": 30,
+  "durationInFrames": 1059,
+  "revision": "5488016f560134bb"
+}

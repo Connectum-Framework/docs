@@ -1,0 +1,22 @@
+.vp-doc .guide-sections {
+    margin: 28px 0;
+    padding: 16px 20px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 10px;
+}
+.vp-doc .guide-sections summary {
+    min-height: 24px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.vp-doc .guide-sections li {
+    scroll-margin-top: 100px;
+}
+.vp-doc .guide-sections li:target {
+    border-left: 3px solid var(--vp-c-brand-1);
+    padding-left: 12px;
+}
+.vp-doc .guide-sections a {
+    display: inline-block;
+    min-height: 24px;
+}

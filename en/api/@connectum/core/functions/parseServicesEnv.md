@@ -4,10 +4,15 @@
 
 > **parseServicesEnv**(`value`): `string`[]
 
-Defined in: [packages/core/src/enabledServices.ts:29](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/enabledServices.ts#L29)
+Defined in: [packages/core/src/enabledServices.ts:34](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/enabledServices.ts#L34)
 
 Parse a comma-separated env value into a list of proto `typeName`s, trimming
 whitespace and dropping empty entries. Returns `[]` for an empty/undefined value.
+
+An empty list is not the server's default: `createServer({ enabledServices: [] })`
+mounts none of the supplied services, while an omitted `enabledServices` mounts all
+of them. To configure `enabledServices` straight from a variable that may be unset,
+use [enabledServicesFromEnv](enabledServicesFromEnv.md), which keeps `undefined` for that case.
 
 ## Parameters
 

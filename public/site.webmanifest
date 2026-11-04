@@ -1,7 +1,7 @@
 {
     "name": "Connectum",
     "short_name": "Connectum",
-    "description": "Production-ready gRPC and ConnectRPC framework for Node.js",
+    "description": "gRPC and ConnectRPC framework for TypeScript",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",

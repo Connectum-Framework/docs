@@ -4,7 +4,7 @@
 
 > **NatsLifecycleEvent** = \{ `reconnected`: `boolean`; `server?`: `string`; `type`: `"connected"`; \} \| \{ `server`: `string`; `type`: `"disconnected"`; \} \| \{ `attempt`: `number`; `type`: `"reconnecting"`; \} \| \{ `error`: `Error`; `type`: `"reconnect-failed"`; \} \| \{ `callback`: `string`; `error`: `Error`; `event`: `string`; `type`: `"lifecycle-error"`; \}
 
-Defined in: [types.ts:82](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L82)
+Defined in: [types.ts:134](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L134)
 
 Connection lifecycle events of the NATS adapter, delivered to [NatsLifecycleCallbacks.onLifecycle](../interfaces/NatsLifecycleCallbacks.md#onlifecycle).
 

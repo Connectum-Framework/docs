@@ -4,7 +4,7 @@
 
 > **createSerializerInterceptor**(`options?`): `Interceptor`
 
-Defined in: [serializer.ts:87](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/serializer.ts#L87)
+Defined in: [serializer.ts:108](https://github.com/Connectum-Framework/connectum/blob/main/packages/interceptors/src/serializer.ts#L108)
 
 Create serializer interceptor
 
@@ -12,6 +12,11 @@ Automatically serializes/deserializes messages to/from JSON.
 By default, skips services whose protobuf type name starts with `grpc.`,
 including the standard Health and Reflection services. This checks the
 service namespace, regardless of the wire protocol used for the call.
+
+A response that already is a message of the method's output type, which is what a handler
+returns, is passed on as it is. Only a response that is JSON is parsed with
+`ignoreUnknownFields`, so `ignoreUnknownFields: false` rejects unknown keys of such JSON and
+never the `$typeName` marker of a message.
 
 ## Parameters
 

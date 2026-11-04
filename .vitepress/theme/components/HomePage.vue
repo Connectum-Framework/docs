@@ -2,6 +2,8 @@
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import site from '../../data/site.json';
 import EcosystemRail from './EcosystemRail.vue';
+import HomeCodeWalkthrough from './HomeCodeWalkthrough.vue';
+import HomeDeployments from './HomeDeployments.vue';
 import ModuleGrid from './ModuleGrid.vue';
 
 const homeRoot = ref<HTMLElement>();
@@ -14,13 +16,16 @@ onMounted(async () => {
 
     for (const section of sections) section.classList.add('home-reveal');
     homeRoot.value?.setAttribute('data-motion', 'ready');
-    revealObserver = new IntersectionObserver((entries) => {
-        for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-            entry.target.classList.add('is-visible');
-            revealObserver?.unobserve(entry.target);
-        }
-    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 });
+    revealObserver = new IntersectionObserver(
+        (entries) => {
+            for (const entry of entries) {
+                if (!entry.isIntersecting) continue;
+                entry.target.classList.add('is-visible');
+                revealObserver?.unobserve(entry.target);
+            }
+        },
+        { rootMargin: '0px 0px -10% 0px', threshold: 0.08 },
+    );
     for (const section of sections) revealObserver.observe(section);
 });
 
@@ -64,28 +69,29 @@ const lifecycle = [
     ['Observe', 'Traces, metrics, and logs'],
     ['Operate', 'Health, shutdown, and deployment'],
 ] as const;
-
 </script>
 
 <template>
     <main ref="homeRoot" class="connectum-home">
         <section class="home-hero" aria-labelledby="home-title">
             <div class="home-hero__copy">
-                <p class="home-eyebrow">gRPC + ConnectRPC for Node.js</p>
+                <p class="home-eyebrow">gRPC + ConnectRPC for TypeScript</p>
                 <h1 id="home-title">From your first RPC to operating a service</h1>
-                <p class="home-hero__lead">
-                    Connectum provides a TypeScript service runtime for proto contracts, request
-                    middleware, security, observability, and operations.
-                </p>
+                <p class="home-hero__lead">Connectum provides a TypeScript service runtime for proto contracts, request middleware, security, observability, and operations.</p>
                 <div class="home-actions">
-                    <a class="home-button home-button--primary" href="/en/guide/quickstart">Build your first service</a>
+                    <a class="home-button home-button--primary" href="/en/builder">Build your service</a>
                     <a class="home-button home-button--secondary" href="/en/reference/">Find an API</a>
                 </div>
                 <dl class="home-support" aria-label="Documentation support information">
-                    <div><dt>Docs</dt><dd>{{ site.documentedVersion }}</dd></div>
+                    <div>
+                        <dt>Docs</dt>
+                        <dd>{{ site.documentedVersion }}</dd>
+                    </div>
                     <div>
                         <dt>Compatibility</dt>
-                        <dd><a href="/en/guide/runtime-compatibility">Runtime matrix <span aria-hidden="true">→</span></a></dd>
+                        <dd>
+                            <a href="/en/guide/runtime-compatibility">Runtime matrix <span aria-hidden="true">→</span></a>
+                        </dd>
                     </div>
                 </dl>
             </div>
@@ -98,6 +104,7 @@ const lifecycle = [
                 <h2 id="start-by-goal">Choose a path for the task at hand.</h2>
             </div>
             <div class="home-goal-grid">
+                <!-- biome-ignore lint/a11y/useValidAnchor: Vue binds the real destination through :href. -->
                 <a v-for="goal in goals" :key="goal.title" class="home-goal-card" :href="goal.link">
                     <span class="home-goal-card__label">{{ goal.label }}</span>
                     <strong>{{ goal.title }}</strong>
@@ -114,12 +121,11 @@ const lifecycle = [
                     <h2 id="lifecycle-title">Add capabilities through explicit modules.</h2>
                 </div>
                 <p>
-                    The framework keeps lifecycle and registration predictable while modules remain
-                    explicit. Begin with the server; add production behavior as the service grows.
+                    The framework keeps lifecycle and registration predictable while modules remain explicit. Begin with the server; add production behavior as the service grows.
                 </p>
             </div>
             <ol class="lifecycle-track">
-                <li v-for="([title, detail], index) in lifecycle" :key="title">
+                <li v-for="([ title, detail ], index) in lifecycle" :key="title">
                     <span class="lifecycle-track__number">0{{ index + 1 }}</span>
                     <strong>{{ title }}</strong>
                     <span>{{ detail }}</span>
@@ -133,10 +139,7 @@ const lifecycle = [
                     <p class="home-eyebrow">Fits your stack</p>
                     <h2 id="ecosystem-title">Choose a runtime for each service.</h2>
                 </div>
-                <p>
-                    Use ConnectRPC or gRPC, connect to supported brokers, and choose Node.js or
-                    Bun for each service.
-                </p>
+                <p>Use ConnectRPC or gRPC, connect to supported brokers, and choose Node.js or Bun for each service.</p>
             </div>
             <EcosystemRail />
         </section>
@@ -146,22 +149,20 @@ const lifecycle = [
                 <p class="home-eyebrow">The central primitive</p>
                 <h2 id="example-title">Compose a service with an explicit lifecycle.</h2>
                 <p>
-                    Services, protocols, middleware, and shutdown policy meet at
-                    <code>createServer()</code>. The full tutorial defines the proto, implements the
-                    handler, starts the service, and verifies a real RPC.
+                    Define a Protobuf contract, generate TypeScript types, implement a handler, and start a server with <code>createServer()</code>. Then call the same service with
+                    Connect and gRPC.
                 </p>
                 <div class="home-inline-links">
                     <a href="/en/guide/quickstart">Follow the full tutorial →</a>
                     <a href="/en/api/@connectum/core/types/interfaces/CreateServerOptions">CreateServerOptions →</a>
                 </div>
             </div>
-            <div class="home-code" aria-label="TypeScript createServer example">
-                <div class="home-code__bar"><span></span><span></span><span></span><strong>server.ts</strong></div>
-                <div class="home-code__highlight">
-                    <slot name="server-example"></slot>
-                </div>
-            </div>
+            <HomeCodeWalkthrough>
+                <slot name="server-example" />
+            </HomeCodeWalkthrough>
         </section>
+
+        <HomeDeployments />
 
         <section class="home-section home-modules" aria-labelledby="modules-title">
             <div class="home-section__heading home-section__heading--split">
@@ -181,15 +182,19 @@ const lifecycle = [
                 <h2 id="resources-title">From evaluation to operation.</h2>
             </div>
             <nav aria-label="Connectum resources">
-                <div class="home-resources__column" aria-label="Documentation links">
+                <section class="home-resources__column" aria-label="Documentation links">
                     <a href="/en/guide/runtime-compatibility"><span>Runtime compatibility</span><span aria-hidden="true">→</span></a>
                     <a href="/en/migration/"><span>Migration</span><span aria-hidden="true">→</span></a>
                     <a href="/en/contributing/"><span>Contributing</span><span aria-hidden="true">→</span></a>
-                </div>
-                <div class="home-resources__column" aria-label="External project links">
-                    <a class="no-icon" href="https://github.com/Connectum-Framework/examples" target="_blank" rel="noreferrer"><span>Examples</span><span class="home-resources__external-arrow" aria-hidden="true">→</span></a>
-                    <a class="no-icon" href="https://github.com/Connectum-Framework/connectum" target="_blank" rel="noreferrer"><span>GitHub</span><span class="home-resources__external-arrow" aria-hidden="true">→</span></a>
-                </div>
+                </section>
+                <section class="home-resources__column" aria-label="External project links">
+                    <a class="no-icon" href="https://github.com/Connectum-Framework/examples" target="_blank" rel="noreferrer"
+                        ><span>Examples</span><span class="home-resources__external-arrow" aria-hidden="true">→</span></a
+                    >
+                    <a class="no-icon" href="https://github.com/Connectum-Framework/connectum" target="_blank" rel="noreferrer"
+                        ><span>GitHub</span><span class="home-resources__external-arrow" aria-hidden="true">→</span></a
+                    >
+                </section>
             </nav>
         </section>
     </main>

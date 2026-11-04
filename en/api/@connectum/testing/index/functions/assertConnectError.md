@@ -4,7 +4,7 @@
 
 > **assertConnectError**(`error`, `expectedCode`, `messagePattern?`): `asserts error is ConnectError`
 
-Defined in: test-fixtures/dist/index.d.ts:45
+Defined in: test-fixtures/dist/index.d.ts:50
 
 Assert that a thrown value is a [ConnectError](https://connectrpc.com/docs/web/errors) with the expected
 gRPC status code and, optionally, a message matching a pattern.
@@ -45,7 +45,14 @@ Optional substring or RegExp to match against
 
 ## Throws
 
-When any of the checks fail.
+When `messagePattern` is given and is neither a string nor a RegExp
+  (a number or a plain object would otherwise skip the message check and pass).
+
+## Throws
+
+When any of the checks fail. A value named `ConnectError` that
+  is not an instance of this package's class (an error from another installed copy of
+  `@connectrpc/connect`) fails with a message that says so.
 
 ## Example
 

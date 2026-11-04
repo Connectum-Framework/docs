@@ -4,7 +4,7 @@
 
 > **collectStreamingMethods**(`source`): [`StreamingMethodInfo`](../interfaces/StreamingMethodInfo.md)[]
 
-Defined in: [packages/core/src/TransportValidation.ts:110](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L110)
+Defined in: [packages/core/src/TransportValidation.ts:111](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/TransportValidation.ts#L111)
 
 Collect bidi-streaming methods. Client-streaming is NOT collected — the
 Connect protocol supports it over HTTP/1.1.

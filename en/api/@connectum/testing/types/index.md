@@ -56,6 +56,12 @@ Re-exports [MockRequestOptions](../index/interfaces/MockRequestOptions.md)
 
 ***
 
+### MockScalarType
+
+Re-exports [MockScalarType](../index/type-aliases/MockScalarType.md)
+
+***
+
 ### MockStreamOptions
 
 Re-exports [MockStreamOptions](../index/interfaces/MockStreamOptions.md)

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Create signals and configure their destination</title>
+<style>
+* { box-sizing: border-box; } body { margin: 0; padding: 32px 24px; background: #fff; color: #3c3c43; font: 16px Inter, ui-sans-serif, system-ui, sans-serif; }
+body:has(#guide-dark:checked) { background: #1b1b1f; color: #dfdfd6; color-scheme: dark; }
+main { width: 100%; max-width: 688px; min-width: 0; margin: auto; } h1 { font: 400 28px Georgia, serif; }
+figure { margin: 24px 0; } label { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; cursor: pointer; }
+.diagram-container { width: 100%; overflow-x: auto; } svg { display: block; width: 100%; min-width: 688px; }
+figcaption { font-size: 14px; line-height: 1.6; margin-top: 16px; } :focus-visible { outline: 2px solid #6078aa; outline-offset: 4px; }
+@media print { label { display: none; } .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style></head><body><main><h1>Create signals and configure their destination</h1><label><input id="guide-dark" type="checkbox">Dark theme</label><figure>
+<section class="diagram-container" tabindex="0" aria-label="Create signals and configure their destination; scroll horizontally"><svg class="guide-overview-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 688 552" role="img" aria-labelledby="observability-title observability-desc" data-overview="observability" data-visual-type="architecture">
+<title id="observability-title">Create signals and configure their destination</title>
+<desc id="observability-desc">RPC and application instrumentation create spans, metrics and structured logs that configured providers export, with explicit resource metadata, initialization and shutdown behavior.</desc>
+<defs><style>
+.guide-overview-svg { --go-paper: #fff; --go-ink: #3c3c43; --go-muted: #67676c; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; color: var(--go-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #1b1b1f; --go-ink: #dfdfd6; --go-muted: #a4a4ab; --go-border: #7f9cd4; --go-accent: #b9cdff; --go-tint: #202b43; --go-zone: #202127; }
+.guide-overview-svg .go-surface { fill: var(--go-paper); stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg [data-focal] .go-surface { fill: var(--go-tint); stroke: var(--go-accent); stroke-width: 1.6; }
+.guide-overview-svg [data-focal] .go-name { fill: var(--go-accent); }
+.guide-overview-svg .go-fold { fill: none; stroke: var(--go-border); stroke-width: 1.2; }
+.guide-overview-svg .go-zone > rect { fill: var(--go-zone); stroke: var(--go-border); stroke-width: .8; stroke-dasharray: 4 4; }
+.guide-overview-svg .go-name { font-size: 16px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-heading { font-size: 14px; font-weight: 600; fill: var(--go-ink); }
+.guide-overview-svg .go-detail { font-size: 12px; font-weight: 400; fill: var(--go-muted); }
+.guide-overview-svg .go-tag { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: var(--go-muted); }
+.guide-overview-svg .go-edge { fill: none; stroke: var(--go-muted); stroke-width: 1.4; }
+.guide-overview-svg .go-dashed { stroke-dasharray: 5 4; }
+.guide-overview-svg .go-arrow { fill: var(--go-muted); }
+.guide-overview-svg .go-label rect { fill: var(--go-paper); }
+@media print { .guide-overview-svg, .dark .guide-overview-svg, body:has(#guide-dark:checked) .guide-overview-svg { --go-paper: #fff; --go-ink: #222; --go-muted: #555; --go-border: #6078aa; --go-accent: #3153a0; --go-tint: #eaf0ff; --go-zone: #f7f8fa; } }
+</style><marker id="observability-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path class="go-arrow" d="M0 0L8 3L0 6Z"/></marker></defs>
+<path class="go-edge" data-from="work" data-to="spans" data-points="208,200 232,200 232,76 256,76" d="M208 200 L224 200 Q232 200 232 192 L232 84 Q232 76 240 76 L256 76" marker-end="url(#observability-arrow)"/>
+<path class="go-edge" data-from="work" data-to="meters" data-points="208,240 256,240" d="M208 240 L256 240" marker-end="url(#observability-arrow)"/>
+<path class="go-edge" data-from="work" data-to="logs" data-points="208,280 232,280 232,452 256,452" d="M208 280 L224 280 Q232 280 232 288 L232 444 Q232 452 240 452 L256 452" marker-end="url(#observability-arrow)"/>
+<path class="go-edge" data-from="spans" data-to="provider" data-points="456,76 480,76 480,168 504,168" d="M456 76 L472 76 Q480 76 480 84 L480 160 Q480 168 488 168 L504 168" marker-end="url(#observability-arrow)"/>
+<path class="go-edge" data-from="meters" data-to="provider" data-points="456,260 504,260" d="M456 260 L504 260" marker-end="url(#observability-arrow)"/>
+<path class="go-edge" data-from="logs" data-to="provider" data-points="456,452 480,452 480,320 504,320" d="M456 452 L472 452 Q480 452 480 444 L480 328 Q480 320 488 320 L504 320" marker-end="url(#observability-arrow)"/>
+<path class="go-edge" data-from="provider" data-to="backend" data-points="584,360 584,424" d="M584 360 L584 424" marker-end="url(#observability-arrow)"/>
+<g data-node="work" data-box="24 168 184 144" data-topics=""><rect class="go-surface" x="24" y="168" width="184" height="144" rx="6"/><text class="go-name" x="40" y="206" text-anchor="start">RPC + application</text><text class="go-name" x="40" y="226" text-anchor="start">instrumentation</text><text class="go-detail" x="40" y="246" text-anchor="start">Server + client RPC hooks</text><text class="go-detail" x="40" y="266" text-anchor="start">traced() / traceAll()</text><text class="go-detail" x="40" y="286" text-anchor="start">getMeter() / getLogger()</text></g>
+<g data-node="spans" data-box="256 24 200 104" data-topics="/en/guide/observability/tracing"><rect class="go-surface" x="256" y="24" width="200" height="104" rx="6"/><text class="go-name" x="272" y="62" text-anchor="start">Traces</text><text class="go-detail" x="272" y="82" text-anchor="start">Spans + propagation</text><text class="go-detail" x="272" y="102" text-anchor="start">Errors + remote-parent trust</text></g>
+<g data-node="meters" data-box="256 208 200 104" data-topics="/en/guide/observability/metrics"><rect class="go-surface" x="256" y="208" width="200" height="104" rx="6"/><text class="go-name" x="272" y="246" text-anchor="start">Metrics</text><text class="go-detail" x="272" y="266" text-anchor="start">RPC duration + app meters</text><text class="go-detail" x="272" y="286" text-anchor="start">Streaming sizes are zero</text></g>
+<g data-node="logs" data-box="256 392 200 120" data-topics="/en/guide/observability/logging"><rect class="go-surface" x="256" y="392" width="200" height="120" rx="6"/><text class="go-name" x="272" y="438" text-anchor="start">Logs</text><text class="go-detail" x="272" y="458" text-anchor="start">Structured event records</text><text class="go-detail" x="272" y="478" text-anchor="start">Trace IDs from active spans</text></g>
+<g data-node="provider" data-box="504 128 160 232" data-topics="/en/guide/observability/backends" data-focal=""><rect class="go-surface" x="504" y="128" width="160" height="232" rx="6"/><text class="go-name" x="520" y="190" text-anchor="start">Provider and</text><text class="go-name" x="520" y="210" text-anchor="start">exporters</text><text class="go-detail" x="520" y="230" text-anchor="start">Service metadata</text><text class="go-detail" x="520" y="250" text-anchor="start">Per-signal exporters</text><text class="go-detail" x="520" y="270" text-anchor="start">OTLP / console / none</text><text class="go-detail" x="520" y="290" text-anchor="start">Init before first use</text><text class="go-detail" x="520" y="310" text-anchor="start">Flush at shutdown</text></g>
+<g data-node="backend" data-box="504 424 160 96" data-topics="/en/guide/observability/backends"><rect class="go-surface" x="504" y="424" width="160" height="96" rx="6"/><text class="go-name" x="520" y="458" text-anchor="start">Telemetry</text><text class="go-name" x="520" y="478" text-anchor="start">destination</text><text class="go-detail" x="520" y="498" text-anchor="start">Collector or console</text></g>
+</svg></section>
+<figcaption>Instrumentation creates signals; providers configure their resources and destinations. Log correlation needs an active span. Configure remote-parent trust and data recording deliberately.</figcaption></figure></main></body></html>

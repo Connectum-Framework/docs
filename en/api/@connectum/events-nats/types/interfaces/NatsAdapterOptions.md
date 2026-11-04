@@ -12,7 +12,7 @@ Options for creating a NATS JetStream adapter.
 
 > `readonly` `optional` **connectionOptions?**: `Partial`\<`NodeConnectionOptions`\>
 
-Defined in: [types.ts:32](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L32)
+Defined in: [types.ts:37](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L37)
 
 NATS connection options (escape hatch for advanced config).
 
@@ -25,7 +25,7 @@ top-level `servers` option.
 
 > `readonly` `optional` **consumerOptions?**: [`NatsConsumerOptions`](NatsConsumerOptions.md)
 
-Defined in: [types.ts:40](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L40)
+Defined in: [types.ts:45](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L45)
 
 JetStream consumer tuning options.
 
@@ -35,7 +35,7 @@ JetStream consumer tuning options.
 
 > `readonly` `optional` **lifecycle?**: [`NatsLifecycleCallbacks`](NatsLifecycleCallbacks.md)
 
-Defined in: [types.ts:37](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L37)
+Defined in: [types.ts:42](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L42)
 
 Connection lifecycle callback. Without it the adapter attaches no listener to the client and behaves as before.
 
@@ -45,9 +45,12 @@ Connection lifecycle callback. Without it the adapter attaches no listener to th
 
 > `readonly` **servers**: `string` \| `string`[]
 
-Defined in: [types.ts:14](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L14)
+Defined in: [types.ts:19](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L19)
 
 NATS server URL(s). Accepts a single string or an array.
+
+A non-empty string, or a non-empty array of non-empty strings; anything else makes `NatsAdapter()` throw
+(an empty value used to make the client dial its local default address).
 
 ***
 
@@ -55,7 +58,7 @@ NATS server URL(s). Accepts a single string or an array.
 
 > `readonly` `optional` **stream?**: `string`
 
-Defined in: [types.ts:24](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L24)
+Defined in: [types.ts:29](https://github.com/Connectum-Framework/connectum/blob/main/packages/events-nats/src/types.ts#L29)
 
 JetStream stream name.
 

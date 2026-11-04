@@ -25,8 +25,8 @@ bun add @connectum/core
 ~~~
 :::
 
-**Peer dependencies:** `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.2.0` and
-`@connectrpc/connect-node` `^2.2.0`, shared with your application. npm 7+, pnpm and Bun
+**Peer dependencies:** `@bufbuild/protobuf` `^2.16.0`, `@connectrpc/connect` `^2.3.0` and
+`@connectrpc/connect-node` `^2.3.0`, shared with your application. npm 7+, pnpm and Bun
 install missing peers automatically. Keep your own pins inside
 these ranges: `createServer()` throws `PeerDependencyVersionError` when a loaded copy is
 outside them, or when `connect` and `connect-node` are out of lockstep (the check is
@@ -51,7 +51,7 @@ await server.start();
 
 | Entry point | Use it to |
 |---|---|
-| `createServer` | Compose services, protocols, interceptors, and shutdown policy. |
+| `createServer` | Compose services, protocols, interceptors, shutdown policy, and the `logger` that receives the server's own lifecycle messages (`console` by default). |
 | `defineService` | Bind a generated service descriptor to typed handlers. |
 | `createCatalogClient` | Call catalog services outside a server handler. |
 

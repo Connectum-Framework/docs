@@ -70,6 +70,7 @@
 - [defineLazyService](functions/defineLazyService.md)
 - [defineService](functions/defineService.md)
 - [dnsResolver](functions/dnsResolver.md)
+- [enabledServicesFromEnv](functions/enabledServicesFromEnv.md)
 - [getTLSPath](functions/getTLSPath.md)
 - [isSanitizableError](functions/isSanitizableError.md)
 - [mapResolver](functions/mapResolver.md)
@@ -143,6 +144,12 @@ Re-exports [Server](types/interfaces/Server.md)
 ### ServerClientOptions
 
 Re-exports [ServerClientOptions](types/interfaces/ServerClientOptions.md)
+
+***
+
+### ServerLogger
+
+Re-exports [ServerLogger](types/interfaces/ServerLogger.md)
 
 ***
 

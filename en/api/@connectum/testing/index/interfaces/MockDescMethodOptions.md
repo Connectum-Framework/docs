@@ -2,7 +2,7 @@
 
 # Interface: MockDescMethodOptions
 
-Defined in: test-fixtures/dist/types.d.ts:64
+Defined in: test-fixtures/dist/types.d.ts:75
 
 Options for [createMockDescMethod](../functions/createMockDescMethod.md).
 
@@ -12,7 +12,7 @@ Options for [createMockDescMethod](../functions/createMockDescMethod.md).
 
 > `optional` **input?**: [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: test-fixtures/dist/types.d.ts:66
+Defined in: test-fixtures/dist/types.d.ts:77
 
 Input message descriptor.
 
@@ -22,7 +22,7 @@ Input message descriptor.
 
 > `optional` **kind?**: `"client_streaming"` \| `"server_streaming"` \| `"bidi_streaming"` \| `"unary"`
 
-Defined in: test-fixtures/dist/types.d.ts:70
+Defined in: test-fixtures/dist/types.d.ts:81
 
 Method kind. Default: `'unary'`
 
@@ -32,7 +32,7 @@ Method kind. Default: `'unary'`
 
 > `optional` **output?**: [`DescMessage`](https://protobufes.com/reference/reflection/descriptors/#types)
 
-Defined in: test-fixtures/dist/types.d.ts:68
+Defined in: test-fixtures/dist/types.d.ts:79
 
 Output message descriptor.
 
@@ -42,7 +42,7 @@ Output message descriptor.
 
 > `optional` **useSensitiveRedaction?**: `boolean`
 
-Defined in: test-fixtures/dist/types.d.ts:79
+Defined in: test-fixtures/dist/types.d.ts:90
 
 Put the fixture-only marker `{ debug_redact: true }` into `proto.options`. Default: `false`
 

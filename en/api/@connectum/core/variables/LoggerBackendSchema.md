@@ -4,6 +4,6 @@
 
 > `const` **LoggerBackendSchema**: `ZodDefault`\<`ZodEnum`\<\{ `console`: `"console"`; `otel`: `"otel"`; `pino`: `"pino"`; \}\>\>
 
-Defined in: [packages/core/src/config/envSchema.ts:25](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/config/envSchema.ts#L25)
+Defined in: [packages/core/src/config/envSchema.ts:32](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/config/envSchema.ts#L32)
 
 Logger backend schema

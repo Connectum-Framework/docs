@@ -2,7 +2,7 @@
 
 # Interface: ClientStreamHandle\<Req, Res\>
 
-Defined in: [packages/core/src/context.ts:72](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L72)
+Defined in: [packages/core/src/context.ts:84](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L84)
 
 Push handle for a client-streaming catalog call: send N requests, then
 `close()` to receive the single aggregated response.
@@ -23,7 +23,7 @@ Push handle for a client-streaming catalog call: send N requests, then
 
 > **close**(): `Promise`\<`Res`\>
 
-Defined in: [packages/core/src/context.ts:84](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L84)
+Defined in: [packages/core/src/context.ts:102](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L102)
 
 End the request stream and resolve with the server's single response.
 
@@ -43,7 +43,7 @@ that status arrives, the call is canceled or its deadline passes.
 
 > **send**(`request`): `void`
 
-Defined in: [packages/core/src/context.ts:74](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L74)
+Defined in: [packages/core/src/context.ts:92](https://github.com/Connectum-Framework/connectum/blob/main/packages/core/src/context.ts#L92)
 
 Enqueue one request message.
 
@@ -56,3 +56,9 @@ Enqueue one request message.
 #### Returns
 
 `void`
+
+#### Throws
+
+ConnectError with `Code.FailedPrecondition` when called after
+[ClientStreamHandle.close](#close): the request stream is already ended, so
+the message could not be delivered and is refused instead of lost.
