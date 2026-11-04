@@ -4,13 +4,25 @@
 
 > **Healthcheck**(`options?`): `ProtocolRegistration`
 
-Defined in: [Healthcheck.ts:126](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/Healthcheck.ts#L126)
+Defined in: [Healthcheck.ts:153](https://github.com/Connectum-Framework/connectum/blob/main/packages/healthcheck/src/Healthcheck.ts#L153)
 
 Create healthcheck protocol registration
 
 Returns a ProtocolRegistration directly (not `{ protocol, manager }`).
 Pass to createServer({ protocols: [...] }).
 Use the singleton `healthcheckManager` export to control health status.
+
+Health tracks the application services and the services of custom
+protocols, wherever `Healthcheck()` stands in the `protocols` array. The set
+is completed in the protocol's `ready` hook, after every protocol has
+registered. Never tracked: the `grpc.health.v1.Health` service itself, the
+infrastructure services `grpc.reflection.v1` and `v1alpha` (so
+`Reflection()` changes neither `List` nor the overall status), and a service
+that is only declared in a mounted file.
+Every tracked service starts as `UNKNOWN`. A protocol that wraps
+`Healthcheck()` and delegates to it must forward `ready` as well as `setup`
+and `register`; without `ready` Health tracks only the services registered
+before the wrapper.
 
 `httpPaths`, when passed, is validated even if `httpEnabled` is false.
 HTTP request paths are matched exactly and case-sensitively (`/healthz/`
