@@ -39,32 +39,32 @@ onBeforeUnmount(() => revealObserver?.disconnect());
 // biome-ignore lint/correctness/noUnusedVariables: the Vue template iterates these goal links.
 const goals = [
     {
-        label: 'New to Connectum',
-        title: 'Build a first service',
-        description: 'Go from an empty directory to a verified gRPC call with a focused, linear tutorial.',
+        label: 'Your first service',
+        title: 'Build a protected RPC',
+        description: 'Scaffold a project, add a Protobuf method and check calls with and without a JWT.',
         link: '/en/guide/quickstart',
-        action: 'Start the tutorial',
+        action: 'Follow the quickstart',
     },
     {
-        label: 'Building a capability',
-        title: 'Solve a service task',
-        description: 'Add validation, service calls, events, authentication, or testing with a guide for the task at hand.',
-        link: '/en/guide/about#choose-your-path',
-        action: 'Browse guides',
+        label: 'Connecting services',
+        title: 'Choose how services communicate',
+        description: 'Compare typed RPC calls and events, then choose local or remote routing.',
+        link: '/en/guide/communication',
+        action: 'Communication guides',
     },
     {
-        label: 'Operating services',
-        title: 'Deploy and operate services',
-        description: 'Configure health checks, observability, shutdown, containers, Kubernetes, or a gateway.',
-        link: '/en/guide/production/kubernetes',
-        action: 'Explore operations',
+        label: 'Deploying a service',
+        title: 'Choose a deployment setup',
+        description: 'Package the service for containers and find guidance for Kubernetes, gateways and service meshes.',
+        link: '/en/guide/deploy',
+        action: 'Deployment guides',
     },
     {
-        label: 'Know what you need',
+        label: 'Exact API',
         title: 'Find an exact option',
-        description: 'Jump by module or symbol into the generated API, compatibility matrix, or migration guidance.',
+        description: 'Look up exported functions, TypeScript interfaces and configuration fields in the generated API.',
         link: '/en/api/',
-        action: 'Open reference',
+        action: 'Open the API',
     },
 ] as const;
 
@@ -72,7 +72,7 @@ const goals = [
 const lifecycle = [
     ['Define', 'Proto contracts and generated types'],
     ['Run', 'Server lifecycle and transport'],
-    ['Protect', 'Validation, auth, and resilience'],
+    ['Protect', 'Configured validation, auth and resilience'],
     ['Observe', 'Traces, metrics, and logs'],
     ['Operate', 'Health, shutdown, and deployment'],
 ] as const;
@@ -97,7 +97,7 @@ const lifecycle = [
                     <div>
                         <dt>Compatibility</dt>
                         <dd>
-                            <a href="/en/guide/runtime-compatibility">Runtime matrix <span aria-hidden="true">→</span></a>
+                            <a href="/en/guide/runtime-compatibility-details#compatibility-matrix">Runtime matrix <span aria-hidden="true">→</span></a>
                         </dd>
                     </div>
                 </dl>
@@ -105,10 +105,47 @@ const lifecycle = [
             <div class="home-hero__art" aria-hidden="true"></div>
         </section>
 
+        <section class="home-section home-ecosystem" aria-labelledby="ecosystem-title">
+            <div class="home-section__heading home-section__heading--split">
+                <div>
+                    <p class="home-eyebrow">Fits your stack</p>
+                    <h2 id="ecosystem-title">Build on ConnectRPC and Protobuf.</h2>
+                </div>
+                <p>
+                    ConnectRPC supplies the RPC layer. Connectum adds a shared server lifecycle and optional modules for security, telemetry and events.
+                </p>
+            </div>
+            <EcosystemRail />
+            <p class="home-section__more">
+                <a href="/en/guide/about#what-connectum-owns">See what Connectum owns →</a>
+                · <a href="/en/guide/runtime-compatibility-details">Runtime requirements and limits →</a>
+            </p>
+        </section>
+
+        <section class="home-section home-example" aria-labelledby="example-title">
+            <div class="home-example__copy">
+                <p class="home-eyebrow">From contract to handler</p>
+                <h2 id="example-title">Implement your contract in TypeScript.</h2>
+                <p>
+                    Define the API in Protobuf, generate its types and implement the handlers as ordinary functions. Register services, middleware and protocols with
+                    <code>createServer()</code>.
+                </p>
+                <div class="home-inline-links">
+                    <a href="/en/guide/quickstart-manual">Build a service step by step →</a>
+                    <a href="/en/api/@connectum/core/types/interfaces/CreateServerOptions">CreateServerOptions →</a>
+                </div>
+            </div>
+            <HomeCodeWalkthrough>
+                <slot name="server-example" />
+            </HomeCodeWalkthrough>
+        </section>
+
+        <HomeDeployments />
+
         <section class="home-section home-intents" aria-labelledby="start-by-goal">
             <div class="home-section__heading">
                 <p class="home-eyebrow">Start by goal</p>
-                <h2 id="start-by-goal">Choose a path for the task at hand.</h2>
+                <h2 id="start-by-goal">Choose your next step.</h2>
             </div>
             <div class="home-goal-grid">
                 <!-- biome-ignore lint/a11y/useValidAnchor: Vue binds the real destination through :href. -->
@@ -128,7 +165,8 @@ const lifecycle = [
                     <h2 id="lifecycle-title">Add capabilities through explicit modules.</h2>
                 </div>
                 <p>
-                    The framework keeps lifecycle and registration predictable while modules remain explicit. Begin with the server; add production behavior as the service grows.
+                    Use the same startup and shutdown model across services, with only the modules each service needs. Your application keeps its database, business logic and
+                    dependency wiring.
                 </p>
             </div>
             <ol class="lifecycle-track">
@@ -138,38 +176,11 @@ const lifecycle = [
                     <span>{{ detail }}</span>
                 </li>
             </ol>
+            <p>
+                For a small RPC endpoint, or when your existing setup already covers these needs, ConnectRPC alone may be enough.
+                <a href="/en/guide/about">Decide whether Connectum fits your service.</a>
+            </p>
         </section>
-
-        <section class="home-section home-ecosystem" aria-labelledby="ecosystem-title">
-            <div class="home-section__heading home-section__heading--split">
-                <div>
-                    <p class="home-eyebrow">Fits your stack</p>
-                    <h2 id="ecosystem-title">Choose a runtime for each service.</h2>
-                </div>
-                <p>Use ConnectRPC or gRPC, connect to supported brokers, and choose Node.js or Bun for each service.</p>
-            </div>
-            <EcosystemRail />
-        </section>
-
-        <section class="home-section home-example" aria-labelledby="example-title">
-            <div class="home-example__copy">
-                <p class="home-eyebrow">The central primitive</p>
-                <h2 id="example-title">Compose a service with an explicit lifecycle.</h2>
-                <p>
-                    Define a Protobuf contract, generate TypeScript types, implement a handler, and start a server with <code>createServer()</code>. Then call the same service with
-                    Connect and gRPC.
-                </p>
-                <div class="home-inline-links">
-                    <a href="/en/guide/quickstart">Follow the full tutorial →</a>
-                    <a href="/en/api/@connectum/core/types/interfaces/CreateServerOptions">CreateServerOptions →</a>
-                </div>
-            </div>
-            <HomeCodeWalkthrough>
-                <slot name="server-example" />
-            </HomeCodeWalkthrough>
-        </section>
-
-        <HomeDeployments />
 
         <section class="home-section home-modules" aria-labelledby="modules-title">
             <div class="home-section__heading home-section__heading--split">
@@ -177,10 +188,10 @@ const lifecycle = [
                     <p class="home-eyebrow">Explore modules</p>
                     <h2 id="modules-title">Find modules by capability.</h2>
                 </div>
-                <p>Each module links to its guide, configuration help, and generated API reference.</p>
+                <p>Choose a capability, then open its Guide or generated API.</p>
             </div>
             <ModuleGrid />
-            <p class="home-section__more"><a href="/en/guide/about#modules">Find a module's guide and API →</a></p>
+            <p class="home-section__more"><a href="/en/guide/production/architecture#extension-seams">Understand module boundaries →</a></p>
         </section>
 
         <section class="home-section home-resources" aria-labelledby="resources-title">
