@@ -75,7 +75,7 @@ const serverA = createServer({ services: [routesA], protocols: [Reflection()] })
 const serverB = createServer({ services: [routesB], protocols: [Reflection()] });
 ```
 
-Protocols are set up and registered in array order. The `context.services` (and `context.registry`, their files) a protocol receives in `setup` hold every mounted application service plus the services of the protocols listed **before** it, as frozen snapshots. `Healthcheck()` and `Reflection()` both read the complete set in `ready`, so neither depends on its position in the array: Healthcheck tracks every mounted service except its own `grpc.health.v1.Health`, and Reflection lists every service:
+Protocols are set up and registered in array order. The `context.services` (and `context.registry`, their files) a protocol receives in `setup` hold every mounted application service plus the services of the protocols listed **before** it, as frozen snapshots. `Healthcheck()` and `Reflection()` both read the complete set in `ready`, so neither depends on its position in the array: Healthcheck tracks every mounted service except its own `grpc.health.v1.Health` and the reflection services, and Reflection lists every service:
 
 ```typescript
 import { createServer } from '@connectum/core';
