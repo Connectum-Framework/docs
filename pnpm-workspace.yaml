@@ -6,17 +6,18 @@ packages:
 # at its latest release. Each target below was checked to be published and to stay
 # inside the major already installed.
 #
-# NOT pinned, deliberately -- `vite` (1 high, 3 moderate: GHSA-fx2h-pf6j-xcff,
+# esbuild is pinned to 0.25.0 (the first release that fixes GHSA-67mh-4wv8-2f99): the
+# static build, llms output and mermaid pages were verified identical on vite 5.
+# Newer esbuild (0.28) breaks the build because vite 5 relies on syntax lowering it
+# removed ("Transforming destructuring to the configured target environment is not
+# supported").
+#
+# NOT pinned, deliberately -- `vite` (1 high, 6 moderate, 1 low; among them GHSA-fx2h-pf6j-xcff,
 # GHSA-4w7w-66w2-5vf9, GHSA-v6wh-96g9-6wx3, GHSA-698v-4r3x-3vcv -- the last one is a
-# Windows `launch-editor` argument-escaping flaw, patched in vite 6.4.4 and later only)
-# and `esbuild` (1 moderate: GHSA-67mh-4wv8-2f99):
-#   * the fixes need vite >= 6.4.3 and esbuild >= 0.24.3, but vitepress 1.6.4 -- the
-#     latest stable -- declares `vite ^5.4.14`, and vite 5 declares `esbuild ^0.21.3`.
-#     vitepress 2.x is alpha only, so neither is reachable without leaving the
-#     supported combination.
-#   * forcing esbuild anyway was tried and breaks the build outright: vite 5 relies on
-#     syntax lowering that esbuild 0.28 removed ("Transforming destructuring to the
-#     configured target environment is not supported").
+# Windows `launch-editor` argument-escaping flaw, patched in vite 6.4.4 and later only):
+#   * the fixes need vite >= 6.4.4, but vitepress 1.6.4 -- the latest stable -- declares
+#     `vite ^5.4.14`. vitepress 2.x is alpha only, so this is not reachable without
+#     leaving the supported combination.
 #   * all four advisories are **dev-server** issues -- `server.fs.deny` bypass on
 #     Windows, `.map` path traversal, NTLM hash disclosure through the Windows
 #     open-in-editor UNC path handling, and "any website can send requests to the
@@ -26,7 +27,7 @@ packages:
 overrides:
   'lodash-es@<=4.17.23': '>=4.18.0'
   'rollup@>=4.0.0 <4.59.0': '4.59.0'
-  'minimatch@>=10.0.0 <10.2.3': '10.2.3'
+  'minimatch@>=10.0.0 <11.0.1': '11.0.1'
   'brace-expansion@>=4.0.0 <5.0.12': '5.0.12'
   'dompurify@<3.4.17': '3.4.17'
   'js-yaml@>=3.0.0 <3.15.2': '3.15.2'
@@ -37,6 +38,11 @@ overrides:
   # Keep the transitive Node transport on the same Connect release as the demos.
   '@connectrpc/connect-node': 2.2.0
   'source-map-js@>=1.0.0 <1.2.2': '1.2.2'
+  'katex@<0.18.2': '0.18.2'
+  # One Vue family: vitepress and its plugins resolve `vue ^3.5` independently of the
+  # root pin, which left a second, vulnerable @vue/server-renderer in the lockfile.
+  'vue@<3.5.42': '3.5.42'
+  'esbuild@<0.25.0': '0.25.0'
 
 allowBuilds:
   '@bufbuild/buf': true
