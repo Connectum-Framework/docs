@@ -13,9 +13,9 @@ assert both the result and the side effects it is allowed to perform.
 
 For an interceptor, `@connectum/test-fixtures` supplies transport-free requests,
 downstream functions, descriptor mocks, streams and error assertions. It is meant
-for authors of interceptor and descriptor-level tests: Connectum's own package
-suites share these fixtures, and application tests use them directly only when no
-server is involved. These helpers do not prove that a running service has the
+for authors of interceptor and descriptor-level tests; most application tests
+depend on `@connectum/testing`, which re-exports these helpers and adds a test
+server. These helpers do not prove that a running service has the
 right middleware or routes; cover that in
 [integration tests](/en/guide/testing/integration).
 

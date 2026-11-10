@@ -112,9 +112,11 @@ jobs:
       # comparison needs the framework tree. Two details are deliberate: the
       # default branch rather than a release tag, because a package merged in
       # the framework must be documentable before it is released; and the
-      # checkout coming after the build, because VitePress builds the project
-      # root as its source directory and would otherwise turn the framework
-      # README files into pages and fail on their relative links.
+      # checkout coming after the build, because VitePress uses the project
+      # root as its source directory. The sparse pattern below brings no
+      # Markdown, but a wider checkout would turn the framework README files
+      # into pages and fail on their relative links, so the order keeps the
+      # build independent of what this step fetches.
       - name: Checkout framework for the registry comparison
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
