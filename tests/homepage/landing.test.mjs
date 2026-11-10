@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { test } from 'node:test';
 import { publicModules } from '../../.vitepress/data/modules.ts';
 
@@ -99,5 +101,45 @@ test('documentation validation accepts real module fragments and rejects missing
         );
         assert.equal(result.status, expected ? 1 : 0, result.stderr);
         if (expected) assert.ok(result.stderr.includes(`@connectum/events-nats: ${expected} ${guide}`), result.stderr);
+    }
+});
+
+test('documentation validation compares the module registry with the public packages of a framework checkout', () => {
+    // The validator reads only packages/<name>/package.json, so a directory of
+    // manifests stands in for the framework. Without this comparison a package
+    // added to the framework ships with no page in the portal and nothing fails.
+    const framework = mkdtempSync(join(tmpdir(), 'connectum-framework-'));
+    const addPackage = (directory, manifest) => {
+        mkdirSync(join(framework, 'packages', directory), { recursive: true });
+        writeFileSync(join(framework, 'packages', directory, 'package.json'), JSON.stringify(manifest));
+    };
+    const validate = (frameworkRoot) =>
+        spawnSync(process.execPath, ['scripts/docs-validate.mjs'], {
+            cwd: root,
+            encoding: 'utf8',
+            env: { ...process.env, CONNECTUM_FRAMEWORK_ROOT: frameworkRoot },
+        });
+
+    try {
+        const missingPackages = validate(framework);
+        assert.equal(missingPackages.status, 1, missingPackages.stdout);
+        assert.ok(missingPackages.stderr.includes('CONNECTUM_FRAMEWORK_ROOT does not contain packages/'), missingPackages.stderr);
+
+        for (const module of publicModules) addPackage(module.slug, { name: module.name });
+        addPackage('internal-tooling', { name: '@connectum/internal-tooling', private: true });
+        const matching = validate(framework);
+        assert.equal(matching.status, 0, matching.stderr);
+        assert.ok(matching.stdout.includes('framework sources checked'), matching.stdout);
+
+        addPackage('unregistered', { name: '@connectum/unregistered' });
+        const unregistered = validate(framework);
+        assert.equal(unregistered.status, 1, unregistered.stdout);
+        assert.ok(unregistered.stderr.includes('module registry mismatch'), unregistered.stderr);
+        const [, packagesLine, registryLine] = unregistered.stderr.match(/packages: (.*)\n\s*registry: (.*)/) ?? [];
+        assert.ok(packagesLine?.includes('@connectum/unregistered'), unregistered.stderr);
+        assert.ok(!registryLine?.includes('@connectum/unregistered'), unregistered.stderr);
+        assert.ok(!packagesLine?.includes('@connectum/internal-tooling'), unregistered.stderr);
+    } finally {
+        rmSync(framework, { recursive: true, force: true });
     }
 });
