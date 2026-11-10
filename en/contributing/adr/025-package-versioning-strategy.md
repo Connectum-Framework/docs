@@ -18,6 +18,13 @@ Accepted -- 2026-02-20; revised -- 2026-10-08 (Phase 2 cancelled; see Current De
 > `@connectum/testing` has been published since 2026-03-05 (`private: false`), and
 > the monorepo has 15 packages today; see [Packages](/en/guide/about#modules).
 
+> **Update (2026-11-10):** 1.0.0 was published on 2026-06-16, so the rc phase that
+> the "Current State" section below describes is over and its `1.0.0-rc.4` version
+> is historical. The `latest` version on npm is 1.3.0, published 2026-11-04, and
+> the fixed group still holds the 15 packages counted in the 2026-10-08 note
+> above. The decision is unchanged: every `@connectum/*` package keeps one shared
+> version.
+
 ## Current Decision (2026-10-08)
 
 Keep every `@connectum/*` package in the same Changesets fixed group for stable
@@ -408,3 +415,4 @@ Use `"linked"` instead of `"fixed"` for the core group. With `linked`, packages 
 |------|--------|--------|
 | 2026-02-20 | Software Architect | Initial ADR: two-phase versioning strategy (Fixed for rc, Hybrid after 1.0.0) |
 | 2026-10-08 | Maintainer revision | Cancel the Phase 2 Hybrid transition; keep all packages at one shared version (Current Decision). Historical body retained; `## Decision` renamed to `## Original Decision (2026-02-20)`. |
+| 2026-11-10 | Connectum maintainers | Added an Update note under Status: 1.0.0 shipped on 2026-06-16, `latest` is 1.3.0, and the fixed group still holds 15 packages. The "Current State" rc-phase sentence is left as written. Decision unchanged. |
