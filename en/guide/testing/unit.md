@@ -12,9 +12,12 @@ the RPC boundary. Pass explicit dependencies to the function under test and
 assert both the result and the side effects it is allowed to perform.
 
 For an interceptor, `@connectum/test-fixtures` supplies transport-free requests,
-downstream functions, descriptor mocks, streams and error assertions. These
-helpers do not prove that a running service has the right middleware or routes;
-cover that in [integration tests](/en/guide/testing/integration).
+downstream functions, descriptor mocks, streams and error assertions. It is meant
+for authors of interceptor and descriptor-level tests; most application tests
+depend on `@connectum/testing`, which re-exports these helpers and adds a test
+server. These helpers do not prove that a running service has the
+right middleware or routes; cover that in
+[integration tests](/en/guide/testing/integration).
 
 ## Installation {#installation}
 
