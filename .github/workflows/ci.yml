@@ -108,5 +108,27 @@ jobs:
       - name: Build VitePress
         run: pnpm docs:build
 
+      # The registry is compared with the framework's public packages, so the
+      # comparison needs the framework tree. Two details are deliberate: the
+      # default branch rather than a release tag, because a package merged in
+      # the framework must be documentable before it is released; and the
+      # checkout coming after the build, because VitePress builds the project
+      # root as its source directory and would otherwise turn the framework
+      # README files into pages and fail on their relative links.
+      - name: Checkout framework for the registry comparison
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: Connectum-Framework/connectum
+          ref: main
+          path: framework/connectum
+          persist-credentials: false
+          # The validator reads only packages/<name>/package.json: private flag
+          # and name. Cone mode cannot express a file pattern, hence non-cone.
+          sparse-checkout: |
+            packages/*/package.json
+          sparse-checkout-cone-mode: false
+
       - name: Validate documentation outputs
+        env:
+          CONNECTUM_FRAMEWORK_ROOT: ${{ github.workspace }}/framework/connectum
         run: pnpm docs:validate:built
