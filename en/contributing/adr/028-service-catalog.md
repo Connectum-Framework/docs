@@ -12,6 +12,8 @@ Accepted -- 2026-06-15; revised -- 2026-10-09
 
 > **Update (2026-10-09):** In 1.0.0-1.2.0 the chain configured in `outgoingInterceptors` ran only on `ctx.call` / `ctx.stream` to services mounted on the same `Server`; `server.client()`, resolver routes, and `createMockContext` routes received no chain. In 1.3.0 ([connectum#339](https://github.com/Connectum-Framework/connectum/pull/339)) the chain runs on every catalog route: the resolver's transport is wrapped (Connect's `runUnaryCall` / `runStreamingCall` around it), the deadline budget starts before the chain, and the transport's own interceptors run inside it. `server.localClient()` stays plain. Application policy has one owner -- this chain -- and transport-specific middleware stays on the resolver's transports. The decision text below is unchanged.
 
+> **Update (2026-11-10):** 1.0.0 was published on 2026-06-16, so the pre-publish window this ADR was written in has closed. Breaking changes now follow the project's [breaking-change policy](/en/contributing/commit-messages#breaking-changes): a changeset whose first line is a `type!:` subject, states **BREAKING** and who is affected, and gives a migration note, plus a migration-guide entry when users must act. The decision text below is unchanged.
+
 ## Context
 
 [ADR-026](./026-eventbus-architecture.md) and [ADR-027](./027-external-contracts-vs-eventbus.md) cover the asynchronous, event-driven path between services. The synchronous, request-response path between services was left to each adopter to assemble by hand on top of the transport layer.
@@ -24,7 +26,7 @@ A prior `in-process-transport` change had already delivered the transport primit
 
 The unifying observation: a catalog carries **proto service descriptors**, while deployment topology is supplied separately at runtime. The catalog does not say which services are local or remote, or where a remote service is hosted. Therefore resolver and `enabledServices` configuration must live exclusively in runtime/boot code, never in proto.
 
-The goal of this ADR is a single declarative DX layer for cross-service calls that satisfies all three cases without forcing topology into proto and without breaking the catalog-free monolith. Because the framework's first stable release (1.0.0) is not yet published, removals required to land a clean API are pre-publish breaking and do not require a major version bump.
+The goal of this ADR is a single declarative DX layer for cross-service calls that satisfies all three cases without forcing topology into proto and without breaking the catalog-free monolith. Because the framework's first stable release (1.0.0) was not yet published when this decision was taken, removals required to land a clean API were pre-publish breaking and did not require a major version bump.
 
 ## Decision
 
@@ -213,3 +215,4 @@ These are explicit limitations of the v1 catalog, not merely "future nice-to-hav
 | 2026-10-08 | Connectum maintainers | Corrected statements that contradicted the ADR itself or the implementation: startup does not probe any route (the earlier "only the default route is probed" sentence contradicted the startup-validation rationale); the catalog/`enabledServices` shape check runs only when both options are supplied; an empty augmentation map makes `ctx.call` keys `never` (no untyped fallback, as the `ctx.call` section already stated); topology is supplied through construction options and consumed on the first route build, which can precede `server.start()`; local means mounted on this `Server` in the same process. |
 | 2026-10-08 | Connectum maintainers | Recorded generated request initializer types (`MessageInitShape`) as a 1.3.0 typing refinement; runtime dispatch is unchanged. |
 | 2026-10-09 | Connectum maintainers | Update: `outgoingInterceptors` applied on every catalog route in 1.3.0; ownership rule recorded (application policy in the chain, transport-specific middleware on the resolver transport) |
+| 2026-11-10 | Connectum maintainers | Placed the release state in time: the Context sentence now says the decision was taken before 1.0.0 was published. An Update note under Status records that 1.0.0 shipped on 2026-06-16 and that breaking changes follow the breaking-change policy. Decision unchanged. |
