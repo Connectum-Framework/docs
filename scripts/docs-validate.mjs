@@ -7,6 +7,7 @@ import { publicModules } from '../.vitepress/data/modules.ts';
 import { findRedirect } from '../.vitepress/data/redirects.ts';
 import { movedInterceptorSections } from '../.vitepress/guide/interceptor-sections.ts';
 import { guideSections as navigationSections } from '../.vitepress/guide/navigation.ts';
+import { slugify } from './lib/heading-anchors.mjs';
 
 const projectRoot = resolve(import.meta.dirname, '..');
 const workspaceRoot = resolve(projectRoot, '..');
@@ -32,29 +33,6 @@ function routeFor(file) {
     const sourcePath = relative(projectRoot, file).replaceAll('\\', '/');
     const route = `/${sourcePath.replace(/\.md$/, '')}`;
     return route.endsWith('/index') ? route.slice(0, -5) : route;
-}
-
-function cleanHeading(value) {
-    return value
-        .replace(/\s+\{#[^}]+\}\s*$/, '')
-        .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-        .replace(/[`*_~]/g, '')
-        .trim();
-}
-
-function slugify(value) {
-    return (
-        cleanHeading(value)
-            .normalize('NFKD')
-            .replace(/[\u0300-\u036f]/g, '')
-            // biome-ignore lint/suspicious/noControlCharactersInRegex: fragment normalization must match VitePress, including removed control characters.
-            .replace(/[\u0000-\u001f]/g, '')
-            .replace(/[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '')
-            .replace(/^(\d)/, '_$1')
-            .toLowerCase()
-    );
 }
 
 function anchorsFor(source) {
