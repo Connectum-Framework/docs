@@ -1,5 +1,5 @@
 import { tasklist } from '@mdit/plugin-tasklist';
-import { defineConfig } from 'vitepress';
+import { defineConfig, type HeadConfig } from 'vitepress';
 import llmstxt, { copyOrDownloadAsMarkdownButtons } from 'vitepress-plugin-llms';
 import { documentationRedirects, findRedirect } from '../data/redirects.ts';
 import { pmContainerPlugin } from '../plugins/pmContainer.js';
@@ -49,10 +49,7 @@ export const sharedConfig = defineConfig({
         ['meta', { name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)' }],
         ['meta', { name: 'theme-color', content: '#1b1b1f', media: '(prefers-color-scheme: dark)' }],
         ['meta', { property: 'og:type', content: 'website' }],
-        ['meta', { property: 'og:title', content: 'Connectum' }],
-        ['meta', { property: 'og:description', content: 'gRPC and ConnectRPC framework for TypeScript' }],
         ['meta', { property: 'og:image', content: 'https://connectum.dev/assets/splash.png' }],
-        ['meta', { property: 'og:url', content: 'https://connectum.dev' }],
         ['meta', { property: 'og:site_name', content: 'Connectum' }],
         ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
         ['meta', { name: 'twitter:image', content: 'https://connectum.dev/assets/splash.png' }],
@@ -96,13 +93,21 @@ export const sharedConfig = defineConfig({
         const redirect = findRedirect(`/${page.relativePath.replace(/\.md$/, '').replace(/\/index$/, '/')}`);
         if (redirect) page.frontmatter.search = false;
     },
-    transformHead({ pageData }) {
-        const redirect = findRedirect(`/${pageData.relativePath.replace(/\.md$/, '').replace(/\/index$/, '/')}`);
-        if (!redirect) return [];
-        return [
-            ['link', { rel: 'canonical', href: `https://connectum.dev${redirect.to.split('#')[0]}` }],
-            ['meta', { name: 'robots', content: 'noindex,follow' }],
+    transformHead({ page, title, description, head: existingHead }) {
+        const route = `/${page.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '')}`;
+        const redirect = findRedirect(route);
+        // A compatibility page identifies its destination, just like its canonical link.
+        const canonical = existingHead.find(([tag, attributes]) => tag === 'link' && attributes.rel === 'canonical')?.[1].href;
+        const url = new URL(redirect ? redirect.to.split('#')[0] : canonical ?? route, 'https://connectum.dev').href;
+        const head: HeadConfig[] = [
+            ['meta', { property: 'og:title', content: title }],
+            ['meta', { property: 'og:description', content: description }],
+            ['meta', { property: 'og:url', content: url }],
         ];
+        if (redirect) {
+            head.push(['link', { rel: 'canonical', href: url }], ['meta', { name: 'robots', content: 'noindex,follow' }]);
+        }
+        return head;
     },
     vite: {
         plugins: [
