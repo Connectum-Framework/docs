@@ -85,7 +85,7 @@ export const sharedConfig = defineConfig({
             md.use(pmContainerPlugin);
         },
     },
-    srcExclude: ['**/api/_media/**'],
+    srcExclude: ['**/api/_media/**', 'README.md'],
     ignoreDeadLinks: [/localhost/, /_media/],
     cleanUrls: true,
     sitemap: {
