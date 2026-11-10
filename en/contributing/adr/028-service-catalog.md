@@ -26,7 +26,7 @@ A prior `in-process-transport` change had already delivered the transport primit
 
 The unifying observation: a catalog carries **proto service descriptors**, while deployment topology is supplied separately at runtime. The catalog does not say which services are local or remote, or where a remote service is hosted. Therefore resolver and `enabledServices` configuration must live exclusively in runtime/boot code, never in proto.
 
-The goal of this ADR is a single declarative DX layer for cross-service calls that satisfies all three cases without forcing topology into proto and without breaking the catalog-free monolith. Because the framework's first stable release (1.0.0) was not yet published when this decision was taken, removals required to land a clean API were pre-publish breaking and did not require a major version bump.
+The goal of this ADR is a single declarative DX layer for cross-service calls that satisfies all three cases without forcing topology into proto and without breaking the catalog-free monolith. Because the framework's first stable release (1.0.0) is not yet published, removals required to land a clean API are pre-publish breaking and do not require a major version bump.
 
 ## Decision
 
@@ -215,4 +215,4 @@ These are explicit limitations of the v1 catalog, not merely "future nice-to-hav
 | 2026-10-08 | Connectum maintainers | Corrected statements that contradicted the ADR itself or the implementation: startup does not probe any route (the earlier "only the default route is probed" sentence contradicted the startup-validation rationale); the catalog/`enabledServices` shape check runs only when both options are supplied; an empty augmentation map makes `ctx.call` keys `never` (no untyped fallback, as the `ctx.call` section already stated); topology is supplied through construction options and consumed on the first route build, which can precede `server.start()`; local means mounted on this `Server` in the same process. |
 | 2026-10-08 | Connectum maintainers | Recorded generated request initializer types (`MessageInitShape`) as a 1.3.0 typing refinement; runtime dispatch is unchanged. |
 | 2026-10-09 | Connectum maintainers | Update: `outgoingInterceptors` applied on every catalog route in 1.3.0; ownership rule recorded (application policy in the chain, transport-specific middleware on the resolver transport) |
-| 2026-11-10 | Connectum maintainers | Placed the release state in time: the Context sentence now says the decision was taken before 1.0.0 was published. An Update note under Status records that 1.0.0 shipped on 2026-06-16 and that breaking changes follow the breaking-change policy. Decision unchanged. |
+| 2026-11-10 | Connectum maintainers | Added an Update note under Status: 1.0.0 shipped on 2026-06-16 and breaking changes follow the breaking-change policy. The Context sentence is left as written. Decision unchanged. |
