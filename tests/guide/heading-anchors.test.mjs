@@ -8,6 +8,27 @@ const root = new URL('../../', import.meta.url).pathname;
 const config = await resolveConfig(root, 'build');
 const md = await createMarkdownRenderer(config.srcDir, config.markdown, config.site.base);
 
+for (const heading of [
+    '`foo_bar`',
+    'snake_case name',
+    '_emphasis_',
+    '*emphasis*',
+    '`foo*bar`',
+    '`foo~bar`',
+    '~~strikethrough~~',
+    '[a link](/en/guide/quickstart)',
+    'Explicit anchor {#custom-id}',
+    '123 heading',
+]) {
+    test(`the validator matches the rendered anchor for ${heading}`, () => {
+        const html = md.render(`### ${heading}\n`, { relativePath: 'en/guide/service-communication/service-catalog.md' });
+        const rendered = html.match(/<h3 id="([^"]+)"/)?.[1];
+        const computed = slugify(heading);
+        console.log(JSON.stringify({ heading, rendered, validator: computed }));
+        assert.equal(computed, rendered);
+    });
+}
+
 test('the validator preserves the em dash and separates the dot in the rendered streaming anchor', () => {
     const source = readFileSync(new URL('../../en/guide/service-communication/service-catalog.md', import.meta.url), 'utf8');
     const heading = source.match(/^### (Streaming calls — `ctx\.stream`)$/m)?.[1];

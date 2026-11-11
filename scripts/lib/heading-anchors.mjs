@@ -1,22 +1,14 @@
-function cleanHeading(value) {
-    return value
-        .replace(/\s+\{#[^}]+\}\s*$/, '')
-        .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-        .replace(/[`*_~]/g, '')
-        .trim();
-}
+import { resolve } from 'node:path';
+import { createMarkdownRenderer, resolveConfig } from 'vitepress';
+
+const config = await resolveConfig(resolve(import.meta.dirname, '../..'), 'build');
+const markdown = await createMarkdownRenderer(config.srcDir, config.markdown, config.site.base);
 
 export function slugify(value) {
-    return (
-        cleanHeading(value)
-            .normalize('NFKD')
-            .replace(/[\u0300-\u036f]/g, '')
-            // biome-ignore lint/suspicious/noControlCharactersInRegex: fragment normalization must match VitePress, including removed control characters.
-            .replace(/[\u0000-\u001f]/g, '')
-            .replace(/[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '')
-            .replace(/^(\d)/, '_$1')
-            .toLowerCase()
-    );
+    // Markdown distinguishes literal punctuation in code from emphasis delimiters.
+    // Reuse VitePress's anchor tokens, including explicit IDs, without rendering HTML.
+    const tokens = markdown.parse(`# ${value}\n`, { relativePath: 'en/index.md' });
+    const anchor = tokens.find((token) => token.type === 'heading_open')?.attrGet('id');
+    if (anchor == null) throw new Error(`Cannot derive a heading anchor: ${value}`);
+    return anchor;
 }
