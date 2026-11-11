@@ -4,6 +4,10 @@ import { findRedirect } from '../../.vitepress/data/redirects.ts';
 
 const projectRoot = resolve(import.meta.dirname, '../..');
 
+function attributesFor(tag) {
+    return Object.fromEntries([...tag.matchAll(/([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g)].map(([, key, double, single]) => [key, double ?? single]));
+}
+
 function collectHtml(directory) {
     const files = [];
     for (const entry of readdirSync(directory, { withFileTypes: true })) {
@@ -45,11 +49,18 @@ export function validateSiteMetadata(buildRoot) {
             const route = `/${output.replace(/(^|\/)index\.html$/, '$1').replace(/\.html$/, '')}`;
             const redirect = findRedirect(route);
             const html = readFileSync(file, 'utf8').split('</head>')[0];
-            const canonicalLink = html.match(/<link rel="canonical" href="([^"]*)"/)?.[1];
+            const canonicalLinks = [...html.matchAll(/<link\b[^>]*>/gi)]
+                .map(([tag]) => attributesFor(tag))
+                .filter((attributes) => attributes.rel === 'canonical')
+                .map((attributes) => attributes.href ?? '');
+            if (canonicalLinks.length > 1) {
+                errors.push(`${relative(projectRoot, file)}: expected at most one canonical link, found ${JSON.stringify(canonicalLinks)}`);
+            }
+            const canonicalLink = canonicalLinks[0];
             const canonical = new URL(redirect ? redirect.to.split('#')[0] : canonicalLink ?? route, 'https://connectum.dev').href;
             const values = new Map(['og:title', 'og:description', 'og:url'].map((property) => [property, []]));
             for (const [tag] of html.matchAll(/<meta\b[^>]*>/gi)) {
-                const attributes = Object.fromEntries([...tag.matchAll(/([\w:-]+)=(?:"([^"]*)"|'([^']*)')/g)].map(([, key, double, single]) => [key, double ?? single]));
+                const attributes = attributesFor(tag);
                 values.get(attributes.property)?.push(attributes.content ?? '');
             }
             for (const [property, found] of values) {

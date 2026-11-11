@@ -108,3 +108,26 @@ test('built metadata accepts the redirect destination as its Open Graph URL', ()
     write('en/packages/core.html', page('https://connectum.dev/en/guide/server'));
     assert.deepEqual(validateSiteMetadata(directory), []);
 }));
+
+for (const [name, link] of [
+    ['href before rel', '<link href="https://connectum.dev/en/" rel="canonical">'],
+    ['single quotes', "<link rel='canonical' href='https://connectum.dev/en/'>"],
+    ['intervening attributes', '<link href="https://connectum.dev/en/" data-source="frontmatter" rel="canonical">'],
+]) {
+    test(`built metadata reads a canonical link with ${name}`, () => withBuild(({ directory, write }) => {
+        write('index.html', home.replace('</head>', `${link}</head>`));
+        assert.deepEqual(validateSiteMetadata(directory), []);
+    }));
+}
+
+test('built metadata rejects two canonical links even when they agree', () => withBuild(({ directory, write, displayPath }) => {
+    write('index.html', home.replace('</head>', '<link rel="canonical" href="https://connectum.dev/en/"><link href="https://connectum.dev/en/" rel="canonical"></head>'));
+    assert.deepEqual(validateSiteMetadata(directory), [
+        `${displayPath('index.html')}: expected at most one canonical link, found ["https://connectum.dev/en/","https://connectum.dev/en/"]`,
+    ]);
+}));
+
+test('built metadata falls back to the root route when no canonical link exists', () => withBuild(({ directory, write }) => {
+    write('index.html', page('https://connectum.dev/'));
+    assert.deepEqual(validateSiteMetadata(directory), []);
+}));
