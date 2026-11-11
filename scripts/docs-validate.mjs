@@ -7,6 +7,8 @@ import { publicModules } from '../.vitepress/data/modules.ts';
 import { findRedirect } from '../.vitepress/data/redirects.ts';
 import { movedInterceptorSections } from '../.vitepress/guide/interceptor-sections.ts';
 import { guideSections as navigationSections } from '../.vitepress/guide/navigation.ts';
+import { slugify } from './lib/heading-anchors.mjs';
+import { validateSiteMetadata } from './lib/site-metadata.mjs';
 
 const projectRoot = resolve(import.meta.dirname, '..');
 const workspaceRoot = resolve(projectRoot, '..');
@@ -16,6 +18,8 @@ const contentRoot = resolve(projectRoot, 'en');
 const buildRoot = resolve(projectRoot, '.vitepress/dist');
 const site = JSON.parse(readFileSync(resolve(projectRoot, '.vitepress/data/site.json'), 'utf8'));
 const checkBuiltOutputs = process.argv.includes('--built');
+// Print source headings and their computed anchors to diagnose changes in link validation.
+const dumpAnchors = process.argv.includes('--dump-anchors');
 const errors = [];
 
 function collectFiles(directory, extension) {
@@ -34,34 +38,11 @@ function routeFor(file) {
     return route.endsWith('/index') ? route.slice(0, -5) : route;
 }
 
-function cleanHeading(value) {
-    return value
-        .replace(/\s+\{#[^}]+\}\s*$/, '')
-        .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-        .replace(/[`*_~]/g, '')
-        .trim();
-}
-
-function slugify(value) {
-    return (
-        cleanHeading(value)
-            .normalize('NFKD')
-            .replace(/[\u0300-\u036f]/g, '')
-            // biome-ignore lint/suspicious/noControlCharactersInRegex: fragment normalization must match VitePress, including removed control characters.
-            .replace(/[\u0000-\u001f]/g, '')
-            .replace(/[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '')
-            .replace(/^(\d)/, '_$1')
-            .toLowerCase()
-    );
-}
-
-function anchorsFor(source) {
+function anchorsFor(source, file) {
     const anchors = new Set([...source.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
     const counts = new Map();
     let inFence = false;
-    for (const line of source.split(/\r?\n/)) {
+    for (const [index, line] of source.split(/\r?\n/).entries()) {
         if (/^\s*```/.test(line)) {
             inFence = !inFence;
             continue;
@@ -69,11 +50,12 @@ function anchorsFor(source) {
         if (inFence) continue;
         const match = line.match(/^#{1,6}\s+(.+)$/);
         if (!match) continue;
-        const custom = match[1].match(/\s+\{#([^}]+)\}\s*$/)?.[1];
-        const base = custom ?? slugify(match[1]);
+        const base = slugify(match[1]);
         const seen = counts.get(base) ?? 0;
         counts.set(base, seen + 1);
-        anchors.add(seen === 0 ? base : `${base}-${seen}`);
+        const anchor = seen === 0 ? base : `${base}-${seen}`;
+        anchors.add(anchor);
+        if (dumpAnchors) console.log(JSON.stringify({ file: relative(projectRoot, file), line: index + 1, heading: match[1], anchor }));
     }
     return anchors;
 }
@@ -89,7 +71,7 @@ const markdownFiles = collectFiles(contentRoot, '.md');
 const pages = new Map(
     markdownFiles.map((file) => {
         const source = readFileSync(file, 'utf8');
-        return [routeFor(file), { file, source, anchors: anchorsFor(source) }];
+        return [routeFor(file), { file, source, anchors: anchorsFor(source, file) }];
     }),
 );
 for (const redirect of site.redirects) {
@@ -280,6 +262,8 @@ if (checkBuiltOutputs) {
     for (const output of requiredOutputs) {
         if (!existsSync(resolve(buildRoot, output))) errors.push(`missing built output: ${output}`);
     }
+
+    errors.push(...validateSiteMetadata(buildRoot));
 
     for (const section of guideSections) {
         for (const route of [section.route, section.detail]) {
