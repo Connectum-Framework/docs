@@ -91,7 +91,7 @@ Two contract mistakes are errors, not silent fallbacks. `resolveMethodAuth()` th
 
 The options of the interceptor itself are checked when it is created. `createProtoAuthzInterceptor` throws a `TypeError` for a `defaultPolicy` or a rule `effect` that is not exactly `"allow"` or `"deny"` (the same case-sensitive rule as the proto policy; before this check, `"Deny"` or `""` was read as allow), and for a rule `methods` entry other than `*`, `Service/*` or `Service/Method`. See [Auth authorization and JWT validation](/en/migration/auth-authorization-validation).
 
-A service `default_policy` is checked when a method that uses it (has no `policy` of its own) is resolved. Building the list with `getPublicMethods(services)` at startup resolves every method, so these errors surface when the server is composed rather than on the first request. See [Auth option validation](/en/migration/auth-proto-options).
+When resolving any method in a service, `resolveMethodAuth()` validates the service's non-empty `default_policy` even if the method sets its own `policy`. Building the list with `getPublicMethods(services)` at startup resolves every method, so these errors surface when the server is composed rather than on the first request. See [Auth option validation](/en/migration/auth-proto-options).
 
 Explicit method-level fields override their service-level counterparts. An
 omitted field inherits the service setting; for the optional booleans, explicit
