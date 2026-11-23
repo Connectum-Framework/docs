@@ -7,8 +7,7 @@ outline: deep
 
 # Proto-Based Authorization
 
-This guide targets the `1.3.x` release line. Features marked `Since 1.3.0`
-require `@connectum/auth` 1.3.0 or later.
+Per-object checks require `@connectum/auth` 1.4.0 on the server. See [Resource authorization](/en/guide/auth/resource-authorization) when an access decision depends on an ID in the request.
 
 Define authorization rules directly in `.proto` files using custom options. The `createProtoAuthzInterceptor()` reads these options at runtime via protobuf reflection -- no code changes when access rules evolve.
 
@@ -72,6 +71,7 @@ service UserService {
 | `requires` | `AuthRequirements` | Required roles and/or scopes |
 | `policy` | `string` | Override service-level default policy: `"allow"` or `"deny"` (lowercase). Empty means not set; any other value is a configuration error (see [Validation](#validation)) |
 | `internal` | `bool` | Mark the method as internal (service-to-service). Distinct from `public`: world-open vs. trusted-caller-only. Since 1.1.0. A method cannot be both `public` and `internal`. |
+| `resources` | `repeated ResourceRequirement` | Require an action on each object named by the request. See [Declare the resource rules](/en/guide/auth/resource-authorization#declare-the-resource-rules). |
 
 #### `AuthRequirements`
 
@@ -166,23 +166,23 @@ const authz = createProtoAuthzInterceptor({
 
 ## Decision Flow
 
-The interceptor checks the following stages in order. Every allow passes the
-request to the next interceptor; every deny throws and ends authorization.
+The first method-level decision determines whether the request reaches step 8.
+Any denial ends the call. See [Resource authorization](/en/guide/auth/resource-authorization) for the object checks at step 8.
 
 | Order | Condition | Outcome |
 |---|---|---|
-| 1. Proto `public` | Resolved method is public | Allow through this authorization interceptor without checking context. This does not configure authentication; add the method to authn `skipMethods` separately. |
-| 2. Proto `internal` | Resolved method is internal | A missing `AuthContext` throws `Unauthenticated`. If `requires` is `undefined`, allow a caller whose context was established by `createInternalAuthInterceptor` upstream; a context from any other interceptor (an end-user JWT) throws `Unauthenticated` with `Untrusted internal request`. If `requires` is defined, continue to the requirements check below; internal identity and roles/scopes compose inclusively. |
-| 3. Proto `requires` | Requirements are defined, including for an internal method | Missing context throws `Unauthenticated`. Satisfied roles/scopes allow immediately, even if a resolved proto policy is `deny`. Unsatisfied requirements throw `AuthzDeniedError` (`PermissionDenied`) without checking policy, rules, or callback. |
-| 4. Proto policy | No earlier proto decision; resolved policy is `allow` or `deny` | `allow` passes the request; `deny` throws `AuthzDeniedError` (`PermissionDenied`). An unset policy continues. |
-| 5. Programmatic rules | No proto decision; inspect rules in order | The first method-matching rule with no `requires` matches unconditionally, even without context. A rule with `requires` is skipped if context is missing or its requirements fail; evaluation continues. A matching allow passes the request; a matching deny throws `AuthzDeniedError` (`PermissionDenied`). If no rule matches, continue. |
-| 6. `authorize` callback | No earlier decision and a callback is configured | Missing context throws `Unauthenticated`. The callback receives the context and method. Exactly `true` passes the request; `false` and every other result (a truthy non-boolean such as the string `"false"`, `1`, `{}`, `undefined`) throw `ConnectError` (`PermissionDenied`). The callback is terminal and is not followed by `defaultPolicy`. |
-| 7. `defaultPolicy` | No earlier decision and no callback is configured | `allow` passes the request, with or without context. `deny` throws `Unauthenticated` when context is missing and `ConnectError` (`PermissionDenied`) when context exists. |
+| 1. Proto `public` | Resolved method is public | Skip authorization. Configure authentication's `skipMethods` separately. A public method with resource rules is an invalid contract. |
+| 2. Proto `internal` | Resolved method is internal | Missing context gives `Unauthenticated`. With `requires`, continue to step 3. Otherwise, a caller authenticated by `createInternalAuthInterceptor` reaches step 8. Any other context gives `Unauthenticated` with `Untrusted internal request`. |
+| 3. Proto `requires` | Requirements are defined | Missing context gives `Unauthenticated`. Satisfied roles/scopes reach step 8, even with a resolved proto policy of `deny`. Unmet requirements throw `AuthzDeniedError` (`PermissionDenied`). |
+| 4. Proto policy | No earlier proto decision | `allow` reaches step 8. The method's own `policy: "deny"` throws `AuthzDeniedError` (`PermissionDenied`). An inherited `default_policy: "deny"` gives the same error unless the method declares `resources`, in which case evaluation continues to step 5. An unset policy also continues to step 5. |
+| 5. Programmatic rules | No proto decision | Evaluate rules in order. A matching method pattern needs no context unless the rule has `requires`. Skip rules with unmet requirements. The first matching allow reaches step 8. A matching deny throws `AuthzDeniedError` (`PermissionDenied`). If none matches, continue. |
+| 6. `authorize` callback | No earlier decision and a callback is configured | Missing context gives `Unauthenticated`. The callback receives the `AuthContext` and `{ service, method }`. Exactly `true` reaches step 8. Every other return value gives `PermissionDenied`. |
+| 7. `defaultPolicy` | No earlier decision or callback | With resource rules, either default reaches step 8. Without them, `allow` passes the request. The default `deny` gives `Unauthenticated` without context and `PermissionDenied` with context. |
+| 8. Resource checks | A non-public method reaches this step | Without resource rules, pass the request. With rules, require an authenticated caller and an explicit `"allow"` for every object before passing the request. |
 
 For internal methods, `requires === undefined` is distinct from a defined
-requirements object: the former allows a caller authenticated by the internal
-interceptor immediately;
-the latter requires a context and evaluates its roles/scopes. An object with
+requirements object. The former admits a caller authenticated by the internal
+interceptor to step 8. The latter checks the caller's roles/scopes. An object with
 empty role and scope lists (`requires {}`) is still defined and passes the
 requirements check when context exists.
 
@@ -302,8 +302,8 @@ Resolved options are cached in a `WeakMap` keyed by method descriptor. After the
 |----------|-------|
 | Unauthenticated + requires roles/scopes | `Code.Unauthenticated` |
 | Authenticated but roles/scopes not met | `Code.PermissionDenied` via `AuthzDeniedError` |
-| Interceptor default policy = deny, no match, authenticated | `Code.PermissionDenied` |
-| Interceptor default policy = deny, no match, unauthenticated | `Code.Unauthenticated` |
+| Interceptor default policy = deny, no match or resource rules, authenticated | `Code.PermissionDenied` |
+| Interceptor default policy = deny, no match or resource rules, unauthenticated | `Code.Unauthenticated` |
 
 `AuthzDeniedError` carries server-side details such as the rule name. Put
 `createErrorHandlerInterceptor()` before authz so it converts this error through

@@ -151,6 +151,7 @@ export const guideSections: GuideSection[] = [
                     { text: 'Session authentication', link: '/en/guide/auth/session' },
                     { text: 'Authorization', link: '/en/guide/auth/authorization' },
                     { text: 'Proto-based authorization', link: '/en/guide/auth/proto-authz' },
+                    { text: 'Resource authorization', link: '/en/guide/auth/resource-authorization' },
                     { text: 'Client credentials', link: '/en/guide/auth/client-interceptors' },
                     { text: 'Auth context and testing', link: '/en/guide/auth/context' },
                 ],
