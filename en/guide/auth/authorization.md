@@ -56,17 +56,19 @@ The catch-all `'*'` is **not accepted in `skipMethods`**. `createAuthInterceptor
 
 ## Programmatic Callback
 
-For complex logic that can not be expressed as rules, add an `authorize` callback. It is invoked only when no rule matches:
+When no rule matches, the interceptor calls the optional `authorize` callback with the auth context and an object containing only `{ service, method }`.
 
 ```typescript
 const authz = createAuthzInterceptor({
   defaultPolicy: 'deny',
   rules: [],
-  authorize: (context, req) => context.roles.includes('superadmin'),
+  authorize: (context) => context.roles.includes('superadmin'),
 });
 ```
 
-If `authorize` returns (or resolves to) exactly `true`, the request is allowed. Any other result fails the request with `Code.PermissionDenied`, including when `defaultPolicy` is `allow`: `false`, but also `undefined` and a truthy value that is not a boolean, such as the string `'false'` that `(ctx) => ctx.claims.isAdmin` returns for a string claim. Write the comparison out, for example `ctx.claims.isAdmin === true`. The default policy applies only when no rule matches and no callback is configured.
+Only the boolean `true`, returned directly or through a promise, allows the call. Every other result denies it with `PermissionDenied: Access denied`, even when `defaultPolicy` is `'allow'`. For a boolean claim, use `ctx.claims.isAdmin === true`. The default policy applies only when no rule matches and no callback is configured.
+
+The callback has no access to the request message. If access depends on the object named in the request, check it in the handler or in an interceptor placed after authorization. For unary calls, that interceptor can read the decoded message from `req.message`.
 
 `defaultPolicy` is `'allow'` or `'deny'` and defaults to `'deny'` when omitted. Any other value (`'Deny'`, `''`, `null`) throws a `TypeError` when the interceptor is created, so a typo cannot open the methods that no rule matches. See [Auth authorization and JWT validation](/en/migration/auth-authorization-validation) when upgrading.
 

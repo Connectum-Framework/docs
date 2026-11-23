@@ -94,6 +94,45 @@ A token that fails verification (bad signature, wrong issuer or audience, expire
 
 `skipMethods` takes exact methods and `Service/*` patterns. The catch-all `'*'` is refused when the interceptor is created, because it would switch authentication off for every method; to disable the interceptor, do not register it. Any other pattern, such as `Service/Read*`, is refused too: it matches nothing.
 
+## Map roles and scopes with `claimsMapping`
+
+`claimsMapping.roles` reads an array and keeps only its string elements. A missing claim, a string, or any other non-array value gives the caller an empty role list without an error. `claimsMapping.scopes` accepts a space-separated string or an array. For an array, it keeps only the strings.
+
+Each dot in a mapping path starts a new key. For example, `realm_access.roles` reads the `roles` field inside `realm_access`. A literal dot in a claim name cannot be escaped, so a path cannot address an Auth0 claim named `https://example.com/roles`.
+
+For other claim shapes, use `createAuthInterceptor` with a custom `verifyCredentials`. ZITADEL's project roles claim can contain an array with one object. Its keys are role names, and each role lists the organizations that granted it. [ZITADEL reserved claims](https://zitadel.com/docs/apis/openidoauth/claims#reserved-claims)
+
+This example uses `jose` to verify the bearer token and maps roles for one organization. Set the issuer, audience and organization ID for your deployment.
+
+```typescript
+import { createAuthInterceptor } from '@connectum/auth';
+import { createRemoteJWKSet, jwtVerify } from 'jose';
+
+const issuer = 'https://login.example.com';
+const audience = 'my-project-id';
+const organizationId = 'my-org-id';
+const keys = createRemoteJWKSet(new URL('/oauth/v2/keys', issuer));
+
+const auth = createAuthInterceptor({
+  async verifyCredentials(token) {
+    const { payload } = await jwtVerify(token, keys, { issuer, audience, requiredClaims: ['exp'] });
+    if (typeof payload.sub !== 'string' || !payload.sub) throw new Error('Missing subject');
+
+    const claim = payload['urn:zitadel:iam:org:project:roles'];
+    const roleMap = Array.isArray(claim) && claim.length === 1 ? claim[0] : undefined;
+    const roles: string[] = [];
+    if (roleMap && typeof roleMap === 'object' && !Array.isArray(roleMap)) {
+      for (const [role, grants] of Object.entries(roleMap)) {
+        if (grants && typeof grants === 'object' && !Array.isArray(grants) && Object.hasOwn(grants, organizationId)) {
+          roles.push(role);
+        }
+      }
+    }
+    return { subject: payload.sub, roles, scopes: [], claims: payload, type: 'jwt' };
+  },
+});
+```
+
 ## HMAC Secret
 
 For simple setups and testing environments where tokens are signed with a shared secret:
