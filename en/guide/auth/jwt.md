@@ -100,9 +100,9 @@ A token that fails verification (bad signature, wrong issuer or audience, expire
 
 Each dot in a mapping path starts a new key. For example, `realm_access.roles` reads the `roles` field inside `realm_access`. A literal dot in a claim name cannot be escaped, so a path cannot address an Auth0 claim named `https://example.com/roles`.
 
-For other claim shapes, use `createAuthInterceptor` with a custom `verifyCredentials`. ZITADEL's project roles claim can contain an array with one object. Its keys are role names, and each role lists the organizations that granted it. [ZITADEL reserved claims](https://zitadel.com/docs/apis/openidoauth/claims#reserved-claims)
+For other claim shapes, use `createAuthInterceptor` with a custom `verifyCredentials`. ZITADEL's generic roles claim describes the client application's project. This example reads the claim for the protected project and keeps each role granted in the configured organization. [ZITADEL reserved claims](https://zitadel.com/docs/apis/openidoauth/claims#reserved-claims)
 
-This example uses `jose` to verify the bearer token and maps roles for one organization. Set the issuer, audience and organization ID for your deployment.
+Set the issuer, protected project ID (`audience`) and organization ID for your deployment. Request `urn:zitadel:iam:org:project:id:{projectId}:aud` to include the protected project in the token audience. The client must also request `urn:zitadel:iam:org:projects:roles` to include the project roles claim, without which the example maps no roles. [ZITADEL reserved scopes](https://zitadel.com/docs/apis/openidoauth/scopes#reserved-scopes)
 
 ```typescript
 import { createAuthInterceptor } from '@connectum/auth';
@@ -118,17 +118,18 @@ const auth = createAuthInterceptor({
     const { payload } = await jwtVerify(token, keys, { issuer, audience, requiredClaims: ['exp'] });
     if (typeof payload.sub !== 'string' || !payload.sub) throw new Error('Missing subject');
 
-    const claim = payload['urn:zitadel:iam:org:project:roles'];
-    const roleMap = Array.isArray(claim) && claim.length === 1 ? claim[0] : undefined;
-    const roles: string[] = [];
-    if (roleMap && typeof roleMap === 'object' && !Array.isArray(roleMap)) {
+    const claim = payload[`urn:zitadel:iam:org:project:${audience}:roles`];
+    const roles = new Set<string>();
+    for (const roleMap of Array.isArray(claim) ? claim : [claim]) {
+      if (!roleMap || typeof roleMap !== 'object' || Array.isArray(roleMap)) continue;
       for (const [role, grants] of Object.entries(roleMap)) {
         if (grants && typeof grants === 'object' && !Array.isArray(grants) && Object.hasOwn(grants, organizationId)) {
-          roles.push(role);
+          roles.add(role);
         }
       }
     }
-    return { subject: payload.sub, roles, scopes: [], claims: payload, type: 'jwt' };
+    const scopes = typeof payload.scope === 'string' ? payload.scope.split(' ').filter(Boolean) : [];
+    return { subject: payload.sub, roles: [...roles], scopes, claims: payload, type: 'jwt' };
   },
 });
 ```
