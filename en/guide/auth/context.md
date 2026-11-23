@@ -107,6 +107,8 @@ The `AuthContext` object contains the following fields:
 | `type` | `string` | Credential type chosen by the verifier; not a closed enumeration |
 | `expiresAt` | `Date \| undefined` | Credential expiration time, when available |
 
+A subject that is empty after [control characters are removed](/en/migration/auth-identity#subjects-in-the-13x-patch) does not identify a caller.
+
 ## Cross-Service Propagation
 
 Enable the authentication interceptor's `propagateHeaders` to write the verified
