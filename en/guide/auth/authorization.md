@@ -56,6 +56,8 @@ The catch-all `'*'` is **not accepted in `skipMethods`**. `createAuthInterceptor
 
 ## Programmatic Callback
 
+The `authorize` callback receives the caller's `AuthContext` and the RPC's `{ service, method }`. To check access to an object named in the request message, use [resource authorization with the proto interceptor](/en/guide/auth/resource-authorization).
+
 For complex logic that can not be expressed as rules, add an `authorize` callback. It is invoked only when no rule matches:
 
 ```typescript
