@@ -6,7 +6,7 @@ docType: migration
 
 # Auth Identity Handling
 
-> Applies to `@connectum/auth` 1.3.0.
+> Applies to `@connectum/auth` 1.3.0 and the [subject validation change in the 1.3.x patch](#subjects-in-the-13x-patch).
 
 ## Does this apply to you?
 
@@ -17,7 +17,8 @@ You need to act if any of these is true:
 - `verifyCredentials` (`createAuthInterceptor`) or `mapSession` (`createSessionAuthInterceptor`) can return anything other than a complete `AuthContext`, for example `null` after a failed lookup or an object without `scopes` or `claims`;
 - you turn `propagateHeaders` on and an identity has a scope that is empty or contains a space, a subject over 512 characters, a type over 128, a name over 256, or roles, scopes or claims whose serialized value is over 8192 characters;
 - a header name option (`headerMapping`, `trustSource.header`, `stripHeaders`, or the `header` of an internal trust source) is not a valid HTTP header name, a gateway `defaultType` is empty, over 128 characters or has a lone surrogate while `propagateHeaders` is on, or the client gateway interceptor gets an empty or whitespace-edged `secret`, an empty `subject` or malformed `roles`;
-- a service that does not use `@connectum/auth` reads `x-auth-subject`, `x-auth-name`, `x-auth-type` or `x-auth-scopes` and can now receive users with non-Latin names.
+- a service that does not use `@connectum/auth` reads `x-auth-subject`, `x-auth-name`, `x-auth-type` or `x-auth-scopes` and can now receive users with non-Latin names;
+- you are applying the 1.3.x patch and your code supplies or relies on a subject or type that is empty after control characters are removed.
 
 Otherwise nothing changes for you. Identities that fit, and ASCII and Latin-1 text, are written as before, with two exceptions that are now encoded (`utf-8''` plus percent-encoding). A subject, name, type or scope with a space or tab at either end used to be trimmed by the platform, so a subject of U+0020 followed by `alice` and the subject `alice` were one identity; they are now two. A text that itself starts with `utf-8''` is encoded so that readers can tell it from an encoded one.
 
@@ -52,6 +53,44 @@ A subject, name, type or scope with a character above U+00FF (Cyrillic, CJK, an 
 ### String options are checked when the interceptor is created
 
 Options whose value is used as a header name or written into a header used to fail only when a request arrived, as an internal error. Creating the interceptor now throws a `TypeError` (or a `RangeError` for a length) that names the option when a header name is not a valid HTTP header name, when a gateway `defaultType` is empty, longer than 128 characters or holds a lone surrogate while `propagateHeaders` is on (with it off the value is accepted as before), and when the client gateway interceptor gets an empty `secret`, one with a line break, a character above U+00FF or a space or tab at either end, an empty `subject` or one with a line break or a lone surrogate, or `roles` that is not an array of strings without holes. The writer also refuses an empty subject or type, which the reader would not read back.
+
+### Subjects in the 1.3.x patch {#subjects-in-the-13x-patch}
+
+If a verifier, mapper, trust source or gateway supplies a subject that is empty after cleaning, give it the caller's actual identifier or reject the credential. Replace any fixed trust option that fails this check. If the gateway has no type to send, omit the type header and configure `defaultType` with the value you want handlers to receive.
+
+The subject check ignores U+0000–U+0008, U+000B–U+000C, U+000E–U+001F and DEL (U+007F). Spaces and tabs count, even when they make up the whole subject. If a verifier returns `a\x01b`, the handler sees the original subject and the standard identity header carries `ab`, as before. Standard identity headers still reject NUL, CR and LF before cleaning.
+
+The patch rejects both `""` and a subject made entirely of removable controls. Each interceptor ends the call with `Unauthenticated` before the handler runs, even when headers are not propagated.
+
+| Interceptor | Source of the subject | Error text |
+| --- | --- | --- |
+| `createAuthInterceptor` | Result of `verifyCredentials` | `Authentication failed` |
+| `createJwtAuthInterceptor` | JWT `sub` or the claim mapped by `claimsMapping.subject` | `JWT missing subject claim` |
+| `createSessionAuthInterceptor` | Result of `mapSession` | `Session mapping failed` |
+| `createInternalAuthInterceptor` | Identity returned by a built-in or custom trust source for an internal method | `Untrusted internal request` |
+| `createGatewayAuthInterceptor` | Subject header named by `headerMapping.subject` | `Missing subject header from gateway` |
+
+In 1.3.0, the generic and session interceptors accepted `""` only with `propagateHeaders` off. The internal interceptor also accepted `""` and has no header propagation. JWT and the gateway already rejected `""`.
+
+A subject made entirely of removable controls could reach the handler through the generic, session, internal or JWT interceptor in 1.3.0. The gateway already rejected it under the standard subject header. The patch extends that check to custom header names.
+
+With a valid subject, `createGatewayAuthInterceptor` uses `defaultType` (by default, `"gateway"`) when a standard or custom type header is empty after cleaning. In 1.3.0 a present empty header yielded `""`. A type made only of removable controls yielded `""` under the standard name and kept its raw value under a custom name.
+
+`parseAuthHeaders` now returns `undefined` for a subject header that cleans to an empty string. It used to return an identity with subject `""` when the incoming header contained only removable controls. With a valid subject, a type header made of those controls now yields `"unknown"` in place of `""`.
+
+`setAuthHeaders` used to write an empty header for a subject or type made of removable controls. It now leaves all headers untouched and throws `UnsafeHeaderValueError`. The message is `AuthContext.subject must not be empty, when auth headers are propagated (the reader would not read it back)`, with `AuthContext.type` in the same message for a type. The propagation helper `propagateAuthHeaders` wraps that error in a `ConnectError` with code `Unauthenticated` and text `Authentication failed`.
+
+In 1.3.0, these factories accepted `""` and strings made entirely of removable controls for the fixed identity options below. The patch throws a `TypeError` naming the option at creation. A non-string value passed at runtime also raises a `TypeError`.
+
+- `sharedSecretTrust` checks `subject` and `type`.
+- `meshIdentityTrust` checks each `allowlist[i].principal` and the shared `type`.
+- `signedTokenTrust` checks `type` and each issuer key used as a subject. If the issuer sets `claimsMapping.subject`, its mapped subject is checked when the request arrives.
+
+For example, an empty principal in the first allowlist entry gives the message `@connectum/auth: meshIdentityTrust allowlist[0].principal must hold a character after the control characters are removed; it is the subject of every identity`. For an empty type the message ends with `it is the type of every identity`.
+
+In 1.3.0, `createClientGatewayInterceptor` already threw a `TypeError` for `subject: ""`, as did `createGatewayAuthInterceptor` for `defaultType: ""` with `propagateHeaders: true`. The patch extends those checks to strings made entirely of removable controls. Both constructors prefix the writer's message with `@connectum/auth: createClientGatewayInterceptor subject: ` or `@connectum/auth: Gateway auth defaultType: `, respectively.
+
+To verify the upgrade, check your verifier or mapper with a credential that has no usable subject. Expect the error for that interceptor and confirm the handler never runs. If you use a gateway type fallback, check the type your handler receives against your configured `defaultType`.
 
 ### Cached identities are copied per request
 
