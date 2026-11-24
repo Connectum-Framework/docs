@@ -104,7 +104,10 @@ For other claim shapes, use `createAuthInterceptor` with a custom `verifyCredent
 
 Set the issuer, protected project ID (`audience`) and organization ID for your deployment. Request `urn:zitadel:iam:org:project:id:{projectId}:aud` to include the protected project in the token audience. The client must also request `urn:zitadel:iam:org:projects:roles` to include the project roles claim, without which the example maps no roles. [ZITADEL reserved scopes](https://zitadel.com/docs/apis/openidoauth/scopes#reserved-scopes)
 
+ZITADEL ID tokens and JWT access tokens can share a signing key, issuer and project audience. To distinguish them, require a string `jti` and reject tokens that contain `auth_time`, which ZITADEL reserves for ID tokens. [ZITADEL claims](https://zitadel.com/docs/apis/openidoauth/claims)
+
 ```typescript
+import { Code, ConnectError } from '@connectrpc/connect';
 import { createAuthInterceptor } from '@connectum/auth';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
@@ -116,7 +119,12 @@ const keys = createRemoteJWKSet(new URL('/oauth/v2/keys', issuer));
 const auth = createAuthInterceptor({
   async verifyCredentials(token) {
     const { payload } = await jwtVerify(token, keys, { issuer, audience, requiredClaims: ['exp'] });
-    if (typeof payload.sub !== 'string' || !payload.sub) throw new Error('Missing subject');
+    if (
+      typeof payload.jti !== 'string' || payload.auth_time !== undefined ||
+      typeof payload.sub !== 'string' || !payload.sub
+    ) {
+      throw new ConnectError('Authentication failed', Code.Unauthenticated);
+    }
 
     const claim = payload[`urn:zitadel:iam:org:project:${audience}:roles`];
     const roles = new Set<string>();
@@ -133,6 +141,8 @@ const auth = createAuthInterceptor({
   },
 });
 ```
+
+If a ZITADEL JWT access token omits `scope`, the empty scope list fails any check for a required scope, so use token introspection to read the granted scopes. [ZITADEL #12180](https://github.com/zitadel/zitadel/pull/12180) · [Introspection response](https://zitadel.com/docs/apis/openidoauth/endpoints#successful-introspection-response)
 
 ## HMAC Secret
 
