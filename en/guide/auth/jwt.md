@@ -94,6 +94,56 @@ A token that fails verification (bad signature, wrong issuer or audience, expire
 
 `skipMethods` takes exact methods and `Service/*` patterns. The catch-all `'*'` is refused when the interceptor is created, because it would switch authentication off for every method; to disable the interceptor, do not register it. Any other pattern, such as `Service/Read*`, is refused too: it matches nothing.
 
+## Map roles and scopes with `claimsMapping`
+
+`claimsMapping.roles` reads an array and keeps only its string elements. A missing claim, a string, or any other non-array value gives the caller an empty role list without an error. `claimsMapping.scopes` accepts a space-separated string or an array. For an array, it keeps only the strings.
+
+Each dot in a mapping path starts a new key. For example, `realm_access.roles` reads the `roles` field inside `realm_access`. A literal dot in a claim name cannot be escaped, so a path cannot address an Auth0 claim named `https://example.com/roles`.
+
+For other claim shapes, use `createAuthInterceptor` with a custom `verifyCredentials`. ZITADEL's generic roles claim describes the client application's project. This example reads the claim for the protected project and keeps each role granted in the configured organization. [ZITADEL reserved claims](https://zitadel.com/docs/apis/openidoauth/claims#reserved-claims)
+
+Set the issuer, protected project ID (`audience`) and organization ID for your deployment. Request `urn:zitadel:iam:org:project:id:{projectId}:aud` to include the protected project in the token audience. The client must also request `urn:zitadel:iam:org:projects:roles` to include the project roles claim, without which the example maps no roles. [ZITADEL reserved scopes](https://zitadel.com/docs/apis/openidoauth/scopes#reserved-scopes)
+
+ZITADEL ID tokens and JWT access tokens can share a signing key, issuer and project audience. To distinguish them, require a string `jti` and reject tokens that contain `auth_time`, which ZITADEL reserves for ID tokens. [ZITADEL claims](https://zitadel.com/docs/apis/openidoauth/claims)
+
+```typescript
+import { Code, ConnectError } from '@connectrpc/connect';
+import { createAuthInterceptor } from '@connectum/auth';
+import { createRemoteJWKSet, jwtVerify } from 'jose';
+
+const issuer = 'https://login.example.com';
+const audience = 'my-project-id';
+const organizationId = 'my-org-id';
+const keys = createRemoteJWKSet(new URL('/oauth/v2/keys', issuer));
+
+const auth = createAuthInterceptor({
+  async verifyCredentials(token) {
+    const { payload } = await jwtVerify(token, keys, { issuer, audience, requiredClaims: ['exp'] });
+    if (
+      typeof payload.jti !== 'string' || payload.auth_time !== undefined ||
+      typeof payload.sub !== 'string' || !payload.sub
+    ) {
+      throw new ConnectError('Authentication failed', Code.Unauthenticated);
+    }
+
+    const claim = payload[`urn:zitadel:iam:org:project:${audience}:roles`];
+    const roles = new Set<string>();
+    for (const roleMap of Array.isArray(claim) ? claim : [claim]) {
+      if (!roleMap || typeof roleMap !== 'object' || Array.isArray(roleMap)) continue;
+      for (const [role, grants] of Object.entries(roleMap)) {
+        if (grants && typeof grants === 'object' && !Array.isArray(grants) && Object.hasOwn(grants, organizationId)) {
+          roles.add(role);
+        }
+      }
+    }
+    const scopes = typeof payload.scope === 'string' ? payload.scope.split(' ').filter(Boolean) : [];
+    return { subject: payload.sub, roles: [...roles], scopes, claims: payload, type: 'jwt' };
+  },
+});
+```
+
+If a ZITADEL JWT access token omits `scope`, the empty scope list fails any check for a required scope, so use token introspection to read the granted scopes. [ZITADEL #12180](https://github.com/zitadel/zitadel/pull/12180) · [Introspection response](https://zitadel.com/docs/apis/openidoauth/endpoints#successful-introspection-response)
+
 ## HMAC Secret
 
 For simple setups and testing environments where tokens are signed with a shared secret:
